@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "baseUrl": ".",
+    "paths": {
+      "assets": ["src/assets"],
+      "utils": ["src/globals/utils"]
+    }
+  },
+  "include": ["src/**/*"]
+}
