@@ -1,6 +1,7 @@
 import { createStore } from './store'
 
-const linear = (from, to, progress) => (from * progress) / to
+export const linear = (from, to, progress) =>
+  ((to - from) * progress) / 100 + from
 
 const mapSegments = segments =>
   segments.map(segment => ({
@@ -12,15 +13,15 @@ const mapSegments = segments =>
     ...segment,
   }))
 
-export const createAnimation = (segments = [], playOnStart = false) => {
+export const createAnimation = params => {
   const state = {
     name: '',
-    isPlaying: playOnStart,
+    isPlaying: params.playOnStart,
     startTime: 0,
     index: 0,
     timer: 0,
 
-    segments: mapSegments(segments),
+    segments: mapSegments(params.segments),
     // segments: [
     //   {
     //     from: 0,
@@ -28,7 +29,6 @@ export const createAnimation = (segments = [], playOnStart = false) => {
     //     duration: 0,
     //     delay: 0,
     //     easing: 'linear',
-    //     onStart: '',
     //     onEnd: '',
     //     property: '',
     //   },
@@ -37,40 +37,34 @@ export const createAnimation = (segments = [], playOnStart = false) => {
   }
 
   const actions = {
-    setSegments: dispatch => payload =>
-      dispatch({
-        type: 'setSegments',
-        payload,
-      }),
+    setSegments: payload => ({
+      type: 'setSegments',
+      payload,
+    }),
 
-    play: dispatch => () =>
-      dispatch({
-        type: 'setIsPlaying',
-        payload: true,
-      }),
+    play: () => ({
+      type: 'setIsPlaying',
+      payload: true,
+    }),
 
-    setCurrentSegment: dispatch => () =>
-      dispatch({
-        type: 'setCurrentSegment',
-        payload: true,
-      }),
+    setCurrentSegment: () => ({
+      type: 'setCurrentSegment',
+      payload: true,
+    }),
 
-    setTimer: dispatch => payload =>
-      dispatch({
-        type: 'setTimer',
-        payload,
-      }),
+    setTimer: payload => ({
+      type: 'setTimer',
+      payload,
+    }),
 
-    reset: dispatch => () =>
-      dispatch({
-        type: 'reset',
-      }),
+    reset: () => ({
+      type: 'reset',
+    }),
 
-    stop: dispatch => () =>
-      dispatch({
-        type: 'setIsPlaying',
-        payload: false,
-      }),
+    stop: () => ({
+      type: 'setIsPlaying',
+      payload: false,
+    }),
   }
 
   const reducer = (state, action) => {
@@ -113,30 +107,35 @@ export const createAnimation = (segments = [], playOnStart = false) => {
     }
   }
 
-  const store = createStore(reducer, state, actions)
+  const { actions: bindedActions, getState } = createStore(
+    reducer,
+    state,
+    actions,
+  )
 
   return {
     ...state,
-    ...actions,
-    store,
+    ...bindedActions,
+    getState,
     tick: (go, app, currentAnimation) => {
       if (currentAnimation.isPlaying) {
         if (currentAnimation.segments.length > 0) {
-          const { delta } = app.gameObjects.time
           const { timer, index, segments } = currentAnimation
           const currentSegment = segments[index]
           const { from, to, duration } = currentSegment
 
-          const newTimer = timer + delta
+          const newTimer = timer + app.gameObjects.time.delta
 
           if (newTimer >= currentSegment.duration) {
-            currentAnimation[currentSegment.onEnd]()
             go.setProperty(currentSegment.property, currentSegment.to)
 
             if (segments.length >= currentSegment + 1) {
+              currentSegment.onEnd && currentSegment.onEnd()
               currentAnimation.setCurrentSegment(currentSegment + 1)
             } else {
-              currentAnimation.reset()
+              currentSegment.onEnd && currentSegment.onEnd()
+              currentAnimation.stop()
+              // currentAnimation.reset()
             }
           } else {
             const progress = (newTimer * 100) / duration
@@ -146,6 +145,7 @@ export const createAnimation = (segments = [], playOnStart = false) => {
           }
           currentAnimation.setTimer(newTimer)
         } else {
+          console.log('stop')
           currentAnimation.stop()
         }
       }

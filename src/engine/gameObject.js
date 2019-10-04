@@ -1,6 +1,7 @@
 import { vectorZero } from '../utils/vector'
 import { createRigidbody } from './rigidbody'
 import { createStore } from './store'
+import { createAnimation } from './animation'
 
 const createImage = ({
   url = '',
@@ -21,20 +22,21 @@ const createImage = ({
 const v = () => {}
 
 const gameObjectActions = {
-  setProperty: (dispatch, state) => payload => {
-    dispatch({
-      type: 'setProperty',
-      payload: payload,
-    })
-  },
+  setProperty: (key, value) => ({
+    type: 'setProperty',
+    payload: {
+      key,
+      value,
+    },
+  }),
 }
 
 const gameObjectReducer = (state, action) => {
   switch (action.type) {
-    case SET_GOAL_POSITION:
+    case 'setProperty':
       return {
         ...state,
-        goalPosition: action.payload,
+        [action.payload.key]: action.payload.value,
       }
     default:
       return state
@@ -45,20 +47,27 @@ export const createGameObject = params => app => {
   const tick = (go, app) => {
     params.tick && params.tick(go, app)
     go.rigidbody.tick(go, app)
-    go.animations.forEach(animation => animation.tick(go, app, animation))
+    // go.animations.forEach(animation => animation.tick(go, app, animation))
 
-    go = Object.assign(go, go.store.getState())
+    go = Object.assign(go, go.getState())
     go.rigidbody = Object.assign(go.rigidbody, go.rigidbody.getState())
-    go.animations = go.animations.reduce(
-      (animations, animation) =>
-        animations.concat(Object.assign(animation, animation.getState())),
-      [],
+
+    go.animations = Object.entries(go.animations).reduce(
+      (animations, [key, animation]) => {
+        animation.tick(go, app, animation)
+
+        return {
+          ...animations,
+          [key]: Object.assign(animation, animation.getState()),
+        }
+      },
+      {},
     )
 
     return go
   }
 
-  const store = createStore(
+  const { actions: bindedActions, getState } = createStore(
     params.reducer,
     params.state,
     {
@@ -70,13 +79,19 @@ export const createGameObject = params => app => {
 
   const go = {
     ...params,
-    ...store.actions,
+    ...bindedActions,
 
     id: params.id || `${Math.random()}`,
     tick,
-    animations: params.animations || [],
+    animations: Object.entries(params.animations || {}).reduce(
+      (animations, [key, animation]) => ({
+        ...animations,
+        [key]: createAnimation(animation),
+      }),
+      {},
+    ),
     beforeDestroy: params.beforeDestroy || v,
-    store: store,
+    getState,
     image: createImage(params.image),
     rigidbody: createRigidbody(params.rigidbody),
   }

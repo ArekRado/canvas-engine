@@ -8,29 +8,18 @@ export const createStore = (
 ) => {
   let localState = state
 
-  const dispatch = action => payload => {
-    const result = action(payload)
-
-    console.log('payload', payload)
-
-    if (typeof result === 'object') {
-      localState = reducer(localState, action)
-      // localState = enhancedReducer(reducer(localState, action), action)
+  const dispatch = action => {
+    if (typeof action === 'object') {
+      localState = enhancedReducer(reducer(localState, action), action)
     } else {
+      action(dispatch, () => localState)
+
       // localState = enhancedReducer(
       //   reducer(localState, action(dispatch, () => localState)),
       //   action,
       // )
-      localState = enhancedReducer(
-        reducer(localState, result(dispatch, () => localState)),
-        action,
-      )
     }
   }
-
-  // Object.keys(actions).forEach(key => {
-  //   actions[key] = actions[key](dispatch, localState)
-  // })
 
   return {
     getState() {
@@ -40,7 +29,7 @@ export const createStore = (
     actions: Object.keys(actions).reduce(
       (bindedActions, key) => ({
         ...bindedActions,
-        [key]: dispatch(actions[key]),
+        [key]: (...args) => dispatch(actions[key](...args)),
       }),
       {},
     ),

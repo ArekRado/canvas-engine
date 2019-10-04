@@ -15,11 +15,10 @@ export const time = () =>
       })
     },
     actions: {
-      setTime: dispatch => payload =>
-        dispatch({
-          type: 'setTime',
-          payload,
-        }),
+      setTime: payload => ({
+        type: 'setTime',
+        payload,
+      }),
     },
     reducer: (state, action) => {
       switch (action.type) {

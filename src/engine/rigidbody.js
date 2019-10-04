@@ -56,38 +56,37 @@ export const createRigidbody = (params = {}) => {
   }
 
   const actions = {
-    setRotation: dispatch => rotation =>
-      dispatch({
-        type: 'setRotation',
-        payload: rotation,
-      }),
+    setRotation: rotation => ({
+      type: 'setRotation',
+      payload: rotation,
+    }),
 
-    setPosition: dispatch => position =>
-      dispatch({
-        type: 'setPosition',
-        payload: position,
-      }),
+    setPosition: position => ({
+      type: 'setPosition',
+      payload: position,
+    }),
 
-    setIsMouseOver: dispatch => isMouseOver =>
-      dispatch({
-        type: 'setIsMouseOver',
-        payload: isMouseOver,
-      }),
+    setIsMouseOver: isMouseOver => ({
+      type: 'setIsMouseOver',
+      payload: isMouseOver,
+    }),
 
-    setIsClicked: dispatch => isClicked =>
-      dispatch({
-        type: 'setIsClicked',
-        payload: isClicked,
-      }),
+    setIsClicked: isClicked => ({
+      type: 'setIsClicked',
+      payload: isClicked,
+    }),
 
-    setIsSelected: dispatch => isClicked =>
-      dispatch({
-        type: 'setIsSelected',
-        payload: isClicked,
-      }),
+    setIsSelected: isClicked => ({
+      type: 'setIsSelected',
+      payload: isClicked,
+    }),
   }
 
-  const store = createStore(reducer, state, actions)
+  const { actions: bindedActions, getState } = createStore(
+    reducer,
+    state,
+    actions,
+  )
 
   const tick = (go, app) => {
     const rigidbody = go.rigidbody
@@ -126,8 +125,8 @@ export const createRigidbody = (params = {}) => {
 
   return {
     ...state,
-    ...actions,
-    store,
+    ...bindedActions,
+    getState,
     tick,
   }
 }

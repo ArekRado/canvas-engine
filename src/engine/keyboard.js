@@ -27,8 +27,8 @@ export const keyboard = () =>
       )
     },
     actions: {
-      keyDown: dispatch => payload => dispatch({ type: KEY_DOWN, payload }),
-      keyUp: dispatch => payload => dispatch({ type: KEY_UP, payload }),
+      keyDown: payload => ({ type: KEY_DOWN, payload }),
+      keyUp: payload => ({ type: KEY_UP, payload }),
     },
     reducer: (state, action) => {
       switch (action.type) {

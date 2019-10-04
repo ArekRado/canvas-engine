@@ -1,36 +1,25 @@
-import { createAnimation } from './animation'
-import { tick } from './testLibrary'
 import { createGameObject } from './gameObject'
 import { createApp } from './createApp'
+import { linear } from './animation'
 
 describe('animation', () => {
-  const fakeTime = ({ delta = 0 } = {}) => ({
-    delta,
+  describe('transitions', () => {
+    describe('linear', () => {
+      it('should return correct value', () => {
+        expect(linear(0, 100, 50)).toBe(50)
+        expect(linear(10, 100, 50)).toBe(55)
+        expect(linear(100, 100, 50)).toBe(100)
+        expect(linear(-100, 100, 50)).toBe(0)
+        expect(linear(1, 2, 1)).toBe(1.01)
+        expect(linear(10, 30, 33)).toBe(16.6)
+        expect(linear(10, -10, 10)).toBe(8)
+      })
+    })
   })
-
-  const fakeApp = (time = fakeTime()) => ({
-    gameObjects: {
-      time,
-    },
-  })
-
-  const fakeGo = animation => ({ animation, setProperty: () => {} })
-
-  // const doAnimationTick = (animation, fakeApp) => {
-  //   animation.tick(fakeGo(animation), fakeApp)
-  //   animation = Object.assign(
-  //     animation,
-  //     animation.store.tick(fakeGo(animation), fakeApp),
-  //   )
-  // }
-
-  // it('should not play animation on start', () => {
-  //   const animation = createAnimation()
-  //   doAnimationTick(animation, fakeApp())
-  //   expect(animation.timer).toBe(0)
-  // })
 
   it('should not play animation if segment is not set', () => {
+    const onEnd = jest.fn()
+
     let app = createApp()
     const go = app.addGameObject(
       createGameObject({
@@ -38,60 +27,53 @@ describe('animation', () => {
         state: {
           positionX: 0,
         },
-        animations: [
-          createAnimation(
-            [
+        animations: {
+          move: {
+            segments: [
               {
-                duration: 2,
+                duration: 10,
                 property: 'positionX',
                 from: 0,
                 to: 20,
+                onEnd,
               },
             ],
-            true,
-          ),
-        ],
+          },
+        },
       }),
     )
 
+    performance.now = () => 0
     app = app.tick()
+    expect(go.animations.move.timer).toBe(0) // animation is stoped
+    expect(go.getState().positionX).toBe(0)
+
+    go.animations.move.play()
+
+    performance.now = () => 5
     app = app.tick()
+    expect(go.animations.move.timer).toBe(0) // animation doesn't have segments
+    expect(go.getState().positionX).toBe(0)
+    expect(onEnd).not.toHaveBeenCalled()
 
-    // animation = animation.tick(fakeGo(animation), fakeApp())
-    expect(go.state.positionX).toBe(0) // animation is stoped and doesnt have segments
+    // First tick after 10ms should change position and timer
+    performance.now = () => 10
+    app = app.tick()
+    expect(go.getState().positionX).toBe(10)
+    expect(go.animations.move.timer).toBe(5)
+    expect(onEnd).not.toHaveBeenCalled()
 
-    // animation.play()
-    // animation = animation.tick(
-    //   fakeGo(animation),
-    //   fakeApp(fakeTime({ delta: 5 })),
-    // )
-    // expect(animation.timer).toBe(0) // animation doesnt have segments
+    // Next tick should finish animation
+    performance.now = () => 20
+    app = app.tick()
+    expect(go.getState().positionX).toBe(20)
+    expect(go.animations.move.timer).toBe(15)
+    expect(onEnd).toHaveBeenCalled()
 
-    // animation.play()
-    // animation.setSegments([
-    //   {
-    //     from: 0,
-    //     to: 100,
-    //     duration: 100,
-    //   },
-    // ])
-    // animation = animation.tick(
-    //   fakeGo(animation),
-    //   fakeApp(fakeTime({ delta: 5 })),
-    // )
-    // animation = animation.tick(
-    //   fakeGo(animation),
-    //   fakeApp(fakeTime({ delta: 5 })),
-    // )
-    // expect(animation.timer).toBe(5)
+    // Next tick should not change finished animation
+    performance.now = () => 200
+    app = app.tick()
+    expect(go.getState().positionX).toBe(20)
+    expect(go.animations.move.timer).toawBe(195)
   })
-
-  // it('timer should change when time delta is changed', () => {
-  //   const animation = createAnimation()
-  //   animation.play()
-  //   doAnimationTick(animation, fakeApp(fakeTime({ delta: 5 })))
-  //   doAnimationTick(animation, fakeApp(fakeTime({ delta: 5 })))
-  //   // doAnimationTick(animation, fakeApp())
-  //   expect(animation.timer).toBe(0)
-  // })
 })

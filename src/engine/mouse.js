@@ -54,21 +54,11 @@ export const mouse = () =>
       }
     },
     actions: {
-      mouseMove: dispatch => payload => {
-        dispatch({ type: MOUSE_MOVE, payload })
-      },
-      // mouseDown: dispatch => payload => {
-      //   dispatch({ type: MOUSE_DOWN, payload })
-      // },
-      // mouseUp: dispatch => payload => {
-      //   dispatch({ type: MOUSE_UP, payload })
-      // },
-      mouseClick: dispatch => payload => {
-        dispatch({ type: MOUSE_CLICK, payload })
-      },
-      mouseUnclick: dispatch => () => {
-        dispatch({ type: MOUSE_UNCLICK })
-      },
+      mouseMove: payload => ({ type: MOUSE_MOVE, payload }),
+      // mouseDown: payload => ({ type: MOUSE_DOWN, payload }),
+      // mouseUp: payload => ({ type: MOUSE_UP, payload }),
+      mouseClick: payload => ({ type: MOUSE_CLICK, payload }),
+      mouseUnclick: () => ({ type: MOUSE_UNCLICK }),
     },
     reducer: (state, action) => {
       switch (action.type) {

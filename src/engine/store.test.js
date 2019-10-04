@@ -35,51 +35,61 @@ describe('store', () => {
       rawActions,
     )
 
-    console.log('actions', actions)
     actions.addItem(1)
 
     expect(getState().items).toEqual([1])
   })
 
-  // it('should be able to use actions as functions which have access to dispatch and getState', () => {
-  //   const store = createStore(reducer, { items: [] })
+  it('should be able to use actions as functions which have access to dispatch and getState', () => {
+    const rawActions = {
+      addItem: payload => ({
+        type: 'addItem',
+        payload,
+      }),
+      addMultipleItems: () => (dispatch, getState) => {
+        dispatch({
+          type: 'addItem',
+          payload: getState().items.length,
+        })
+        dispatch({
+          type: 'addItem',
+          payload: getState().items.length,
+        })
+        dispatch({
+          type: 'addItem',
+          payload: getState().items.length,
+        })
+      },
+    }
 
-  //   store.dispatch({
-  //     type: 'addItem',
-  //     payload: 1,
-  //   })
+    const { getState, actions } = createStore(
+      reducer,
+      { items: [] },
+      rawActions,
+    )
 
-  //   expect(store.getState().items).toEqual([1])
-  // })
+    actions.addMultipleItems()
 
-  // it('should push object to array and return it as state', () => {
-  //   const { getState, actions } = createStore(
-  //     reducer,
-  //     { items: [] },
-  //     { addItem: payload => ({ type: 'addItem', payload }) },
-  //   )
+    expect(getState().items).toEqual([0, 1, 2])
+  })
 
-  //   actions.addItem({
-  //     type: 'addItem',
-  //     payload: 1,
-  //   })
+  it('should push object to array and not mutate prev state', () => {
+    const rawActions = {
+      addItem: payload => ({
+        type: 'addItem',
+        payload,
+      }),
+    }
+    const { actions, getState } = createStore(
+      reducer,
+      { items: [] },
+      rawActions,
+    )
+    const prevState = getState()
 
-  //   expect(getState().items).toEqual([1])
-  // })
+    actions.addItem(1)
 
-  // it('should push object to array and not mutate prev state', () => {
-  //   const actions = {
-  //     addItem: (dispatch, localState) => payload => ({
-  //       type: 'addItem',
-  //       payload,
-  //     }),
-  //   }
-  //   const store = createStore(reducer, { items: [] })
-  //   const prevState = store.getState()
-
-  //   actions.addItem()
-
-  //   expect(store.getState().items).toEqual([1])
-  //   expect(prevState.items).toEqual([])
-  // })
+    expect(getState().items).toEqual([1])
+    expect(prevState.items).toEqual([])
+  })
 })
