@@ -1,11 +1,11 @@
-import { gameObject } from './gameObject'
+import { createGameObject } from './gameObject'
 
-describe('gameObject', () => {
+describe('createGameObject', () => {
   it('should return object', () => {
-    expect(typeof gameObject()()).toBe('object')
+    expect(typeof createGameObject()()).toBe('object')
   })
 
   it('should has id equal "gameObject"', () => {
-    expect(gameObject()({}).id).toBe('gameObject')
+    expect(createGameObject({ id: 'gameObject' })({}).id).toBe('gameObject')
   })
 })

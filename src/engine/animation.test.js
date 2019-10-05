@@ -47,6 +47,7 @@ describe('animation', () => {
     app = app.tick()
     expect(go.animations.move.timer).toBe(0) // animation is stoped
     expect(go.getState().positionX).toBe(0)
+    expect(go.animations.move.isPlaying).toBe(false)
 
     go.animations.move.play()
 
@@ -55,6 +56,7 @@ describe('animation', () => {
     expect(go.animations.move.timer).toBe(0) // animation doesn't have segments
     expect(go.getState().positionX).toBe(0)
     expect(onEnd).not.toHaveBeenCalled()
+    expect(go.animations.move.isPlaying).toBe(true)
 
     // First tick after 10ms should change position and timer
     performance.now = () => 10
@@ -62,6 +64,7 @@ describe('animation', () => {
     expect(go.getState().positionX).toBe(10)
     expect(go.animations.move.timer).toBe(5)
     expect(onEnd).not.toHaveBeenCalled()
+    expect(go.animations.move.isPlaying).toBe(true)
 
     // Next tick should finish animation
     performance.now = () => 20
@@ -69,11 +72,13 @@ describe('animation', () => {
     expect(go.getState().positionX).toBe(20)
     expect(go.animations.move.timer).toBe(15)
     expect(onEnd).toHaveBeenCalled()
+    expect(go.animations.move.isPlaying).toBe(false)
 
     // Next tick should not change finished animation
     performance.now = () => 200
     app = app.tick()
     expect(go.getState().positionX).toBe(20)
-    expect(go.animations.move.timer).toawBe(195)
+    expect(go.animations.move.timer).toBe(15)
+    expect(go.animations.move.isPlaying).toBe(false)
   })
 })

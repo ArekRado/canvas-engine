@@ -16,8 +16,8 @@ describe('mouse', () => {
     })
 
     const go = mouse()()
-    map.mousemove({ x: 1, y: 1 })
+    go.mouseMove({ x: 1, y: 1 })
 
-    expect(go.position).toEqual({ x: 1, y: 1 })
+    expect(go.getState().position).toEqual({ x: 1, y: 1 })
   })
 })

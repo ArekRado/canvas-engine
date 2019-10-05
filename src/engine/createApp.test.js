@@ -1,5 +1,5 @@
 import { createApp } from './createApp'
-// import { createGameObject } from './gameObject'
+// import { addGameObject } from './gameObject'
 
 describe('createApp', () => {
   it('should return object', () => {
@@ -25,7 +25,7 @@ describe('createApp', () => {
     const app = createApp({ withDraw: false })
     const tickSpy = jest.fn(() => {})
 
-    app.createGameObject(app => ({ tick: tickSpy }))
+    app.addGameObject(app => ({ tick: tickSpy }))
 
     app.tick(app)
 
@@ -33,9 +33,9 @@ describe('createApp', () => {
   })
 
   describe('global actions', () => {
-    it('createGameObject should increase amount of gameobject', () => {
+    it('addGameObject should increase amount of gameobject', () => {
       const app = createApp({ withDraw: false })
-      app.createGameObject(() => ({ tick: () => {} }))
+      app.addGameObject(() => ({ tick: () => {} }))
 
       const newApp = app.tick(app)
 

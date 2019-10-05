@@ -43,7 +43,7 @@ const gameObjectReducer = (state, action) => {
   }
 }
 
-export const createGameObject = params => app => {
+export const createGameObject = (params = {}) => app => {
   const tick = (go, app) => {
     params.tick && params.tick(go, app)
     go.rigidbody.tick(go, app)
@@ -68,7 +68,7 @@ export const createGameObject = params => app => {
   }
 
   const { actions: bindedActions, getState } = createStore(
-    params.reducer,
+    params.reducer || v,
     params.state,
     {
       ...params.actions,

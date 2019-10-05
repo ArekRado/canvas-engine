@@ -16,7 +16,7 @@ const mapSegments = segments =>
 export const createAnimation = params => {
   const state = {
     name: '',
-    isPlaying: params.playOnStart,
+    isPlaying: params.playOnStart || false,
     startTime: 0,
     index: 0,
     timer: 0,
@@ -145,7 +145,6 @@ export const createAnimation = params => {
           }
           currentAnimation.setTimer(newTimer)
         } else {
-          console.log('stop')
           currentAnimation.stop()
         }
       }
