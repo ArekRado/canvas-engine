@@ -41,24 +41,18 @@ export const city = ({ position }) =>
       }
     },
     actions: {
-      resetUnitTick: dispatch => payload => {
-        dispatch({
-          type: 'resetUnitTick',
-          payload,
-        })
-      },
-      resetUnitTick: dispatch => payload => {
-        dispatch({
-          type: 'resetUnitTick',
-          payload,
-        })
-      },
-      assignUnitsToArea: dispatch => payload => {
-        dispatch({
-          type: 'assignUnitsToArea',
-          payload,
-        })
-      },
+      resetUnitTick: payload => ({
+        type: 'resetUnitTick',
+        payload,
+      }),
+      resetUnitTick: payload => ({
+        type: 'resetUnitTick',
+        payload,
+      }),
+      assignUnitsToArea: payload => ({
+        type: 'assignUnitsToArea',
+        payload,
+      }),
     },
     reducer: (state, action) => {
       switch (action.type) {

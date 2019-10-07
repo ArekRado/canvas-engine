@@ -10,8 +10,38 @@ const mapSegments = segments =>
     onStart: '',
     onEnd: '',
     property: '',
+    hasCustomProperty: typeof segment.property === 'function',
     ...segment,
   }))
+
+const finishAnimation = (go, currentSegment, currentAnimation) => {
+  if (currentSegment.hasCustomProperty) {
+    currentSegment.property(go, 100, currentSegment.to)
+  } else {
+    go.setProperty(currentSegment.property, currentSegment.to)
+  }
+
+  if (currentAnimation.segments.length >= currentSegment + 1) {
+    currentSegment.onEnd && currentSegment.onEnd()
+    currentAnimation.setCurrentSegment(currentSegment + 1)
+  } else {
+    currentSegment.onEnd && currentSegment.onEnd()
+    currentAnimation.stop()
+    // currentAnimation.reset()
+  }
+}
+
+const nextAnimationFrame = (go, currentSegment, timer) => {
+  const { duration, from, to } = currentSegment
+  const progress = (timer * 100) / duration
+  const value = linear(from, to, progress)
+
+  if (currentSegment.hasCustomProperty) {
+    currentSegment.property(go, progress, value)
+  } else {
+    go.setProperty(currentSegment.property, value)
+  }
+}
 
 export const createAnimation = params => {
   const state = {
@@ -42,9 +72,9 @@ export const createAnimation = params => {
       payload,
     }),
 
-    play: () => ({
-      type: 'setIsPlaying',
-      payload: true,
+    play: (payload = {}) => ({
+      type: 'play',
+      payload,
     }),
 
     setCurrentSegment: () => ({
@@ -69,6 +99,14 @@ export const createAnimation = params => {
 
   const reducer = (state, action) => {
     switch (action.type) {
+      case 'play':
+        console.log('action.payload', action.payload)
+        return {
+          ...state,
+          isPlaying: true,
+          duration: action.payload.duration || state.duration,
+        }
+
       case 'setIsPlaying':
         return {
           ...state,
@@ -118,30 +156,18 @@ export const createAnimation = params => {
     ...bindedActions,
     getState,
     tick: (go, app, currentAnimation) => {
+      console.log(currentAnimation.segments[currentAnimation.index].duration)
       if (currentAnimation.isPlaying) {
         if (currentAnimation.segments.length > 0) {
           const { timer, index, segments } = currentAnimation
           const currentSegment = segments[index]
-          const { from, to, duration } = currentSegment
 
           const newTimer = timer + app.gameObjects.time.delta
 
           if (newTimer >= currentSegment.duration) {
-            go.setProperty(currentSegment.property, currentSegment.to)
-
-            if (segments.length >= currentSegment + 1) {
-              currentSegment.onEnd && currentSegment.onEnd()
-              currentAnimation.setCurrentSegment(currentSegment + 1)
-            } else {
-              currentSegment.onEnd && currentSegment.onEnd()
-              currentAnimation.stop()
-              // currentAnimation.reset()
-            }
+            finishAnimation(go, currentSegment, currentAnimation)
           } else {
-            const progress = (newTimer * 100) / duration
-            const newValue = linear(from, to, progress)
-
-            go.setProperty(currentSegment.property, newValue)
+            nextAnimationFrame(go, currentSegment, newTimer)
           }
           currentAnimation.setTimer(newTimer)
         } else {

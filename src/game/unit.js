@@ -46,12 +46,10 @@ export const unit = ({ id, goal, position, player } = {}) =>
     },
 
     actions: {
-      goTo: (dispatch, state) => payload => {
-        dispatch({
-          type: SET_GOAL_POSITION,
-          payload: payload,
-        })
-      },
+      goTo: payload => ({
+        type: SET_GOAL_POSITION,
+        payload: payload,
+      }),
     },
 
     reducer: (state, action) => {
