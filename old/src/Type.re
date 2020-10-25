@@ -1,0 +1,194 @@
+type entity = string;
+
+type vector = (float, float);
+
+type rotation = float;
+
+type collideType =
+  | Box(string)
+  | Circle(string);
+
+type collideBox = {
+  entity,
+  name: string,
+  size: vector,
+  position: vector,
+  collisions: Belt.List.t(collideType),
+};
+
+type collideCircle = {
+  entity,
+  name: string,
+  radius: float,
+  position: vector,
+  collisions: Belt.List.t(collideType),
+};
+
+type transform = {
+  rotation,
+  localRotation: float,
+  scale: vector,
+  localScale: vector,
+  position: vector,
+  localPosition: vector,
+  parent: option(string),
+};
+
+type field('a) = {
+  entity,
+  value: 'a,
+  name: string,
+};
+
+type animatedComponent =
+  | FieldFloat(entity, string)
+  | FieldVector(entity, string)
+  | TransformLocalPosition(entity);
+
+type animationValueRange =
+  | Float((float, float))
+  | Vector((Vector_Util.t, Vector_Util.t));
+
+type timingFunction =
+  | Linear
+  | EaseInQuad
+  | EaseOutQuad
+  | EaseInOutQuad
+  | EaseInCubic
+  | EaseOutCubic
+  | EaseInOutCubic
+  | EaseInQuart
+  | EaseOutQuart
+  | EaseInOutQuart
+  | EaseInQuint
+  | EaseOutQuint
+  | EaseInOutQuint
+  | CubicBezier(float, float, float, float);
+
+type wrapMode =
+  //When time reaches the end of the animation clip, the clip will automatically stop playing and time will be reset to beginning of the clip.
+  | Once
+  // When time reaches the end of the animation clip, time will continue at the beginning.
+  | Loop
+  // When time reaches the end of the animation clip, time will ping pong back between beginning and end.
+  | PingPong
+  // Plays back the animation. When it reaches the end, it will keep playing the last frame and never stop playing.
+  | ClampForever;
+
+type keyframe = {
+  duration: float,
+  timingFunction,
+  valueRange: animationValueRange,
+};
+
+type animation = {
+  entity,
+  name: string,
+  keyframes: Belt.List.t(keyframe),
+  isPlaying: bool,
+  isFinished: bool,
+  currentTime: float,
+  component: animatedComponent,
+  wrapMode,
+};
+
+type spriteSrc = string;
+
+type sprite = {src: spriteSrc};
+
+type time = {
+  timeNow: float,
+  delta: float,
+};
+
+type assetSprite = {
+  src: string,
+  name: string,
+};
+
+type asset = {
+  sprite: Belt.List.t(assetSprite)
+};
+
+type state = {
+  entity: Belt.List.t(string),
+  /* blueprint: Belt.Map.String.t({
+    connectedEntites: []
+  }), */
+  transform: Belt.Map.String.t(transform),
+  sprite: Belt.Map.String.t(sprite),
+  animation: Belt.Map.String.t(animation),
+  collideBox: Belt.Map.String.t(collideBox),
+  collideCircle: Belt.Map.String.t(collideCircle),
+  fieldFloat: Belt.Map.String.t(field(float)),
+  fieldVector: Belt.Map.String.t(field(Vector_Util.t)),
+  fieldString: Belt.Map.String.t(field(string)),
+  mutable mouseButtons: int,
+  mutable mousePosition: vector,
+  time,
+  isDebugInitialized: bool,
+  asset,
+};
+
+let initialState: state = {
+  entity: [],
+  transform: Belt.Map.String.empty,
+  sprite: Belt.Map.String.empty,
+  animation: Belt.Map.String.empty,
+  collideBox: Belt.Map.String.empty,
+  collideCircle: Belt.Map.String.empty,
+  fieldFloat: Belt.Map.String.empty,
+  fieldString: Belt.Map.String.empty,
+  fieldVector: Belt.Map.String.empty,
+  time: {
+    timeNow: 0.0,
+    delta: 0.0,
+  },
+  mouseButtons: 0,
+  mousePosition: Vector_Util.zero,
+  isDebugInitialized: false,
+  asset: {
+    sprite: [],
+  },
+
+  // TODO
+  // event
+  // scene
+};
+
+module type ComponentModuleType = {
+  let create: (
+    /* ~name: string,
+    ~entity: string, */
+    /* ~isPlaying: option(bool),
+    ~keyframes: Belt.List.t(keyframe),
+    ~component: animatedComponent,
+    ~wrapMode: option(wrapMode), */
+    ~state: state,
+    ~data: animation,
+  ) => state;
+
+  let set: (
+    ~entity: entity,
+    ~name: string,
+    ~state: state,
+    ~animation: animation
+    ) => state;
+
+  let get: (
+    ~entity: entity,
+    ~state: state,
+    ~name: string,
+  ) => option(animation);
+
+  let remove: (
+    ~entity: entity, 
+    ~name: string, 
+    ~state: state
+    ) => state;
+
+  let removeByEntity: (~entity: entity, ~state: state) => state;
+  
+  /* let entity: entity; */
+  /* let name: string; */
+} 
