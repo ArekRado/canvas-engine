@@ -1,17 +1,23 @@
+import { Sprite } from '../component'
+
+type EnhancedPixiImage = PIXI.Sprite & {
+  id: string
+}
+
 let isInitialized = false
-let pixiApp = null
-let images = null
-let debugGraphics = null
-let PIXI = null
+let pixiApp: PIXI.Application | null = null
+let images: Map<string, EnhancedPixiImage> = new Map()
+let debugGraphics: PIXI.Graphics | null = null
+// let PIXI = null
 
 let getGameContainerDimensions = () => {
   const element = document.querySelector('#engine-game')
 
-  return [element.clientWidth, element.clientHeight]
+  return element ? [element.clientWidth, element.clientHeight] : [100, 100]
 }
 
-let initialize = () => {
-  PIXI = require('pixi.js')
+let initialize = async () => {
+  let PIXI = await import('pixi.js')
 
   const [x, y] = getGameContainerDimensions()
 
@@ -21,13 +27,13 @@ let initialize = () => {
     backgroundColor: 0x1099bb,
   })
 
-  pixiApp.renderer.autoResize = true
+  ;(pixiApp.renderer as any).autoResize = true
 
   if (!document || !document.body) {
     console.warn("Couldn't find document body")
   } else {
     const element = document.querySelector('#engine-game')
-    element.appendChild(pixiApp.view)
+    element?.appendChild(pixiApp.view)
   }
 
   images = new Map()
@@ -37,24 +43,25 @@ let initialize = () => {
   isInitialized = true
 }
 
-exports.default = (params, devMode = false) => {
-  if(Array.isArray(params) === false) {
+type Render = (data: Sprite[], devMode: boolean) => void
+export const render: Render = (data, devMode = false) => {
+  if (Array.isArray(data) === false) {
     return
   }
 
-  if (!isInitialized) {
-    initialize()
+  if (!isInitialized || !debugGraphics) {
+    console.error('Pixi not initialized')
+    return
   }
   debugGraphics.clear()
 
-  // const state = params.flat(Infinity).slice(0, -1)
+  // const state = data.flat(Infinity).slice(0, -1)
 
-  for (let i = 0; i < params.length; i++) {
-    const image = JSON.parse(params[i])
+  Object.values(data).forEach((image) => {
     const pixiImage = images.get(image.entity)
 
     if (pixiImage) {
-      if (pixiImage.texture.baseTexture.imageUrl !== image.src) {
+      if ((pixiImage.texture.baseTexture as any).imageUrl !== image.data.src) {
         changeImage(pixiImage, image)
       }
       drawImage(pixiImage, image, devMode, debugGraphics)
@@ -66,10 +73,15 @@ exports.default = (params, devMode = false) => {
         debugGraphics,
       )
     }
-  }
+  })
 }
 
-const drawImage = (pixiImage, image, devMode, debugGraphic) => {
+const drawImage = (
+  pixiImage: any,
+  image: any,
+  devMode: boolean,
+  debugGraphic: any,
+) => {
   // if (gameObject.image.stickToRigidbody) {
   //   image.x = gameObject.rigidbody.position.x
   //   image.y = gameObject.rigidbody.position.y
@@ -84,13 +96,13 @@ const drawImage = (pixiImage, image, devMode, debugGraphic) => {
   if (devMode) {
     debugGraphic.lineStyle(1, 0x0000ff, 1)
     debugGraphic.drawRect(image.x, image.y, 20, 20)
-    
+
     // debugGraphic.drawRect(r.position.x, r.position.y, r.size.x, r.size.y)
   }
 }
 
-const createImage = (images, pixiApp, image) => {
-  const pixiImage = PIXI.Sprite.from(image.src)
+const createImage = (images: any, pixiApp: any, image: any) => {
+  const pixiImage = PIXI.Sprite.from(image.src) as EnhancedPixiImage
   pixiImage.id = image.entity
   pixiApp.stage.addChild(pixiImage)
   images.set(pixiImage.id, pixiImage)
@@ -98,7 +110,7 @@ const createImage = (images, pixiApp, image) => {
   return pixiImage
 }
 
-const changeImage = (pixiImage, image) => {
+const changeImage = (pixiImage: any, image: any) => {
   pixiImage.texture = PIXI.Texture.from(image.src)
   return image
 }
