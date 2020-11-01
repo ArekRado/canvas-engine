@@ -1,3 +1,3 @@
-export type Guid = string;
+export type Guid = string
 
-export const humanFriendlyEntity = (entity: Guid) => entity.split(entity, "###")[0];
+export const humanFriendlyEntity = (entity: Guid) => entity.split('###')[0]

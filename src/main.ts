@@ -1,7 +1,14 @@
 import { Guid } from './util/uuid'
 import { Vector2D } from '@arekrado/vector-2d'
 import { Animation, CollideBox, CollideCircle, Field, Sprite, Transform } from './component'
-import { Dictionary } from './type/common'
+import { Dictionary } from './type'
+import {
+  initialize as initializeDraw,
+} from 'system/draw'
+import {
+  initialize as initializeIO,
+} from 'system/io'
+
 
 export type Time = {
   timeNow: number
@@ -36,7 +43,7 @@ export type State = {
     animation: Dictionary<Animation>
     collideBox: Dictionary<CollideBox>
     collideCircle: Dictionary<CollideCircle>
-    fieldFloat: Dictionary<Field<number>>
+    fieldNumber: Dictionary<Field<number>>
     fieldVector: Dictionary<Field<Vector2D>>
     fieldString: Dictionary<Field<string>>
   },
@@ -54,7 +61,7 @@ export const initialState: State = {
     animation: {},
     collideBox: {},
     collideCircle: {},
-    fieldFloat: {},
+    fieldNumber: {},
     fieldString: {},
     fieldVector: {},
   },
@@ -100,3 +107,25 @@ export const initialState: State = {
 
 // IO_System.initialize();
 // }
+
+
+export const initialize = () => {
+  const body = document.body
+
+  if (body) {
+    const gameContainer = document.createElement('div')
+    gameContainer.setAttribute('id', 'canvas-engine')
+    body.appendChild(gameContainer)
+  }
+  //   switch (Webapi.Dom.Document.querySelector("body", Webapi.Dom.document)) {
+  //   | Some(body) => {
+  //     let container = Webapi.Dom.Document.createElement("div", Webapi.Dom.document);
+  //     Webapi.Dom.Element.setAttribute("id", "engine-game", container);
+  //     Webapi.Dom.Element.appendChild(container, body);
+  //   }
+  //   | None => ()
+  // };
+
+  initializeIO()
+  initializeDraw()
+}

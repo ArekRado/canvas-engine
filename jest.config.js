@@ -1,17 +1,12 @@
 module.exports = {
+  preset: 'ts-jest',
   testEnvironment: 'jsdom',
   moduleDirectories: ['node_modules', 'src'],
+  collectCoverage: true,
   verbose: false,
-  setupFiles: ['jest-canvas-mock'],
-  moduleNameMapper: {
-    '~/(.*)$': '<rootDir>/src/$1',
-    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
-      '<rootDir>/assetsTransformer.js',
-    '\\.(css|less)$': '<rootDir>/assetsTransformer.js',
+  globals: {
+    'ts-jest': {
+      babelConfig: true,
+    }
   },
-  moduleFileExtensions: ['js', 'jsx', 'json'],
-  transform: {
-    '^.+\\.(js|jsx)?$': 'babel-jest',
-  },
-  transformIgnorePatterns: ['<rootDir>/node_modules/'],
 }

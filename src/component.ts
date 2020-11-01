@@ -2,11 +2,12 @@ import { State } from './main'
 import { Guid } from './util/uuid'
 import { Vector2D } from '@arekrado/vector-2d'
 import { TimingFunction } from './util/bezierFunction'
+import { Dictionary } from 'type'
 
 export type Component<Data> = {
-  name: string,
-  entity: string,
-  data: Data,
+  name: string
+  entity: string
+  data: Data
 }
 
 export type CollideType = {
@@ -39,7 +40,7 @@ export type Transform = Component<{
 export type Field<Value> = Component<Value>
 
 export type AnimatedComponent = {
-  component: 'FieldFloat' | 'FieldVector' | 'TransformLocalPosition'
+  component: 'FieldNumber' | 'FieldVector' | 'TransformLocalPosition'
   entity: Guid
   name: string
 }
@@ -87,13 +88,14 @@ export type ComponentFactory<Data> = {
   remove: (params: { entity: Guid; name: string; state: State }) => State
 
   removeByEntity: (params: { entity: Guid; state: State }) => State
-
-  /* let entity: entity; */
-  /* let name: string; */
 }
-
 const componentFactory = <Data>(
   componentName: keyof State['component'],
+  {
+    onePerEntity,
+  }: Partial<{
+    onePerEntity: boolean
+  }>,
 ): ComponentFactory<Data> => ({
   set: ({ state, data }) => ({
     ...state,
@@ -101,13 +103,13 @@ const componentFactory = <Data>(
       ...state.component,
       [componentName]: {
         ...state.component[componentName],
-        [data.entity + data.name]: data,
+        [onePerEntity ? data.entity : data.entity + data.name]: data,
       },
     },
   }),
 
   remove: ({ entity, name, state }) => {
-    const key = entity + name
+    const key = onePerEntity ? entity : entity + name
     const { [key]: _, ...dictionaryWithoutComponent } = state.component[
       componentName
     ]
@@ -135,15 +137,34 @@ const componentFactory = <Data>(
     }
   },
 
-  get: ({ entity, state, name }) =>
-    state.component[componentName][entity + name],
+  get: ({ entity, state, name }) => {
+    const c: Dictionary<Component<any>> = state.component[componentName]
+    return c[onePerEntity ? entity : entity + name] as
+      | Component<Data>
+      | undefined
+  },
 })
 
-export const sprite = componentFactory<Sprite>('sprite')
-export const transform = componentFactory<Transform>('transform')
-export const animation = componentFactory<Animation>('animation')
-export const collideBox = componentFactory<CollideBox>('collideBox')
-export const collideCircle = componentFactory<CollideCircle>('collideCircle')
-export const fieldFloat = componentFactory<Field<number>>('fieldFloat')
-export const fieldVector = componentFactory<Field<Vector2D>>('fieldVector')
-export const fieldString = componentFactory<Field<string>>('fieldString')
+export const transform = componentFactory<Transform['data']>('transform', {
+  onePerEntity: true,
+})
+
+export const sprite = componentFactory<Sprite['data']>('sprite', {})
+export const animation = componentFactory<Animation['data']>('animation', {})
+export const collideBox = componentFactory<CollideBox['data']>('collideBox', {})
+export const collideCircle = componentFactory<CollideCircle['data']>(
+  'collideCircle',
+  {},
+)
+export const fieldNumber = componentFactory<Field<number>['data']>(
+  'fieldNumber',
+  {},
+)
+export const fieldVector = componentFactory<Field<Vector2D>['data']>(
+  'fieldVector',
+  {},
+)
+export const fieldString = componentFactory<Field<string>['data']>(
+  'fieldString',
+  {},
+)
