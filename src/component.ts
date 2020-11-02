@@ -39,13 +39,17 @@ export type Transform = Component<{
 
 export type Field<Value> = Component<Value>
 
-export type AnimatedComponent = {
-  component: 'FieldNumber' | 'FieldVector' | 'TransformLocalPosition'
+export type AnimatedProperty = {
+  path: string
+  component: keyof State['component']
   entity: Guid
   name: string
 }
 
-export type AnimationValueRange = Vector2D | [Vector2D, Vector2D]
+export type AnimationValueRange = {
+  type: 'Number' | 'Vector2D'
+  value: Vector2D | [Vector2D, Vector2D]
+}
 
 export type WrapMode =
   //When time reaches the end of the animation clip, the clip will automatically stop playing and time will be reset to beginning of the clip.
@@ -68,7 +72,7 @@ export type Animation = Component<{
   isPlaying: boolean
   isFinished: boolean
   currentTime: number
-  component: AnimatedComponent
+  property: AnimatedProperty
   wrapMode: WrapMode
 }>
 

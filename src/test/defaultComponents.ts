@@ -28,8 +28,8 @@ export const defaultAnimation: GetDefaultComponent<Animation> = ({
     isPlaying: false,
     isFinished: false,
     currentTime: 0,
-    component: {
-      component: 'FieldNumber',
+    property: {
+      path: 'FieldNumber',
       entity: '',
       name: '',
     },

@@ -1,26 +1,26 @@
-let runTests = () => {
+const runTests = () => {
   Test_Util.describe("Animation_System - Float", it => {
-    let tick = (performanceNow, state) =>
+    const tick = (performanceNow, state) =>
       Util.runOneFrame(~state, ~enableDraw=false, ~performanceNow, ());
 
-    let entity = "entity";
-    let animationName = "animationName";
-    let fieldFloatName = "testFieldFloat";
+    const entity = "entity";
+    const animationName = "animationName";
+    const fieldFloatName = "testFieldFloat";
 
-    let getAnimation = (state: Type.state) =>
+    const getAnimation = (state: Type.state) =>
       switch (Animation_Component.get(~state, ~name=animationName, ~entity)) {
       | Some(animation) => animation
       | None => failwith("Can't find animation " ++ animationName)
       };
 
-    let getFieldFloat = (state: Type.state) =>
+    const getFieldFloat = (state: Type.state) =>
       switch (FieldFloat_Component.get(~state, ~name=fieldFloatName, ~entity)) {
       | Some(field) => field
       | None => failwith("Can't find fieldFloat " ++ fieldFloatName)
       };
 
     it("Linear animation should change value in proper way", _assert => {
-      let keyframe: Type.keyframe = {
+      const keyframe: Type.keyframe = {
         duration: 10.0,
         timingFunction: Linear,
         valueRange: Float((0.0, 1.0)),
@@ -48,49 +48,49 @@ let runTests = () => {
         )
       ->(
           state => {
-            let newState = tick(0.0, state);
+            const newState = tick(0.0, state);
             _assert(getFieldFloat(newState).value === 0.0);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(1.0, state);
+            const newState = tick(1.0, state);
             _assert(getFieldFloat(newState).value === 0.0);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(2.0, state);
+            const newState = tick(2.0, state);
             _assert(getFieldFloat(newState).value === 0.1);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(2.0, state);
+            const newState = tick(2.0, state);
             _assert(getFieldFloat(newState).value === 0.2);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(10.0, state);
+            const newState = tick(10.0, state);
             _assert(getFieldFloat(newState).value === 0.2);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(10.0, state);
+            const newState = tick(10.0, state);
             _assert(getFieldFloat(newState).value === 1.0);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(12.0, state);
+            const newState = tick(12.0, state);
             _assert(getFieldFloat(newState).value === 1.0);
           }
         );
@@ -98,7 +98,7 @@ let runTests = () => {
     });
 
     it("Should not update frame values when time is over", _assert => {
-      let keyframe: Type.keyframe = {
+      const keyframe: Type.keyframe = {
         duration: 10.0,
         timingFunction: Linear,
         valueRange: Float((0.0, 1.0)),
@@ -126,21 +126,21 @@ let runTests = () => {
         )
       ->(
           state => {
-            let newState = tick(0.0, state);
+            const newState = tick(0.0, state);
             _assert(getFieldFloat(newState).value === 0.0);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(20.0, state);
+            const newState = tick(20.0, state);
             _assert(getFieldFloat(newState).value === 0.0);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(40.0, state);
+            const newState = tick(40.0, state);
             _assert(getFieldFloat(newState).value === 1.0);
           }
         );
@@ -148,7 +148,7 @@ let runTests = () => {
     });
 
     it("Should works with negative values", _assert => {
-      let keyframe: Type.keyframe = {
+      const keyframe: Type.keyframe = {
         duration: 10.0,
         timingFunction: Linear,
         valueRange: Float(((-1.0), (-2.0))),
@@ -176,21 +176,21 @@ let runTests = () => {
         )
       ->(
           state => {
-            let newState = tick(0.0, state);
+            const newState = tick(0.0, state);
             _assert(getFieldFloat(newState).value === 0.0);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(1.0, state);
+            const newState = tick(1.0, state);
             _assert(getFieldFloat(newState).value === 0.0);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(22.0, state);
+            const newState = tick(22.0, state);
             _assert(
               getFieldFloat(newState).value === (-0.1),
             );
@@ -199,7 +199,7 @@ let runTests = () => {
         )
       ->(
           state => {
-            let newState = tick(22.0, state);
+            const newState = tick(22.0, state);
             _assert(
               getFieldFloat(newState).value === (-2.0),
             );
@@ -208,7 +208,7 @@ let runTests = () => {
         )
       ->(
           state => {
-            let newState = tick(2.0, state);
+            const newState = tick(2.0, state);
             _assert(
               getFieldFloat(newState).value === (-2.0),
             );
@@ -218,7 +218,7 @@ let runTests = () => {
     });
 
     it("Should works with multiple frames", _assert => {
-      let keyframes = [
+      const keyframes = [
         (
           {
             duration: 10.0,
@@ -272,49 +272,49 @@ let runTests = () => {
         )
       ->(
           state => {
-            let newState = tick(0.0, state);
+            const newState = tick(0.0, state);
             _assert(getFieldFloat(newState).value === 0.0);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(5.0, state);
+            const newState = tick(5.0, state);
             _assert(getFieldFloat(newState).value === 0.0);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(10.5, state);
+            const newState = tick(10.5, state);
             _assert(getFieldFloat(newState).value === 0.5);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(12.0, state);
+            const newState = tick(12.0, state);
             _assert(getFieldFloat(newState).value === 0.5);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(100.0, state);
+            const newState = tick(100.0, state);
             _assert(getFieldFloat(newState).value === 0.5);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(300.0, state);
+            const newState = tick(300.0, state);
             _assert(getFieldFloat(newState).value === 0.87);
             newState;
           }
         )
       ->(
           state => {
-            let newState = tick(100.0, state);
+            const newState = tick(100.0, state);
 
             // _assert(getFieldFloat(newState).value === 0.0);
             _assert(getAnimation(newState).isPlaying === false);
@@ -325,7 +325,7 @@ let runTests = () => {
     });
 
     it("Should works with looped animations", _assert => {
-      let keyframes = [
+      const keyframes = [
         (
           {
             duration: 10.0,
@@ -356,7 +356,7 @@ let runTests = () => {
         ),
       ];
 
-      let _ =
+      const _ =
         Type.initialState
         ->Entity.create(~entity, ~state=_)
         ->FieldFloat_Component.create(
@@ -381,7 +381,7 @@ let runTests = () => {
         ->tick(2000.0, _)
         ->(
             state => {
-              let newState = tick(2000.0, state);
+              const newState = tick(2000.0, state);
 
               _assert(
                 getFieldFloat(newState).value === 0.66,
@@ -396,7 +396,7 @@ let runTests = () => {
         ->(
             // Second tick should reset isFinished flag
             state => {
-              let newState = tick(2010.0, state);
+              const newState = tick(2010.0, state);
 
               _assert(getAnimation(newState).isFinished === false);
               _assert(getAnimation(newState).currentTime === 76.0);
@@ -409,7 +409,7 @@ let runTests = () => {
     });
 
     it("getActiveFrame - should return active frame", _assert => {
-      let animation: Type.animation = {
+      const animation: Type.animation = {
         entity,
         name: animationName,
         isPlaying: true,
@@ -428,7 +428,7 @@ let runTests = () => {
         wrapMode: Once,
       };
 
-      let {keyframeCurrentTime, keyframeIndex}: Animation_System.activeKeyframe =
+      const {keyframeCurrentTime, keyframeIndex}: Animation_System.activeKeyframe =
         Animation_System.getActiveKeyframe(animation, false);
 
       _assert(keyframeCurrentTime === 0.0);
@@ -436,7 +436,7 @@ let runTests = () => {
     });
 
     it("getActiveFrame - should return active frame", _assert => {
-      let animation: Type.animation = {
+      const animation: Type.animation = {
         entity: "",
         name: animationName,
         isPlaying: true,
@@ -455,7 +455,7 @@ let runTests = () => {
         wrapMode: Once,
       };
 
-      let {keyframeCurrentTime, keyframeIndex}: Animation_System.activeKeyframe =
+      const {keyframeCurrentTime, keyframeIndex}: Animation_System.activeKeyframe =
         Animation_System.getActiveKeyframe(animation, false);
 
       _assert(keyframeCurrentTime === 5.0);
@@ -463,7 +463,7 @@ let runTests = () => {
     });
 
     it("getActiveFrame - should return active frame", _assert => {
-      let animation: Type.animation = {
+      const animation: Type.animation = {
         entity: "",
         name: animationName,
         isPlaying: true,
@@ -489,7 +489,7 @@ let runTests = () => {
         wrapMode: Once,
       };
 
-      let {keyframeCurrentTime, keyframeIndex}: Animation_System.activeKeyframe =
+      const {keyframeCurrentTime, keyframeIndex}: Animation_System.activeKeyframe =
         Animation_System.getActiveKeyframe(animation, false);
 
       _assert(keyframeCurrentTime === 0.5);
@@ -497,7 +497,7 @@ let runTests = () => {
     });
 
     it("getActiveFrame - should return active frame", _assert => {
-      let animation: Type.animation = {
+      const animation: Type.animation = {
         entity: "",
         name: animationName,
         isPlaying: true,
@@ -537,7 +537,7 @@ let runTests = () => {
         wrapMode: Once,
       };
 
-      let {keyframeCurrentTime, keyframeIndex, timeExceeded}: Animation_System.activeKeyframe =
+      const {keyframeCurrentTime, keyframeIndex, timeExceeded}: Animation_System.activeKeyframe =
         Animation_System.getActiveKeyframe(animation, false);
 
       _assert(keyframeCurrentTime === 1887.0);
@@ -546,7 +546,7 @@ let runTests = () => {
     });
 
     it("getActiveFrame - should works with Loop animation", _assert => {
-      let animation: Type.animation = {
+      const animation: Type.animation = {
         entity: "",
         name: animationName,
         isPlaying: true,
@@ -586,7 +586,7 @@ let runTests = () => {
         wrapMode: Loop,
       };
 
-      let {keyframeCurrentTime, keyframeIndex, timeExceeded}: Animation_System.activeKeyframe =
+      const {keyframeCurrentTime, keyframeIndex, timeExceeded}: Animation_System.activeKeyframe =
         Animation_System.getActiveKeyframe(animation, false);
 
       _assert(keyframeCurrentTime === 66.0);

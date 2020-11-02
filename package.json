@@ -25,7 +25,7 @@
     "lint": "tsdx lint"
   },
   "engines": {
-    "node": "12.19.0"
+    "node": ">=12"
   },
   "dependencies": {
     "@arekrado/vector-2d": "0.0.2",
