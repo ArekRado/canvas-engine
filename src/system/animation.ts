@@ -1,6 +1,6 @@
-import { State, Time, Keyframe } from 'main'
+import { State, Time } from 'main'
 import { TimingFunction, getValue } from 'util/bezierFunction'
-import { Animation } from 'component'
+import { Animation, Keyframe } from 'component'
 import { magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
 
@@ -102,12 +102,21 @@ const updateNumberAnimation: UpdateNumberAnimation = ({
   keyframeCurrentTime,
   timeExceeded,
 }) => {
-  const [v1, v2] = keyframe.value
+  const v1 = keyframe.valueRange.value[0] as number
+  const v2 = keyframe.valueRange.value[1] as number
 
   const normalizedMax = v2 - v1
   const newValue = (progress * normalizedMax) / 100
 
   const isNegative = v2 > v1
+
+  // console.log({
+  //   v1,
+  //   v2,
+  //   normalizedMax,
+  //   newValue,
+  //   isNegative,
+  // })
 
   return [
     isNegative
@@ -152,7 +161,8 @@ const updateVectorAnimation: UpdateVectorAnimation = ({
   keyframeCurrentTime,
   timeExceeded,
 }) => {
-  const [v1, v2] = keyframe.value
+  const v1 = keyframe.valueRange.value[0] as Vector2D
+  const v2 = keyframe.valueRange.value[1] as Vector2D
 
   const normalizedMax = sub(v2, v1)
   const newValue = scale(1.0 / 100, scale(progress, normalizedMax))
@@ -176,68 +186,29 @@ const updateVectorAnimation: UpdateVectorAnimation = ({
   ]
 }
 
-// const updateVectorAnimation =
-//     (
-//       ~keyframe: Type.keyframe,
-//       ~time: Type.time,
-//       ~animation: Type.animation,
-//       ~progress: number,
-//       ~keyframeCurrentTime: number,
-//       ~timeExceeded: boolean,
-//     )
-//     : updateVectorAnimationType => {
-//   const (v1, v2) =
-//     switch (keyframe.valueRange) {
-//     | Float(_) => (Vector_Util.zero, Vector_Util.zero)
-//     | Vector(v) => v
-//     };
-
-//   const normalizedMax = Vector_Util.sub(v2, v1);
-//   const newValue =
-//     Vector_Util.scale(
-//       1.0 /. 100,
-//       Vector_Util.scale(progress, normalizedMax),
-//     );
-
-//   const isNegative = Vector_Util.isLesser(v1, v2);
-
-//   (
-//     isNegative
-//       ? Vector_Util.isGreater(newValue, v2) ? v2 : newValue
-//       : Vector_Util.isLesser(newValue, v2) ? v2 : newValue,
-//     {
-//       ...animation,
-//       currentTime:
-//         timeExceeded
-//           ? keyframeCurrentTime +. time.delta
-//           : animation.currentTime +. time.delta,
-//       isFinished: timeExceeded,
-//     },
-//   );
-// };
-
 type Update = (params: { state: State }) => State
 export const update: Update = ({ state }) => {
   Object.values(state.component.animation).forEach((animation) => {
     if (animation.data.isPlaying === false) {
       return
     }
+
     const {
       keyframeCurrentTime,
       keyframeIndex,
       timeExceeded,
     } = getActiveKeyframe(animation, false)
+
+    console.log('timeExceeded', timeExceeded)
+
     if (timeExceeded === true && animation.data.wrapMode === 'Once') {
-      animation = {
-        ...animation,
-        data: {
-          ...animation.data,
-          currentTime: 0,
-          isPlaying: false,
-          isFinished: true,
-        },
+      animation.data = {
+        ...animation.data,
+        currentTime: 0,
+        isPlaying: false,
+        isFinished: true,
       }
-      return
+      return;
     } else {
       const keyframe = animation.data.keyframes[keyframeIndex]
 
@@ -247,148 +218,26 @@ export const update: Update = ({ state }) => {
         keyframe.timingFunction,
       )
 
-      switch (keyframe.valueRange.type) {
-        case 'Number':
-          const [value, newAnimation] = updateNumberAnimation({
-            keyframe,
-            time: state.time,
-            animation,
-            progress,
-            keyframeCurrentTime,
-            timeExceeded,
-          })
+      const updateFunction =
+        keyframe.valueRange.type === 'Number'
+          ? updateNumberAnimation
+          : updateVectorAnimation
 
-          set(
-            state.component,
-            `${animation.data.property.component}.${animation.data.property.path}`,
-            value,
-          )
+      const [value, newAnimation] = updateFunction({
+        keyframe,
+        time: state.time,
+        animation,
+        progress,
+        keyframeCurrentTime,
+        timeExceeded,
+      })
 
-          break
-        case 'Vector2D':
-          const [value, newAnimation] = updateVectorAnimation({
-            keyframe,
-            time: state.time,
-            animation,
-            progress,
-            keyframeCurrentTime,
-            timeExceeded,
-          })
+      const { component, entity, name, path } = animation.data.property
+      set(state.component, `${component}.${entity + name}.${path}`, value)
 
-          set(
-            state.component,
-            `${animation.data.property.component}.${animation.data.property.path}`,
-            value,
-          )
-          break
-      }
+      animation.data = newAnimation.data
     }
   })
 
   return state
 }
-
-// const updateAnimation =
-//     (acc: Type.state, _: string, animation: Type.animation) =>
-//   if (animation.isPlaying) {
-//     const {keyframeCurrentTime, keyframeIndex, timeExceeded} =
-//       getActiveKeyframe(animation, false);
-
-//     if (timeExceeded === true && animation.wrapMode === Once) {
-//       Animation_Component.set(
-//         ~state=acc,
-//         ~name=animation.name,
-//         ~entity=animation.entity,
-//         ~animation={
-//           ...animation,
-//           currentTime: 0,
-//           isPlaying: false,
-//           isFinished: true,
-//         },
-//       );
-//     } else {
-//       switch (Belt.List.get(animation.keyframes, keyframeIndex)) {
-//       | None => acc
-//       | Some(keyframe) =>
-//         const progress =
-//           getPercentageProgress(
-//             keyframeCurrentTime,
-//             keyframe.duration,
-//             keyframe.timingFunction,
-//           );
-
-//         switch (keyframe.valueRange) {
-//         | Type.Float(_) =>
-//           const (value, updatedAnimation) =
-//             updateFloatAnimation(
-//               ~keyframe,
-//               ~time=acc.time,
-//               ~animation,
-//               ~progress,
-//               ~keyframeCurrentTime,
-//               ~timeExceeded,
-//             );
-
-//           const stateWithNewAnimation =
-//             Animation_Component.set(
-//               ~state=acc,
-//               ~name=animation.name,
-//               ~animation=updatedAnimation,
-//               ~entity=animation.entity,
-//             );
-
-//           switch (animation.component) {
-//           | FieldFloat(entity, fieldFloatName) =>
-//             FieldFloat_Component.setValue(
-//               ~state=stateWithNewAnimation,
-//               ~name=fieldFloatName,
-//               ~value,
-//               ~entity,
-//             )
-//           | FieldVector(_) => acc
-//           | TransformLocalPosition(_) => acc
-//           };
-//         | Type.Vector(_) =>
-//           const (value, updatedAnimation) =
-//             updateVectorAnimation(
-//               ~keyframe,
-//               ~time=acc.time,
-//               ~animation,
-//               ~progress,
-//               ~keyframeCurrentTime,
-//               ~timeExceeded,
-//             );
-
-//           const stateWithNewAnimation =
-//             Animation_Component.set(
-//               ~state=acc,
-//               ~name=animation.name,
-//               ~animation=updatedAnimation,
-//               ~entity=animation.entity,
-//             );
-
-//           switch (animation.component) {
-//           | FieldFloat(_) => acc
-//           | FieldVector(entity, fieldVectorName) =>
-//             FieldVector_Component.setValue(
-//               ~state=stateWithNewAnimation,
-//               ~name=fieldVectorName,
-//               ~value,
-//               ~entity,
-//             )
-//           | TransformLocalPosition(entity) =>
-//             Transform_Component.setLocalPosition(
-//               ~state=stateWithNewAnimation,
-//               ~entity,
-//               ~localPosition=value,
-//             )
-//           };
-//         };
-//       };
-//     };
-//   } else {
-//     acc;
-//   };
-
-// const update = (~state: Type.state): Type.state =>
-//   Belt.Map.String.reduce(state.animation, state, updateAnimation);

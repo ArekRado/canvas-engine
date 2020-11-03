@@ -29,7 +29,8 @@ export const defaultAnimation: GetDefaultComponent<Animation> = ({
     isFinished: false,
     currentTime: 0,
     property: {
-      path: 'FieldNumber',
+      component: 'transform',
+      path: '-',
       entity: '',
       name: '',
     },
