@@ -199,8 +199,6 @@ export const update: Update = ({ state }) => {
       timeExceeded,
     } = getActiveKeyframe(animation, false)
 
-    console.log('timeExceeded', timeExceeded)
-
     if (timeExceeded === true && animation.data.wrapMode === 'Once') {
       animation.data = {
         ...animation.data,
@@ -208,7 +206,7 @@ export const update: Update = ({ state }) => {
         isPlaying: false,
         isFinished: true,
       }
-      return;
+      return
     } else {
       const keyframe = animation.data.keyframes[keyframeIndex]
 

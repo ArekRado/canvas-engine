@@ -414,88 +414,66 @@ describe('animation', () => {
       expect(getAnimation(v10)?.currentTime).toBe(0)
     })
 
-    // it("Should works with looped animations", _assert => {
-    //   const keyframes = [
-    //     (
-    //       {
-    //         duration: 10.0,
-    //         timingFunction: Linear,
-    //         valueRange: Float((0.0, 1.0)),
-    //       }: Type.keyframe
-    //     ),
-    //     (
-    //       {
-    //         duration: 1.0,
-    //         timingFunction: Linear,
-    //         valueRange: Float((0.0, 1.0)),
-    //       }: Type.keyframe
-    //     ),
-    //     (
-    //       {
-    //         duration: 2.0,
-    //         timingFunction: Linear,
-    //         valueRange: Float((0.0, 1.0)),
-    //       }: Type.keyframe
-    //     ),
-    //     (
-    //       {
-    //         duration: 100.0,
-    //         timingFunction: Linear,
-    //         valueRange: Float((0.0, 1.0)),
-    //       }: Type.keyframe
-    //     ),
-    //   ];
+    it('Should works with looped animations', () => {
+      const v1 = setEntity({ state: initialState, entity })
+      const v2 = fieldNumber.set({
+        state: v1,
+        data: defaultFieldNumber({ entity, name: fieldNumberName, data: 0 }),
+      })
+      const v3 = animation.set({
+        state: v2,
+        data: defaultAnimation({
+          entity,
+          name: animationName,
+          data: {
+            isPlaying: true,
+            keyframes: [
+              {
+                duration: 10,
+                timingFunction: 'Linear',
+                valueRange: { type: 'Number', value: vector(0, 1) },
+              },
+              {
+                duration: 1,
+                timingFunction: 'Linear',
+                valueRange: { type: 'Number', value: vector(0, 1) },
+              },
+              {
+                duration: 2,
+                timingFunction: 'Linear',
+                valueRange: { type: 'Number', value: vector(0, 1) },
+              },
+              {
+                duration: 100,
+                timingFunction: 'Linear',
+                valueRange: { type: 'Number', value: vector(0, 1) },
+              },
+            ],
+            currentTime: 0,
+            wrapMode: 'Loop',
+            isFinished: false,
+            property: {
+              path: 'data',
+              component: 'fieldNumber',
+              entity: entity,
+              name: fieldNumberName,
+            },
+          },
+        }),
+      })
 
-    //   const _ =
-    //     Type.initialState
-    //     ->Entity.create(~entity, ~state=_)
-    //     ->FieldFloat_Component.create(
-    //         ~entity,
-    //         ~state=_,
-    //         ~name=fieldNumberName,
-    //         ~value=0.0,
-    //       )
-    //     ->Animation_Component.create(
-    //         ~state=_,
-    //         ~data={
-    //           component: FieldFloat(entity, fieldNumberName),
-    //           isPlaying: true,
-    //           keyframes,
-    //           entity,
-    //           name: animationName,
-    //           wrapMode: Loop,
-    //           currentTime: 0.0,
-    //           isFinished: false,
-    //         }
-    //       )
-    //     ->tick(2000.0, _)
-    //     ->(
-    //         state => {
-    //           const newState = tick(2000.0, state);
+      const v4 = tick(2000, v3)
 
-    //           _assert(
-    //             getFieldFloat(newState).value === 0.66,
-    //           );
-    //           _assert(getAnimation(newState).isFinished === true);
-    //           _assert(getAnimation(newState).isPlaying === true);
-    //           _assert(getAnimation(newState).currentTime === 66.0);
+      const v5 = tick(2000, v4)
+      expect(getFieldFloat(v5)).toBe(0.66)
+      expect(getAnimation(v5)?.isFinished).toBe(true)
+      expect(getAnimation(v5)?.isPlaying).toBe(true)
+      expect(getAnimation(v5)?.currentTime).toBe(66)
 
-    //           newState;
-    //         }
-    //       )
-    //     ->(
-    //         // Second tick should reset isFinished flag
-    //         state => {
-    //           const newState = tick(2010.0, state);
-
-    //           _assert(getAnimation(newState).isFinished === false);
-    //           _assert(getAnimation(newState).currentTime === 76.0);
-
-    //           newState;
-    //         }
-    //       );
-
-    //   ();
-    // });
+      const v6 = tick(2010, v5)
+      expect(getAnimation(v6)?.isFinished).toBe(false)
+      expect(getAnimation(v6)?.isPlaying).toBe(true)
+      expect(getAnimation(v6)?.currentTime).toBe(76)
+    })
   })
 })
