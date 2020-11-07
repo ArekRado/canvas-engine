@@ -4,8 +4,8 @@ import {
   CollideType,
   Transform,
   transform as transformComponent,
-} from 'component'
-import { State } from 'main'
+} from '../component'
+import { State } from '../main'
 
 type DetectAABBcollision = (params: {
   v1: Vector2D

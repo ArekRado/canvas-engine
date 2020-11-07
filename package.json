@@ -1,5 +1,14 @@
 {
   "name": "canvas-engine",
+  "umd:main": "dist/canvas-engine.umd.production.js",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "module": "dist/canvas-engine.esm.js",
+  "npmName": "@arekrado/canvas-engine",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "canvas",
     "engine"
@@ -20,7 +29,7 @@
   "scripts": {
     "test": "tsdx test --env=jsdom",
     "test:watch": "tsdx test --env=jsdom --watch --coverage=false",
-    "build": "tsdx build --tsconfig tsconfig.json",
+    "build": "tsdx build --tsconfig tsconfig.build.json",
     "prepublish": "npm run build",
     "lint": "tsdx lint"
   },

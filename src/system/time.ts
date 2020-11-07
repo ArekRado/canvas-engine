@@ -1,4 +1,4 @@
-import { State } from 'main'
+import { State } from '../main'
 
 type Update = (params: { state: State; timeNow?: number }) => State
 export const update: Update = ({ state, timeNow }) => {

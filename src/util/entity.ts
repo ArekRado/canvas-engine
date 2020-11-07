@@ -7,7 +7,7 @@ import {
   fieldVector,
   sprite,
   transform,
-} from 'component'
+} from '../component'
 import { v1 } from 'uuid'
 import { State } from '../main'
 import { Guid } from './uuid'

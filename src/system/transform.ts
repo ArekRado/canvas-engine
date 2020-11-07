@@ -1,7 +1,7 @@
 import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
-import { Transform } from 'component'
-import { State } from 'main'
-import { Dictionary } from 'type'
+import { Transform } from '../component'
+import { State } from '../main'
+import { Dictionary } from '../type'
 
 const getParentPosition = (
   transform: Dictionary<Transform>,

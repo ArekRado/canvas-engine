@@ -7,8 +7,8 @@ import {
   Sprite,
   Transform,
   Component as CESComponent,
-} from 'component'
-import { Guid } from 'util/uuid'
+} from '../component'
+import { Guid } from '../util/uuid'
 
 type GetDefaultComponent<Component extends CESComponent<any>> = (params: {
   entity: Guid

@@ -1,5 +1,5 @@
-import { State } from 'main'
-import { Sprite, Transform } from 'component'
+import { State } from '../main'
+import { Sprite, Transform } from '../component'
 import { initialize as initializePixi } from '../util/pixiDraw'
 
 export type DrawState = {

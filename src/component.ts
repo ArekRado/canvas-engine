@@ -2,7 +2,7 @@ import { State } from './main'
 import { Guid } from './util/uuid'
 import { Vector2D } from '@arekrado/vector-2d'
 import { TimingFunction } from './util/bezierFunction'
-import { Dictionary } from 'type'
+import { Dictionary } from './type'
 
 export type Component<Data> = {
   name: string

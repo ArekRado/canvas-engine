@@ -1,6 +1,6 @@
-import { State, Time } from 'main'
-import { TimingFunction, getValue } from 'util/bezierFunction'
-import { Animation, Keyframe } from 'component'
+import { State, Time } from '../main'
+import { TimingFunction, getValue } from '../util/bezierFunction'
+import { Animation, Keyframe } from '../component'
 import { magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
 

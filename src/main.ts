@@ -4,10 +4,10 @@ import { Animation, CollideBox, CollideCircle, Field, Sprite, Transform } from '
 import { Dictionary } from './type'
 import {
   initialize as initializeDraw,
-} from 'system/draw'
+} from './system/draw'
 import {
   initialize as initializeIO,
-} from 'system/io'
+} from './system/io'
 
 
 export type Time = {
@@ -87,14 +87,6 @@ export const initialize = () => {
     gameContainer.setAttribute('id', 'canvas-engine')
     body.appendChild(gameContainer)
   }
-  //   switch (Webapi.Dom.Document.querySelector("body", Webapi.Dom.document)) {
-  //   | Some(body) => {
-  //     let container = Webapi.Dom.Document.createElement("div", Webapi.Dom.document);
-  //     Webapi.Dom.Element.setAttribute("id", "engine-game", container);
-  //     Webapi.Dom.Element.appendChild(container, body);
-  //   }
-  //   | None => ()
-  // };
 
   initializeIO()
   initializeDraw()

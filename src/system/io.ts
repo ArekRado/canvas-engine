@@ -1,7 +1,7 @@
 // open Webapi.Dom;
 
 import { vector, vectorZero } from '@arekrado/vector-2d'
-import { State } from 'main'
+import { State } from '../main'
 
 // type t = {
 //   mutable mouseButtons: int,

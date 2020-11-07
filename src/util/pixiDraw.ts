@@ -1,4 +1,4 @@
-import { DrawState } from 'system/draw'
+import { DrawState } from '../system/draw'
 
 declare namespace PIXI {
   type Sprite = any
@@ -23,7 +23,7 @@ const getGameContainerDimensions = () => {
 }
 
 export const initialize = async () => {
-  PIXI = import('pixi.js')
+  PIXI = await import('pixi.js')
 
   const [x, y] = getGameContainerDimensions()
 
