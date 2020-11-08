@@ -3,6 +3,17 @@ import { Guid } from './util/uuid'
 import { Vector2D } from '@arekrado/vector-2d'
 import { TimingFunction } from './util/bezierFunction'
 import { Dictionary } from './type'
+import {
+  defaultSprite,
+  defaultTransform,
+  GetDefaultComponent,
+  defaultAnimation,
+  defaultCollideBox,
+  defaultCollideCircle,
+  defaultFieldNumber,
+  defaultFieldVector,
+  defaultFieldString,
+} from './util/defaultComponents'
 
 export type Component<Data> = {
   name: string
@@ -81,6 +92,7 @@ export type SpriteSrc = string
 export type Sprite = Component<{ src: SpriteSrc }>
 
 export type ComponentFactory<Data> = {
+  defaultData: GetDefaultComponent<Component<Data>>
   set: (params: { state: State; data: Component<Data> }) => State
 
   get: (params: {
@@ -97,10 +109,13 @@ const componentFactory = <Data>(
   componentName: keyof State['component'],
   {
     onePerEntity,
-  }: Partial<{
-    onePerEntity: boolean
-  }>,
+    defaultData,
+  }: {
+    onePerEntity?: boolean
+    defaultData: GetDefaultComponent<Component<Data>>
+  },
 ): ComponentFactory<Data> => ({
+  defaultData,
   set: ({ state, data }) => ({
     ...state,
     component: {
@@ -151,24 +166,39 @@ const componentFactory = <Data>(
 
 export const transform = componentFactory<Transform['data']>('transform', {
   onePerEntity: true,
+  defaultData: defaultTransform,
 })
 
-export const sprite = componentFactory<Sprite['data']>('sprite', {})
-export const animation = componentFactory<Animation['data']>('animation', {})
-export const collideBox = componentFactory<CollideBox['data']>('collideBox', {})
+export const sprite = componentFactory<Sprite['data']>('sprite', {
+  defaultData: defaultSprite,
+})
+export const animation = componentFactory<Animation['data']>('animation', {
+  defaultData: defaultAnimation,
+})
+export const collideBox = componentFactory<CollideBox['data']>('collideBox', {
+  defaultData: defaultCollideBox,
+})
 export const collideCircle = componentFactory<CollideCircle['data']>(
   'collideCircle',
-  {},
+  {
+    defaultData: defaultCollideCircle,
+  },
 )
 export const fieldNumber = componentFactory<Field<number>['data']>(
   'fieldNumber',
-  {},
+  {
+    defaultData: defaultFieldNumber,
+  },
 )
 export const fieldVector = componentFactory<Field<Vector2D>['data']>(
   'fieldVector',
-  {},
+  {
+    defaultData: defaultFieldVector,
+  },
 )
 export const fieldString = componentFactory<Field<string>['data']>(
   'fieldString',
-  {},
+  {
+    defaultData: defaultFieldString,
+  },
 )

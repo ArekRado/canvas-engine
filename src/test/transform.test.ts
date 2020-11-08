@@ -3,8 +3,8 @@ import { vector } from '@arekrado/vector-2d'
 import { transform } from 'component'
 import { initialState } from 'main'
 import { set as setEntity, generate } from 'util/entity'
-import { runOneFrame } from 'util/runOneFrame'
-import { defaultTransform } from './defaultComponents'
+import { runOneFrame } from '../util/runOneFrame'
+import { defaultTransform } from '../util/defaultComponents'
 
 describe('transform', () => {
   it('should set proper position using localPosition and parent.position', () => {

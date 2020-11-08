@@ -24,7 +24,7 @@ import {
   defaultFieldVector,
   defaultSprite,
   defaultTransform,
-} from './defaultComponents'
+} from '../util/defaultComponents'
 
 describe('entity', () => {
   it('remove - should remove components by entity', () => {

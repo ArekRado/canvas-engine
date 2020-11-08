@@ -8,9 +8,9 @@ import {
   Transform,
   Component as CESComponent,
 } from '../component'
-import { Guid } from '../util/uuid'
+import { Guid } from './uuid'
 
-type GetDefaultComponent<Component extends CESComponent<any>> = (params: {
+export type GetDefaultComponent<Component extends CESComponent<any>> = (params: {
   entity: Guid
   name: string
   data?: Partial<Component['data']>

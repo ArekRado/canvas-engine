@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
-import { defaultAnimation, defaultFieldNumber } from './defaultComponents'
+import { defaultAnimation, defaultFieldNumber } from '../util/defaultComponents'
 import { getActiveKeyframe } from 'system/animation'
 import { set as setEntity } from '../util/entity'
 import { initialState, State } from 'main'

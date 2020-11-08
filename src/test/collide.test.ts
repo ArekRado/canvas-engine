@@ -4,7 +4,7 @@ import { collideBox, transform } from 'component'
 import { initialState } from 'main'
 import { set as setEntity, generate } from 'util/entity'
 import { runOneFrame } from 'util/runOneFrame'
-import { defaultCollideBox, defaultTransform } from './defaultComponents'
+import { defaultCollideBox, defaultTransform } from '../util/defaultComponents'
 import { detectAABBcollision } from 'system/collide'
 
 describe('collide', () => {
