@@ -9,13 +9,15 @@ import {
   transform,
 } from '../component'
 import { v1 } from 'uuid'
-import { State } from '../main'
-import { Guid } from './uuid'
+import { Entity, State } from '../main'
 
-export const generate = (debugName: string) => `${debugName}###${v1()}`
+export const generate = (name: string): Entity => ({
+  name,
+  id: v1(),
+})
 
 type Params = {
-  entity: Guid
+  entity: Entity
   state: State
 }
 

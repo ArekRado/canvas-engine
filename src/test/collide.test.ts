@@ -50,7 +50,6 @@ describe('collide', () => {
       state: v3,
       data: defaultTransform({
         entity: entity1,
-        name: 'entity1',
         data: { localPosition: vector(0, 0) },
       }),
     })
@@ -59,7 +58,6 @@ describe('collide', () => {
       state: v4,
       data: defaultTransform({
         entity: entity2,
-        name: 'entity2',
         data: { localPosition: vector(1, 1) },
       }),
     })
@@ -68,7 +66,6 @@ describe('collide', () => {
       state: v5,
       data: defaultTransform({
         entity: entity3,
-        name: 'entity3',
         data: { localPosition: vector(3.5, 3.5) },
       }),
     })
@@ -77,7 +74,6 @@ describe('collide', () => {
       state: v6,
       data: defaultCollideBox({
         entity: entity1,
-        name: 'entity1',
         data: {
           size: vector(1.5, 1.5),
           position: vector(0, 0),
@@ -89,7 +85,6 @@ describe('collide', () => {
       state: v7,
       data: defaultCollideBox({
         entity: entity2,
-        name: 'entity2',
         data: {
           size: vector(1, 1),
           position: vector(0, 0),
@@ -101,7 +96,6 @@ describe('collide', () => {
       state: v8,
       data: defaultCollideBox({
         entity: entity3,
-        name: 'entity3',
         data: {
           size: vector(1, 1),
           position: vector(-2, -2),
@@ -115,21 +109,18 @@ describe('collide', () => {
       collideBox.get({
         state,
         entity: entity1,
-        name: 'entity1',
       })?.data.collisions || []
 
     const collisions2 =
       collideBox.get({
         state,
         entity: entity2,
-        name: 'entity2',
       })?.data.collisions || []
 
     const collisions3 =
       collideBox.get({
         state,
         entity: entity3,
-        name: 'entity3',
       })?.data.collisions || []
 
     expect(collisions1[0].entity).toEqual(entity2)

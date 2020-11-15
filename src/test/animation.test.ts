@@ -2,22 +2,18 @@ import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
 import { defaultAnimation, defaultFieldNumber } from '../util/defaultComponents'
 import { getActiveKeyframe } from 'system/animation'
-import { set as setEntity } from '../util/entity'
+import { generate, set as setEntity } from '../util/entity'
 import { initialState, State } from 'main'
 import { animation, fieldNumber } from 'component'
 import { runOneFrame } from 'util/runOneFrame'
 
 describe('animation', () => {
-  const entity = 'entity'
-  const animationName = 'animationName'
-  const fieldNumberName = 'testFieldNumber'
-  // const fieldVectorName = 'testFieldVector'
+  const entity = generate('entity')
 
   const getFieldFloat = (state: State) =>
-    fieldNumber.get({ state, entity, name: fieldNumberName })?.data
+    fieldNumber.get({ state, entity })?.data
 
-  const getAnimation = (state: State) =>
-    animation.get({ state, entity, name: animationName })?.data
+  const getAnimation = (state: State) => animation.get({ state, entity })?.data
 
   const tick = (timeNow: number, state: State) =>
     runOneFrame({ state, timeNow, enableDraw: false })
@@ -26,7 +22,6 @@ describe('animation', () => {
     it('should return proper time and index when time is zero', () => {
       const animation = defaultAnimation({
         entity,
-        name: animationName,
         data: {
           isPlaying: true,
           currentTime: 0,
@@ -34,7 +29,6 @@ describe('animation', () => {
             component: 'animation',
             path: 'FieldNumber',
             entity: entity,
-            name: fieldNumberName,
           },
           keyframes: [
             {
@@ -63,7 +57,6 @@ describe('animation', () => {
     it('should return proper time and index when time is non zero', () => {
       const animation = defaultAnimation({
         entity,
-        name: animationName,
         data: {
           isPlaying: true,
           currentTime: 5,
@@ -71,7 +64,6 @@ describe('animation', () => {
             component: 'animation',
             path: 'FieldNumber',
             entity: entity,
-            name: fieldNumberName,
           },
           keyframes: [
             {
@@ -100,7 +92,6 @@ describe('animation', () => {
     it('should return proper data when animation has multiple keyframes and currentTime exceeded all keyframes', () => {
       const animation = defaultAnimation({
         entity,
-        name: animationName,
         data: {
           isPlaying: true,
           currentTime: 2000,
@@ -108,7 +99,6 @@ describe('animation', () => {
             component: 'animation',
             path: 'FieldNumber',
             entity: entity,
-            name: fieldNumberName,
           },
           keyframes: [
             {
@@ -163,7 +153,6 @@ describe('animation', () => {
     it('should return proper data when animation has multiple keyframes and is looped', () => {
       const animation = defaultAnimation({
         entity,
-        name: animationName,
         data: {
           isPlaying: true,
           currentTime: 2000,
@@ -171,7 +160,6 @@ describe('animation', () => {
             component: 'animation',
             path: 'FieldNumber',
             entity: entity,
-            name: fieldNumberName,
           },
           keyframes: [
             {
@@ -229,13 +217,12 @@ describe('animation', () => {
       const v1 = setEntity({ state: initialState, entity })
       const v2 = fieldNumber.set({
         state: v1,
-        data: defaultFieldNumber({ entity, name: fieldNumberName, data: 0 }),
+        data: defaultFieldNumber({ entity, data: 0 }),
       })
       const v3 = animation.set({
         state: v2,
         data: defaultAnimation({
           entity,
-          name: animationName,
           data: {
             isPlaying: true,
             keyframes: [
@@ -255,7 +242,7 @@ describe('animation', () => {
               path: 'data',
               component: 'fieldNumber',
               entity: entity,
-              name: fieldNumberName,
+              
             },
           },
         }),
@@ -293,13 +280,13 @@ describe('animation', () => {
       const v1 = setEntity({ state: initialState, entity })
       const v2 = fieldNumber.set({
         state: v1,
-        data: defaultFieldNumber({ entity, name: fieldNumberName, data: 0 }),
+        data: defaultFieldNumber({ entity, data: 0 }),
       })
       const v3 = animation.set({
         state: v2,
         data: defaultAnimation({
           entity,
-          name: animationName,
+          
           data: {
             isPlaying: true,
             keyframes: [
@@ -319,7 +306,7 @@ describe('animation', () => {
               path: 'data',
               component: 'fieldNumber',
               entity: entity,
-              name: fieldNumberName,
+              
             },
           },
         }),
@@ -345,13 +332,13 @@ describe('animation', () => {
       const v1 = setEntity({ state: initialState, entity })
       const v2 = fieldNumber.set({
         state: v1,
-        data: defaultFieldNumber({ entity, name: fieldNumberName, data: 0 }),
+        data: defaultFieldNumber({ entity, data: 0 }),
       })
       const v3 = animation.set({
         state: v2,
         data: defaultAnimation({
           entity,
-          name: animationName,
+          
           data: {
             isPlaying: true,
             keyframes: [
@@ -383,7 +370,7 @@ describe('animation', () => {
               path: 'data',
               component: 'fieldNumber',
               entity: entity,
-              name: fieldNumberName,
+              
             },
           },
         }),
@@ -418,13 +405,13 @@ describe('animation', () => {
       const v1 = setEntity({ state: initialState, entity })
       const v2 = fieldNumber.set({
         state: v1,
-        data: defaultFieldNumber({ entity, name: fieldNumberName, data: 0 }),
+        data: defaultFieldNumber({ entity, data: 0 }),
       })
       const v3 = animation.set({
         state: v2,
         data: defaultAnimation({
           entity,
-          name: animationName,
+          
           data: {
             isPlaying: true,
             keyframes: [
@@ -456,7 +443,7 @@ describe('animation', () => {
               path: 'data',
               component: 'fieldNumber',
               entity: entity,
-              name: fieldNumberName,
+              
             },
           },
         }),

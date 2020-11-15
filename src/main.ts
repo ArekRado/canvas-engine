@@ -1,7 +1,6 @@
-import { Guid } from './util/uuid'
 import { Vector2D } from '@arekrado/vector-2d'
 import { Animation, CollideBox, CollideCircle, Field, Sprite, Transform } from './component'
-import { Dictionary } from './type'
+import { Dictionary, Guid } from './type'
 import {
   initialize as initializeDraw,
 } from './system/draw'
@@ -9,6 +8,10 @@ import {
   initialize as initializeIO,
 } from './system/io'
 
+export type Entity = {
+  id: Guid,
+  name: string,
+} 
 
 export type Time = {
   timeNow: number
@@ -30,7 +33,7 @@ export type Mouse = {
 }
 
 export type State = {
-  entity: Guid[]
+  entity: Entity[]
   component: {
     /* blueprint: Belt.Map.String.t({
       connectedEntites: []

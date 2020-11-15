@@ -37,7 +37,6 @@ const findCollisionsWith: FindCollisionsWith = ({
     const transform2 = transformComponent.get({
       state,
       entity: collideBox2.entity,
-      name: '',
     })
 
     if (transform2 && transform.entity !== transform2.entity) {
@@ -65,7 +64,6 @@ export const update: Update = ({ state }) => {
     const transform = transformComponent.get({
       state,
       entity: collideBox.entity,
-      name: '',
     })
 
     if (transform) {
@@ -79,57 +77,3 @@ export const update: Update = ({ state }) => {
 
   return state
 }
-
-// let update = (~state: Type.state): Type.state => {
-//   ...state,
-//   collideBox:
-//     Belt.Map.String.mapWithKey(
-//       state.collideBox,
-//       (id1, collideBox1) => {
-//         let transform =
-//           Belt.Map.String.get(state.transform, collideBox1.entity);
-
-//         switch (transform) {
-//         | None => collideBox1
-//         | Some(transform) =>
-//           let collisionList =
-
-//             Belt.Map.String.reduce(
-//               state.collideBox,
-//               [],
-//               (acc, id2, collideBox2) => {
-//                 let transform2 =
-//                   Belt.Map.String.get(state.transform, collideBox2.entity);
-
-//                 switch (transform2, id2 === id1) {
-//                 | (None, _) => acc
-//                 | (_, true) => acc
-//                 | (Some(transform2), _) =>
-//                   let isColliding =
-//                     detectAABBcollision(
-//                       Vector_Util.add(
-//                         transform.position,
-//                         collideBox1.position,
-//                       ),
-//                       collideBox1.size,
-//                       Vector_Util.add(
-//                         transform2.position,
-//                         collideBox2.position,
-//                       ),
-//                       collideBox2.size,
-//                     );
-
-//                   if (isColliding) {
-//                     [Type.Box(id2), ...acc];
-//                   } else {
-//                     acc;
-//                   };
-//                 };
-//               },
-//             );
-
-//           {...collideBox1, collisions: collisionList};
-//         };
-//       },
-//     ),
-// };

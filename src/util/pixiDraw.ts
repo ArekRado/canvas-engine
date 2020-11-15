@@ -22,30 +22,33 @@ const getGameContainerDimensions = () => {
   return element ? [element.clientWidth, element.clientHeight] : [100, 100]
 }
 
-export const initialize = async () => {
-  PIXI = await import('pixi.js')
+export const initialize = () => {
+  // https://github.com/formium/tsdx/pull/367
+  import('pixi.js').then((module) => {
+    PIXI = module
 
-  const [x, y] = getGameContainerDimensions()
+    const [x, y] = getGameContainerDimensions()
 
-  pixiApp = new PIXI.Application({
-    width: x,
-    height: y,
-    backgroundColor: 0x1099bb,
-  }) as PIXI.Application
-  ;(pixiApp.renderer as any).autoResize = true
+    pixiApp = new PIXI.Application({
+      width: x,
+      height: y,
+      backgroundColor: 0x1099bb,
+    }) as PIXI.Application
+    ;(pixiApp.renderer as any).autoResize = true
 
-  if (!document || !document.body) {
-    console.warn("Couldn't find document body")
-  } else {
-    const element = document.querySelector('#canvas-game')
-    element?.appendChild(pixiApp.view)
-  }
+    if (!document || !document.body) {
+      console.warn("Couldn't find document body")
+    } else {
+      const element = document.querySelector('#canvas-game')
+      element && element.appendChild(pixiApp.view)
+    }
 
-  images = new Map()
-  debugGraphics = new PIXI.Graphics() as PIXI.Graphics
-  pixiApp.stage.addChild(debugGraphics)
+    images = new Map()
+    debugGraphics = new PIXI.Graphics() as PIXI.Graphics
+    pixiApp.stage.addChild(debugGraphics)
 
-  isInitialized = true
+    isInitialized = true
+  })
 }
 
 type Render = (data: DrawState[], devMode: boolean) => void
@@ -60,10 +63,8 @@ export const render: Render = (data, devMode = false) => {
   }
   debugGraphics.clear()
 
-  // const state = data.flat(Infinity).slice(0, -1)
-
   data.forEach((image) => {
-    const pixiImage = images.get(image.sprite.entity)
+    const pixiImage = images.get(image.sprite.entity.id)
 
     if (pixiApp) {
       if (pixiImage) {

@@ -13,15 +13,6 @@ type RunOneFrame = (params: {
 }) => State
 
 export const runOneFrame: RunOneFrame = ({ state, enableDraw, timeNow }) => {
-  // const newState =
-  //   state
-  //   ->Time_System.update(~timeNowOverride=?timeNow, ~state=_, ())
-  //   ->IO_System.update(~state=_)
-  //   ->Transform_System.update(~state=_)
-  //   ->Collide_System.update(~state=_)
-  //   ->Animation_System.update(~state=_)
-  //   ->Draw_System.update(~enableDraw, ~state=_);
-
   const v1 = timeSystemUpdate({ state, timeNow })
   const v2 = IOSystemUpdate({ state: v1 })
   const v3 = transformSystemUpdate({ state: v2 })

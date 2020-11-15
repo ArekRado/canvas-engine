@@ -1,5 +1,13 @@
 {
   "presets": [
-    "@babel/preset-env",
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "firefox": "83",
+          "esmodules": true
+        }
+      }
+    ],
   ]
 }

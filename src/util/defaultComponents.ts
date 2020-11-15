@@ -1,4 +1,5 @@
 import { Vector2D, vectorZero } from '@arekrado/vector-2d'
+import { Entity } from 'main'
 import {
   Animation,
   CollideBox,
@@ -8,21 +9,17 @@ import {
   Transform,
   Component as CESComponent,
 } from '../component'
-import { Guid } from './uuid'
+import { generate } from './entity'
 
-export type GetDefaultComponent<Component extends CESComponent<any>> = (params: {
-  entity: Guid
-  name: string
-  data?: Partial<Component['data']>
-}) => Component
+export type GetDefaultComponent<
+  Component extends CESComponent<any>
+> = (params: { entity: Entity; data?: Partial<Component['data']> }) => Component
 
 export const defaultAnimation: GetDefaultComponent<Animation> = ({
   entity,
-  name,
   data = {},
 }) => ({
   entity,
-  name,
   data: {
     keyframes: [],
     isPlaying: false,
@@ -31,8 +28,8 @@ export const defaultAnimation: GetDefaultComponent<Animation> = ({
     property: {
       component: 'transform',
       path: '-',
-      entity: '',
-      name: '',
+      entity: generate('-'),
+      index: -1,
     },
     wrapMode: 'Once',
     ...data,
@@ -41,11 +38,9 @@ export const defaultAnimation: GetDefaultComponent<Animation> = ({
 
 export const defaultCollideBox: GetDefaultComponent<CollideBox> = ({
   entity,
-  name,
   data = {},
 }) => ({
   entity,
-  name,
   data: {
     size: vectorZero(),
     position: vectorZero(),
@@ -56,11 +51,9 @@ export const defaultCollideBox: GetDefaultComponent<CollideBox> = ({
 
 export const defaultCollideCircle: GetDefaultComponent<CollideCircle> = ({
   entity,
-  name,
   data = {},
 }) => ({
   entity,
-  name,
   data: {
     radius: 1,
     position: vectorZero(),
@@ -71,29 +64,24 @@ export const defaultCollideCircle: GetDefaultComponent<CollideCircle> = ({
 
 export const defaultFieldNumber: GetDefaultComponent<Field<number>> = ({
   entity,
-  name,
   data = 0,
-}) => ({ entity, name, data })
+}) => ({ entity, data })
 
 export const defaultFieldString: GetDefaultComponent<Field<string>> = ({
   entity,
-  name,
   data = '',
-}) => ({ entity, name, data })
+}) => ({ entity, data })
 
 export const defaultFieldVector: GetDefaultComponent<Field<Vector2D>> = ({
   entity,
-  name,
-  data = (vectorZero() as any)
-}) => ({ entity, name, data })
+  data = vectorZero() as any,
+}) => ({ entity, data })
 
 export const defaultSprite: GetDefaultComponent<Sprite> = ({
   entity,
-  name,
   data = {},
 }) => ({
   entity,
-  name,
   data: {
     src: '',
     ...data,
@@ -102,11 +90,9 @@ export const defaultSprite: GetDefaultComponent<Sprite> = ({
 
 export const defaultTransform: GetDefaultComponent<Transform> = ({
   entity,
-  name,
   data = {},
 }) => ({
   entity,
-  name,
   data: {
     rotation: 0,
     localRotation: 0,
@@ -114,7 +100,7 @@ export const defaultTransform: GetDefaultComponent<Transform> = ({
     localScale: vectorZero(),
     position: vectorZero(),
     localPosition: vectorZero(),
-    parent: '',
+    parent: data.parent || generate('-'),
     ...data,
   },
 })

@@ -1,7 +1,6 @@
 export * from './type'
 export * from './main'
 export * from './util/runOneFrame'
-export * as uuid from './util/uuid'
 export * as bezierFunction from './util/bezierFunction'
 export * from './util/asset'
 export * as entity from './util/entity'

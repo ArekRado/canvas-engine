@@ -230,8 +230,8 @@ export const update: Update = ({ state }) => {
         timeExceeded,
       })
 
-      const { component, entity, name, path } = animation.data.property
-      set(state.component, `${component}.${entity + name}.${path}`, value)
+      const { component, entity, path } = animation.data.property
+      set(state.component, `${component}.${entity.id}.${path}`, value)
 
       animation.data = newAnimation.data
     }
