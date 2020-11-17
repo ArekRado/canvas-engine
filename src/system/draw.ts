@@ -1,6 +1,6 @@
 import { State } from '../main'
 import { Sprite, Transform } from '../component'
-import { initialize as initializePixi } from '../util/pixiDraw'
+import { initialize as initializePixi, render } from '../util/pixiDraw'
 
 export type DrawState = {
   sprite: Sprite
@@ -25,6 +25,8 @@ export const update: Update = ({ state, enableDraw }) => {
         })
       }
     })
+
+    render(drawState, false)
   }
 
   return state

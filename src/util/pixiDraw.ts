@@ -17,7 +17,7 @@ let debugGraphics: PIXI.Graphics | null = null
 let PIXI: any = null
 
 const getGameContainerDimensions = () => {
-  const element = document.querySelector('#canvas-game')
+  const element = document.querySelector('#canvas-engine')
 
   return element ? [element.clientWidth, element.clientHeight] : [100, 100]
 }
@@ -39,7 +39,7 @@ export const initialize = () => {
     if (!document || !document.body) {
       console.warn("Couldn't find document body")
     } else {
-      const element = document.querySelector('#canvas-game')
+      const element = document.querySelector('#canvas-engine')
       element && element.appendChild(pixiApp.view)
     }
 
@@ -58,7 +58,7 @@ export const render: Render = (data, devMode = false) => {
   }
 
   if (!isInitialized || !debugGraphics) {
-    console.error('Pixi not initialized')
+    console.error('Pixi is not initialized')
     return
   }
   debugGraphics.clear()

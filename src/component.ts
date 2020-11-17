@@ -48,17 +48,26 @@ export type Transform = Component<{
 
 export type Field<Value> = Component<Value>
 
-export type AnimatedProperty = {
+export type AnimationProperty = {
   path: string
   component: keyof State['component']
   entity: Entity
   index?: number
 }
 
-export type AnimationValueRange = {
-  type: 'Number' | 'Vector2D'
-  value: Vector2D | [Vector2D, Vector2D]
+export type AnimationValueRangeNumber = {
+  type: 'Number'
+  value: Vector2D
 }
+
+export type AnimationValueRangeVector2D = {
+  type: 'Vector2D'
+  value: [Vector2D, Vector2D]
+}
+
+export type AnimationValueRange =
+  | AnimationValueRangeNumber
+  | AnimationValueRangeVector2D
 
 export type WrapMode =
   //When time reaches the end of the animation clip, the clip will automatically stop playing and time will be reset to beginning of the clip.
@@ -81,7 +90,7 @@ export type Animation = Component<{
   isPlaying: boolean
   isFinished: boolean
   currentTime: number
-  property: AnimatedProperty
+  property: AnimationProperty
   wrapMode: WrapMode
 }>
 
@@ -89,8 +98,19 @@ export type SpriteSrc = string
 
 export type Sprite = Component<{ src: SpriteSrc }>
 
+export type AnimatedProperty = {
+  path: string
+  type: 'number' | 'Vector2D'
+}
+
+export type ComponentFactoryOptions<Data> = {
+  defaultData: GetDefaultComponent<Component<Data>>
+  animatedProperties?: Array<AnimatedProperty>
+}
+
 export type ComponentFactory<Data> = {
   defaultData: GetDefaultComponent<Component<Data>>
+  animatedProperties: Array<AnimatedProperty>
   set: (params: { state: State; data: Component<Data> }) => State
   get: (params: { entity: Entity; state: State }) => Component<Data> | undefined
   remove: (params: { entity: Entity; state: State }) => State
@@ -99,13 +119,10 @@ export type ComponentFactory<Data> = {
 
 const componentFactory = <Data>(
   componentName: keyof State['component'],
-  {
-    defaultData,
-  }: {
-    defaultData: GetDefaultComponent<Component<Data>>
-  },
+  { defaultData, animatedProperties }: ComponentFactoryOptions<Data>,
 ): ComponentFactory<Data> => ({
   defaultData,
+  animatedProperties: animatedProperties || [],
   set: ({ state, data }) => ({
     ...state,
     component: {
@@ -153,38 +170,59 @@ const componentFactory = <Data>(
 
 export const transform = componentFactory<Transform['data']>('transform', {
   defaultData: defaultTransform,
+  animatedProperties: [
+    { path: 'rotation', type: 'number' },
+    { path: 'localRotation', type: 'number' },
+    { path: 'scale', type: 'Vector2D' },
+    { path: 'localScale', type: 'Vector2D' },
+    { path: 'position', type: 'Vector2D' },
+    { path: 'localPosition', type: 'Vector2D' },
+  ],
 })
 
 export const sprite = componentFactory<Sprite['data']>('sprite', {
   defaultData: defaultSprite,
+  animatedProperties: [],
 })
 export const animation = componentFactory<Animation['data']>('animation', {
   defaultData: defaultAnimation,
+  animatedProperties: [],
 })
 export const collideBox = componentFactory<CollideBox['data']>('collideBox', {
   defaultData: defaultCollideBox,
+  animatedProperties: [
+    { path: 'size', type: 'Vector2D' },
+    { path: 'position', type: 'Vector2D' },
+  ],
 })
 export const collideCircle = componentFactory<CollideCircle['data']>(
   'collideCircle',
   {
     defaultData: defaultCollideCircle,
+    animatedProperties: [
+      { path: 'radius', type: 'number' },
+      { path: 'position', type: 'Vector2D' },
+    ],
   },
 )
 export const fieldNumber = componentFactory<Field<number>['data']>(
   'fieldNumber',
   {
     defaultData: defaultFieldNumber,
+    animatedProperties: [{ path: '', type: 'number' }],
   },
 )
 export const fieldVector = componentFactory<Field<Vector2D>['data']>(
   'fieldVector',
   {
     defaultData: defaultFieldVector,
+    animatedProperties: [{ path: '', type: 'Vector2D' }],
   },
 )
 export const fieldString = componentFactory<Field<string>['data']>(
   'fieldString',
   {
     defaultData: defaultFieldString,
+    animatedProperties: [],
   },
 )
