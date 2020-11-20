@@ -1,11 +1,9 @@
 import { add, Vector2D } from '@arekrado/vector-2d'
-import {
-  CollideBox,
-  CollideType,
-  Transform,
-  transform as transformComponent,
-} from '../component'
+import { collideBox as collideBoxComponent } from 'component/collideBox'
+import { transform as transformComponent } from '../component/transform'
 import { State } from '../main'
+import { CollideBox, CollideType, Transform } from '../type'
+import { createSystem } from './createSystem'
 
 type DetectAABBcollision = (params: {
   v1: Vector2D
@@ -58,22 +56,36 @@ const findCollisionsWith: FindCollisionsWith = ({
   return collisionList
 }
 
-type Update = (params: { state: State }) => State
-export const update: Update = ({ state }) => {
-  Object.values(state.component.collideBox).forEach((collideBox) => {
-    const transform = transformComponent.get({
-      state,
-      entity: collideBox.entity,
-    })
-
-    if (transform) {
-      collideBox.data.collisions = findCollisionsWith({
+export const collideBoxSystem = createSystem<CollideBox>({
+  componentName: 'collideBox',
+  init: ({ state }) => state,
+  remove: ({ state }) => state,
+  tick: ({ state, component: collideBox }) => {
+    if (collideBox) {
+      const transform = transformComponent.get({
         state,
-        collideBox,
-        transform,
+        entity: collideBox.entity,
       })
-    }
-  })
 
-  return state
-}
+      if (transform) {
+        const collisions = findCollisionsWith({
+          state,
+          collideBox,
+          transform,
+        })
+        return collideBoxComponent.set({
+          state,
+          data: {
+            ...collideBox,
+            data: {
+              ...collideBox.data,
+              collisions,
+            },
+          },
+        })
+      }
+    }
+
+    return state
+  },
+})

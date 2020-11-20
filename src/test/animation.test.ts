@@ -1,22 +1,23 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
-import { defaultAnimation, defaultFieldNumber } from '../util/defaultComponents'
+import { defaultAnimation, defaultTransform } from '../util/defaultComponents'
 import { getActiveKeyframe } from 'system/animation'
 import { generate, set as setEntity } from '../util/entity'
 import { initialState, State } from 'main'
-import { animation, fieldNumber } from 'component'
+import { animation } from '../component/animation'
+import { transform } from '../component/transform'
 import { runOneFrame } from 'util/runOneFrame'
 
 describe('animation', () => {
   const entity = generate('entity')
 
   const getFieldFloat = (state: State) =>
-    fieldNumber.get({ state, entity })?.data
+    transform.get({ state, entity })?.data
 
   const getAnimation = (state: State) => animation.get({ state, entity })?.data
 
   const tick = (timeNow: number, state: State) =>
-    runOneFrame({ state, timeNow, enableDraw: false })
+    runOneFrame({ state, timeNow })
 
   describe('getActiveKeyframe', () => {
     it('should return proper time and index when time is zero', () => {
@@ -215,9 +216,9 @@ describe('animation', () => {
   describe('number', () => {
     it('Linear animation should change value in proper way', () => {
       const v1 = setEntity({ state: initialState, entity })
-      const v2 = fieldNumber.set({
+      const v2 = transform.set({
         state: v1,
-        data: defaultFieldNumber({ entity, data: 0 }),
+        data: defaultTransform({ entity }),
       })
       const v3 = animation.set({
         state: v2,
@@ -240,7 +241,7 @@ describe('animation', () => {
             isFinished: false,
             property: {
               path: 'data',
-              component: 'fieldNumber',
+              component: 'transform',
               entity: entity,
               
             },
@@ -278,9 +279,9 @@ describe('animation', () => {
 
     it('Should works with negative values', () => {
       const v1 = setEntity({ state: initialState, entity })
-      const v2 = fieldNumber.set({
+      const v2 = transform.set({
         state: v1,
-        data: defaultFieldNumber({ entity, data: 0 }),
+        data: defaultTransform({ entity }),
       })
       const v3 = animation.set({
         state: v2,
@@ -304,7 +305,7 @@ describe('animation', () => {
             isFinished: false,
             property: {
               path: 'data',
-              component: 'fieldNumber',
+              component: 'transform',
               entity: entity,
               
             },
@@ -330,9 +331,9 @@ describe('animation', () => {
 
     it('Should works with multiple frames', () => {
       const v1 = setEntity({ state: initialState, entity })
-      const v2 = fieldNumber.set({
+      const v2 = transform.set({
         state: v1,
-        data: defaultFieldNumber({ entity, data: 0 }),
+        data: defaultTransform({ entity }),
       })
       const v3 = animation.set({
         state: v2,
@@ -368,7 +369,7 @@ describe('animation', () => {
             isFinished: false,
             property: {
               path: 'data',
-              component: 'fieldNumber',
+              component: 'transform',
               entity: entity,
               
             },
@@ -403,9 +404,9 @@ describe('animation', () => {
 
     it('Should works with looped animations', () => {
       const v1 = setEntity({ state: initialState, entity })
-      const v2 = fieldNumber.set({
+      const v2 = transform.set({
         state: v1,
-        data: defaultFieldNumber({ entity, data: 0 }),
+        data: defaultTransform({ entity }),
       })
       const v3 = animation.set({
         state: v2,
@@ -441,7 +442,7 @@ describe('animation', () => {
             isFinished: false,
             property: {
               path: 'data',
-              component: 'fieldNumber',
+              component: 'transform',
               entity: entity,
               
             },

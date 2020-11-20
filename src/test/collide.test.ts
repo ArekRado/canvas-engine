@@ -1,11 +1,12 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
-import { collideBox, transform } from 'component'
+import { transform } from 'component/transform'
+import { collideBox } from 'component/collideBox'
 import { initialState } from 'main'
 import { set as setEntity, generate } from 'util/entity'
 import { runOneFrame } from 'util/runOneFrame'
 import { defaultCollideBox, defaultTransform } from '../util/defaultComponents'
-import { detectAABBcollision } from 'system/collide'
+import { detectAABBcollision } from 'system/collideBox'
 
 describe('collide', () => {
   it('detectAABBcollision', () => {
@@ -103,7 +104,7 @@ describe('collide', () => {
       }),
     })
 
-    const state = runOneFrame({ state: v9, enableDraw: false, timeNow: 0 })
+    const state = runOneFrame({ state: v9, timeNow: 0 })
 
     const collisions1 =
       collideBox.get({

@@ -1,6 +1,8 @@
 import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
-import { transform as transformComponent } from '../component'
+import { Transform } from 'type'
+import { transform as transformComponent } from '../component/transform'
 import { Entity, State } from '../main'
+import { createSystem } from './createSystem'
 
 const getParentPosition = (state: State, parentEntity: Entity): Vector2D => {
   const parent = transformComponent.get({ entity: parentEntity, state })
@@ -19,16 +21,18 @@ const getParentPosition = (state: State, parentEntity: Entity): Vector2D => {
   }
 }
 
-type Update = (params: { state: State }) => State
-export const update: Update = ({ state }) => {
-  Object.values(state.component.transform).forEach((transform) => {
-    if (transform.data.parent) {
-      transform.data.position = add(
-        transform.data.localPosition,
-        getParentPosition(state, transform.data.parent),
+export const transformSystem = createSystem<Transform>({
+  componentName: 'transform',
+  init: ({ state }) => state,
+  remove: ({ state }) => state,
+  tick: ({ state, component }) => {
+    if (component && component.data.parent) {
+      component.data.position = add(
+        component.data.localPosition,
+        getParentPosition(state, component.data.parent),
       )
     }
-  })
 
-  return state
-}
+    return state
+  },
+})

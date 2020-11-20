@@ -16,18 +16,18 @@ let images: Map<string, EnhancedPixiImage> = new Map()
 let debugGraphics: PIXI.Graphics | null = null
 let PIXI: any = null
 
-const getGameContainerDimensions = () => {
-  const element = document.querySelector('#canvas-engine')
+const getGameContainerDimensions = (containerId: string) => {
+  const element = document.querySelector(containerId)
 
   return element ? [element.clientWidth, element.clientHeight] : [100, 100]
 }
 
-export const initialize = () => {
+export const initialize = (containerId = '#canvas-engine') => {
   // https://github.com/formium/tsdx/pull/367
   import('pixi.js').then((module) => {
     PIXI = module
 
-    const [x, y] = getGameContainerDimensions()
+    const [x, y] = getGameContainerDimensions(containerId)
 
     pixiApp = new PIXI.Application({
       width: x,
@@ -39,7 +39,7 @@ export const initialize = () => {
     if (!document || !document.body) {
       console.warn("Couldn't find document body")
     } else {
-      const element = document.querySelector('#canvas-engine')
+      const element = document.querySelector(containerId)
       element && element.appendChild(pixiApp.view)
     }
 
@@ -51,40 +51,34 @@ export const initialize = () => {
   })
 }
 
-type Render = (data: DrawState[], devMode: boolean) => void
-export const render: Render = (data, devMode = false) => {
-  if (Array.isArray(data) === false) {
-    return
-  }
-
+type Render = (state: DrawState, devMode: boolean) => void
+export const render: Render = (state, devMode = false) => {
   if (!isInitialized || !debugGraphics) {
     console.error('Pixi is not initialized')
     return
   }
   debugGraphics.clear()
 
-  data.forEach((image) => {
-    const pixiImage = images.get(image.sprite.entity.id)
+  const pixiImage = images.get(state.sprite.entity.id)
 
-    if (pixiApp) {
-      if (pixiImage) {
-        if (
-          (pixiImage.texture.baseTexture as any).imageUrl !==
-          image.sprite.data.src
-        ) {
-          changeImage({ pixiImage, image })
-        }
-        drawImage({ pixiImage, image, devMode, debugGraphics })
-      } else {
-        drawImage({
-          pixiImage: createImage({ images, pixiApp, image }),
-          image,
-          devMode,
-          debugGraphics,
-        })
+  if (pixiApp) {
+    if (pixiImage) {
+      if (
+        (pixiImage.texture.baseTexture as any).imageUrl !==
+        state.sprite.data.src
+      ) {
+        changeImage({ pixiImage, image: state })
       }
+      drawImage({ pixiImage, image: state, devMode, debugGraphics })
+    } else {
+      drawImage({
+        pixiImage: createImage({ images, pixiApp, image: state }),
+        image: state,
+        devMode,
+        debugGraphics,
+      })
     }
-  })
+  }
 }
 
 type DrawImage = (params: {
@@ -125,7 +119,7 @@ type CreateImage = (params: {
 
 const createImage: CreateImage = ({ images, pixiApp, image }) => {
   const pixiImage = PIXI.Sprite.from(image.sprite.data.src) as EnhancedPixiImage
-  pixiImage.id = image.sprite.entity
+  pixiImage.id = image.sprite.entity.id
   pixiApp.stage.addChild(pixiImage)
   images.set(pixiImage.id, pixiImage)
 

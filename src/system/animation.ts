@@ -1,8 +1,9 @@
-import { State, Time } from '../main'
+import { Time } from '../main'
 import { TimingFunction, getValue } from '../util/bezierFunction'
-import { Animation, Keyframe } from '../component'
+import { Animation, Keyframe } from '../type'
 import { magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
+import { createSystem } from './createSystem'
 
 const getPercentageProgress = (
   currentTime: number,
@@ -186,11 +187,13 @@ const updateVectorAnimation: UpdateVectorAnimation = ({
   ]
 }
 
-type Update = (params: { state: State }) => State
-export const update: Update = ({ state }) => {
-  Object.values(state.component.animation).forEach((animation) => {
-    if (animation.data.isPlaying === false) {
-      return
+export const animationSystem = createSystem<Animation>({
+  componentName: 'animation',
+  init: ({ state }) => state,
+  remove: ({ state }) => state,
+  tick: ({ state, component: animation }) => {
+    if (!animation || animation.data.isPlaying === false) {
+      return state
     }
 
     const {
@@ -206,7 +209,7 @@ export const update: Update = ({ state }) => {
         isPlaying: false,
         isFinished: true,
       }
-      return
+      return state
     } else {
       const keyframe = animation.data.keyframes[keyframeIndex]
 
@@ -235,7 +238,7 @@ export const update: Update = ({ state }) => {
 
       animation.data = newAnimation.data
     }
-  })
 
-  return state
-}
+    return state
+  },
+})

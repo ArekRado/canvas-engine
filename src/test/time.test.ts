@@ -6,7 +6,6 @@ describe('time', () => {
   it('should change time - start from 0 case', () => {
     const v1 = runOneFrame({
       state: initialState,
-      enableDraw: false,
       timeNow: 0,
     })
 
@@ -15,7 +14,6 @@ describe('time', () => {
 
     const v2 = runOneFrame({
       state: v1,
-      enableDraw: false,
       timeNow: 1000,
     })
 
@@ -24,7 +22,6 @@ describe('time', () => {
 
     const v3 = runOneFrame({
       state: v2,
-      enableDraw: false,
       timeNow: 1002,
     })
 
@@ -35,7 +32,6 @@ describe('time', () => {
   it('should change time - start from non 0 case', () => {
     const v1 = runOneFrame({
       state: initialState,
-      enableDraw: false,
       timeNow: 10,
     })
 
@@ -44,7 +40,6 @@ describe('time', () => {
 
     const v2 = runOneFrame({
       state: v1,
-      enableDraw: false,
       timeNow: 1000,
     })
 
@@ -53,7 +48,6 @@ describe('time', () => {
 
     const v3 = runOneFrame({
       state: v2,
-      enableDraw: false,
       timeNow: 1002,
     })
 

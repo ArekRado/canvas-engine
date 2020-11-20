@@ -1,14 +1,13 @@
-import { Vector2D, vectorZero } from '@arekrado/vector-2d'
+import { vectorZero } from '@arekrado/vector-2d'
 import { Entity } from 'main'
 import {
   Animation,
   CollideBox,
   CollideCircle,
-  Field,
   Sprite,
   Transform,
   Component as CESComponent,
-} from '../component'
+} from '../type'
 import { generate } from './entity'
 
 export type GetDefaultComponent<
@@ -61,21 +60,6 @@ export const defaultCollideCircle: GetDefaultComponent<CollideCircle> = ({
     ...data,
   },
 })
-
-export const defaultFieldNumber: GetDefaultComponent<Field<number>> = ({
-  entity,
-  data = 0,
-}) => ({ entity, data })
-
-export const defaultFieldString: GetDefaultComponent<Field<string>> = ({
-  entity,
-  data = '',
-}) => ({ entity, data })
-
-export const defaultFieldVector: GetDefaultComponent<Field<Vector2D>> = ({
-  entity,
-  data = vectorZero() as any,
-}) => ({ entity, data })
 
 export const defaultSprite: GetDefaultComponent<Sprite> = ({
   entity,

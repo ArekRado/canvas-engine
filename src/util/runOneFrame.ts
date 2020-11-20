@@ -1,25 +1,29 @@
 import { State } from '../main'
 import { update as timeSystemUpdate } from '../system/time'
-import { update as drawSystemUpdate } from '../system/draw'
-import { update as transformSystemUpdate } from '../system/transform'
-import { update as collideSystemUpdate } from '../system/collide'
+import { drawSystem } from '../system/draw'
+import { transformSystem } from '../system/transform'
+import { collideBoxSystem } from '../system/collideBox'
+import { collideCircleSystem } from '../system/collideCircle'
 import { update as IOSystemUpdate } from '../system/io'
-import { update as animationSystemUpdate } from '../system/animation'
+import { animationSystem } from '../system/animation'
 
-type RunOneFrame = (params: {
-  state: State
-  enableDraw: boolean
-  timeNow?: number
-}) => State
+type RunOneFrame = (params: { state: State; timeNow?: number }) => State
 
-export const runOneFrame: RunOneFrame = ({ state, enableDraw, timeNow }) => {
+export const runOneFrame: RunOneFrame = ({ state, timeNow }) => {
   const v1 = timeSystemUpdate({ state, timeNow })
   const v2 = IOSystemUpdate({ state: v1 })
-  const v3 = transformSystemUpdate({ state: v2 })
-  const v4 = collideSystemUpdate({ state: v3 })
-  const v5 = animationSystemUpdate({ state: v4 })
 
-  const v6 = drawSystemUpdate({ state: v5, enableDraw })
+  const v3 = transformSystem.tick({ state: v2 })
+  const v4 = collideBoxSystem.tick({ state: v3 })
+  const v5 = collideCircleSystem.tick({ state: v4 })
+  const v6 = animationSystem.tick({ state: v5 })
 
-  return v6
+  // const newState = v2.entity.reduce((acc, entity) => {
+
+  //   return v6
+  // }, v2)
+
+  const v7 = drawSystem.tick({ state: v6 })
+
+  return v7
 }

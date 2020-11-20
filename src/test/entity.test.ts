@@ -1,15 +1,11 @@
 import 'regenerator-runtime/runtime'
 import { initialState } from '../main'
-import {
-  animation,
-  collideBox,
-  collideCircle,
-  fieldNumber,
-  fieldString,
-  fieldVector,
-  sprite,
-  transform,
-} from '../component'
+import { animation } from '../component/animation'
+import { collideBox } from '../component/collideBox'
+import { collideCircle } from '../component/collideCircle'
+import { sprite } from '../component/sprite'
+import { transform } from '../component/transform'
+
 import {
   set as setEntity,
   remove as removeEntity,
@@ -19,9 +15,6 @@ import {
   defaultAnimation,
   defaultCollideBox,
   defaultCollideCircle,
-  defaultFieldNumber,
-  defaultFieldString,
-  defaultFieldVector,
   defaultSprite,
   defaultTransform,
 } from '../util/defaultComponents'
@@ -43,24 +36,12 @@ describe('entity', () => {
       state: v3,
       data: defaultCollideCircle({ entity }),
     })
-    const v5 = fieldNumber.set({
+    const v5 = sprite.set({
       state: v4,
-      data: defaultFieldNumber({ entity }),
-    })
-    const v6 = fieldString.set({
-      state: v5,
-      data: defaultFieldString({ entity }),
-    })
-    const v7 = fieldVector.set({
-      state: v6,
-      data: defaultFieldVector({ entity }),
-    })
-    const v8 = sprite.set({
-      state: v7,
       data: defaultSprite({ entity }),
     })
     const state = transform.set({
-      state: v8,
+      state: v5,
       data: defaultTransform({ entity }),
     })
 
@@ -70,9 +51,6 @@ describe('entity', () => {
     expect(state.component.animation[entity.id]).toBeDefined()
     expect(state.component.collideBox[entity.id]).toBeDefined()
     expect(state.component.collideCircle[entity.id]).toBeDefined()
-    expect(state.component.fieldNumber[entity.id]).toBeDefined()
-    expect(state.component.fieldString[entity.id]).toBeDefined()
-    expect(state.component.fieldVector[entity.id]).toBeDefined()
 
     const stateWithoutEntity = removeEntity({
       state,
@@ -84,9 +62,8 @@ describe('entity', () => {
     expect(stateWithoutEntity.component.sprite[entity.id]).not.toBeDefined()
     expect(stateWithoutEntity.component.animation[entity.id]).not.toBeDefined()
     expect(stateWithoutEntity.component.collideBox[entity.id]).not.toBeDefined()
-    expect(stateWithoutEntity.component.collideCircle[entity.id]).not.toBeDefined()
-    expect(stateWithoutEntity.component.fieldNumber[entity.id]).not.toBeDefined()
-    expect(stateWithoutEntity.component.fieldString[entity.id]).not.toBeDefined()
-    expect(stateWithoutEntity.component.fieldVector[entity.id]).not.toBeDefined()
+    expect(
+      stateWithoutEntity.component.collideCircle[entity.id],
+    ).not.toBeDefined()
   })
 })

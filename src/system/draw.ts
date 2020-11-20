@@ -1,6 +1,7 @@
-import { State } from '../main'
-import { Sprite, Transform } from '../component'
+import { Sprite, Transform } from '../type'
 import { initialize as initializePixi, render } from '../util/pixiDraw'
+import { createSystem } from './createSystem'
+import { transform as transformComponent } from '../component/transform'
 
 export type DrawState = {
   sprite: Sprite
@@ -9,25 +10,25 @@ export type DrawState = {
 
 export const initialize = initializePixi
 
-type Update = (params: { state: State; enableDraw: boolean }) => State
-export const update: Update = ({ state, enableDraw }) => {
-  if (enableDraw) {
-    const drawState: DrawState[] = []
+export const drawSystem = createSystem<Sprite>({
+  componentName: 'collideBox',
+  init: ({ state }) => state,
+  remove: ({ state }) => state,
+  tick: ({ state, component: sprite }) => {
+    if (state.isDrawEnabled && sprite) {
+      const transform = transformComponent.get({ state, entity: sprite.entity })
 
-    Object.keys(state.component.sprite).forEach((key) => {
-      const sprite = state.component.sprite[key]
-      const transform = state.component.transform[key]
-
-      if (sprite && transform) {
-        drawState.push({
-          sprite,
-          transform,
-        })
+      if (transform) {
+        render(
+          {
+            sprite,
+            transform,
+          },
+          false,
+        )
       }
-    })
+    }
 
-    render(drawState, false)
-  }
-
-  return state
-}
+    return state
+  },
+})

@@ -1,5 +1,5 @@
 import { Vector2D } from '@arekrado/vector-2d'
-import { Animation, CollideBox, CollideCircle, Field, Sprite, Transform } from './component'
+import { Animation, CollideBox, CollideCircle, Sprite, Transform } from './type'
 import { Dictionary, Guid } from './type'
 import {
   initialize as initializeDraw,
@@ -46,14 +46,12 @@ export type State = {
     animation: Dictionary<Animation>
     collideBox: Dictionary<CollideBox>
     collideCircle: Dictionary<CollideCircle>
-    fieldNumber: Dictionary<Field<number>>
-    fieldVector: Dictionary<Field<Vector2D>>
-    fieldString: Dictionary<Field<string>>
   },
   asset: Asset
   mouse: Mouse
   time: Time
   isDebugInitialized: boolean
+  isDrawEnabled: boolean
 }
 
 export const initialState: State = {
@@ -64,9 +62,6 @@ export const initialState: State = {
     animation: {},
     collideBox: {},
     collideCircle: {},
-    fieldNumber: {},
-    fieldString: {},
-    fieldVector: {},
   },
   asset: {
     sprite: [],
@@ -80,6 +75,7 @@ export const initialState: State = {
     position: [0, 0],
   },
   isDebugInitialized: false,
+  isDrawEnabled: false,
 }
 
 export const initialize = () => {

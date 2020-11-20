@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
-import { transform } from 'component'
+import { transform } from 'component/transform'
 import { initialState } from 'main'
 import { set as setEntity, generate } from 'util/entity'
 import { runOneFrame } from '../util/runOneFrame'
@@ -61,7 +61,7 @@ describe('transform', () => {
       }),
     })
 
-    const state = runOneFrame({ state: v8, enableDraw: false, timeNow: 0 })
+    const state = runOneFrame({ state: v8, timeNow: 0 })
 
     const e1 = transform.get({ state, entity: entity1 })
     if (e1) {
