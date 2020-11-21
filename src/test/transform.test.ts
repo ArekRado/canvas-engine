@@ -1,8 +1,8 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
-import { transform } from 'component/transform'
-import { initialState } from 'main'
-import { set as setEntity, generate } from 'util/entity'
+import { transform } from '../component/transform'
+import { initialState } from '../main'
+import { set as setEntity, generate } from '../util/entity'
 import { runOneFrame } from '../util/runOneFrame'
 import { defaultTransform } from '../util/defaultComponents'
 
@@ -65,7 +65,7 @@ describe('transform', () => {
 
     const e1 = transform.get({ state, entity: entity1 })
     if (e1) {
-      expect(e1.data.position).toEqual(vector(1, 1))
+      expect(e1.data.position).toEqual(vector(0, 0))
       // Should not change localPosition when transform doesn't have parent
       expect(e1.data.localPosition).toEqual(vector(1, 1))
     }

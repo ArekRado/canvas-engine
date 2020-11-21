@@ -1,5 +1,5 @@
 import { vectorZero } from '@arekrado/vector-2d'
-import { Entity } from 'main'
+import { Entity } from '../main'
 import {
   Animation,
   CollideBox,
@@ -84,7 +84,6 @@ export const defaultTransform: GetDefaultComponent<Transform> = ({
     localScale: vectorZero(),
     position: vectorZero(),
     localPosition: vectorZero(),
-    parent: data.parent || generate('-'),
     ...data,
   },
 })

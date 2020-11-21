@@ -1,5 +1,5 @@
 import { add, Vector2D } from '@arekrado/vector-2d'
-import { collideBox as collideBoxComponent } from 'component/collideBox'
+import { collideBox as collideBoxComponent } from '../component/collideBox'
 import { transform as transformComponent } from '../component/transform'
 import { State } from '../main'
 import { CollideBox, CollideType, Transform } from '../type'
@@ -17,7 +17,10 @@ export const detectAABBcollision: DetectAABBcollision = ({
   v2: [x2, y2],
   size2: [size2x, size2y],
 }) =>
-  x1 < x2 + size2x && x1 + size1x > x2 && y1 < y2 + size2y && y1 + size1y > y2
+  x1 <= x2 + size2x 
+  && x1 + size1x >= x2 
+  && y1 <= y2 + size2y 
+  && y1 + size1y >= y2
 
 type FindCollisionsWith = (pramams: {
   state: State
@@ -73,6 +76,7 @@ export const collideBoxSystem = createSystem<CollideBox>({
           collideBox,
           transform,
         })
+
         return collideBoxComponent.set({
           state,
           data: {

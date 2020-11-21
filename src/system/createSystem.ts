@@ -1,4 +1,4 @@
-import { Dictionary } from 'type'
+import { Dictionary } from '../type'
 import { Entity, State } from '../main'
 
 type SystemMethodParams<Component> = {

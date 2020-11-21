@@ -1,41 +1,87 @@
 import 'regenerator-runtime/runtime'
-import { vector } from '@arekrado/vector-2d'
-import { transform } from 'component/transform'
-import { collideBox } from 'component/collideBox'
-import { initialState } from 'main'
-import { set as setEntity, generate } from 'util/entity'
-import { runOneFrame } from 'util/runOneFrame'
+import { vector, Vector2D } from '@arekrado/vector-2d'
+import { transform } from '../component/transform'
+import { collideBox } from '../component/collideBox'
+import { initialState } from '../main'
+import { set as setEntity, generate } from '../util/entity'
+import { runOneFrame } from '../util/runOneFrame'
 import { defaultCollideBox, defaultTransform } from '../util/defaultComponents'
-import { detectAABBcollision } from 'system/collideBox'
+import { detectAABBcollision } from '../system/collideBox'
 
 describe('collide', () => {
-  it('detectAABBcollision', () => {
-    expect(
-      detectAABBcollision({
-        v1: vector(0, 0),
-        size1: vector(1, 1),
-        v2: vector(0.5, 0.5),
-        size2: vector(1, 1),
-      }),
-    ).toBeTruthy()
+  describe('detectAABBcollision', () => {
+    it('should detect edge collisions', () => {
+      const edgeV1: Vector2D[] = [
+        [-1, 1],
+        [-1, 0],
+        [-1, -1],
+        [0, 1],
+        [0, -1],
+        [1, 1],
+        [1, 0],
+        [1, -1],
+      ]
 
-    expect(
-      detectAABBcollision({
-        v1: vector(0, 0),
-        size1: vector(1, 1),
-        v2: vector(1, 1),
-        size2: vector(1, 1),
-      }),
-    ).toBeFalsy()
+      edgeV1.forEach((v1) => {
+        expect(
+          detectAABBcollision({
+            v1,
+            size1: vector(1, 1),
+            v2: vector(0, 0),
+            size2: vector(1, 1),
+          }),
+        ).toBeTruthy()
+      })
+    })
 
-    expect(
-      detectAABBcollision({
-        v1: vector(0, 0),
-        size1: vector(1, 1),
-        v2: vector(-10, -10),
-        size2: vector(20, 20),
-      }),
-    ).toBeTruthy()
+    it('should not detect collisions when object is outside', () => {
+      const outsideV1: Vector2D[] = [
+        [-2, 1],
+        [-2, 0],
+        [-2, -1],
+        [0, 2],
+        [0, -2],
+        [2, 1],
+        [2, 0],
+        [2, -1],
+      ]
+
+      outsideV1.forEach((v1) => {
+        expect(
+          detectAABBcollision({
+            v1,
+            size1: vector(1, 1),
+            v2: vector(0, 0),
+            size2: vector(1, 1),
+          }),
+        ).toBeFalsy()
+      })
+    })
+
+    it('should detect collisions when object inside', () => {
+      const outsideV1: Vector2D[] = [
+        [0, 0],
+        [-0.5, 1],
+        [-0.5, 0],
+        [-0.5, -1],
+        [0, 0.5],
+        [0, -0.5],
+        [0.5, 0.5],
+        [0.5, 0],
+        [0.5, -0.5],
+      ]
+
+      outsideV1.forEach((v1) => {
+        expect(
+          detectAABBcollision({
+            v1,
+            size1: vector(1, 1),
+            v2: vector(0, 0),
+            size2: vector(1, 1),
+          }),
+        ).toBeTruthy()
+      })
+    })
   })
 
   it('detect collisions box-box', () => {
@@ -77,7 +123,7 @@ describe('collide', () => {
         entity: entity1,
         data: {
           size: vector(1.5, 1.5),
-          position: vector(0, 0),
+          position: vector(1, 1),
         },
       }),
     })
@@ -99,7 +145,7 @@ describe('collide', () => {
         entity: entity3,
         data: {
           size: vector(1, 1),
-          position: vector(-2, -2),
+          position: vector(-1, -1),
         },
       }),
     })

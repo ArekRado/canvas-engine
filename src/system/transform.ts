@@ -1,5 +1,5 @@
 import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
-import { Transform } from 'type'
+import { Transform } from '../type'
 import { transform as transformComponent } from '../component/transform'
 import { Entity, State } from '../main'
 import { createSystem } from './createSystem'

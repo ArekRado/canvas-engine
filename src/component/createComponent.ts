@@ -27,15 +27,13 @@ export const removeByEntity: RemoveByEntity = ({
 }
 
 export type CreateComponentOptions<Data> = {
-  defaultData: GetDefaultComponent<Component<Data>>
+  defaultData?: GetDefaultComponent<Component<Data>>
   animatedProperties?: Array<AnimatedProperty>
 }
 
 export type CreateComponent<Data> = {
-  devTool: {
-    defaultData?: GetDefaultComponent<Component<Data>>
-    animatedProperties?: Array<AnimatedProperty>
-  }
+  defaultData?: GetDefaultComponent<Component<Data>>
+  animatedProperties?: Array<AnimatedProperty>
   set: (params: { state: State; data: Component<Data> }) => State
   // setData: (params: { state: State; data: Data }) => State
   get: (params: { entity: Entity; state: State }) => Component<Data> | undefined
@@ -47,10 +45,8 @@ export const createComponent = <Data>(
   componentName: keyof State['component'],
   { defaultData, animatedProperties }: CreateComponentOptions<Data>,
 ): CreateComponent<Data> => ({
-  devTool: {
-    defaultData,
-    animatedProperties: animatedProperties || [],
-  },
+  defaultData,
+  animatedProperties: animatedProperties || [],
   set: ({ state, data }) => ({
     ...state,
     component: {

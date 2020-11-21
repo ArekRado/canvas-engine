@@ -1,12 +1,12 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
 import { defaultAnimation, defaultTransform } from '../util/defaultComponents'
-import { getActiveKeyframe } from 'system/animation'
+import { getActiveKeyframe } from '../system/animation'
 import { generate, set as setEntity } from '../util/entity'
-import { initialState, State } from 'main'
+import { initialState, State } from '../main'
 import { animation } from '../component/animation'
 import { transform } from '../component/transform'
-import { runOneFrame } from 'util/runOneFrame'
+import { runOneFrame } from '../util/runOneFrame'
 
 describe('animation', () => {
   const entity = generate('entity')

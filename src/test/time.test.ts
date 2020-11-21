@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime'
 import { initialState } from '../main'
-import { runOneFrame } from 'util/runOneFrame'
+import { runOneFrame } from '../util/runOneFrame'
 
 describe('time', () => {
   it('should change time - start from 0 case', () => {

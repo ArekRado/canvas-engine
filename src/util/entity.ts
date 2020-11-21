@@ -1,6 +1,6 @@
 import { v1 } from 'uuid'
 import { Entity, State } from '../main'
-import { removeByEntity } from 'component/createComponent'
+import { removeByEntity } from '../component/createComponent'
 
 export const generate = (name: string): Entity => ({
   name,
