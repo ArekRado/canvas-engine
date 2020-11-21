@@ -1,10 +1,12 @@
 export * from './type'
-export * from './main'
-export * from './util/runOneFrame'
+export { runOneFrame } from './util/runOneFrame'
 export * as bezierFunction from './util/bezierFunction'
-export * from './util/asset'
-export * as entity from './util/entity'
+export { initialState } from './util/initialState'
+export { initialize } from './util/initialize'
+export { jsonToState, stateToJson } from './util/jsonState'
 
+import { addSprite, removeSprite } from './util/asset'
+import { generate, set, remove } from './util/entity'
 import { transform } from './component/transform'
 import { sprite } from './component/sprite'
 import { collideCircle } from './component/collideCircle'
@@ -17,6 +19,17 @@ export const component = {
   collideCircle,
   collideBox,
   animation,
+}
+
+export const asset = {
+  addSprite,
+  removeSprite,
+}
+
+export const entity = {
+  generate,
+  set,
+  remove,
 }
 
 // @todo

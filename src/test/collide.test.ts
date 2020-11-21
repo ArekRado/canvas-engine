@@ -2,7 +2,7 @@ import 'regenerator-runtime/runtime'
 import { vector, Vector2D } from '@arekrado/vector-2d'
 import { transform } from '../component/transform'
 import { collideBox } from '../component/collideBox'
-import { initialState } from '../main'
+import { initialState } from '../util/initialState'
 import { set as setEntity, generate } from '../util/entity'
 import { runOneFrame } from '../util/runOneFrame'
 import { defaultCollideBox, defaultTransform } from '../util/defaultComponents'
@@ -97,7 +97,7 @@ describe('collide', () => {
       state: v3,
       data: defaultTransform({
         entity: entity1,
-        data: { localPosition: vector(0, 0) },
+        localPosition: vector(0, 0),
       }),
     })
 
@@ -105,7 +105,7 @@ describe('collide', () => {
       state: v4,
       data: defaultTransform({
         entity: entity2,
-        data: { localPosition: vector(1, 1) },
+        localPosition: vector(1, 1),
       }),
     })
 
@@ -113,7 +113,7 @@ describe('collide', () => {
       state: v5,
       data: defaultTransform({
         entity: entity3,
-        data: { localPosition: vector(3.5, 3.5) },
+        localPosition: vector(3.5, 3.5),
       }),
     })
 
@@ -121,10 +121,8 @@ describe('collide', () => {
       state: v6,
       data: defaultCollideBox({
         entity: entity1,
-        data: {
-          size: vector(1.5, 1.5),
-          position: vector(1, 1),
-        },
+        size: vector(1.5, 1.5),
+        position: vector(1, 1),
       }),
     })
 
@@ -132,10 +130,8 @@ describe('collide', () => {
       state: v7,
       data: defaultCollideBox({
         entity: entity2,
-        data: {
-          size: vector(1, 1),
-          position: vector(0, 0),
-        },
+        size: vector(1, 1),
+        position: vector(0, 0),
       }),
     })
 
@@ -143,10 +139,8 @@ describe('collide', () => {
       state: v8,
       data: defaultCollideBox({
         entity: entity3,
-        data: {
-          size: vector(1, 1),
-          position: vector(-1, -1),
-        },
+        size: vector(1, 1),
+        position: vector(-1, -1),
       }),
     })
 
@@ -156,19 +150,19 @@ describe('collide', () => {
       collideBox.get({
         state,
         entity: entity1,
-      })?.data.collisions || []
+      })?.collisions || []
 
     const collisions2 =
       collideBox.get({
         state,
         entity: entity2,
-      })?.data.collisions || []
+      })?.collisions || []
 
     const collisions3 =
       collideBox.get({
         state,
         entity: entity3,
-      })?.data.collisions || []
+      })?.collisions || []
 
     expect(collisions1[0].entity).toEqual(entity2)
     expect(collisions1[1]).not.toBeDefined()

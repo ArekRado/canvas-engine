@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { initialState } from '../main'
+import { initialState } from '../util/initialState'
 import { animation } from '../component/animation'
 import { collideBox } from '../component/collideBox'
 import { collideCircle } from '../component/collideCircle'

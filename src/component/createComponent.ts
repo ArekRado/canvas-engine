@@ -1,4 +1,4 @@
-import { Entity, State } from '../main'
+import { Entity, State } from '../type'
 import { AnimatedProperty, Component, Dictionary } from '../type'
 import { GetDefaultComponent } from '../util/defaultComponents'
 
@@ -35,7 +35,6 @@ export type CreateComponent<Data> = {
   defaultData?: GetDefaultComponent<Component<Data>>
   animatedProperties?: Array<AnimatedProperty>
   set: (params: { state: State; data: Component<Data> }) => State
-  // setData: (params: { state: State; data: Data }) => State
   get: (params: { entity: Entity; state: State }) => Component<Data> | undefined
   remove: (params: { entity: Entity; state: State }) => State
   removeByEntity: (params: { entity: Entity; state: State }) => State

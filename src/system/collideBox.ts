@@ -1,7 +1,7 @@
 import { add, Vector2D } from '@arekrado/vector-2d'
 import { collideBox as collideBoxComponent } from '../component/collideBox'
 import { transform as transformComponent } from '../component/transform'
-import { State } from '../main'
+import { State } from '../type'
 import { CollideBox, CollideType, Transform } from '../type'
 import { createSystem } from './createSystem'
 
@@ -17,10 +17,10 @@ export const detectAABBcollision: DetectAABBcollision = ({
   v2: [x2, y2],
   size2: [size2x, size2y],
 }) =>
-  x1 <= x2 + size2x 
-  && x1 + size1x >= x2 
-  && y1 <= y2 + size2y 
-  && y1 + size1y >= y2
+  x1 <= x2 + size2x &&
+  x1 + size1x >= x2 &&
+  y1 <= y2 + size2y &&
+  y1 + size1y >= y2
 
 type FindCollisionsWith = (pramams: {
   state: State
@@ -42,10 +42,10 @@ const findCollisionsWith: FindCollisionsWith = ({
 
     if (transform2 && transform.entity !== transform2.entity) {
       const isColliding = detectAABBcollision({
-        v1: add(transform.data.position, collideBox.data.position),
-        size1: collideBox.data.size,
-        v2: add(transform2.data.position, collideBox2.data.position),
-        size2: collideBox2.data.size,
+        v1: add(transform.position, collideBox.position),
+        size1: collideBox.size,
+        v2: add(transform2.position, collideBox2.position),
+        size2: collideBox2.size,
       })
 
       isColliding &&
@@ -59,37 +59,36 @@ const findCollisionsWith: FindCollisionsWith = ({
   return collisionList
 }
 
-export const collideBoxSystem = createSystem<CollideBox>({
-  componentName: 'collideBox',
-  init: ({ state }) => state,
-  remove: ({ state }) => state,
-  tick: ({ state, component: collideBox }) => {
-    if (collideBox) {
-      const transform = transformComponent.get({
-        state,
-        entity: collideBox.entity,
-      })
-
-      if (transform) {
-        const collisions = findCollisionsWith({
+export const collideBoxSystem = (state: State) =>
+  createSystem<CollideBox>({
+    state,
+    name: 'collideBox',
+    create: ({ state }) => state,
+    remove: ({ state }) => state,
+    tick: ({ state, component: collideBox }) => {
+      if (collideBox) {
+        const transform = transformComponent.get({
           state,
-          collideBox,
-          transform,
+          entity: collideBox.entity,
         })
 
-        return collideBoxComponent.set({
-          state,
-          data: {
-            ...collideBox,
+        if (transform) {
+          const collisions = findCollisionsWith({
+            state,
+            collideBox,
+            transform,
+          })
+
+          return collideBoxComponent.set({
+            state,
             data: {
-              ...collideBox.data,
+              ...collideBox,
               collisions,
             },
-          },
-        })
+          })
+        }
       }
-    }
 
-    return state
-  },
-})
+      return state
+    },
+  })

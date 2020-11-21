@@ -2,7 +2,7 @@ import { defaultTransform } from '../util/defaultComponents';
 import { createComponent } from './createComponent';
 import { Transform } from '../type';
 
-export const transform = createComponent<Transform['data']>('transform', {
+export const transform = createComponent<Transform>('transform', {
   defaultData: defaultTransform,
   animatedProperties: [
     { path: 'rotation', type: 'number' },

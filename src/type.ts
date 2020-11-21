@@ -1,5 +1,5 @@
 import { Vector2D } from '@arekrado/vector-2d'
-import { Entity, State } from './main'
+import { System } from './system/createSystem'
 import { TimingFunction } from './util/bezierFunction'
 
 export type Dictionary<Value> = { [key: string]: Value }
@@ -8,8 +8,8 @@ export type Guid = string
 
 export type Component<Data> = {
   entity: Entity
-  data: Data
-}
+  name: string
+} & Data
 
 export type CollideType = {
   type: 'box' | 'circle'
@@ -91,4 +91,51 @@ export type Sprite = Component<{ src: SpriteSrc }>
 export type AnimatedProperty = {
   path: string
   type: 'number' | 'Vector2D'
+}
+
+export type Entity = {
+  id: Guid
+  name: string
+}
+
+export type Time = {
+  timeNow: number
+  delta: number
+}
+
+export type AssetSprite = {
+  src: string
+  name: string
+}
+
+export type Asset = {
+  sprite: AssetSprite[]
+}
+
+export type Mouse = {
+  buttons: number
+  position: Vector2D
+}
+
+export type State = {
+  entity: Entity[]
+  component: {
+    /* blueprint: Belt.Map.String.t({
+      connectedEntites: []
+    }), */
+    // TODO
+    // event
+    // scene
+    sprite: Dictionary<Sprite>
+    transform: Dictionary<Transform>
+    animation: Dictionary<Animation>
+    collideBox: Dictionary<CollideBox>
+    collideCircle: Dictionary<CollideCircle>
+  }
+  system: Dictionary<System>
+  asset: Asset
+  mouse: Mouse
+  time: Time
+  isDebugInitialized: boolean
+  isDrawEnabled: boolean
 }

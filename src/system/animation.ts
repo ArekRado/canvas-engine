@@ -1,4 +1,4 @@
-import { Time } from '../main'
+import { State, Time } from '../type'
 import { TimingFunction, getValue } from '../util/bezierFunction'
 import { Animation, Keyframe } from '../type'
 import { magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
@@ -26,20 +26,20 @@ export const getActiveKeyframe = (
   animation: Animation,
   secondLoop: boolean,
 ): ActiveKeyframe => {
-  const size = animation.data.keyframes.length
+  const size = animation.keyframes.length
 
-  if (size === 1 && animation.data.wrapMode === 'Once') {
+  if (size === 1 && animation.wrapMode === 'Once') {
     return {
-      keyframeCurrentTime: animation.data.currentTime,
+      keyframeCurrentTime: animation.currentTime,
       keyframeIndex: 0,
       timeExceeded: false,
     }
   } else {
-    const { sum, activeIndex } = animation.data.keyframes.reduce(
+    const { sum, activeIndex } = animation.keyframes.reduce(
       (acc, keyframe, index) => {
         if (acc.breakLoop === true) {
           return acc
-        } else if (keyframe.duration + acc.sum < animation.data.currentTime) {
+        } else if (keyframe.duration + acc.sum < animation.currentTime) {
           if (size === index + 1) {
             return {
               // timeExceeded
@@ -65,21 +65,18 @@ export const getActiveKeyframe = (
       },
     )
 
-    if (activeIndex === -1 && animation.data.wrapMode === 'Loop') {
+    if (activeIndex === -1 && animation.wrapMode === 'Loop') {
       return getActiveKeyframe(
         {
           ...animation,
-          data: {
-            ...animation.data,
-            // mod_number prevents from unnecessary loops, instantly moves to last keyframe
-            currentTime: animation.data.currentTime % sum,
-          },
+          // mod_number prevents from unnecessary loops, instantly moves to last keyframe
+          currentTime: animation.currentTime % sum,
         },
         true,
       )
     } else {
       return {
-        keyframeCurrentTime: animation.data.currentTime - sum,
+        keyframeCurrentTime: animation.currentTime - sum,
         keyframeIndex: activeIndex,
         timeExceeded: secondLoop || activeIndex === -1,
       }
@@ -129,13 +126,10 @@ const updateNumberAnimation: UpdateNumberAnimation = ({
       : newValue,
     {
       ...animation,
-      data: {
-        ...animation.data,
-        currentTime: timeExceeded
-          ? keyframeCurrentTime + time.delta
-          : animation.data.currentTime + time.delta,
-        isFinished: timeExceeded,
-      },
+      currentTime: timeExceeded
+        ? keyframeCurrentTime + time.delta
+        : animation.currentTime + time.delta,
+      isFinished: timeExceeded,
     },
   ]
 }
@@ -181,64 +175,66 @@ const updateVectorAnimation: UpdateVectorAnimation = ({
       ...animation,
       currentTime: timeExceeded
         ? keyframeCurrentTime + time.delta
-        : animation.data.currentTime + time.delta,
+        : animation.currentTime + time.delta,
       isFinished: timeExceeded,
     },
   ]
 }
 
-export const animationSystem = createSystem<Animation>({
-  componentName: 'animation',
-  init: ({ state }) => state,
-  remove: ({ state }) => state,
-  tick: ({ state, component: animation }) => {
-    if (!animation || animation.data.isPlaying === false) {
-      return state
-    }
-
-    const {
-      keyframeCurrentTime,
-      keyframeIndex,
-      timeExceeded,
-    } = getActiveKeyframe(animation, false)
-
-    if (timeExceeded === true && animation.data.wrapMode === 'Once') {
-      animation.data = {
-        ...animation.data,
-        currentTime: 0,
-        isPlaying: false,
-        isFinished: true,
+export const animationSystem = (state: State) =>
+  createSystem<Animation>({
+    state,
+    name: 'animation',
+    create: ({ state }) => state,
+    remove: ({ state }) => state,
+    tick: ({ state, component: animation }) => {
+      if (!animation || animation.isPlaying === false) {
+        return state
       }
-      return state
-    } else {
-      const keyframe = animation.data.keyframes[keyframeIndex]
 
-      const progress = getPercentageProgress(
+      const {
         keyframeCurrentTime,
-        keyframe.duration,
-        keyframe.timingFunction,
-      )
-
-      const updateFunction =
-        keyframe.valueRange.type === 'Number'
-          ? updateNumberAnimation
-          : updateVectorAnimation
-
-      const [value, newAnimation] = updateFunction({
-        keyframe,
-        time: state.time,
-        animation,
-        progress,
-        keyframeCurrentTime,
+        keyframeIndex,
         timeExceeded,
-      })
+      } = getActiveKeyframe(animation, false)
 
-      const { component, entity, path } = animation.data.property
-      set(state.component, `${component}.${entity.id}.${path}`, value)
+      if (timeExceeded === true && animation.wrapMode === 'Once') {
+        animation = {
+          ...animation,
+          currentTime: 0,
+          isPlaying: false,
+          isFinished: true,
+        }
+        return state
+      } else {
+        const keyframe = animation.keyframes[keyframeIndex]
 
-      animation.data = newAnimation.data
-    }
+        const progress = getPercentageProgress(
+          keyframeCurrentTime,
+          keyframe.duration,
+          keyframe.timingFunction,
+        )
 
-    return state
-  },
-})
+        const updateFunction =
+          keyframe.valueRange.type === 'Number'
+            ? updateNumberAnimation
+            : updateVectorAnimation
+
+        const [value, newAnimation] = updateFunction({
+          keyframe,
+          time: state.time,
+          animation,
+          progress,
+          keyframeCurrentTime,
+          timeExceeded,
+        })
+
+        const { component, entity, path } = animation.property
+        set(state.component, `${component}.${entity.id}.${path}`, value)
+
+        animation = newAnimation
+      }
+
+      return state
+    },
+  })

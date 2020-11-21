@@ -1,4 +1,4 @@
-import { State } from '../main'
+import { State } from '../type'
 
 type AddSprite = (param: { state: State; name: string; src: string }) => State
 export const addSprite: AddSprite = ({ state, name, src }): State => ({

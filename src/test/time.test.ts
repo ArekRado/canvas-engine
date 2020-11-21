@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { initialState } from '../main'
+import { initialState } from '../util/initialState'
 import { runOneFrame } from '../util/runOneFrame'
 
 describe('time', () => {

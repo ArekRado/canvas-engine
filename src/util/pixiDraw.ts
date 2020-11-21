@@ -65,7 +65,7 @@ export const render: Render = (state, devMode = false) => {
     if (pixiImage) {
       if (
         (pixiImage.texture.baseTexture as any).imageUrl !==
-        state.sprite.data.src
+        state.sprite.src
       ) {
         changeImage({ pixiImage, image: state })
       }
@@ -92,8 +92,8 @@ const drawImage: DrawImage = ({ pixiImage, image, devMode, debugGraphics }) => {
   //   image.x = gameObject.rigidbody.position.x
   //   image.y = gameObject.rigidbody.position.y
   // } else {
-  pixiImage.x = image.transform.data.position[0]
-  pixiImage.y = image.transform.data.position[1]
+  pixiImage.x = image.transform.position[0]
+  pixiImage.y = image.transform.position[1]
   // }
 
   // image.rotation = gameObject.rigidbody.rotation
@@ -102,8 +102,8 @@ const drawImage: DrawImage = ({ pixiImage, image, devMode, debugGraphics }) => {
   if (devMode) {
     debugGraphics.lineStyle(1, 0x0000ff, 1)
     debugGraphics.drawRect(
-      image.transform.data.position[0],
-      image.transform.data.position[1],
+      image.transform.position[0],
+      image.transform.position[1],
       20,
       20,
     )
@@ -118,7 +118,7 @@ type CreateImage = (params: {
 }) => PIXI.Sprite
 
 const createImage: CreateImage = ({ images, pixiApp, image }) => {
-  const pixiImage = PIXI.Sprite.from(image.sprite.data.src) as EnhancedPixiImage
+  const pixiImage = PIXI.Sprite.from(image.sprite.src) as EnhancedPixiImage
   pixiImage.id = image.sprite.entity.id
   pixiApp.stage.addChild(pixiImage)
   images.set(pixiImage.id, pixiImage)
@@ -131,6 +131,6 @@ type ChangeImage = (params: {
   image: DrawState
 }) => PIXI.Sprite
 const changeImage: ChangeImage = ({ pixiImage, image }) => {
-  pixiImage.texture = PIXI.Texture.from(image.sprite.data.src)
+  pixiImage.texture = PIXI.Texture.from(image.sprite.src)
   return image
 }

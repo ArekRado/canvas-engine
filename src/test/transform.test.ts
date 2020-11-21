@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
 import { transform } from '../component/transform'
-import { initialState } from '../main'
+import { initialState } from '../util/initialState'
 import { set as setEntity, generate } from '../util/entity'
 import { runOneFrame } from '../util/runOneFrame'
 import { defaultTransform } from '../util/defaultComponents'
@@ -22,10 +22,8 @@ describe('transform', () => {
       state: v4,
       data: defaultTransform({
         entity: entity3,
-        data: {
-          localPosition: vector(-10, -10),
-          parent: entity2,
-        },
+        localPosition: vector(-10, -10),
+        parent: entity2,
       }),
     })
 
@@ -33,10 +31,8 @@ describe('transform', () => {
       state: v5,
       data: defaultTransform({
         entity: entity2,
-        data: {
-          localPosition: vector(1, 1),
-          parent: entity1,
-        },
+        localPosition: vector(1, 1),
+        parent: entity1,
       }),
     })
 
@@ -44,10 +40,8 @@ describe('transform', () => {
       state: v6,
       data: defaultTransform({
         entity: entity4,
-        data: {
-          localPosition: vector(10, 10),
-          parent: entity2,
-        },
+        localPosition: vector(10, 10),
+        parent: entity2,
       }),
     })
 
@@ -55,9 +49,7 @@ describe('transform', () => {
       state: v7,
       data: defaultTransform({
         entity: entity1,
-        data: {
-          localPosition: vector(1, 1),
-        },
+        localPosition: vector(1, 1),
       }),
     })
 
@@ -65,24 +57,24 @@ describe('transform', () => {
 
     const e1 = transform.get({ state, entity: entity1 })
     if (e1) {
-      expect(e1.data.position).toEqual(vector(0, 0))
+      expect(e1.position).toEqual(vector(0, 0))
       // Should not change localPosition when transform doesn't have parent
-      expect(e1.data.localPosition).toEqual(vector(1, 1))
+      expect(e1.localPosition).toEqual(vector(1, 1))
     }
     const e2 = transform.get({ state, entity: entity2 })
     if (e2) {
-      expect(e2.data.position).toEqual(vector(2, 2))
-      expect(e2.data.localPosition).toEqual(vector(1, 1))
+      expect(e2.position).toEqual(vector(2, 2))
+      expect(e2.localPosition).toEqual(vector(1, 1))
     }
     const e3 = transform.get({ state, entity: entity3 })
     if (e3) {
-      expect(e3.data.position).toEqual(vector(-8, -8))
-      expect(e3.data.localPosition).toEqual(vector(-10, -10))
+      expect(e3.position).toEqual(vector(-8, -8))
+      expect(e3.localPosition).toEqual(vector(-10, -10))
     }
     const e4 = transform.get({ state, entity: entity4 })
     if (e4) {
-      expect(e4.data.position).toEqual(vector(12, 12))
-      expect(e4.data.localPosition).toEqual(vector(10, 10))
+      expect(e4.position).toEqual(vector(12, 12))
+      expect(e4.localPosition).toEqual(vector(10, 10))
     }
   })
 })

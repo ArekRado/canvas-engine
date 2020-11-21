@@ -2,7 +2,7 @@ import { defaultCollideCircle } from '../util/defaultComponents';
 import { createComponent } from './createComponent';
 import { CollideCircle } from '../type';
 
-export const collideCircle = createComponent<CollideCircle['data']>(
+export const collideCircle = createComponent<CollideCircle>(
   'collideCircle',
   {
     defaultData: defaultCollideCircle,

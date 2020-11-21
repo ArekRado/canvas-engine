@@ -1,5 +1,5 @@
 import { vector, vectorZero } from '@arekrado/vector-2d'
-import { State } from '../main'
+import { State } from '../type'
 
 let buttons = 0
 let position = vectorZero()
