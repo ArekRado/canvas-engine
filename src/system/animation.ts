@@ -4,6 +4,8 @@ import { Animation, Keyframe } from '../type'
 import { magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
 import { createSystem } from './createSystem'
+import { setComponent } from '../component'
+import { componentName } from '../component'
 
 const getPercentageProgress = (
   currentTime: number,
@@ -108,14 +110,6 @@ const updateNumberAnimation: UpdateNumberAnimation = ({
 
   const isNegative = v2 > v1
 
-  // console.log({
-  //   v1,
-  //   v2,
-  //   normalizedMax,
-  //   newValue,
-  //   isNegative,
-  // })
-
   return [
     isNegative
       ? newValue > v2
@@ -184,7 +178,7 @@ const updateVectorAnimation: UpdateVectorAnimation = ({
 export const animationSystem = (state: State) =>
   createSystem<Animation>({
     state,
-    name: 'animation',
+    name: componentName.animation,
     create: ({ state }) => state,
     remove: ({ state }) => state,
     tick: ({ state, component: animation }) => {
@@ -230,11 +224,14 @@ export const animationSystem = (state: State) =>
         })
 
         const { component, entity, path } = animation.property
+
         set(state.component, `${component}.${entity.id}.${path}`, value)
 
-        animation = newAnimation
+        return setComponent({
+          name:'animation',
+          state,
+          data: newAnimation,
+        })
       }
-
-      return state
     },
   })

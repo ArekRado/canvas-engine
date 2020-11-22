@@ -1,6 +1,6 @@
 import { v1 } from 'uuid'
 import { Entity, State } from '../type'
-import { removeByEntity } from '../component/createComponent'
+import { removeComponentByEntity } from '../component'
 
 export const generate = (name: string): Entity => ({
   name,
@@ -24,11 +24,11 @@ export const remove = ({ entity, state }: Params): State => {
   }
 
   const v1 = Object.keys(state.component).reduce(
-    (state, componentName) =>
-      removeByEntity({
+    (state, name) =>
+      removeComponentByEntity({
         state,
         entity,
-        componentName: componentName as keyof State['component'],
+        name,
       }),
     newState,
   )

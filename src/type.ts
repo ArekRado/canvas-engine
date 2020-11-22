@@ -117,15 +117,15 @@ export type Mouse = {
   position: Vector2D
 }
 
-export type State = {
-  entity: Entity[]
-  component: {
-    /* blueprint: Belt.Map.String.t({
+/* blueprint: Belt.Map.String.t({
       connectedEntites: []
     }), */
-    // TODO
-    // event
-    // scene
+// TODO
+// event
+// scene
+export type State = {
+  entity: Entity[]
+  component: Dictionary<Component<any>> & {
     sprite: Dictionary<Sprite>
     transform: Dictionary<Transform>
     animation: Dictionary<Animation>

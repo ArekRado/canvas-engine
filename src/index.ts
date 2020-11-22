@@ -4,22 +4,10 @@ export * as bezierFunction from './util/bezierFunction'
 export { initialState } from './util/initialState'
 export { initialize } from './util/initialize'
 export { jsonToState, stateToJson } from './util/jsonState'
+export * from './component'
 
 import { addSprite, removeSprite } from './util/asset'
 import { generate, set, remove } from './util/entity'
-import { transform } from './component/transform'
-import { sprite } from './component/sprite'
-import { collideCircle } from './component/collideCircle'
-import { collideBox } from './component/collideBox'
-import { animation } from './component/animation'
-
-export const component = {
-  transform,
-  sprite,
-  collideCircle,
-  collideBox,
-  animation,
-}
 
 export const asset = {
   addSprite,

@@ -1,4 +1,5 @@
 import { vectorZero } from '@arekrado/vector-2d'
+import { componentName } from '../component'
 import { Entity } from '../type'
 import {
   Animation,
@@ -19,7 +20,7 @@ export const defaultAnimation: GetDefaultComponent<Animation> = ({
   ...data
 }) => ({
   entity,
-  name: 'animation',
+  name: componentName.animation,
   keyframes: [],
   isPlaying: false,
   isFinished: false,
@@ -39,7 +40,7 @@ export const defaultCollideBox: GetDefaultComponent<CollideBox> = ({
   ...data
 }) => ({
   entity,
-  name: 'collideBox',
+  name: componentName.collideBox,
   size: vectorZero(),
   position: vectorZero(),
   collisions: [],
@@ -51,7 +52,7 @@ export const defaultCollideCircle: GetDefaultComponent<CollideCircle> = ({
   ...data
 }) => ({
   entity,
-  name: 'collideCircle',
+  name: componentName.collideCircle,
   radius: 1,
   position: vectorZero(),
   collisions: [],
@@ -63,7 +64,7 @@ export const defaultSprite: GetDefaultComponent<Sprite> = ({
   ...data
 }) => ({
   entity,
-  name: 'sprite',
+  name: componentName.sprite,
   src: '',
   ...data,
 })
@@ -73,7 +74,7 @@ export const defaultTransform: GetDefaultComponent<Transform> = ({
   ...data
 }) => ({
   entity,
-  name: 'transform',
+  name: componentName.transform,
   rotation: 0,
   localRotation: 0,
   scale: vectorZero(),

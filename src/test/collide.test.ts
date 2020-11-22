@@ -1,12 +1,13 @@
 import 'regenerator-runtime/runtime'
 import { vector, Vector2D } from '@arekrado/vector-2d'
-import { transform } from '../component/transform'
-import { collideBox } from '../component/collideBox'
 import { initialState } from '../util/initialState'
 import { set as setEntity, generate } from '../util/entity'
 import { runOneFrame } from '../util/runOneFrame'
 import { defaultCollideBox, defaultTransform } from '../util/defaultComponents'
 import { detectAABBcollision } from '../system/collideBox'
+import { getComponent, setComponent } from '../component'
+import { CollideBox } from '../type'
+import { componentName } from '../component'
 
 describe('collide', () => {
   describe('detectAABBcollision', () => {
@@ -93,7 +94,8 @@ describe('collide', () => {
     const v2 = setEntity({ entity: entity2, state: v1 })
     const v3 = setEntity({ entity: entity3, state: v2 })
 
-    const v4 = transform.set({
+    const v4 = setComponent({
+      name: componentName.transform,
       state: v3,
       data: defaultTransform({
         entity: entity1,
@@ -101,7 +103,8 @@ describe('collide', () => {
       }),
     })
 
-    const v5 = transform.set({
+    const v5 = setComponent({
+      name: componentName.transform,
       state: v4,
       data: defaultTransform({
         entity: entity2,
@@ -109,7 +112,8 @@ describe('collide', () => {
       }),
     })
 
-    const v6 = transform.set({
+    const v6 = setComponent({
+      name: componentName.transform,
       state: v5,
       data: defaultTransform({
         entity: entity3,
@@ -117,7 +121,8 @@ describe('collide', () => {
       }),
     })
 
-    const v7 = collideBox.set({
+    const v7 = setComponent({
+      name: componentName.collideBox,
       state: v6,
       data: defaultCollideBox({
         entity: entity1,
@@ -126,7 +131,8 @@ describe('collide', () => {
       }),
     })
 
-    const v8 = collideBox.set({
+    const v8 = setComponent({
+      name: componentName.collideBox,
       state: v7,
       data: defaultCollideBox({
         entity: entity2,
@@ -135,7 +141,8 @@ describe('collide', () => {
       }),
     })
 
-    const v9 = collideBox.set({
+    const v9 = setComponent({
+      name: componentName.collideBox,
       state: v8,
       data: defaultCollideBox({
         entity: entity3,
@@ -147,19 +154,22 @@ describe('collide', () => {
     const state = runOneFrame({ state: v9, timeNow: 0 })
 
     const collisions1 =
-      collideBox.get({
+      getComponent<CollideBox>({
+        name: componentName.collideBox,
         state,
         entity: entity1,
       })?.collisions || []
 
     const collisions2 =
-      collideBox.get({
+      getComponent<CollideBox>({
+        name: componentName.collideBox,
         state,
         entity: entity2,
       })?.collisions || []
 
     const collisions3 =
-      collideBox.get({
+      getComponent<CollideBox>({
+        name: componentName.collideBox,
         state,
         entity: entity3,
       })?.collisions || []

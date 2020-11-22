@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime'
-import { initialState } from './initialState'
-import { jsonToState, stateToJson } from './jsonState'
+import { initialState } from '../util/initialState'
+import { jsonToState, stateToJson } from '../util/jsonState'
 
 describe('jsonState', () => {
   it('jsonToState ', () => {

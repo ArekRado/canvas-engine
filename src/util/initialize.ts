@@ -1,5 +1,5 @@
-import { initialize as initializeDraw } from './system/draw'
-import { initialize as initializeIO } from './system/io'
+import { initialize as initializeDraw } from '../system/draw'
+import { initialize as initializeIO } from '../system/io'
 
 export const initialize = ({
   containerId = 'canvas-engine',

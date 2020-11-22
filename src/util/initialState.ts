@@ -3,15 +3,16 @@ import { animationSystem } from '../system/animation'
 import { collideBoxSystem } from '../system/collideBox'
 import { drawSystem } from '../system/draw'
 import { transformSystem } from '../system/transform'
+import { componentName } from '..'
 
 const v1: State = {
   entity: [],
   component: {
-    transform: {},
-    sprite: {},
-    animation: {},
-    collideBox: {},
-    collideCircle: {},
+    [componentName.transform]: {},
+    [componentName.sprite]: {},
+    [componentName.animation]: {},
+    [componentName.collideBox]: {},
+    [componentName.collideCircle]: {},
   },
   asset: {
     sprite: [],

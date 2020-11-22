@@ -1,10 +1,5 @@
 import 'regenerator-runtime/runtime'
 import { initialState } from '../util/initialState'
-import { animation } from '../component/animation'
-import { collideBox } from '../component/collideBox'
-import { collideCircle } from '../component/collideCircle'
-import { sprite } from '../component/sprite'
-import { transform } from '../component/transform'
 
 import {
   set as setEntity,
@@ -18,29 +13,36 @@ import {
   defaultSprite,
   defaultTransform,
 } from '../util/defaultComponents'
+import { setComponent } from '../component'
+import { componentName } from '../component'
 
 describe('entity', () => {
   it('remove - should remove components by entity', () => {
     const entity = generate('test')
     const v1 = setEntity({ state: initialState, entity })
 
-    const v2 = animation.set({
+    const v2 = setComponent({
+      name: componentName.animation,
       state: v1,
       data: defaultAnimation({ entity }),
     })
-    const v3 = collideBox.set({
+    const v3 = setComponent({
+      name: componentName.collideBox,
       state: v2,
       data: defaultCollideBox({ entity }),
     })
-    const v4 = collideCircle.set({
+    const v4 = setComponent({
+      name: componentName.collideCircle,
       state: v3,
       data: defaultCollideCircle({ entity }),
     })
-    const v5 = sprite.set({
+    const v5 = setComponent({
+      name: componentName.sprite,
       state: v4,
       data: defaultSprite({ entity }),
     })
-    const state = transform.set({
+    const state = setComponent({
+      name: componentName.transform,
       state: v5,
       data: defaultTransform({ entity }),
     })
