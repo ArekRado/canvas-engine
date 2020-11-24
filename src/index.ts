@@ -4,8 +4,16 @@ export * as bezierFunction from './util/bezierFunction'
 export { initialState } from './util/initialState'
 export { initialize } from './util/initialize'
 export { jsonToState, stateToJson } from './util/jsonState'
+export { createSystem } from './system/createSystem'
 export * from './component'
 
+import {
+  defaultAnimation,
+  defaultCollideBox,
+  defaultCollideCircle,
+  defaultSprite,
+  defaultTransform,
+} from './util/defaultComponents'
 import { addSprite, removeSprite } from './util/asset'
 import { generate, set, remove } from './util/entity'
 
@@ -18,6 +26,14 @@ export const entity = {
   generate,
   set,
   remove,
+}
+
+export const defaultData = {
+  animation: defaultAnimation,
+  collideBox: defaultCollideBox,
+  collideCircle: defaultCollideCircle,
+  sprite: defaultSprite,
+  transform: defaultTransform,
 }
 
 // @todo

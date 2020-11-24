@@ -12,7 +12,7 @@ export enum componentName {
 type SetComponent = (params: {
   name: string
   state: State
-  data: Component<any>
+  data: Component<object>
 }) => State
 export const setComponent: SetComponent = ({ state, data, name }) => ({
   ...state,

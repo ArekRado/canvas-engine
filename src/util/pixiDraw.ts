@@ -17,12 +17,12 @@ let debugGraphics: PIXI.Graphics | null = null
 let PIXI: any = null
 
 const getGameContainerDimensions = (containerId: string) => {
-  const element = document.querySelector(containerId)
+  const element = document.querySelector(`#${containerId}`)
 
   return element ? [element.clientWidth, element.clientHeight] : [100, 100]
 }
 
-export const initialize = (containerId = '#canvas-engine') => {
+export const initialize = (containerId = 'canvas-engine') => {
   // https://github.com/formium/tsdx/pull/367
   import('pixi.js').then((module) => {
     PIXI = module
@@ -39,7 +39,8 @@ export const initialize = (containerId = '#canvas-engine') => {
     if (!document || !document.body) {
       console.warn("Couldn't find document body")
     } else {
-      const element = document.querySelector(containerId)
+      const element = document.querySelector(`#${containerId}`)
+      console.log(`Container with id ${containerId} doesn't exists`)
       element && element.appendChild(pixiApp.view)
     }
 

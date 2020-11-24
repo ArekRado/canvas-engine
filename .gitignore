@@ -35,3 +35,6 @@ yarn-error.log*
 # Cache and runtime files
 .cache/
 dist/
+
+.yalc
+yalc.lock
