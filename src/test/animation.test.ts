@@ -4,7 +4,7 @@ import { defaultAnimation, defaultTransform } from '../util/defaultComponents'
 import { getActiveKeyframe } from '../system/animation'
 import { generate, set as setEntity } from '../util/entity'
 import { State, Transform, Animation } from '../type'
-import { initialState } from '../util/initialState'
+import { initialStateWithDisabledDraw } from '../util/initialState'
 import { runOneFrame } from '../util/runOneFrame'
 import { getComponent, setComponent } from '../component'
 import { componentName } from '../component'
@@ -208,7 +208,7 @@ describe('animation', () => {
 
   describe('number', () => {
     it('Linear animation should change value in proper way', () => {
-      const v1 = setEntity({ state: initialState, entity })
+      const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
       const v2 = setComponent({
         name: componentName.transform,
         state: v1,
@@ -270,7 +270,7 @@ describe('animation', () => {
     })
 
     it('Should works with negative values', () => {
-      const v1 = setEntity({ state: initialState, entity })
+      const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
       const v2 = setComponent({
         name: componentName.transform,
         state: v1,
@@ -320,7 +320,7 @@ describe('animation', () => {
     })
 
     it('Should works with multiple frames', () => {
-      const v1 = setEntity({ state: initialState, entity })
+      const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
       const v2 = setComponent({
         name: componentName.transform,
         state: v1,
@@ -393,7 +393,7 @@ describe('animation', () => {
     })
 
     it('Should works with looped animations', () => {
-      const v1 = setEntity({ state: initialState, entity })
+      const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
       const v2 = setComponent({
         name: componentName.transform,
         state: v1,

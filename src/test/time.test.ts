@@ -1,11 +1,11 @@
 import 'regenerator-runtime/runtime'
-import { initialState } from '../util/initialState'
+import { initialStateWithDisabledDraw } from '../util/initialState'
 import { runOneFrame } from '../util/runOneFrame'
 
 describe('time', () => {
   it('should change time - start from 0 case', () => {
     const v1 = runOneFrame({
-      state: initialState,
+      state: initialStateWithDisabledDraw,
       timeNow: 0,
     })
 
@@ -31,7 +31,7 @@ describe('time', () => {
 
   it('should change time - start from non 0 case', () => {
     const v1 = runOneFrame({
-      state: initialState,
+      state: initialStateWithDisabledDraw,
       timeNow: 10,
     })
 

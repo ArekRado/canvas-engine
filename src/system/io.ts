@@ -1,5 +1,6 @@
 import { vector, vectorZero } from '@arekrado/vector-2d'
 import { State } from '../type'
+import { createSystem } from './createSystem'
 
 let buttons = 0
 let position = vectorZero()
@@ -21,11 +22,15 @@ export const initialize = () => {
   }
 }
 
-type Update = (params: { state: State }) => State
-export const update: Update = ({ state }) => ({
-  ...state,
-  mouse: {
-    buttons,
-    position,
-  },
-})
+export const ioSystem = (state: State) =>
+  createSystem({
+    name: 'io',
+    state,
+    tick: ({ state }) => ({
+      ...state,
+      mouse: {
+        buttons,
+        position,
+      },
+    }),
+  })

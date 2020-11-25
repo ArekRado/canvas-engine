@@ -1,14 +1,18 @@
 import { State } from '../type'
+import { createSystem } from './createSystem'
 
-type Update = (params: { state: State; timeNow?: number }) => State
-export const update: Update = ({ state, timeNow }) => {
-  const now = timeNow ?? performance.now()
-
-  return {
-    ...state,
-    time: {
-      delta: now - state.time.timeNow,
-      timeNow: now,
+export const timeSystem = (state: State) =>
+  createSystem({
+    name: 'time',
+    state,
+    tick: ({ state }) => {
+      return {
+        ...state,
+        time: {
+          delta: state.time.timeNow - state.time.previousTimeNow,
+          timeNow: state.time.timeNow,
+          previousTimeNow: state.time.timeNow,
+        },
+      }
     },
-  }
-}
+  })

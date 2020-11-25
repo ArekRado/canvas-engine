@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
-import { initialState } from '../util/initialState'
+import { initialStateWithDisabledDraw } from '../util/initialState'
 import { set as setEntity, generate } from '../util/entity'
 import { runOneFrame } from '../util/runOneFrame'
 import { defaultTransform } from '../util/defaultComponents'
@@ -15,7 +15,10 @@ describe('transform', () => {
     const entity3 = generate('e3')
     const entity4 = generate('e4')
 
-    const v1 = setEntity({ entity: entity1, state: initialState })
+    const v1 = setEntity({
+      entity: entity1,
+      state: initialStateWithDisabledDraw,
+    })
     const v2 = setEntity({ entity: entity2, state: v1 })
     const v3 = setEntity({ entity: entity3, state: v2 })
     const v4 = setEntity({ entity: entity4, state: v3 })

@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { initialState } from '../util/initialState'
+import { initialStateWithDisabledDraw } from '../util/initialState'
 
 import {
   set as setEntity,
@@ -19,7 +19,7 @@ import { componentName } from '../component'
 describe('entity', () => {
   it('remove - should remove components by entity', () => {
     const entity = generate('test')
-    const v1 = setEntity({ state: initialState, entity })
+    const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
 
     const v2 = setComponent({
       name: componentName.animation,

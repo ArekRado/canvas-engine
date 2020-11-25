@@ -1,5 +1,5 @@
 import { Dictionary } from '../type'
-import { Entity, State } from '../type'
+import { State } from '../type'
 
 const doNothing = <Component>(params: SystemMethodParams<Component>) =>
   params.state
@@ -7,7 +7,6 @@ const doNothing = <Component>(params: SystemMethodParams<Component>) =>
 type SystemMethodParams<Component> = {
   state: State
   component?: Component
-  entity?: Entity
 }
 
 export type CreateSystemParams<Component> = {
@@ -42,10 +41,7 @@ export const createSystem = <Component>({
             state,
           )
         } else {
-          return state.entity.reduce(
-            (acc, entity) => tick({ state: acc, entity }),
-            state,
-          )
+          return tick({ state })
         }
       }
 

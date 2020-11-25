@@ -24,7 +24,7 @@
   "author": "Arek Rado",
   "license": "MIT",
   "private": false,
-  "version": "0.0.14",
+  "version": "0.0.17",
   "description": "",
   "scripts": {
     "test": "tsdx test --env=jsdom",

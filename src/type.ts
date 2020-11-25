@@ -99,6 +99,7 @@ export type Entity = {
 }
 
 export type Time = {
+  previousTimeNow: number
   timeNow: number
   delta: number
 }

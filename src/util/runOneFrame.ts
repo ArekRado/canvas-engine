@@ -1,15 +1,17 @@
 import { State } from '../type'
-import { update as timeSystemUpdate } from '../system/time'
-import { update as IOSystemUpdate } from '../system/io'
 
 type RunOneFrame = (params: { state: State; timeNow?: number }) => State
-
-export const runOneFrame: RunOneFrame = ({ state, timeNow }) => {
-  const v1 = timeSystemUpdate({ state, timeNow })
-  const v2 = IOSystemUpdate({ state: v1 })
+export const runOneFrame: RunOneFrame = ({ state, timeNow }): State => {
+  const v1: State = {
+    ...state,
+    time: {
+      ...state.time,
+      timeNow: timeNow !== undefined ? timeNow : performance.now(),
+    },
+  }
 
   return Object.values(state.system).reduce(
     (acc, system) => system.tick({ state: acc }),
-    v2,
+    v1,
   )
 }

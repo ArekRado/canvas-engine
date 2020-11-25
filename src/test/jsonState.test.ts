@@ -1,11 +1,11 @@
 import 'regenerator-runtime/runtime'
-import { initialState } from '../util/initialState'
+import { initialStateWithDisabledDraw } from '../util/initialState'
 import { jsonToState, stateToJson } from '../util/jsonState'
 
 describe('jsonState', () => {
   it('jsonToState ', () => {
-    const jsonString = stateToJson(initialState)
-    const state = jsonToState(jsonString, initialState)
+    const jsonString = stateToJson(initialStateWithDisabledDraw)
+    const state = jsonToState(jsonString, initialStateWithDisabledDraw)
 
     expect(state.entity).toMatchSnapshot()
     expect(state.component).toMatchSnapshot()
@@ -17,7 +17,7 @@ describe('jsonState', () => {
   })
 
   it('jsonToState', () => {
-    const jsonString = stateToJson(initialState)
+    const jsonString = stateToJson(initialStateWithDisabledDraw)
 
     expect(jsonString).toMatchSnapshot()
   })

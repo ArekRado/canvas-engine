@@ -22,34 +22,36 @@ const getGameContainerDimensions = (containerId: string) => {
   return element ? [element.clientWidth, element.clientHeight] : [100, 100]
 }
 
-export const initialize = (containerId = 'canvas-engine') => {
+export const initialize = async (containerId = 'canvas-engine') => {
   // https://github.com/formium/tsdx/pull/367
-  import('pixi.js').then((module) => {
-    PIXI = module
+  const module = await import('pixi.js')
+  PIXI = module
 
-    const [x, y] = getGameContainerDimensions(containerId)
+  const [x, y] = getGameContainerDimensions(containerId)
 
-    pixiApp = new PIXI.Application({
-      width: x,
-      height: y,
-      backgroundColor: 0x1099bb,
-    }) as PIXI.Application
-    ;(pixiApp.renderer as any).autoResize = true
+  pixiApp = new PIXI.Application({
+    width: x,
+    height: y,
+    backgroundColor: 0x1099bb,
+  }) as PIXI.Application
+  ;(pixiApp.renderer as any).autoResize = true
 
-    if (!document || !document.body) {
-      console.warn("Couldn't find document body")
-    } else {
-      const element = document.querySelector(`#${containerId}`)
+  if (!document || !document.body) {
+    console.warn("Couldn't find document body")
+  } else {
+    const element = document.querySelector(`#${containerId}`)
+    if (!element) {
       console.log(`Container with id ${containerId} doesn't exists`)
-      element && element.appendChild(pixiApp.view)
+    } else {
+      element.appendChild(pixiApp.view)
     }
+  }
 
-    images = new Map()
-    debugGraphics = new PIXI.Graphics() as PIXI.Graphics
-    pixiApp.stage.addChild(debugGraphics)
+  images = new Map()
+  debugGraphics = new PIXI.Graphics() as PIXI.Graphics
+  pixiApp.stage.addChild(debugGraphics)
 
-    isInitialized = true
-  })
+  isInitialized = true
 }
 
 type Render = (state: DrawState, devMode: boolean) => void
@@ -65,8 +67,7 @@ export const render: Render = (state, devMode = false) => {
   if (pixiApp) {
     if (pixiImage) {
       if (
-        (pixiImage.texture.baseTexture as any).imageUrl !==
-        state.sprite.src
+        (pixiImage.texture.baseTexture as any).imageUrl !== state.sprite.src
       ) {
         changeImage({ pixiImage, image: state })
       }
