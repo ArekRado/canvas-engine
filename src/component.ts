@@ -7,6 +7,7 @@ export enum componentName {
   animation = 'animation',
   collideBox = 'collideBox',
   collideCircle = 'collideCircle',
+  blueprint = 'blueprint',
 }
 
 type SetComponent = (params: {

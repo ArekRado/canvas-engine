@@ -38,6 +38,10 @@ export type Transform = Component<{
   parent?: Entity
 }>
 
+export type Blueprint = Component<{
+  id: Guid
+}>
+
 export type AnimationProperty = {
   path: string
   component: keyof State['component']
@@ -109,8 +113,15 @@ export type AssetSprite = {
   name: string
 }
 
+export type AssetBlueprint = {
+  name: string
+  entity: Entity
+  data: Dictionary<Component<any>>
+}
+
 export type Asset = {
   sprite: AssetSprite[]
+  blueprint: AssetBlueprint[]
 }
 
 export type Mouse = {
@@ -126,7 +137,7 @@ export type Mouse = {
 // scene
 export type State = {
   entity: Entity[]
-  component: Dictionary<Component<any>> & {
+  component: Dictionary<Dictionary<Component<any>>> & {
     sprite: Dictionary<Sprite>
     transform: Dictionary<Transform>
     animation: Dictionary<Animation>

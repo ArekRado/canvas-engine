@@ -18,6 +18,7 @@ const v1: State = {
   },
   asset: {
     sprite: [],
+    blueprint: [],
   },
   time: {
     previousTimeNow: 0.0,

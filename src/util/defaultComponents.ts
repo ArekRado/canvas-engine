@@ -1,6 +1,6 @@
 import { vectorZero } from '@arekrado/vector-2d'
 import { componentName } from '../component'
-import { Entity } from '../type'
+import { Blueprint, Entity } from '../type'
 import {
   Animation,
   CollideBox,
@@ -66,6 +66,16 @@ export const defaultSprite: GetDefaultComponent<Sprite> = ({
   entity,
   name: componentName.sprite,
   src: '',
+  ...data,
+})
+
+export const defaultBlueprint: GetDefaultComponent<Blueprint> = ({
+  entity,
+  ...data
+}) => ({
+  entity,
+  name: componentName.blueprint,
+  id: '',
   ...data,
 })
 

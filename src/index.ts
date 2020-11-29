@@ -14,7 +14,12 @@ import {
   defaultSprite,
   defaultTransform,
 } from './util/defaultComponents'
-import { addSprite, removeSprite } from './util/asset'
+import {
+  addSprite,
+  removeSprite,
+  addBlueprint,
+  removeBlueprint,
+} from './util/asset'
 import { generate, set, remove } from './util/entity'
 
 export const asset = {
