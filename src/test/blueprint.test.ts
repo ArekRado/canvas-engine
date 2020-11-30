@@ -66,6 +66,7 @@ describe('blueprint', () => {
         data: {
           collideBox: defaultCollideBox({
             entity: generate('-'),
+            position: [1, 1],
           }),
         },
       },
@@ -93,21 +94,21 @@ describe('blueprint', () => {
       })?.position,
     ).toEqual([0, 0])
 
-    // Collidebox should be changed by blueprint
+    // ALL Collidebox properties should be changed to match blueprint
     expect(
       getComponent<CollideBox>({
         state,
         entity: entity1,
         name: componentName.collideBox,
       })?.position,
-    ).toEqual([0, 0])
+    ).toEqual([1, 1])
     expect(
       getComponent<CollideBox>({
         state,
         entity: entity2,
         name: componentName.collideBox,
       })?.position,
-    ).toEqual([0, 0])
+    ).toEqual([1, 1])
 
     // entity3 doesn't have blueprint so should not be changed
     expect(

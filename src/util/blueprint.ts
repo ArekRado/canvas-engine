@@ -4,22 +4,26 @@ const syncComponentBlueprint = (assetBlueprint: AssetBlueprint) => (
   state: State,
   blueprint: Blueprint,
 ): State => {
-  Object.entries(assetBlueprint.data).map(
-    ([key, value]) => (state.component[key][blueprint.entity.id] = value),
-  )
+  const entityId = blueprint.entity.id
+
+  Object.entries(assetBlueprint.data).forEach(([componentKey, value]) => {
+    state.component[componentKey][entityId] = {
+      ...value,
+      entity: blueprint.entity,
+    }
+  })
 
   return state
 }
 
 export const syncBlueprint = (state: State): State => {
-  const blueprintComponents: Blueprint[] = Object.values(
+  const blueprintComponent: Blueprint[] = Object.values(
     state.component.blueprint,
   )
 
-  return state.asset.blueprint.reduce((acc, assetBlueprint) => {
-    return blueprintComponents.reduce(
-      syncComponentBlueprint(assetBlueprint),
-      acc,
-    )
-  }, state)
+  return state.asset.blueprint.reduce(
+    (acc, assetBlueprint) =>
+      blueprintComponent.reduce(syncComponentBlueprint(assetBlueprint), acc),
+    state,
+  )
 }
