@@ -1,7 +1,7 @@
 import { initialize as initializeDraw } from '../system/draw'
 import { initialize as initializeIO } from '../system/io'
 
-export const initialize = async (params?: { containerId?: string }) => {
+export const initializeEngine = async (params?: { containerId?: string }) => {
   const containerId = params?.containerId || 'canvas-engine'
 
   const body = document.body

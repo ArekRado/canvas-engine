@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { initialStateWithDisabledDraw } from '../util/initialState'
+import { initialStateWithDisabledDraw } from '../util/state'
 
 import {
   set as setEntity,

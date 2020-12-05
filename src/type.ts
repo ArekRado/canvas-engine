@@ -30,11 +30,11 @@ export type CollideCircle = Component<{
 
 export type Transform = Component<{
   rotation: number
-  localRotation: number
+  fromParentRotation: number
   scale: Vector2D
-  localScale: Vector2D
+  fromParentScale: Vector2D
   position: Vector2D
-  localPosition: Vector2D
+  fromParentPosition: Vector2D
   parent?: Entity
 }>
 
@@ -100,6 +100,7 @@ export type AnimatedProperty = {
 export type Entity = {
   id: Guid
   name: string
+  persistOnSceneChange: boolean
 }
 
 export type Time = {

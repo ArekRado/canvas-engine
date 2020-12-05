@@ -1,11 +1,10 @@
 export * from './type'
 export { runOneFrame } from './util/runOneFrame'
 export * as bezierFunction from './util/bezierFunction'
-export { initialState } from './util/initialState'
-export { initialize } from './util/initialize'
+export { initialState, setScene } from './util/state'
+export { initializeEngine } from './util/initializeEngine'
 export { jsonToState, stateToJson } from './util/jsonState'
 export { createSystem } from './system/createSystem'
-export * from './component'
 
 import {
   defaultAnimation,
@@ -21,10 +20,17 @@ import {
   removeBlueprint,
 } from './util/asset'
 import { generate, set, remove } from './util/entity'
+import {
+  setComponent,
+  removeComponent,
+  getComponent
+} from './component'
 
 export const asset = {
   addSprite,
   removeSprite,
+  addBlueprint,
+  removeBlueprint,
 }
 
 export const entity = {
@@ -39,6 +45,12 @@ export const defaultData = {
   collideCircle: defaultCollideCircle,
   sprite: defaultSprite,
   transform: defaultTransform,
+}
+
+export {
+  setComponent,
+  removeComponent,
+  getComponent
 }
 
 // @todo

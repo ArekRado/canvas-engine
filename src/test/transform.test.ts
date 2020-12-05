@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
-import { initialStateWithDisabledDraw } from '../util/initialState'
+import { initialStateWithDisabledDraw } from '../util/state'
 import { set as setEntity, generate } from '../util/entity'
 import { runOneFrame } from '../util/runOneFrame'
 import { defaultTransform } from '../util/defaultComponents'
@@ -9,7 +9,7 @@ import { Transform } from '../type'
 import { componentName } from '../component'
 
 describe('transform', () => {
-  it('should set proper position using localPosition and parent.position', () => {
+  it('should set proper position using fromParentPosition and parent.position', () => {
     const entity1 = generate('e1')
     const entity2 = generate('e2')
     const entity3 = generate('e3')
@@ -28,7 +28,7 @@ describe('transform', () => {
       state: v4,
       data: defaultTransform({
         entity: entity3,
-        localPosition: vector(-10, -10),
+        fromParentPosition: vector(-10, -10),
         parent: entity2,
       }),
     })
@@ -38,7 +38,7 @@ describe('transform', () => {
       state: v5,
       data: defaultTransform({
         entity: entity2,
-        localPosition: vector(1, 1),
+        fromParentPosition: vector(1, 1),
         parent: entity1,
       }),
     })
@@ -48,7 +48,7 @@ describe('transform', () => {
       state: v6,
       data: defaultTransform({
         entity: entity4,
-        localPosition: vector(10, 10),
+        fromParentPosition: vector(10, 10),
         parent: entity2,
       }),
     })
@@ -58,7 +58,7 @@ describe('transform', () => {
       state: v7,
       data: defaultTransform({
         entity: entity1,
-        localPosition: vector(1, 1),
+        fromParentPosition: vector(1, 1),
       }),
     })
 
@@ -71,8 +71,8 @@ describe('transform', () => {
     })
     if (e1) {
       expect(e1.position).toEqual(vector(0, 0))
-      // Should not change localPosition when transform doesn't have parent
-      expect(e1.localPosition).toEqual(vector(1, 1))
+      // Should not change fromParentPosition when transform doesn't have parent
+      expect(e1.fromParentPosition).toEqual(vector(1, 1))
     }
     const e2 = getComponent<Transform>({
       name: componentName.transform,
@@ -81,7 +81,7 @@ describe('transform', () => {
     })
     if (e2) {
       expect(e2.position).toEqual(vector(2, 2))
-      expect(e2.localPosition).toEqual(vector(1, 1))
+      expect(e2.fromParentPosition).toEqual(vector(1, 1))
     }
     const e3 = getComponent<Transform>({
       name: componentName.transform,
@@ -90,7 +90,7 @@ describe('transform', () => {
     })
     if (e3) {
       expect(e3.position).toEqual(vector(-8, -8))
-      expect(e3.localPosition).toEqual(vector(-10, -10))
+      expect(e3.fromParentPosition).toEqual(vector(-10, -10))
     }
     const e4 = getComponent<Transform>({
       name: componentName.transform,
@@ -99,7 +99,7 @@ describe('transform', () => {
     })
     if (e4) {
       expect(e4.position).toEqual(vector(12, 12))
-      expect(e4.localPosition).toEqual(vector(10, 10))
+      expect(e4.fromParentPosition).toEqual(vector(10, 10))
     }
   })
 })

@@ -14,9 +14,9 @@ const getParentPosition = (state: State, parentEntity: Entity): Vector2D => {
 
   if (parent) {
     if (parent.parent) {
-      return add(getParentPosition(state, parent.parent), parent.localPosition)
+      return add(getParentPosition(state, parent.parent), parent.fromParentPosition)
     } else {
-      return parent.localPosition
+      return parent.fromParentPosition
     }
   } else {
     return vectorZero()
@@ -32,7 +32,7 @@ export const transformSystem = (state: State) =>
     tick: ({ state, component }) => {
       if (component && component.parent) {
         component.position = add(
-          component.localPosition,
+          component.fromParentPosition,
           getParentPosition(state, component.parent),
         )
       }

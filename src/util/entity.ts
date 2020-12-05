@@ -1,10 +1,15 @@
 import { v1 } from 'uuid'
 import { Entity, State } from '../type'
-import { removeComponentByEntity } from '../component'
+import { removeComponent } from '../component'
 
-export const generate = (name: string): Entity => ({
+type Generate = (
+  name: string,
+  params?: Partial<{ persistOnSceneChange: boolean }>,
+) => Entity
+export const generate: Generate = (name: string, options = {}): Entity => ({
   name,
   id: v1(),
+  persistOnSceneChange: options.persistOnSceneChange || false,
 })
 
 type Params = {
@@ -25,7 +30,7 @@ export const remove = ({ entity, state }: Params): State => {
 
   const v1 = Object.keys(state.component).reduce(
     (state, name) =>
-      removeComponentByEntity({
+      removeComponent({
         state,
         entity,
         name,

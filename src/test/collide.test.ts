@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime'
 import { vector, Vector2D } from '@arekrado/vector-2d'
-import { initialStateWithDisabledDraw } from '../util/initialState'
+import { initialStateWithDisabledDraw } from '../util/state'
 import { set as setEntity, generate } from '../util/entity'
 import { runOneFrame } from '../util/runOneFrame'
 import { defaultCollideBox, defaultTransform } from '../util/defaultComponents'
@@ -99,7 +99,7 @@ describe('collide', () => {
       state: v3,
       data: defaultTransform({
         entity: entity1,
-        localPosition: vector(0, 0),
+        fromParentPosition: vector(0, 0),
       }),
     })
 
@@ -108,7 +108,7 @@ describe('collide', () => {
       state: v4,
       data: defaultTransform({
         entity: entity2,
-        localPosition: vector(1, 1),
+        fromParentPosition: vector(1, 1),
       }),
     })
 
@@ -117,7 +117,7 @@ describe('collide', () => {
       state: v5,
       data: defaultTransform({
         entity: entity3,
-        localPosition: vector(3.5, 3.5),
+        fromParentPosition: vector(3.5, 3.5),
       }),
     })
 

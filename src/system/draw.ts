@@ -2,8 +2,7 @@ import { Sprite, Transform } from '../type'
 import { initialize as initializePixi, render } from '../util/pixiDraw'
 import { createSystem } from './createSystem'
 import { State } from '../type'
-import { componentName } from '../component'
-import { getComponent } from '../component'
+import { getComponent, componentName } from '../component'
 
 export type DrawState = {
   sprite: Sprite

@@ -86,10 +86,10 @@ export const defaultTransform: GetDefaultComponent<Transform> = ({
   entity,
   name: componentName.transform,
   rotation: 0,
-  localRotation: 0,
+  fromParentRotation: 0,
   scale: vectorZero(),
-  localScale: vectorZero(),
+  fromParentScale: vectorZero(),
   position: vectorZero(),
-  localPosition: vectorZero(),
+  fromParentPosition: vectorZero(),
   ...data,
 })

@@ -3,7 +3,7 @@ import { animationSystem } from '../system/animation'
 import { collideBoxSystem } from '../system/collideBox'
 import { drawSystem } from '../system/draw'
 import { transformSystem } from '../system/transform'
-import { componentName } from '..'
+import { componentName } from '../component'
 import { ioSystem } from '../system/io'
 import { timeSystem } from '../system/time'
 
@@ -50,5 +50,9 @@ export const initialStateWithDisabledDraw: State = {
 
 export const getInitialState = (state?: State): State => ({
   ...initialState,
+  ...state,
+})
+
+export const setScene = (state: State) => ({
   ...state,
 })
