@@ -5,9 +5,16 @@ export { initialState, setScene } from './util/state'
 export { initializeEngine } from './util/initializeEngine'
 export { jsonToState, stateToJson } from './util/jsonState'
 export { createSystem } from './system/createSystem'
+export {
+  setComponent,
+  removeComponent,
+  getComponent,
+  componentName,
+} from './component'
 
 import {
   defaultAnimation,
+  defaultBlueprint,
   defaultCollideBox,
   defaultCollideCircle,
   defaultSprite,
@@ -20,11 +27,6 @@ import {
   removeBlueprint,
 } from './util/asset'
 import { generate, set, remove } from './util/entity'
-import {
-  setComponent,
-  removeComponent,
-  getComponent
-} from './component'
 
 export const asset = {
   addSprite,
@@ -45,12 +47,7 @@ export const defaultData = {
   collideCircle: defaultCollideCircle,
   sprite: defaultSprite,
   transform: defaultTransform,
-}
-
-export {
-  setComponent,
-  removeComponent,
-  getComponent
+  blueprint: defaultBlueprint,
 }
 
 // @todo

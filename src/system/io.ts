@@ -5,20 +5,20 @@ import { createSystem } from './createSystem'
 let buttons = 0
 let position = vectorZero()
 
-export const initialize = () => {
-  const body = document.body
+export const initialize = (containerId = 'canvas-engine') => {
+  const container = document.getElementById(containerId)
 
-  if (body) {
+  if (container) {
     const setMousePosition = (e: MouseEvent) => {
       position = vector(e.pageX, e.pageY)
     }
 
-    body.addEventListener('click', (e) => {
+    container.addEventListener('click', (e) => {
       buttons = e.buttons
     })
-    body.addEventListener('mousemove', setMousePosition, false)
-    body.addEventListener('mouseenter', setMousePosition, false)
-    body.addEventListener('mouseleave', setMousePosition, false)
+    container.addEventListener('mousemove', setMousePosition, false)
+    container.addEventListener('mouseenter', setMousePosition, false)
+    container.addEventListener('mouseleave', setMousePosition, false)
   }
 }
 
