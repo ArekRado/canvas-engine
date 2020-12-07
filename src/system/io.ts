@@ -9,8 +9,13 @@ export const initialize = (containerId = 'canvas-engine') => {
   const container = document.getElementById(containerId)
 
   if (container) {
+    const containerPosition = container.getBoundingClientRect()
+
     const setMousePosition = (e: MouseEvent) => {
-      position = vector(e.pageX, e.pageY)
+      position = vector(
+        e.pageX - containerPosition.left,
+        e.pageY - containerPosition.top,
+      )
     }
 
     container.addEventListener('click', (e) => {
