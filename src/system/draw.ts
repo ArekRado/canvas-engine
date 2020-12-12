@@ -18,9 +18,8 @@ export const drawSystem = (state: State) =>
     create: ({ state }) => state,
     remove: ({ state }) => state,
     tick: ({ state, component: sprite }) => {
-      if (state.isDrawEnabled && sprite) {
-        const transform = getComponent<Transform>({
-          name: componentName.transform,
+      if (state.isDrawEnabled) {
+        const transform = getComponent<Transform>(componentName.transform, {
           state,
           entity: sprite.entity,
         })

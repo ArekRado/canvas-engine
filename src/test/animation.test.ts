@@ -13,9 +13,9 @@ describe('animation', () => {
   const entity = generate('entity')
 
   const getTransform = (state: State) =>
-    getComponent<Transform>({ name: componentName.transform, state, entity })
+    getComponent<Transform>(componentName.transform, { state, entity })
   const getAnimation = (state: State) =>
-    getComponent<Animation>({ name: componentName.animation, state, entity })
+    getComponent<Animation>(componentName.animation, { state, entity })
 
   const tick = (timeNow: number, state: State) =>
     runOneFrame({ state, timeNow })
@@ -209,13 +209,11 @@ describe('animation', () => {
   describe('number', () => {
     it('Linear animation should change value in proper way', () => {
       const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
-      const v2 = setComponent({
-        name: componentName.transform,
+      const v2 = setComponent(componentName.transform, {
         state: v1,
         data: defaultTransform({ entity }),
       })
-      const v3 = setComponent({
-        name: componentName.animation,
+      const v3 = setComponent(componentName.animation, {
         state: v2,
         data: defaultAnimation({
           entity,
@@ -271,13 +269,11 @@ describe('animation', () => {
 
     it('Should works with negative values', () => {
       const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
-      const v2 = setComponent({
-        name: componentName.transform,
+      const v2 = setComponent(componentName.transform, {
         state: v1,
         data: defaultTransform({ entity }),
       })
-      const v3 = setComponent({
-        name: componentName.animation,
+      const v3 = setComponent(componentName.animation, {
         state: v2,
         data: defaultAnimation({
           entity,
@@ -321,13 +317,11 @@ describe('animation', () => {
 
     it('Should works with multiple frames', () => {
       const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
-      const v2 = setComponent({
-        name: componentName.transform,
+      const v2 = setComponent(componentName.transform, {
         state: v1,
         data: defaultTransform({ entity }),
       })
-      const v3 = setComponent({
-        name: componentName.animation,
+      const v3 = setComponent(componentName.animation, {
         state: v2,
         data: defaultAnimation({
           entity,
@@ -394,13 +388,11 @@ describe('animation', () => {
 
     it('Should works with looped animations', () => {
       const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
-      const v2 = setComponent({
-        name: componentName.transform,
+      const v2 = setComponent(componentName.transform, {
         state: v1,
         data: defaultTransform({ entity }),
       })
-      const v3 = setComponent({
-        name: componentName.animation,
+      const v3 = setComponent(componentName.animation, {
         state: v2,
         data: defaultAnimation({
           entity,

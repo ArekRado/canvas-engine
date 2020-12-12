@@ -1,5 +1,5 @@
 import { Vector2D } from '@arekrado/vector-2d'
-import { System } from './system/createSystem'
+import { GlobalSystem, System } from './system/createSystem'
 import { TimingFunction } from './util/bezierFunction'
 
 export type Dictionary<Value> = { [key: string]: Value }
@@ -145,7 +145,7 @@ export type State = {
     collideBox: Dictionary<CollideBox>
     collideCircle: Dictionary<CollideCircle>
   }
-  system: Dictionary<System>
+  system: Dictionary<System<any> | GlobalSystem>
   asset: Asset
   mouse: Mouse
   time: Time

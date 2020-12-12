@@ -6,7 +6,7 @@ const doNothing = <Component>(params: SystemMethodParams<Component>) =>
 
 type SystemMethodParams<Component> = {
   state: State
-  component?: Component
+  component: Component
 }
 
 export type CreateSystemParams<Component> = {
@@ -17,11 +17,11 @@ export type CreateSystemParams<Component> = {
   remove?: (params: SystemMethodParams<Component>) => State
 }
 
-export type System = {
+export type System<Component> = {
   name: string
-  create: ({ state }: { state: State }) => State
-  tick: ({ state }: { state: State }) => State
-  remove: ({ state }: { state: State }) => State
+  create: (params: SystemMethodParams<Component>) => State
+  tick: (params: { state: State }) => State
+  remove: (params: SystemMethodParams<Component>) => State
 }
 
 export const createSystem = <Component>({
@@ -29,25 +29,57 @@ export const createSystem = <Component>({
   tick,
   ...params
 }: CreateSystemParams<Component>): State => {
-  const system: System = {
+  const system: System<Component> = {
     name: params.name,
     create: params.create || doNothing,
     tick: ({ state }) => {
       if (tick) {
         const component = state.component[params.name] as Dictionary<Component>
-        if (component && tick) {
+        if (component) {
           return Object.values(component).reduce(
             (acc, component) => tick({ state: acc, component }),
             state,
           )
-        } else {
-          return tick({ state })
         }
       }
 
       return state
     },
     remove: params.remove || doNothing,
+  }
+
+  return {
+    ...state,
+    system: {
+      ...state.system,
+      [params.name]: system,
+    },
+  }
+}
+
+export type CreateGlobalSystemParams = {
+  state: State
+  name: string
+  tick: (params: { state: State }) => State
+}
+
+export type GlobalSystem = {
+  name: string
+  tick: (params: { state: State }) => State
+  create: (params: { state: State }) => State
+  remove: (params: { state: State }) => State
+}
+
+export const createGlobalSystem = ({
+  state,
+  tick,
+  ...params
+}: CreateGlobalSystemParams): State => {
+  const system: GlobalSystem = {
+    name: params.name,
+    tick,
+    create: ({ state }) => state,
+    remove: ({ state }) => state,
   }
 
   return {

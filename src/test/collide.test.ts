@@ -90,12 +90,14 @@ describe('collide', () => {
     const entity2 = generate('e2')
     const entity3 = generate('e3')
 
-    const v1 = setEntity({ entity: entity1, state: initialStateWithDisabledDraw })
+    const v1 = setEntity({
+      entity: entity1,
+      state: initialStateWithDisabledDraw,
+    })
     const v2 = setEntity({ entity: entity2, state: v1 })
     const v3 = setEntity({ entity: entity3, state: v2 })
 
-    const v4 = setComponent({
-      name: componentName.transform,
+    const v4 = setComponent(componentName.transform, {
       state: v3,
       data: defaultTransform({
         entity: entity1,
@@ -103,8 +105,7 @@ describe('collide', () => {
       }),
     })
 
-    const v5 = setComponent({
-      name: componentName.transform,
+    const v5 = setComponent(componentName.transform, {
       state: v4,
       data: defaultTransform({
         entity: entity2,
@@ -112,8 +113,7 @@ describe('collide', () => {
       }),
     })
 
-    const v6 = setComponent({
-      name: componentName.transform,
+    const v6 = setComponent(componentName.transform, {
       state: v5,
       data: defaultTransform({
         entity: entity3,
@@ -121,8 +121,7 @@ describe('collide', () => {
       }),
     })
 
-    const v7 = setComponent({
-      name: componentName.collideBox,
+    const v7 = setComponent(componentName.collideBox, {
       state: v6,
       data: defaultCollideBox({
         entity: entity1,
@@ -131,8 +130,7 @@ describe('collide', () => {
       }),
     })
 
-    const v8 = setComponent({
-      name: componentName.collideBox,
+    const v8 = setComponent(componentName.collideBox, {
       state: v7,
       data: defaultCollideBox({
         entity: entity2,
@@ -141,8 +139,7 @@ describe('collide', () => {
       }),
     })
 
-    const v9 = setComponent({
-      name: componentName.collideBox,
+    const v9 = setComponent(componentName.collideBox, {
       state: v8,
       data: defaultCollideBox({
         entity: entity3,
@@ -154,22 +151,19 @@ describe('collide', () => {
     const state = runOneFrame({ state: v9, timeNow: 0 })
 
     const collisions1 =
-      getComponent<CollideBox>({
-        name: componentName.collideBox,
+      getComponent<CollideBox>(componentName.collideBox, {
         state,
         entity: entity1,
       })?.collisions || []
 
     const collisions2 =
-      getComponent<CollideBox>({
-        name: componentName.collideBox,
+      getComponent<CollideBox>(componentName.collideBox, {
         state,
         entity: entity2,
       })?.collisions || []
 
     const collisions3 =
-      getComponent<CollideBox>({
-        name: componentName.collideBox,
+      getComponent<CollideBox>(componentName.collideBox, {
         state,
         entity: entity3,
       })?.collisions || []

@@ -28,16 +28,14 @@ describe('component', () => {
       tick,
     })
 
-    const v3 = setComponent({
-      name: 'test',
+    const v3 = setComponent('test', {
       state: v2,
       data: {
         entity: entity1,
         name: 'test',
       },
     })
-    const v4 = setComponent({
-      name: 'test',
+    const v4 = setComponent('test', {
       state: v3,
       data: {
         entity: entity2,
@@ -46,15 +44,14 @@ describe('component', () => {
     })
 
     const v5 = runOneFrame({ state: v4, timeNow: 0 })
-    const v6 = removeComponent({ entity: entity1, state: v5, name: 'test' })
+    const v6 = removeComponent('test', { entity: entity1, state: v5 })
 
     expect(create).toHaveBeenCalledTimes(2)
     expect(remove).toHaveBeenCalled()
     expect(tick).toHaveBeenCalled()
 
     // create new component after remove
-    const v7 = setComponent({
-      name: 'test',
+    const v7 = setComponent('test', {
       state: v6,
       data: {
         entity: entity1,
@@ -65,8 +62,7 @@ describe('component', () => {
     expect(create).toHaveBeenCalledTimes(3)
 
     // updating existing component
-    const v8 = setComponent({
-      name: 'test',
+    const v8 = setComponent('test', {
       state: v7,
       data: {
         entity: entity1,

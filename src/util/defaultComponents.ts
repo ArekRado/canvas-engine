@@ -1,4 +1,4 @@
-import { vectorZero } from '@arekrado/vector-2d'
+import { vector, vectorZero } from '@arekrado/vector-2d'
 import { componentName } from '../component'
 import { Blueprint, Entity } from '../type'
 import {
@@ -87,8 +87,8 @@ export const defaultTransform: GetDefaultComponent<Transform> = ({
   name: componentName.transform,
   rotation: 0,
   fromParentRotation: 0,
-  scale: vectorZero(),
-  fromParentScale: vectorZero(),
+  scale: vector(1, 1),
+  fromParentScale: vector(1, 1),
   position: vectorZero(),
   fromParentPosition: vectorZero(),
   ...data,

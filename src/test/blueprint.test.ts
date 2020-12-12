@@ -27,15 +27,13 @@ describe('blueprint', () => {
         entity,
         state,
       })
-      const v2 = setComponent({
-        name: componentName.transform,
+      const v2 = setComponent(componentName.transform, {
         state: v1,
         data: defaultTransform({
           entity,
         }),
       })
-      const v3 = setComponent({
-        name: componentName.collideBox,
+      const v3 = setComponent(componentName.collideBox, {
         state: v2,
         data: defaultCollideBox({
           entity,
@@ -43,8 +41,7 @@ describe('blueprint', () => {
       })
 
       return hasBlueprint
-        ? setComponent({
-            name: componentName.blueprint,
+        ? setComponent(componentName.blueprint, {
             state: v3,
             data: defaultBlueprint({
               entity,
@@ -76,49 +73,43 @@ describe('blueprint', () => {
 
     // Transform should not be touched by blueprint
     expect(
-      getComponent<Transform>({
+      getComponent<Transform>(componentName.transform, {
         state,
         entity: entity1,
-        name: componentName.transform,
       })?.position,
     ).toEqual([0, 0])
     expect(
-      getComponent<Transform>({
+      getComponent<Transform>(componentName.transform, {
         state,
         entity: entity2,
-        name: componentName.transform,
       })?.position,
     ).toEqual([0, 0])
 
     // ALL Collidebox properties should be changed to match blueprint
     expect(
-      getComponent<CollideBox>({
+      getComponent<CollideBox>(componentName.collideBox, {
         state,
         entity: entity1,
-        name: componentName.collideBox,
       })?.position,
     ).toEqual([1, 1])
     expect(
-      getComponent<CollideBox>({
+      getComponent<CollideBox>(componentName.collideBox, {
         state,
         entity: entity2,
-        name: componentName.collideBox,
       })?.position,
     ).toEqual([1, 1])
 
     // entity3 doesn't have blueprint so should not be changed
     expect(
-      getComponent<Transform>({
+      getComponent<Transform>(componentName.transform, {
         state,
         entity: entity3,
-        name: componentName.transform,
       })?.position,
     ).toEqual([0, 0])
     expect(
-      getComponent<CollideBox>({
+      getComponent<CollideBox>(componentName.collideBox, {
         state,
         entity: entity3,
-        name: componentName.collideBox,
       })?.position,
     ).toEqual([0, 0])
   })

@@ -1,6 +1,6 @@
 import { vector, vectorZero } from '@arekrado/vector-2d'
 import { State } from '../type'
-import { createSystem } from './createSystem'
+import { createGlobalSystem } from './createSystem'
 
 let buttons = 0
 let position = vectorZero()
@@ -28,7 +28,7 @@ export const initialize = (containerId = 'canvas-engine') => {
 }
 
 export const ioSystem = (state: State) =>
-  createSystem({
+  createGlobalSystem({
     name: 'io',
     state,
     tick: ({ state }) => ({

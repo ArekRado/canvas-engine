@@ -1,8 +1,8 @@
 import { State } from '../type'
-import { createSystem } from './createSystem'
+import { createGlobalSystem } from './createSystem'
 
 export const timeSystem = (state: State) =>
-  createSystem({
+  createGlobalSystem({
     name: 'time',
     state,
     tick: ({ state }) => {

@@ -90,15 +90,16 @@ type DrawImage = (params: {
   debugGraphics: PIXI.Graphics
 }) => void
 const drawImage: DrawImage = ({ pixiImage, image, devMode, debugGraphics }) => {
-  // if (gameObject.image.stickToRigidbody) {
-  //   image.x = gameObject.rigidbody.position.x
-  //   image.y = gameObject.rigidbody.position.y
-  // } else {
-  pixiImage.x = image.transform.position[0]
-  pixiImage.y = image.transform.position[1]
-  // }
+  const position = image.transform.position
+  const rotation = image.transform.rotation
+  const scale = image.transform.scale
 
-  // image.rotation = gameObject.rigidbody.rotation
+  pixiImage.x = position[0]
+  pixiImage.y = position[1]
+  pixiImage.scale.x = scale[0]
+  pixiImage.scale.y = scale[1]
+  pixiImage.rotation = rotation
+
   pixiImage.anchor.set(0, 0)
 
   if (devMode) {

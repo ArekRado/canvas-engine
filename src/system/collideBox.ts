@@ -35,8 +35,7 @@ const findCollisionsWith: FindCollisionsWith = ({
   const collisionList: CollideType[] = []
 
   Object.values(state.component.collideBox).forEach((collideBox2) => {
-    const transform2 = getComponent<Transform>({
-      name: componentName.transform,
+    const transform2 = getComponent<Transform>(componentName.transform, {
       state,
       entity: collideBox2.entity,
     })
@@ -67,29 +66,25 @@ export const collideBoxSystem = (state: State) =>
     create: ({ state }) => state,
     remove: ({ state }) => state,
     tick: ({ state, component: collideBox }) => {
-      if (collideBox) {
-        const transform = getComponent<Transform>({
-          name: componentName.transform,
+      const transform = getComponent<Transform>(componentName.transform, {
+        state,
+        entity: collideBox.entity,
+      })
+
+      if (transform) {
+        const collisions = findCollisionsWith({
           state,
-          entity: collideBox.entity,
+          collideBox,
+          transform,
         })
 
-        if (transform) {
-          const collisions = findCollisionsWith({
-            state,
-            collideBox,
-            transform,
-          })
-
-          return setComponent({
-            name: componentName.collideBox,
-            state,
-            data: {
-              ...collideBox,
-              collisions,
-            },
-          })
-        }
+        return setComponent(componentName.collideBox, {
+          state,
+          data: {
+            ...collideBox,
+            collisions,
+          },
+        })
       }
 
       return state

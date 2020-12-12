@@ -10,12 +10,14 @@ export enum componentName {
   blueprint = 'blueprint',
 }
 
-type SetComponent = (params: {
-  name: string
-  state: State
-  data: Component<Dictionary<any>>
-}) => State
-export const setComponent: SetComponent = ({ state, data, name }) => {
+type SetComponent = (
+  name: string,
+  params: {
+    state: State
+    data: Component<Dictionary<any>>
+  },
+) => State
+export const setComponent: SetComponent = (name, { state, data }) => {
   const newState = {
     ...state,
     component: {
@@ -32,18 +34,20 @@ export const setComponent: SetComponent = ({ state, data, name }) => {
     (state.component[name] === undefined ||
       state.component[name][data.entity.id] === undefined)
   ) {
-    return state.system[name].create({ state: newState })
+    return state.system[name].create({ state: newState, component: data })
   }
 
   return newState
 }
 
-type RemoveComponent = (params: {
-  entity: Entity
-  state: State
-  name: string
-}) => State
-export const removeComponent: RemoveComponent = ({ entity, state, name }) => {
+type RemoveComponent = (
+  name: string,
+  params: {
+    entity: Entity
+    state: State
+  },
+) => State
+export const removeComponent: RemoveComponent = (name, { entity, state }) => {
   const { [entity.id]: _, ...dictionaryWithoutComponent } = state.component[
     name
   ] as Dictionary<Component<any>>
@@ -56,22 +60,25 @@ export const removeComponent: RemoveComponent = ({ entity, state, name }) => {
     },
   }
 
+  const component = getComponent(name, { state, entity })
+
   if (newState.system[name]) {
-    return newState.system[name].remove({ state: newState })
+    return newState.system[name].remove({ state: newState, component })
   }
 
   return newState
 }
 
-export const getComponent = <Data>({
-  entity,
-  state,
-  name,
-}: {
-  entity: Entity
-  state: State
-  name: string
-}): Component<Data> | undefined => {
+export const getComponent = <Data>(
+  name: string,
+  {
+    entity,
+    state,
+  }: {
+    entity: Entity
+    state: State
+  },
+): Component<Data> | undefined => {
   const c: Dictionary<Component<Data>> = state.component[name]
   return c ? (c[entity.id] as Component<Data> | undefined) : undefined
 }

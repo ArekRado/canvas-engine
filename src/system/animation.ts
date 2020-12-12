@@ -182,7 +182,7 @@ export const animationSystem = (state: State) =>
     create: ({ state }) => state,
     remove: ({ state }) => state,
     tick: ({ state, component: animation }) => {
-      if (!animation || animation.isPlaying === false) {
+      if (animation.isPlaying === false) {
         return state
       }
 
@@ -227,8 +227,7 @@ export const animationSystem = (state: State) =>
 
         set(state.component, `${component}.${entity.id}.${path}`, value)
 
-        return setComponent({
-          name:'animation',
+        return setComponent(componentName.animation, {
           state,
           data: newAnimation,
         })

@@ -30,10 +30,9 @@ export const remove = ({ entity, state }: Params): State => {
 
   const v1 = Object.keys(state.component).reduce(
     (state, name) =>
-      removeComponent({
+      removeComponent(name, {
         state,
         entity,
-        name,
       }),
     newState,
   )

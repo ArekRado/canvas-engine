@@ -21,28 +21,23 @@ describe('entity', () => {
     const entity = generate('test')
     const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
 
-    const v2 = setComponent({
-      name: componentName.animation,
+    const v2 = setComponent(componentName.animation, {
       state: v1,
       data: defaultAnimation({ entity }),
     })
-    const v3 = setComponent({
-      name: componentName.collideBox,
+    const v3 = setComponent(componentName.collideBox, {
       state: v2,
       data: defaultCollideBox({ entity }),
     })
-    const v4 = setComponent({
-      name: componentName.collideCircle,
+    const v4 = setComponent(componentName.collideCircle, {
       state: v3,
       data: defaultCollideCircle({ entity }),
     })
-    const v5 = setComponent({
-      name: componentName.sprite,
+    const v5 = setComponent(componentName.sprite, {
       state: v4,
       data: defaultSprite({ entity }),
     })
-    const state = setComponent({
-      name: componentName.transform,
+    const state = setComponent(componentName.transform, {
       state: v5,
       data: defaultTransform({ entity }),
     })
