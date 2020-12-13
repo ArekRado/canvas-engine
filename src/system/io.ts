@@ -1,9 +1,16 @@
 import { vector, vectorZero } from '@arekrado/vector-2d'
-import { State } from '../type'
+import { Mouse, State } from '../type'
 import { createGlobalSystem } from './createSystem'
 
 let buttons = 0
 let position = vectorZero()
+let lastClick = {
+  timestamp: -1,
+  buttons: 0,
+}
+let isMoving = false
+let isButtonUp = false
+let isButtonDown = false
 
 export const initialize = (containerId = 'canvas-engine') => {
   const container = document.getElementById(containerId)
@@ -20,10 +27,36 @@ export const initialize = (containerId = 'canvas-engine') => {
 
     container.addEventListener('click', (e) => {
       buttons = e.buttons
+      lastClick = {
+        timestamp: Date.now(),
+        buttons: e.buttons,
+      }
     })
-    container.addEventListener('mousemove', setMousePosition, false)
+    container.addEventListener(
+      'mousemove',
+      (e: MouseEvent) => {
+        setMousePosition(e)
+        isMoving = true
+      },
+      false,
+    )
     container.addEventListener('mouseenter', setMousePosition, false)
     container.addEventListener('mouseleave', setMousePosition, false)
+
+    container.addEventListener(
+      'mouseup',
+      () => {
+        isButtonUp = true
+      },
+      false,
+    )
+    container.addEventListener(
+      'mousedown',
+      () => {
+        isButtonDown = true
+      },
+      false,
+    )
   }
 }
 
@@ -31,11 +64,23 @@ export const ioSystem = (state: State) =>
   createGlobalSystem({
     name: 'io',
     state,
-    tick: ({ state }) => ({
-      ...state,
-      mouse: {
+    tick: ({ state }) => {
+      const mouseBeforeReset: Mouse = {
         buttons,
         position,
-      },
-    }),
+        lastClick,
+        isButtonUp,
+        isButtonDown,
+        isMoving,
+      }
+      buttons = 0
+      isButtonUp = false
+      isButtonDown = false
+      isMoving = false
+
+      return {
+        ...state,
+        mouse: mouseBeforeReset,
+      }
+    },
   })

@@ -28,6 +28,13 @@ const v1: State = {
   mouse: {
     buttons: 0,
     position: [0, 0],
+    isButtonUp: false,
+    isButtonDown: false,
+    isMoving: false,
+    lastClick: {
+      timestamp: -1,
+      buttons: 0,
+    },
   },
   system: {},
   isDebugInitialized: false,

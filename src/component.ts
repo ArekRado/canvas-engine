@@ -8,6 +8,7 @@ export enum componentName {
   collideBox = 'collideBox',
   collideCircle = 'collideCircle',
   blueprint = 'blueprint',
+  mouseInteraction = 'mouseInteraction',
 }
 
 type SetComponent = (

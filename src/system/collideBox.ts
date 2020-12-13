@@ -4,23 +4,7 @@ import { State } from '../type'
 import { CollideBox, CollideType, Transform } from '../type'
 import { createSystem } from './createSystem'
 import { componentName } from '../component'
-
-type DetectAABBcollision = (params: {
-  v1: Vector2D
-  size1: Vector2D
-  v2: Vector2D
-  size2: Vector2D
-}) => boolean
-export const detectAABBcollision: DetectAABBcollision = ({
-  v1: [x1, y1],
-  size1: [size1x, size1y],
-  v2: [x2, y2],
-  size2: [size2x, size2y],
-}) =>
-  x1 <= x2 + size2x &&
-  x1 + size1x >= x2 &&
-  y1 <= y2 + size2y &&
-  y1 + size1y >= y2
+import { detectAABBcollision } from '../util/detectCollision'
 
 type FindCollisionsWith = (pramams: {
   state: State

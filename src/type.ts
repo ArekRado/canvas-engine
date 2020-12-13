@@ -92,6 +92,22 @@ export type SpriteSrc = string
 
 export type Sprite = Component<{ src: SpriteSrc }>
 
+export type MouseInteraction = Component<{
+  doubleClickSpeed: number
+  
+  // When the user clicks on an element
+  isClicked: boolean
+  // When the user double-clicks on an element
+  isDoubleClicked: boolean
+  // When the user presses a mouse button over an element
+
+  isMouseOver: boolean
+  // When the pointer is moved onto an element
+  isMouseEnter: boolean
+  // When the pointer is moved out of an element
+  isMouseLeave: boolean
+}>
+
 export type AnimatedProperty = {
   path: string
   type: 'number' | 'Vector2D'
@@ -128,6 +144,13 @@ export type Asset = {
 export type Mouse = {
   buttons: number
   position: Vector2D
+  isMoving: boolean
+  isButtonUp: boolean
+  isButtonDown: boolean
+  lastClick: {
+    timestamp: number
+    buttons: number
+  }
 }
 
 /* blueprint: Belt.Map.String.t({

@@ -1,6 +1,6 @@
 import { vector, vectorZero } from '@arekrado/vector-2d'
 import { componentName } from '../component'
-import { Blueprint, Entity } from '../type'
+import { Blueprint, Entity, MouseInteraction } from '../type'
 import {
   Animation,
   CollideBox,
@@ -91,5 +91,21 @@ export const defaultTransform: GetDefaultComponent<Transform> = ({
   fromParentScale: vector(1, 1),
   position: vectorZero(),
   fromParentPosition: vectorZero(),
+  ...data,
+})
+
+export const defaultMouseInteraction: GetDefaultComponent<MouseInteraction> = ({
+  entity,
+  ...data
+}) => ({
+  entity,
+  name: componentName.mouseInteraction,
+  clickSpeed: 200,
+  doubleClickSpeed: 200,
+  isClicked: false,
+  isDoubleClicked: false,
+  isMouseOver: false,
+  isMouseEnter: false,
+  isMouseLeave: false,
   ...data,
 })
