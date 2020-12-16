@@ -19,6 +19,7 @@ import {
   defaultCollideCircle,
   defaultSprite,
   defaultTransform,
+  defaultMouseInteraction,
 } from './util/defaultComponents'
 import {
   addSprite,
@@ -48,6 +49,7 @@ export const defaultData = {
   sprite: defaultSprite,
   transform: defaultTransform,
   blueprint: defaultBlueprint,
+  mouseInteraction: defaultMouseInteraction,
 }
 
 // @todo

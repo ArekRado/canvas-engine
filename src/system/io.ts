@@ -11,6 +11,7 @@ let lastClick = {
 let isMoving = false
 let isButtonUp = false
 let isButtonDown = false
+let isInitialized = false
 
 export const initialize = (containerId = 'canvas-engine') => {
   const container = document.getElementById(containerId)
@@ -57,6 +58,8 @@ export const initialize = (containerId = 'canvas-engine') => {
       },
       false,
     )
+
+    isInitialized = true
   }
 }
 
@@ -65,14 +68,17 @@ export const ioSystem = (state: State) =>
     name: 'io',
     state,
     tick: ({ state }) => {
-      const mouseBeforeReset: Mouse = {
-        buttons,
-        position,
-        lastClick,
-        isButtonUp,
-        isButtonDown,
-        isMoving,
-      }
+      const mouseBeforeReset: Mouse = isInitialized
+        ? {
+            buttons,
+            position,
+            lastClick,
+            isButtonUp,
+            isButtonDown,
+            isMoving,
+          }
+        : state.mouse
+        
       buttons = 0
       isButtonUp = false
       isButtonDown = false

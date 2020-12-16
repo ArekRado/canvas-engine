@@ -175,3 +175,7 @@ export type State = {
   isDebugInitialized: boolean
   isDrawEnabled: boolean
 }
+
+export type GetDefaultComponent<X> = (
+  params: Partial<Component<X>> & { entity: Entity },
+) => X

@@ -1,4 +1,4 @@
-import { add, Vector2D } from '@arekrado/vector-2d'
+import { add } from '@arekrado/vector-2d'
 import { getComponent, setComponent } from '../component'
 import { State } from '../type'
 import { CollideBox, CollideType, Transform } from '../type'

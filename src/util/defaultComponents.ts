@@ -1,6 +1,6 @@
 import { vector, vectorZero } from '@arekrado/vector-2d'
 import { componentName } from '../component'
-import { Blueprint, Entity, MouseInteraction } from '../type'
+import { Blueprint, GetDefaultComponent, MouseInteraction } from '../type'
 import {
   Animation,
   CollideBox,
@@ -10,10 +10,6 @@ import {
   Component as CESComponent,
 } from '../type'
 import { generate } from './entity'
-
-export type GetDefaultComponent<X> = (
-  params: Partial<CESComponent<X>> & { entity: Entity },
-) => X
 
 export const defaultAnimation: GetDefaultComponent<Animation> = ({
   entity,

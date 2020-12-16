@@ -1,5 +1,4 @@
 import { magnitude, sub, Vector2D } from '@arekrado/vector-2d'
-import { CollideBox } from '../type'
 
 type DetectAABBcollision = (params: {
   v1: Vector2D

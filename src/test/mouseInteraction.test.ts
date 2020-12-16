@@ -10,33 +10,9 @@ import {
   defaultTransform,
 } from '../util/defaultComponents'
 import { getComponent, setComponent } from '../component'
-import { Entity, MouseInteraction, State, Transform } from '../type'
+import { MouseInteraction } from '../type'
 import { componentName } from '../component'
-import { isClicked, isMouseOver } from '../system/mouseInteraction'
-
-const getBase = (entity: Entity): State => {
-  const v1 = setEntity({
-    entity,
-    state: initialStateWithDisabledDraw,
-  })
-  const v2 = setEntity({ entity, state: v1 })
-
-  const v3 = setComponent(componentName.mouseInteraction, {
-    state: v2,
-    data: defaultMouseInteraction({
-      entity,
-    }),
-  })
-
-  const v4 = setComponent(componentName.transform, {
-    state: v3,
-    data: defaultTransform({
-      entity,
-    }),
-  })
-
-  return v4
-}
+import { isMouseOver } from '../system/mouseInteraction'
 
 describe('mouseInteraction', () => {
   it('isMouseOver', () => {
@@ -81,99 +57,141 @@ describe('mouseInteraction', () => {
     ).toBeTruthy()
   })
 
-  it('isClicked', () => {
-    const mouse = initialStateWithDisabledDraw.mouse
+  it('should set proper mouse interaction values', () => {
+    const entity = generate('entity')
 
-    // Mouse is not clicked but is over
-    expect(
-      isClicked({
-        mouse,
-        isMouseOver: true,
+    const v1 = setEntity({
+      entity,
+      state: initialStateWithDisabledDraw,
+    })
+    const v2 = setEntity({ entity, state: v1 })
+
+    const v3 = setComponent(componentName.mouseInteraction, {
+      state: v2,
+      data: defaultMouseInteraction({
+        entity,
       }),
-    ).toBeFalsy()
+    })
 
-    // Mouse is clicked but not over collide
-    expect(
-      isClicked({
+    const v4 = setComponent(componentName.transform, {
+      state: v3,
+      data: defaultTransform({
+        entity,
+      }),
+    })
+
+    const v5 = setComponent(componentName.collideBox, {
+      state: v4,
+      data: defaultCollideBox({
+        entity,
+        position: vector(200, 200),
+        size: vector(10, 10),
+      }),
+    })
+
+    const v6 = setComponent(componentName.collideCircle, {
+      state: v5,
+      data: defaultCollideCircle({
+        entity,
+        position: vector(100, 100),
+        radius: 10,
+      }),
+    })
+
+    // Mouse is not over element
+    const v7 = runOneFrame({
+      state: {
+        ...v6,
         mouse: {
-          ...mouse,
-          buttons: 1,
+          ...v6.mouse,
+          position: vector(0, 0),
         },
-        isMouseOver: false,
-      }),
-    ).toBeFalsy()
+      },
+      timeNow: 0,
+    })
 
-    // Mouse is clicked and over collideBox
-    expect(
-      isClicked({
+    const mouseInteraction1 = getComponent<MouseInteraction>(
+      componentName.mouseInteraction,
+      {
+        state: v7,
+        entity,
+      },
+    )
+
+    expect(mouseInteraction1?.isMouseOver).toBeFalsy()
+    expect(mouseInteraction1?.isMouseEnter).toBeFalsy()
+    expect(mouseInteraction1?.isMouseLeave).toBeFalsy()
+
+    // Mouse is over collideBox
+    const v8 = runOneFrame({
+      state: {
+        ...v7,
         mouse: {
-          ...mouse,
-          buttons: 1,
+          ...v7.mouse,
+          position: vector(100, 100),
         },
-        isMouseOver: true,
-      }),
-    ).toBeTruthy()
+      },
+      timeNow: 0,
+    })
+
+    const mouseInteraction2 = getComponent<MouseInteraction>(
+      componentName.mouseInteraction,
+      {
+        state: v8,
+        entity,
+      },
+    )
+
+    expect(mouseInteraction2?.isMouseOver).toBeTruthy()
+    expect(mouseInteraction2?.isMouseEnter).toBeTruthy()
+    expect(mouseInteraction2?.isMouseLeave).toBeFalsy()
+
+    // Mouse is over collideCircle
+    const v9 = runOneFrame({
+      state: {
+        ...v8,
+        mouse: {
+          ...v8.mouse,
+          position: vector(200, 200),
+        },
+      },
+      timeNow: 0,
+    })
+
+    const mouseInteraction3 = getComponent<MouseInteraction>(
+      componentName.mouseInteraction,
+      {
+        state: v9,
+        entity,
+      },
+    )
+
+    expect(mouseInteraction3?.isMouseOver).toBeTruthy()
+    expect(mouseInteraction3?.isMouseEnter).toBeFalsy()
+    expect(mouseInteraction3?.isMouseLeave).toBeFalsy()
+
+    // Mouse is not over element again
+    const v10 = runOneFrame({
+      state: {
+        ...v9,
+        mouse: {
+          ...v9.mouse,
+          position: vector(300, 300),
+        },
+      },
+      timeNow: 0,
+    })
+
+    const mouseInteraction4 = getComponent<MouseInteraction>(
+      componentName.mouseInteraction,
+      {
+        state: v10,
+        entity,
+      },
+    )
+
+    expect(mouseInteraction4?.isMouseOver).toBeFalsy()
+    expect(mouseInteraction4?.isMouseEnter).toBeFalsy()
+    expect(mouseInteraction4?.isMouseLeave).toBeTruthy()
   })
-  
-  it('isClickedDown', () => {
-    const mouse = initialStateWithDisabledDraw.mouse
-
-    // Mouse is not clicked but is over
-    expect(
-      isClicked({
-        mouse,
-        isMouseOver: true,
-      }),
-    ).toBeFalsy()
-
-    // Mouse is clicked but not over collide
-    expect(
-      isClicked({
-        mouse: {
-          ...mouse,
-          buttons: 1,
-        },
-        isMouseOver: false,
-      }),
-    ).toBeFalsy()
-
-    // Mouse is clicked and over collideBox
-    expect(
-      isClicked({
-        mouse: {
-          ...mouse,
-          buttons: 1,
-        },
-        isMouseOver: true,
-      }),
-    ).toBeTruthy()
-  })
-
-  // describe('isDoubleClicked', () => {})
-  // describe('isClickedDown', () => {})
-  // describe('isClickedUp', () => {})
-  // describe('isMouseEnter', () => {})
-  // describe('isMouseLeave', () => {})
-  // describe('isMouseMove', () => {})
-  // it('should set proper position using fromParentPosition and parent.position - simple example', () => {
-  //   const entity = generate('e')
-
-  //   const v1 = getBase(entity)
-
-  //   const state = runOneFrame({ state: v1, timeNow: 0 })
-
-  //   const component = getComponent<MouseInteraction>(
-  //     componentName.mouseInteraction,
-  //     {
-  //       state,
-  //       entity,
-  //     },
-  //   )
-
-  //   expect(component?.position).toEqual(vector(1, 1))
-  //   expect(component?.fromParentPosition).toEqual(vector(0, 0))
-
-  //   expect(component?.position).toEqual(vector(3, 3))
-  //   expect(component?.fromParentPosition).toEqual(vector(2, 2))
-  // })
 })

@@ -6,6 +6,7 @@ import { transformSystem } from '../system/transform'
 import { componentName } from '../component'
 import { ioSystem } from '../system/io'
 import { timeSystem } from '../system/time'
+import { mouseInteractionSystem } from '../system/mouseInteraction'
 
 const v1: State = {
   entity: [],
@@ -15,6 +16,7 @@ const v1: State = {
     [componentName.animation]: {},
     [componentName.collideBox]: {},
     [componentName.collideCircle]: {},
+    [componentName.mouseInteraction]: {},
   },
   asset: {
     sprite: [],
@@ -47,8 +49,9 @@ const v4 = transformSystem(v3)
 const v5 = drawSystem(v4)
 const v6 = collideBoxSystem(v5)
 const v7 = animationSystem(v6)
+const v8 = mouseInteractionSystem(v7)
 
-export const initialState = v7
+export const initialState = v8
 
 export const initialStateWithDisabledDraw: State = {
   ...initialState,
