@@ -7,7 +7,6 @@ import {
   CollideCircle,
   Sprite,
   Transform,
-  Component as CESComponent,
 } from '../type'
 import { generate } from './entity'
 

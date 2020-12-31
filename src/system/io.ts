@@ -13,7 +13,10 @@ let isButtonUp = false
 let isButtonDown = false
 let isInitialized = false
 
-export const initialize = (containerId = 'canvas-engine') => {
+export const createInitialize = (
+  containerId = 'canvas-engine',
+  { document }: { document: Document },
+) => {
   const container = document.getElementById(containerId)
 
   if (container) {
@@ -26,13 +29,6 @@ export const initialize = (containerId = 'canvas-engine') => {
       )
     }
 
-    container.addEventListener('click', (e) => {
-      buttons = e.buttons
-      lastClick = {
-        timestamp: Date.now(),
-        buttons: e.buttons,
-      }
-    })
     container.addEventListener(
       'mousemove',
       (e: MouseEvent) => {
@@ -53,8 +49,14 @@ export const initialize = (containerId = 'canvas-engine') => {
     )
     container.addEventListener(
       'mousedown',
-      () => {
+      (e) => {
         isButtonDown = true
+
+        buttons = e.buttons
+        lastClick = {
+          timestamp: Date.now(),
+          buttons: e.buttons,
+        }
       },
       false,
     )
@@ -62,6 +64,11 @@ export const initialize = (containerId = 'canvas-engine') => {
     isInitialized = true
   }
 }
+
+export const initialize = (containerId = 'canvas-engine') =>
+  createInitialize(containerId, {
+    document: document,
+  })
 
 export const ioSystem = (state: State) =>
   createGlobalSystem({
@@ -78,7 +85,7 @@ export const ioSystem = (state: State) =>
             isMoving,
           }
         : state.mouse
-        
+
       buttons = 0
       isButtonUp = false
       isButtonDown = false

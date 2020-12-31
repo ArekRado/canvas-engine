@@ -167,6 +167,7 @@ export type State = {
     animation: Dictionary<Animation>
     collideBox: Dictionary<CollideBox>
     collideCircle: Dictionary<CollideCircle>
+    mouseInteraction: Dictionary<MouseInteraction>
   }
   system: Dictionary<System<any> | GlobalSystem>
   asset: Asset
