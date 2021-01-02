@@ -4,10 +4,10 @@ import { set as setEntity, generate } from '../util/entity'
 import {
   defaultBlueprint,
   defaultCollideBox,
-  defaultTransform,
+  defaultSprite,
 } from '../util/defaultComponents'
 import { getComponent, setComponent } from '../component'
-import { CollideBox, Entity, State, Transform } from '../type'
+import { Blueprint, CollideBox, Entity, State, Sprite } from '../type'
 import { componentName } from '../component'
 import { syncBlueprint } from '../util/blueprint'
 import { addBlueprint } from '../util/asset'
@@ -27,13 +27,13 @@ describe('blueprint', () => {
         entity,
         state,
       })
-      const v2 = setComponent(componentName.transform, {
+      const v2 = setComponent<Sprite>(componentName.sprite, {
         state: v1,
-        data: defaultTransform({
+        data: defaultSprite({
           entity,
         }),
       })
-      const v3 = setComponent(componentName.collideBox, {
+      const v3 = setComponent<CollideBox>(componentName.collideBox, {
         state: v2,
         data: defaultCollideBox({
           entity,
@@ -41,7 +41,7 @@ describe('blueprint', () => {
       })
 
       return hasBlueprint
-        ? setComponent(componentName.blueprint, {
+        ? setComponent<Blueprint>(componentName.blueprint, {
             state: v3,
             data: defaultBlueprint({
               entity,
@@ -71,18 +71,18 @@ describe('blueprint', () => {
 
     const state = syncBlueprint(v3)
 
-    // Transform should not be touched by blueprint
+    // Sprite should not be touched by blueprint
     expect(
-      getComponent<Transform>(componentName.transform, {
+      getComponent<Sprite>(componentName.sprite, {
         state,
         entity: entity1,
-      })?.position,
+      })?.scale,
     ).toEqual([0, 0])
     expect(
-      getComponent<Transform>(componentName.transform, {
+      getComponent<Sprite>(componentName.sprite, {
         state,
         entity: entity2,
-      })?.position,
+      })?.scale,
     ).toEqual([0, 0])
 
     // ALL Collidebox properties should be changed to match blueprint
@@ -101,10 +101,10 @@ describe('blueprint', () => {
 
     // entity3 doesn't have blueprint so should not be changed
     expect(
-      getComponent<Transform>(componentName.transform, {
+      getComponent<Sprite>(componentName.sprite, {
         state,
         entity: entity3,
-      })?.position,
+      })?.scale,
     ).toEqual([0, 0])
     expect(
       getComponent<CollideBox>(componentName.collideBox, {

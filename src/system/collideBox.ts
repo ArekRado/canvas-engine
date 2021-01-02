@@ -1,34 +1,35 @@
 import { add } from '@arekrado/vector-2d'
 import { getComponent, setComponent } from '../component'
-import { State } from '../type'
-import { CollideBox, CollideType, Transform } from '../type'
+import { Entity, State } from '../type'
+import { CollideBox, CollideType } from '../type'
 import { createSystem } from './createSystem'
 import { componentName } from '../component'
 import { detectAABBcollision } from '../util/detectCollision'
+import { get } from '../util/entity'
 
 type FindCollisionsWith = (pramams: {
   state: State
   collideBox: CollideBox
-  transform: Transform
+  entity: Entity
 }) => CollideType[]
 const findCollisionsWith: FindCollisionsWith = ({
   state,
   collideBox,
-  transform,
+  entity,
 }) => {
   const collisionList: CollideType[] = []
 
   Object.values(state.component.collideBox).forEach((collideBox2) => {
-    const transform2 = getComponent<Transform>(componentName.transform, {
+    const entity2 = get({
       state,
-      entity: collideBox2.entity,
+      entityId: collideBox2.entity.id,
     })
 
-    if (transform2 && transform.entity !== transform2.entity) {
+    if (entity2 && entity.id !== entity2.id) {
       const isColliding = detectAABBcollision({
-        v1: add(transform.position, collideBox.position),
+        v1: add(entity.position, collideBox.position),
         size1: collideBox.size,
-        v2: add(transform2.position, collideBox2.position),
+        v2: add(entity2.position, collideBox2.position),
         size2: collideBox2.size,
       })
 
@@ -50,19 +51,19 @@ export const collideBoxSystem = (state: State) =>
     create: ({ state }) => state,
     remove: ({ state }) => state,
     tick: ({ state, component: collideBox }) => {
-      const transform = getComponent<Transform>(componentName.transform, {
+      const entity = get({
         state,
-        entity: collideBox.entity,
+        entityId: collideBox.entity.id,
       })
 
-      if (transform) {
+      if (entity) {
         const collisions = findCollisionsWith({
           state,
           collideBox,
-          transform,
+          entity,
         })
 
-        return setComponent(componentName.collideBox, {
+        return setComponent<CollideBox>(componentName.collideBox, {
           state,
           data: {
             ...collideBox,

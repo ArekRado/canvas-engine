@@ -1,52 +1,51 @@
 import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
-import { getComponent, setComponent } from '../component'
-import { Transform } from '../type'
 import { Entity, State } from '../type'
-import { createSystem } from './createSystem'
-import { componentName } from '../component'
+import { createGlobalSystem } from './createSystem'
+import { set, get } from '../util/entity'
 
 const getParentPosition = (state: State, parentEntity: Entity): Vector2D => {
-  const parent = getComponent<Transform>(componentName.transform, {
-    entity: parentEntity,
-    state,
-  })
+  if (parentEntity.parentId) {
+    const parentParentEntity = get({ entityId: parentEntity.parentId, state })
 
-  if (parent) {
-    if (parent.parent) {
+    if (parentParentEntity) {
       return add(
-        getParentPosition(state, parent.parent),
-        parent.fromParentPosition,
+        getParentPosition(state, parentParentEntity),
+        parentEntity.fromParentPosition,
       )
     } else {
-      return parent.position
+      return vectorZero()
     }
   } else {
-    return vectorZero()
+    return parentEntity.position
   }
 }
 
 export const transformSystem = (state: State) =>
-  createSystem<Transform>({
+  createGlobalSystem({
     state,
-    name: componentName.transform,
-    create: ({ state }) => state,
-    remove: ({ state }) => state,
-    tick: ({ state, component }) => {
-      if (component.parent) {
-        const newPosition = add(
-          component.fromParentPosition,
-          getParentPosition(state, component.parent),
-        )
+    name: 'transform',
+    tick: (params) => {
+      return params.state.entity.reduce((state, entity) => {
+        if (entity.parentId) {
+          const parentEntity = get({ entityId: entity.parentId, state })
 
-        return setComponent(componentName.transform, {
-          data: {
-            ...component,
-            position: newPosition,
-          },
-          state,
-        })
-      }
+          if (parentEntity) {
+            const newPosition = add(
+              entity.fromParentPosition,
+              getParentPosition(state, parentEntity),
+            )
 
-      return state
+            return set({
+              entity: {
+                ...entity,
+                position: newPosition,
+              },
+              state,
+            })
+          }
+        }
+
+        return state
+      }, params.state)
     },
   })

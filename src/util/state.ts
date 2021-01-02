@@ -11,7 +11,6 @@ import { mouseInteractionSystem } from '../system/mouseInteraction'
 const v1: State = {
   entity: [],
   component: {
-    [componentName.transform]: {},
     [componentName.sprite]: {},
     [componentName.animation]: {},
     [componentName.collideBox]: {},

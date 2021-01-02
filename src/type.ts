@@ -28,15 +28,15 @@ export type CollideCircle = Component<{
   collisions: CollideType[]
 }>
 
-export type Transform = Component<{
-  rotation: number
-  fromParentRotation: number
-  scale: Vector2D
-  fromParentScale: Vector2D
-  position: Vector2D
-  fromParentPosition: Vector2D
-  parent?: Entity
-}>
+// export type Transform = Component<{
+//   rotation: number
+//   fromParentRotation: number
+//   scale: Vector2D
+//   fromParentScale: Vector2D
+//   position: Vector2D
+//   fromParentPosition: Vector2D
+//   parent?: Entity
+// }>
 
 export type Blueprint = Component<{
   id: Guid
@@ -90,11 +90,15 @@ export type Animation = Component<{
 
 export type SpriteSrc = string
 
-export type Sprite = Component<{ src: SpriteSrc }>
+export type Sprite = Component<{
+  src: SpriteSrc
+  rotation: number
+  scale: Vector2D
+}>
 
 export type MouseInteraction = Component<{
-  doubleClickSpeed: number
-  
+  // doubleClickSpeed: number
+
   // When the user clicks on an element
   isClicked: boolean
   // When the user double-clicks on an element
@@ -117,6 +121,14 @@ export type Entity = {
   id: Guid
   name: string
   persistOnSceneChange: boolean
+
+  rotation: number
+  fromParentRotation: number
+  scale: Vector2D
+  fromParentScale: Vector2D
+  position: Vector2D
+  fromParentPosition: Vector2D
+  parentId?: Guid
 }
 
 export type Time = {
@@ -163,7 +175,6 @@ export type State = {
   entity: Entity[]
   component: Dictionary<Dictionary<Component<any>>> & {
     sprite: Dictionary<Sprite>
-    transform: Dictionary<Transform>
     animation: Dictionary<Animation>
     collideBox: Dictionary<CollideBox>
     collideCircle: Dictionary<CollideCircle>

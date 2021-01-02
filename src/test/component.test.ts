@@ -4,7 +4,7 @@ import { set as setEntity, generate } from '../util/entity'
 import { runOneFrame } from '../util/runOneFrame'
 import { getComponent, removeComponent, setComponent } from '../component'
 import { createSystem } from '../system/createSystem'
-import { State } from '../type'
+import { Dictionary, State } from '../type'
 
 describe('component', () => {
   it('should call system create and remove methods', () => {
@@ -28,14 +28,14 @@ describe('component', () => {
       tick,
     })
 
-    const v3 = setComponent('test', {
+    const v3 = setComponent<Dictionary<{}>>('test', {
       state: v2,
       data: {
         entity: entity1,
         name: 'test',
       },
     })
-    const v4 = setComponent('test', {
+    const v4 = setComponent<Dictionary<{}>>('test', {
       state: v3,
       data: {
         entity: entity2,
@@ -51,7 +51,7 @@ describe('component', () => {
     expect(tick).toHaveBeenCalled()
 
     // create new component after remove
-    const v7 = setComponent('test', {
+    const v7 = setComponent<Partial<{}>>('test', {
       state: v6,
       data: {
         entity: entity1,
@@ -62,7 +62,7 @@ describe('component', () => {
     expect(create).toHaveBeenCalledTimes(3)
 
     // updating existing component
-    const v8 = setComponent('test', {
+    const v8 = setComponent<Partial<{}>>('test', {
       state: v7,
       data: {
         entity: entity1,

@@ -5,14 +5,20 @@ import { set as setEntity, generate } from '../util/entity'
 import { runOneFrame } from '../util/runOneFrame'
 import { defaultCollideBox, defaultTransform } from '../util/defaultComponents'
 import { getComponent, setComponent } from '../component'
-import { CollideBox } from '../type'
+import { CollideBox, Transform } from '../type'
 import { componentName } from '../component'
 
 describe('collide', () => {
   it('detect collisions box-box', () => {
-    const entity1 = generate('e1')
-    const entity2 = generate('e2')
-    const entity3 = generate('e3')
+    const entity1 = generate('e1', {
+      fromParentPosition: vector(0, 0),
+    })
+    const entity2 = generate('e2', {
+      fromParentPosition: vector(1, 1),
+    })
+    const entity3 = generate('e3', {
+      fromParentPosition: vector(3.5, 3.5),
+    })
 
     const v1 = setEntity({
       entity: entity1,
@@ -21,32 +27,8 @@ describe('collide', () => {
     const v2 = setEntity({ entity: entity2, state: v1 })
     const v3 = setEntity({ entity: entity3, state: v2 })
 
-    const v4 = setComponent(componentName.transform, {
+    const v4 = setComponent<CollideBox>(componentName.collideBox, {
       state: v3,
-      data: defaultTransform({
-        entity: entity1,
-        fromParentPosition: vector(0, 0),
-      }),
-    })
-
-    const v5 = setComponent(componentName.transform, {
-      state: v4,
-      data: defaultTransform({
-        entity: entity2,
-        fromParentPosition: vector(1, 1),
-      }),
-    })
-
-    const v6 = setComponent(componentName.transform, {
-      state: v5,
-      data: defaultTransform({
-        entity: entity3,
-        fromParentPosition: vector(3.5, 3.5),
-      }),
-    })
-
-    const v7 = setComponent(componentName.collideBox, {
-      state: v6,
       data: defaultCollideBox({
         entity: entity1,
         size: vector(1.5, 1.5),
@@ -54,8 +36,8 @@ describe('collide', () => {
       }),
     })
 
-    const v8 = setComponent(componentName.collideBox, {
-      state: v7,
+    const v5 = setComponent<CollideBox>(componentName.collideBox, {
+      state: v4,
       data: defaultCollideBox({
         entity: entity2,
         size: vector(1, 1),
@@ -63,8 +45,8 @@ describe('collide', () => {
       }),
     })
 
-    const v9 = setComponent(componentName.collideBox, {
-      state: v8,
+    const v6 = setComponent<CollideBox>(componentName.collideBox, {
+      state: v5,
       data: defaultCollideBox({
         entity: entity3,
         size: vector(1, 1),
@@ -72,7 +54,7 @@ describe('collide', () => {
       }),
     })
 
-    const state = runOneFrame({ state: v9, timeNow: 0 })
+    const state = runOneFrame({ state: v6, timeNow: 0 })
 
     const collisions1 =
       getComponent<CollideBox>(componentName.collideBox, {

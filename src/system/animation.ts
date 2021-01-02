@@ -227,7 +227,7 @@ export const animationSystem = (state: State) =>
 
         set(state.component, `${component}.${entity.id}.${path}`, value)
 
-        return setComponent(componentName.animation, {
+        return setComponent<Animation>(componentName.animation, {
           state,
           data: newAnimation,
         })

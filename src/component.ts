@@ -3,7 +3,6 @@ import { Component, Dictionary } from './type'
 
 export enum componentName {
   sprite = 'sprite',
-  transform = 'transform',
   animation = 'animation',
   collideBox = 'collideBox',
   collideCircle = 'collideCircle',
@@ -11,14 +10,14 @@ export enum componentName {
   mouseInteraction = 'mouseInteraction',
 }
 
-type SetComponent = (
+type SetComponentParams<Data> = {
+  state: State
+  data: Component<Data>
+}
+export const setComponent = <Data>(
   name: string,
-  params: {
-    state: State
-    data: Component<Dictionary<any>>
-  },
-) => State
-export const setComponent: SetComponent = (name, { state, data }) => {
+  { state, data }: SetComponentParams<Data>,
+): State => {
   const newState = {
     ...state,
     component: {

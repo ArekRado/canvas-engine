@@ -6,7 +6,6 @@ import {
   CollideBox,
   CollideCircle,
   Sprite,
-  Transform,
 } from '../type'
 import { generate } from './entity'
 
@@ -21,7 +20,7 @@ export const defaultAnimation: GetDefaultComponent<Animation> = ({
   isFinished: false,
   currentTime: 0,
   property: {
-    component: 'transform',
+    component: 'collideBox',
     path: '-',
     entity: generate('-'),
     index: -1,
@@ -61,6 +60,8 @@ export const defaultSprite: GetDefaultComponent<Sprite> = ({
   entity,
   name: componentName.sprite,
   src: '',
+  rotation: 0,
+  scale: vectorZero(),
   ...data,
 })
 
@@ -71,21 +72,6 @@ export const defaultBlueprint: GetDefaultComponent<Blueprint> = ({
   entity,
   name: componentName.blueprint,
   id: '',
-  ...data,
-})
-
-export const defaultTransform: GetDefaultComponent<Transform> = ({
-  entity,
-  ...data
-}) => ({
-  entity,
-  name: componentName.transform,
-  rotation: 0,
-  fromParentRotation: 0,
-  scale: vector(1, 1),
-  fromParentScale: vector(1, 1),
-  position: vectorZero(),
-  fromParentPosition: vectorZero(),
   ...data,
 })
 

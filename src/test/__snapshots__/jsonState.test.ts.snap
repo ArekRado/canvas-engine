@@ -9,7 +9,6 @@ Object {
   "collideCircle": Object {},
   "mouseInteraction": Object {},
   "sprite": Object {},
-  "transform": Object {},
 }
 `;
 
@@ -49,4 +48,4 @@ exports[`jsonState jsonToState  6`] = `false`;
 
 exports[`jsonState jsonToState  7`] = `false`;
 
-exports[`jsonState jsonToState 1`] = `"{\\"entity\\":[],\\"component\\":{\\"transform\\":{},\\"sprite\\":{},\\"animation\\":{},\\"collideBox\\":{},\\"collideCircle\\":{},\\"mouseInteraction\\":{}},\\"time\\":{\\"previousTimeNow\\":0,\\"timeNow\\":0,\\"delta\\":0},\\"asset\\":{\\"sprite\\":[],\\"blueprint\\":[]},\\"mouse\\":{\\"buttons\\":0,\\"position\\":[0,0],\\"isButtonUp\\":false,\\"isButtonDown\\":false,\\"isMoving\\":false,\\"lastClick\\":{\\"timestamp\\":-1,\\"buttons\\":0}},\\"isDebugInitialized\\":false,\\"isDrawEnabled\\":false}"`;
+exports[`jsonState jsonToState 1`] = `"{\\"entity\\":[],\\"component\\":{\\"sprite\\":{},\\"animation\\":{},\\"collideBox\\":{},\\"collideCircle\\":{},\\"mouseInteraction\\":{}},\\"time\\":{\\"previousTimeNow\\":0,\\"timeNow\\":0,\\"delta\\":0},\\"asset\\":{\\"sprite\\":[],\\"blueprint\\":[]},\\"mouse\\":{\\"buttons\\":0,\\"position\\":[0,0],\\"isButtonUp\\":false,\\"isButtonDown\\":false,\\"isMoving\\":false,\\"lastClick\\":{\\"timestamp\\":-1,\\"buttons\\":0}},\\"isDebugInitialized\\":false,\\"isDrawEnabled\\":false}"`;

@@ -7,10 +7,9 @@ import {
   defaultCollideBox,
   defaultCollideCircle,
   defaultMouseInteraction,
-  defaultTransform,
 } from '../util/defaultComponents'
 import { getComponent, setComponent } from '../component'
-import { MouseInteraction } from '../type'
+import { CollideBox, CollideCircle, MouseInteraction } from '../type'
 import { componentName } from '../component'
 import { isMouseOver } from '../system/mouseInteraction'
 
@@ -27,7 +26,7 @@ describe('mouseInteraction', () => {
           position: vector(-10, -10),
         },
         collideBox: defaultCollideBox({ entity }),
-        transform: defaultTransform({ entity }),
+        entity
       }),
     ).toBeFalsy()
 
@@ -39,7 +38,7 @@ describe('mouseInteraction', () => {
           position: vector(5, 5),
         },
         collideBox: defaultCollideBox({ entity, size: vector(10, 10) }),
-        transform: defaultTransform({ entity }),
+        entity
       }),
     ).toBeTruthy()
 
@@ -52,7 +51,7 @@ describe('mouseInteraction', () => {
           position: vector(5, 5),
         },
         collideCircle: defaultCollideCircle({ entity, radius: 10 }),
-        transform: defaultTransform({ entity }),
+        entity
       }),
     ).toBeTruthy()
   })
@@ -66,22 +65,15 @@ describe('mouseInteraction', () => {
     })
     const v2 = setEntity({ entity, state: v1 })
 
-    const v3 = setComponent(componentName.mouseInteraction, {
+    const v3 = setComponent<MouseInteraction>(componentName.mouseInteraction, {
       state: v2,
       data: defaultMouseInteraction({
         entity,
       }),
     })
 
-    const v4 = setComponent(componentName.transform, {
+    const v5 = setComponent<CollideBox>(componentName.collideBox, {
       state: v3,
-      data: defaultTransform({
-        entity,
-      }),
-    })
-
-    const v5 = setComponent(componentName.collideBox, {
-      state: v4,
       data: defaultCollideBox({
         entity,
         position: vector(200, 200),
@@ -89,7 +81,7 @@ describe('mouseInteraction', () => {
       }),
     })
 
-    const v6 = setComponent(componentName.collideCircle, {
+    const v6 = setComponent<CollideCircle>(componentName.collideCircle, {
       state: v5,
       data: defaultCollideCircle({
         entity,

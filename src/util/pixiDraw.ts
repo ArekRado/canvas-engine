@@ -90,9 +90,9 @@ type DrawImage = (params: {
   debugGraphics: PIXI.Graphics
 }) => void
 const drawImage: DrawImage = ({ pixiImage, image, devMode, debugGraphics }) => {
-  const position = image.transform.position
-  const rotation = image.transform.rotation
-  const scale = image.transform.scale
+  const position = image.entity.position
+  const rotation = image.entity.rotation
+  const scale = image.entity.scale
 
   pixiImage.x = position[0]
   pixiImage.y = position[1]
@@ -105,8 +105,8 @@ const drawImage: DrawImage = ({ pixiImage, image, devMode, debugGraphics }) => {
   if (devMode) {
     debugGraphics.lineStyle(1, 0x0000ff, 1)
     debugGraphics.drawRect(
-      image.transform.position[0],
-      image.transform.position[1],
+      image.entity.position[0],
+      image.entity.position[1],
       20,
       20,
     )
