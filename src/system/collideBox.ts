@@ -1,11 +1,11 @@
 import { add } from '@arekrado/vector-2d'
-import { getComponent, setComponent } from '../component'
+import { setComponent } from '../component'
 import { Entity, State } from '../type'
 import { CollideBox, CollideType } from '../type'
 import { createSystem } from './createSystem'
 import { componentName } from '../component'
 import { detectAABBcollision } from '../util/detectCollision'
-import { get } from '../util/entity'
+import { getEntity } from '../util/entity'
 
 type FindCollisionsWith = (pramams: {
   state: State
@@ -20,7 +20,7 @@ const findCollisionsWith: FindCollisionsWith = ({
   const collisionList: CollideType[] = []
 
   Object.values(state.component.collideBox).forEach((collideBox2) => {
-    const entity2 = get({
+    const entity2 = getEntity({
       state,
       entityId: collideBox2.entity.id,
     })
@@ -51,7 +51,7 @@ export const collideBoxSystem = (state: State) =>
     create: ({ state }) => state,
     remove: ({ state }) => state,
     tick: ({ state, component: collideBox }) => {
-      const entity = get({
+      const entity = getEntity({
         state,
         entityId: collideBox.entity.id,
       })

@@ -14,7 +14,7 @@ import {
   detectPointBoxCollision,
   detectPointCircleCollision,
 } from '../util/detectCollision'
-import { get } from '../util/entity'
+import { getEntity } from '../util/entity'
 
 type IsMouseOver = (params: {
   mouse: Mouse
@@ -60,7 +60,7 @@ export const mouseInteractionSystem = (state: State) =>
     create: ({ state }) => state,
     remove: ({ state }) => state,
     tick: ({ state, component }) => {
-      const entity = get({
+      const entity = getEntity({
         state,
         entityId: component.entity.id,
       })

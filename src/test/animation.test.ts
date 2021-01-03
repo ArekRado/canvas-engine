@@ -2,7 +2,7 @@ import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
 import { defaultAnimation, defaultSprite } from '../util/defaultComponents'
 import { getActiveKeyframe } from '../system/animation'
-import { generate, set as setEntity } from '../util/entity'
+import { generateEntity, setEntity } from '../util/entity'
 import { State, Sprite, Animation } from '../type'
 import { initialStateWithDisabledDraw } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
@@ -10,7 +10,7 @@ import { getComponent, setComponent } from '../component'
 import { componentName } from '../component'
 
 describe('animation', () => {
-  const entity = generate('entity')
+  const entity = generateEntity('entity')
 
   const getSprite = (state: State) =>
     getComponent<Sprite>(componentName.sprite, { state, entity })

@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime'
 import { initialStateWithDisabledDraw } from '../util/state'
-import { set as setEntity, generate } from '../util/entity'
+import { setEntity as setEntity, generateEntity } from '../util/entity'
 import {
   defaultBlueprint,
   defaultCollideBox,
@@ -14,9 +14,9 @@ import { addBlueprint } from '../util/asset'
 
 describe('blueprint', () => {
   it('should update all components connected with blueprint', () => {
-    const entity1 = generate('e1')
-    const entity2 = generate('e2')
-    const entity3 = generate('e3')
+    const entity1 = generateEntity('e1')
+    const entity2 = generateEntity('e2')
+    const entity3 = generateEntity('e3')
 
     const gameObjectCreator = (
       entity: Entity,
@@ -54,11 +54,11 @@ describe('blueprint', () => {
     const stateWithBlueprint = addBlueprint({
       state: initialStateWithDisabledDraw,
       data: {
-        entity: generate('-'),
+        entity: generateEntity('-'),
         name: 'test',
         data: {
           collideBox: defaultCollideBox({
-            entity: generate('-'),
+            entity: generateEntity('-'),
             position: [1, 1],
           }),
         },

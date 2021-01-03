@@ -1,6 +1,6 @@
 import { v4 } from 'uuid'
-import { Component, Entity, Guid, State } from '../type'
-import { componentName, getComponent, removeComponent } from '../component'
+import { Entity, Guid, State } from '../type'
+import { removeComponent } from '../component'
 import { vector, Vector2D, vectorZero } from '@arekrado/vector-2d'
 
 type Generate = (
@@ -16,7 +16,7 @@ type Generate = (
     parentId?: Guid
   }>,
 ) => Entity
-export const generate: Generate = (name: string, options = {}): Entity => ({
+export const generateEntity: Generate = (name: string, options = {}): Entity => ({
   name,
   id: v4(),
   persistOnSceneChange: options.persistOnSceneChange || false,
@@ -34,7 +34,7 @@ type Params = {
   state: State
 }
 
-export const set = ({ entity, state }: Params): State => {
+export const setEntity = ({ entity, state }: Params): State => {
   const exist = state.entity.find((x) => x.id === entity.id)
   if (exist) {
     return {
@@ -53,10 +53,10 @@ type Get = {
   entityId: Guid
   state: State
 }
-export const get = ({ entityId, state }: Get): Entity | undefined =>
+export const getEntity = ({ entityId, state }: Get): Entity | undefined =>
   state.entity.find((e) => e.id === entityId)
 
-export const remove = ({ entity, state }: Params): State => {
+export const removeEntity = ({ entity, state }: Params): State => {
   const newState = {
     ...state,
     entity: state.entity.filter((item) => item !== entity),
@@ -72,33 +72,4 @@ export const remove = ({ entity, state }: Params): State => {
   )
 
   return v1
-}
-
-export type GetChildren = (params: {
-  entity: Entity
-  state: State
-  componentName: keyof State['component']
-}) => Entity[] | undefined
-
-export const getChildren: GetChildren = ({
-  entity,
-  state,
-  componentName: cn,
-}) => {
-  if (state.component[cn]) {
-    state.component[cn].filter((component: Component<any>) => {
-      const transform = getComponent<Transform>(componentName.transform, {
-        state,
-        entity: component.entity,
-      })
-
-      if (transform?.parent?.id === entity.id) {
-        return true
-      }
-
-      return false
-    })
-  }
-
-  return undefined
 }

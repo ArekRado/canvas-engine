@@ -2,7 +2,7 @@ import { Entity, Sprite } from '../type'
 import { initialize as initializePixi, render } from '../util/pixiDraw'
 import { createSystem } from './createSystem'
 import { State } from '../type'
-import { getComponent, componentName } from '../component'
+import { componentName } from '../component'
 
 export type DrawState = {
   sprite: Sprite

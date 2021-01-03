@@ -1,11 +1,11 @@
 import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
 import { Entity, State } from '../type'
 import { createGlobalSystem } from './createSystem'
-import { set, get } from '../util/entity'
+import { setEntity, getEntity } from '../util/entity'
 
 const getParentPosition = (state: State, parentEntity: Entity): Vector2D => {
   if (parentEntity.parentId) {
-    const parentParentEntity = get({ entityId: parentEntity.parentId, state })
+    const parentParentEntity = getEntity({ entityId: parentEntity.parentId, state })
 
     if (parentParentEntity) {
       return add(
@@ -27,7 +27,7 @@ export const transformSystem = (state: State) =>
     tick: (params) => {
       return params.state.entity.reduce((state, entity) => {
         if (entity.parentId) {
-          const parentEntity = get({ entityId: entity.parentId, state })
+          const parentEntity = getEntity({ entityId: entity.parentId, state })
 
           if (parentEntity) {
             const newPosition = add(
@@ -35,7 +35,7 @@ export const transformSystem = (state: State) =>
               getParentPosition(state, parentEntity),
             )
 
-            return set({
+            return setEntity({
               entity: {
                 ...entity,
                 position: newPosition,

@@ -1,22 +1,22 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
 import { initialStateWithDisabledDraw } from '../util/state'
-import { set as setEntity, generate } from '../util/entity'
+import { setEntity, generateEntity } from '../util/entity'
 import { runOneFrame } from '../util/runOneFrame'
-import { defaultCollideBox, defaultTransform } from '../util/defaultComponents'
+import { defaultCollideBox } from '../util/defaultComponents'
 import { getComponent, setComponent } from '../component'
-import { CollideBox, Transform } from '../type'
+import { CollideBox } from '../type'
 import { componentName } from '../component'
 
 describe('collide', () => {
   it('detect collisions box-box', () => {
-    const entity1 = generate('e1', {
+    const entity1 = generateEntity('e1', {
       fromParentPosition: vector(0, 0),
     })
-    const entity2 = generate('e2', {
+    const entity2 = generateEntity('e2', {
       fromParentPosition: vector(1, 1),
     })
-    const entity3 = generate('e3', {
+    const entity3 = generateEntity('e3', {
       fromParentPosition: vector(3.5, 3.5),
     })
 

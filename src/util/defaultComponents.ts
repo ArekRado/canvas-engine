@@ -1,4 +1,4 @@
-import { vector, vectorZero } from '@arekrado/vector-2d'
+import { vectorZero } from '@arekrado/vector-2d'
 import { componentName } from '../component'
 import { Blueprint, GetDefaultComponent, MouseInteraction } from '../type'
 import {
@@ -7,7 +7,7 @@ import {
   CollideCircle,
   Sprite,
 } from '../type'
-import { generate } from './entity'
+import { generateEntity } from './entity'
 
 export const defaultAnimation: GetDefaultComponent<Animation> = ({
   entity,
@@ -22,7 +22,7 @@ export const defaultAnimation: GetDefaultComponent<Animation> = ({
   property: {
     component: 'collideBox',
     path: '-',
-    entity: generate('-'),
+    entity: generateEntity('-'),
     index: -1,
   },
   wrapMode: 'Once',

@@ -1,15 +1,15 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
 import { initialStateWithDisabledDraw } from '../util/state'
-import { set as setEntity, generate, get as getEntity } from '../util/entity'
+import { setEntity, generateEntity, getEntity as getEntity } from '../util/entity'
 import { runOneFrame } from '../util/runOneFrame'
 
 describe('transform', () => {
   it('should set proper position using fromParentPosition and parent.position - simple example', () => {
-    const entity1 = generate('e1', {
+    const entity1 = generateEntity('e1', {
       position: vector(1, 1),
     })
-    const entity2 = generate('e2', {
+    const entity2 = generateEntity('e2', {
       fromParentPosition: vector(2, 2),
       parentId: entity1.id,
     })
@@ -40,18 +40,18 @@ describe('transform', () => {
   })
 
   it('should set proper position using fromParentPosition and parent.position', () => {
-    const entity1 = generate('e1', {
+    const entity1 = generateEntity('e1', {
       position: vector(1, 1),
     })
-    const entity2 = generate('e2', {
+    const entity2 = generateEntity('e2', {
       fromParentPosition: vector(1, 1),
       parentId: entity1.id,
     })
-    const entity3 = generate('e3', {
+    const entity3 = generateEntity('e3', {
       fromParentPosition: vector(-10, -10),
       parentId: entity2.id,
     })
-    const entity4 = generate('e4', {
+    const entity4 = generateEntity('e4', {
       fromParentPosition: vector(10, 10),
       parentId: entity2.id,
     })

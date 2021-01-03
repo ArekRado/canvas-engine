@@ -26,19 +26,18 @@ import {
   addBlueprint,
   removeBlueprint,
 } from './util/asset'
-import { generate, set, remove } from './util/entity'
+export {
+  getEntity,
+  generateEntity,
+  setEntity,
+  removeEntity,
+} from './util/entity'
 
 export const asset = {
   addSprite,
   removeSprite,
   addBlueprint,
   removeBlueprint,
-}
-
-export const entity = {
-  generate,
-  set,
-  remove,
 }
 
 export const defaultData = {

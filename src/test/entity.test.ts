@@ -2,9 +2,9 @@ import 'regenerator-runtime/runtime'
 import { initialStateWithDisabledDraw } from '../util/state'
 
 import {
-  set as setEntity,
-  remove as removeEntity,
-  generate,
+  setEntity,
+  removeEntity,
+  generateEntity,
 } from '../util/entity'
 import {
   defaultAnimation,
@@ -23,7 +23,7 @@ import {
 
 describe('entity', () => {
   it('remove - should remove components by entity', () => {
-    const entity = generate('test')
+    const entity = generateEntity('test')
     const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
 
     const v2 = setComponent<Animation>(componentName.animation, {
@@ -64,7 +64,7 @@ describe('entity', () => {
   })
 
   it('set - should set and update entity', () => {
-    const entity = generate('test', { rotation: 1 })
+    const entity = generateEntity('test', { rotation: 1 })
     const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
 
     expect(v1.entity[0]).toEqual(entity)

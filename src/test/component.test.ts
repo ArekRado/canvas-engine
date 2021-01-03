@@ -1,15 +1,15 @@
 import 'regenerator-runtime/runtime'
 import { initialStateWithDisabledDraw } from '../util/state'
-import { set as setEntity, generate } from '../util/entity'
+import { setEntity, generateEntity } from '../util/entity'
 import { runOneFrame } from '../util/runOneFrame'
-import { getComponent, removeComponent, setComponent } from '../component'
+import { removeComponent, setComponent } from '../component'
 import { createSystem } from '../system/createSystem'
 import { Dictionary, State } from '../type'
 
 describe('component', () => {
   it('should call system create and remove methods', () => {
-    const entity1 = generate('e1')
-    const entity2 = generate('e2')
+    const entity1 = generateEntity('e1')
+    const entity2 = generateEntity('e2')
 
     const create = jest.fn<State, [{ state: State }]>(({ state }) => state)
     const remove = jest.fn<State, [{ state: State }]>(({ state }) => state)
