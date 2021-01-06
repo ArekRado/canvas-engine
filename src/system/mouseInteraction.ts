@@ -60,18 +60,20 @@ export const mouseInteractionSystem = (state: State) =>
     create: ({ state }) => state,
     remove: ({ state }) => state,
     tick: ({ state, component }) => {
+      const entityId = component.entityId
       const entity = getEntity({
         state,
-        entityId: component.entity.id,
+        entityId: component.entityId,
       })
+
       if (entity) {
         const collideBox = getComponent<CollideBox>(componentName.collideBox, {
           state,
-          entity,
+          entityId,
         })
         const collideCircle = getComponent<CollideCircle>(
           componentName.collideCircle,
-          { state, entity },
+          { state, entityId },
         )
 
         const mouse = state.mouse
@@ -93,7 +95,7 @@ export const mouseInteractionSystem = (state: State) =>
             {
               state,
               data: {
-                entity,
+                entityId,
                 name: componentName.mouseInteraction,
                 isClicked,
                 isDoubleClicked: false, // TODO

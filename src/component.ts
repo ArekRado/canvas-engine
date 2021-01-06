@@ -1,4 +1,4 @@
-import { Entity, State } from './type'
+import { Entity, Guid, State } from './type'
 import { Component, Dictionary } from './type'
 
 export enum componentName {
@@ -24,7 +24,7 @@ export const setComponent = <Data>(
       ...state.component,
       [name]: {
         ...state.component[name],
-        [data.entity.id]: data,
+        [data.entityId]: data,
       },
     },
   }
@@ -32,7 +32,7 @@ export const setComponent = <Data>(
   if (
     state.system[name] !== undefined &&
     (state.component[name] === undefined ||
-      state.component[name][data.entity.id] === undefined)
+      state.component[name][data.entityId] === undefined)
   ) {
     return state.system[name].create({ state: newState, component: data })
   }
@@ -43,12 +43,12 @@ export const setComponent = <Data>(
 type RemoveComponent = (
   name: string,
   params: {
-    entity: Entity
+    entityId: Guid
     state: State
   },
 ) => State
-export const removeComponent: RemoveComponent = (name, { entity, state }) => {
-  const { [entity.id]: _, ...dictionaryWithoutComponent } = state.component[
+export const removeComponent: RemoveComponent = (name, { entityId, state }) => {
+  const { [entityId]: _, ...dictionaryWithoutComponent } = state.component[
     name
   ] as Dictionary<Component<any>>
 
@@ -60,7 +60,7 @@ export const removeComponent: RemoveComponent = (name, { entity, state }) => {
     },
   }
 
-  const component = getComponent(name, { state, entity })
+  const component = getComponent(name, { state, entityId })
 
   if (newState.system[name]) {
     return newState.system[name].remove({ state: newState, component })
@@ -72,13 +72,13 @@ export const removeComponent: RemoveComponent = (name, { entity, state }) => {
 export const getComponent = <Data>(
   name: string,
   {
-    entity,
+    entityId,
     state,
   }: {
-    entity: Entity
+    entityId: Guid
     state: State
   },
 ): Component<Data> | undefined => {
   const c: Dictionary<Component<Data>> = state.component[name]
-  return c ? (c[entity.id] as Component<Data> | undefined) : undefined
+  return c ? (c[entityId] as Component<Data> | undefined) : undefined
 }

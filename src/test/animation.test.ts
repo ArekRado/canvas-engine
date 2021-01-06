@@ -11,11 +11,12 @@ import { componentName } from '../component'
 
 describe('animation', () => {
   const entity = generateEntity('entity')
+  const entityId = entity.id
 
   const getSprite = (state: State) =>
-    getComponent<Sprite>(componentName.sprite, { state, entity })
+    getComponent<Sprite>(componentName.sprite, { state, entityId })
   const getAnimation = (state: State) =>
-    getComponent<Animation>(componentName.animation, { state, entity })
+    getComponent<Animation>(componentName.animation, { state, entityId })
 
   const tick = (timeNow: number, state: State) =>
     runOneFrame({ state, timeNow })
@@ -23,7 +24,7 @@ describe('animation', () => {
   describe('getActiveKeyframe', () => {
     it('should return proper time and index when time is zero', () => {
       const animation = defaultAnimation({
-        entity,
+        entityId,
         isPlaying: true,
         currentTime: 0,
         property: {
@@ -56,7 +57,7 @@ describe('animation', () => {
 
     it('should return proper time and index when time is non zero', () => {
       const animation = defaultAnimation({
-        entity,
+        entityId,
         isPlaying: true,
         currentTime: 5,
         property: {
@@ -89,7 +90,7 @@ describe('animation', () => {
 
     it('should return proper data when animation has multiple keyframes and currentTime exceeded all keyframes', () => {
       const animation = defaultAnimation({
-        entity,
+        entityId,
         isPlaying: true,
         currentTime: 2000,
         property: {
@@ -148,7 +149,7 @@ describe('animation', () => {
 
     it('should return proper data when animation has multiple keyframes and is looped', () => {
       const animation = defaultAnimation({
-        entity,
+        entityId,
         isPlaying: true,
         currentTime: 2000,
         property: {
@@ -211,12 +212,12 @@ describe('animation', () => {
       const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
       const v2 = setComponent<Sprite>(componentName.sprite, {
         state: v1,
-        data: defaultSprite({ entity }),
+        data: defaultSprite({ entityId }),
       })
       const v3 = setComponent<Animation>(componentName.animation, {
         state: v2,
         data: defaultAnimation({
-          entity,
+          entityId,
           isPlaying: true,
           keyframes: [
             {
@@ -271,12 +272,12 @@ describe('animation', () => {
       const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
       const v2 = setComponent<Sprite>(componentName.sprite, {
         state: v1,
-        data: defaultSprite({ entity }),
+        data: defaultSprite({ entityId }),
       })
       const v3 = setComponent<Animation>(componentName.animation, {
         state: v2,
         data: defaultAnimation({
-          entity,
+          entityId,
           isPlaying: true,
           keyframes: [
             {
@@ -319,12 +320,12 @@ describe('animation', () => {
       const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
       const v2 = setComponent<Sprite>(componentName.sprite, {
         state: v1,
-        data: defaultSprite({ entity }),
+        data: defaultSprite({ entityId }),
       })
       const v3 = setComponent<Animation>(componentName.animation, {
         state: v2,
         data: defaultAnimation({
-          entity,
+          entityId,
           isPlaying: true,
           keyframes: [
             {
@@ -390,12 +391,12 @@ describe('animation', () => {
       const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
       const v2 = setComponent<Sprite>(componentName.sprite, {
         state: v1,
-        data: defaultSprite({ entity }),
+        data: defaultSprite({ entityId }),
       })
       const v3 = setComponent<Animation>(componentName.animation, {
         state: v2,
         data: defaultAnimation({
-          entity,
+          entityId,
           isPlaying: true,
           keyframes: [
             {

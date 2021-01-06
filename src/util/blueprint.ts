@@ -4,12 +4,12 @@ const syncComponentBlueprint = (assetBlueprint: AssetBlueprint) => (
   state: State,
   blueprint: Blueprint,
 ): State => {
-  const entityId = blueprint.entity.id
+  const entityId = blueprint.entityId
 
   Object.entries(assetBlueprint.data).forEach(([componentKey, value]) => {
     state.component[componentKey][entityId] = {
       ...value,
-      entity: blueprint.entity,
+      entityId: blueprint.entityId,
     }
   })
 

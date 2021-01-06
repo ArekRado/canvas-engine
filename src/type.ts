@@ -7,13 +7,13 @@ export type Dictionary<Value> = { [key: string]: Value }
 export type Guid = string
 
 export type Component<Data> = {
-  entity: Entity
+  entityId: Guid
   name: string
 } & Data
 
 export type CollideType = {
   type: 'box' | 'circle'
-  entity: Entity
+  entityId: Guid
 }
 
 export type CollideBox = Component<{
@@ -144,7 +144,7 @@ export type AssetSprite = {
 
 export type AssetBlueprint = {
   name: string
-  entity: Entity
+  entityId: Guid
   data: Dictionary<Component<any>>
 }
 
@@ -189,5 +189,5 @@ export type State = {
 }
 
 export type GetDefaultComponent<X> = (
-  params: Partial<Component<X>> & { entity: Entity },
+  params: Partial<Component<X>> & { entityId: Guid },
 ) => X

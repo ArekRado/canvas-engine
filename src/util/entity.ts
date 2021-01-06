@@ -16,7 +16,10 @@ type Generate = (
     parentId?: Guid
   }>,
 ) => Entity
-export const generateEntity: Generate = (name: string, options = {}): Entity => ({
+export const generateEntity: Generate = (
+  name: string,
+  options = {},
+): Entity => ({
   name,
   id: v4(),
   persistOnSceneChange: options.persistOnSceneChange || false,
@@ -29,12 +32,9 @@ export const generateEntity: Generate = (name: string, options = {}): Entity => 
   parentId: options.parentId,
 })
 
-type Params = {
-  entity: Entity
-  state: State
-}
+type SetEntity = (params: { entity: Entity; state: State }) => State
 
-export const setEntity = ({ entity, state }: Params): State => {
+export const setEntity: SetEntity = ({ entity, state }) => {
   const exist = state.entity.find((x) => x.id === entity.id)
   if (exist) {
     return {
@@ -49,24 +49,26 @@ export const setEntity = ({ entity, state }: Params): State => {
   }
 }
 
-type Get = {
+type GetEntity = (params: {
   entityId: Guid
   state: State
-}
-export const getEntity = ({ entityId, state }: Get): Entity | undefined =>
+}) => Entity | undefined
+
+export const getEntity: GetEntity = ({ entityId, state }) =>
   state.entity.find((e) => e.id === entityId)
 
-export const removeEntity = ({ entity, state }: Params): State => {
+type RemoveEntity = (params: { entityId: Guid; state: State }) => State
+export const removeEntity: RemoveEntity = ({ entityId, state }) => {
   const newState = {
     ...state,
-    entity: state.entity.filter((item) => item !== entity),
+    entity: state.entity.filter((item) => item.id !== entityId),
   }
 
   const v1 = Object.keys(state.component).reduce(
     (state, name) =>
       removeComponent(name, {
         state,
-        entity,
+        entityId,
       }),
     newState,
   )

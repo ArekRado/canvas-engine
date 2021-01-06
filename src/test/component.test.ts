@@ -31,20 +31,20 @@ describe('component', () => {
     const v3 = setComponent<Dictionary<{}>>('test', {
       state: v2,
       data: {
-        entity: entity1,
+        entityId: entity1.id,
         name: 'test',
       },
     })
     const v4 = setComponent<Dictionary<{}>>('test', {
       state: v3,
       data: {
-        entity: entity2,
+        entityId: entity2.id,
         name: 'test',
       },
     })
 
     const v5 = runOneFrame({ state: v4, timeNow: 0 })
-    const v6 = removeComponent('test', { entity: entity1, state: v5 })
+    const v6 = removeComponent('test', { entityId: entity1.id, state: v5 })
 
     expect(create).toHaveBeenCalledTimes(2)
     expect(remove).toHaveBeenCalled()
@@ -54,7 +54,7 @@ describe('component', () => {
     const v7 = setComponent<Partial<{}>>('test', {
       state: v6,
       data: {
-        entity: entity1,
+        entityId: entity1.id,
         name: 'test',
       },
     })
@@ -65,7 +65,7 @@ describe('component', () => {
     const v8 = setComponent<Partial<{}>>('test', {
       state: v7,
       data: {
-        entity: entity1,
+        entityId: entity1.id,
         name: 'test',
       },
     })

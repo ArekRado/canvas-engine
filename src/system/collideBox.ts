@@ -22,7 +22,7 @@ const findCollisionsWith: FindCollisionsWith = ({
   Object.values(state.component.collideBox).forEach((collideBox2) => {
     const entity2 = getEntity({
       state,
-      entityId: collideBox2.entity.id,
+      entityId: collideBox2.entityId,
     })
 
     if (entity2 && entity.id !== entity2.id) {
@@ -36,7 +36,7 @@ const findCollisionsWith: FindCollisionsWith = ({
       isColliding &&
         collisionList.push({
           type: 'box',
-          entity: collideBox2.entity,
+          entityId: collideBox2.entityId,
         })
     }
   })
@@ -53,7 +53,7 @@ export const collideBoxSystem = (state: State) =>
     tick: ({ state, component: collideBox }) => {
       const entity = getEntity({
         state,
-        entityId: collideBox.entity.id,
+        entityId: collideBox.entityId,
       })
 
       if (entity) {

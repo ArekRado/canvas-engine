@@ -16,6 +16,7 @@ import { isMouseOver } from '../system/mouseInteraction'
 describe('mouseInteraction', () => {
   it('isMouseOver', () => {
     const entity = generateEntity('entity')
+    const entityId = entity.id
     const mouse = initialStateWithDisabledDraw.mouse
 
     // Mouse is not over collide
@@ -25,7 +26,7 @@ describe('mouseInteraction', () => {
           ...mouse,
           position: vector(-10, -10),
         },
-        collideBox: defaultCollideBox({ entity }),
+        collideBox: defaultCollideBox({ entityId }),
         entity
       }),
     ).toBeFalsy()
@@ -37,7 +38,7 @@ describe('mouseInteraction', () => {
           ...mouse,
           position: vector(5, 5),
         },
-        collideBox: defaultCollideBox({ entity, size: vector(10, 10) }),
+        collideBox: defaultCollideBox({ entityId, size: vector(10, 10) }),
         entity
       }),
     ).toBeTruthy()
@@ -50,7 +51,7 @@ describe('mouseInteraction', () => {
           buttons: 1,
           position: vector(5, 5),
         },
-        collideCircle: defaultCollideCircle({ entity, radius: 10 }),
+        collideCircle: defaultCollideCircle({ entityId, radius: 10 }),
         entity
       }),
     ).toBeTruthy()
@@ -58,6 +59,7 @@ describe('mouseInteraction', () => {
 
   it('should set proper mouse interaction values', () => {
     const entity = generateEntity('entity')
+    const entityId = entity.id
 
     const v1 = setEntity({
       entity,
@@ -68,14 +70,14 @@ describe('mouseInteraction', () => {
     const v3 = setComponent<MouseInteraction>(componentName.mouseInteraction, {
       state: v2,
       data: defaultMouseInteraction({
-        entity,
+        entityId,
       }),
     })
 
     const v5 = setComponent<CollideBox>(componentName.collideBox, {
       state: v3,
       data: defaultCollideBox({
-        entity,
+        entityId,
         position: vector(200, 200),
         size: vector(10, 10),
       }),
@@ -84,7 +86,7 @@ describe('mouseInteraction', () => {
     const v6 = setComponent<CollideCircle>(componentName.collideCircle, {
       state: v5,
       data: defaultCollideCircle({
-        entity,
+        entityId,
         position: vector(100, 100),
         radius: 10,
       }),
@@ -106,7 +108,7 @@ describe('mouseInteraction', () => {
       componentName.mouseInteraction,
       {
         state: v7,
-        entity,
+        entityId,
       },
     )
 
@@ -130,7 +132,7 @@ describe('mouseInteraction', () => {
       componentName.mouseInteraction,
       {
         state: v8,
-        entity,
+        entityId,
       },
     )
 
@@ -154,7 +156,7 @@ describe('mouseInteraction', () => {
       componentName.mouseInteraction,
       {
         state: v9,
-        entity,
+        entityId,
       },
     )
 
@@ -178,7 +180,7 @@ describe('mouseInteraction', () => {
       componentName.mouseInteraction,
       {
         state: v10,
-        entity,
+        entityId,
       },
     )
 

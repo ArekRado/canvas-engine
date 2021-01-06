@@ -30,7 +30,7 @@ describe('collide', () => {
     const v4 = setComponent<CollideBox>(componentName.collideBox, {
       state: v3,
       data: defaultCollideBox({
-        entity: entity1,
+        entityId: entity1.id,
         size: vector(1.5, 1.5),
         position: vector(1, 1),
       }),
@@ -39,7 +39,7 @@ describe('collide', () => {
     const v5 = setComponent<CollideBox>(componentName.collideBox, {
       state: v4,
       data: defaultCollideBox({
-        entity: entity2,
+        entityId: entity2.id,
         size: vector(1, 1),
         position: vector(0, 0),
       }),
@@ -48,7 +48,7 @@ describe('collide', () => {
     const v6 = setComponent<CollideBox>(componentName.collideBox, {
       state: v5,
       data: defaultCollideBox({
-        entity: entity3,
+        entityId: entity3.id,
         size: vector(1, 1),
         position: vector(-1, -1),
       }),
@@ -59,28 +59,28 @@ describe('collide', () => {
     const collisions1 =
       getComponent<CollideBox>(componentName.collideBox, {
         state,
-        entity: entity1,
+        entityId: entity1.id,
       })?.collisions || []
 
     const collisions2 =
       getComponent<CollideBox>(componentName.collideBox, {
         state,
-        entity: entity2,
+        entityId: entity2.id,
       })?.collisions || []
 
     const collisions3 =
       getComponent<CollideBox>(componentName.collideBox, {
         state,
-        entity: entity3,
+        entityId: entity3.id,
       })?.collisions || []
 
-    expect(collisions1[0].entity).toEqual(entity2)
+    expect(collisions1[0].entityId).toEqual(entity2.id)
     expect(collisions1[1]).not.toBeDefined()
 
-    expect(collisions2[0].entity).toEqual(entity1)
-    expect(collisions2[1].entity).toEqual(entity3)
+    expect(collisions2[0].entityId).toEqual(entity1.id)
+    expect(collisions2[1].entityId).toEqual(entity3.id)
 
-    expect(collisions3[0].entity).toEqual(entity2)
+    expect(collisions3[0].entityId).toEqual(entity2.id)
     expect(collisions3[1]).not.toBeDefined()
   })
 })

@@ -24,42 +24,43 @@ import {
 describe('entity', () => {
   it('remove - should remove components by entity', () => {
     const entity = generateEntity('test')
+    const entityId = entity.id
     const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
 
     const v2 = setComponent<Animation>(componentName.animation, {
       state: v1,
-      data: defaultAnimation({ entity }),
+      data: defaultAnimation({ entityId }),
     })
     const v3 = setComponent<CollideBox>(componentName.collideBox, {
       state: v2,
-      data: defaultCollideBox({ entity }),
+      data: defaultCollideBox({ entityId }),
     })
     const v4 = setComponent<CollideCircle>(componentName.collideCircle, {
       state: v3,
-      data: defaultCollideCircle({ entity }),
+      data: defaultCollideCircle({ entityId }),
     })
     const state = setComponent<Sprite>(componentName.sprite, {
       state: v4,
-      data: defaultSprite({ entity }),
+      data: defaultSprite({ entityId }),
     })
 
-    expect(state.entity[0]).toBe(entity)
-    expect(state.component.sprite[entity.id]).toBeDefined()
-    expect(state.component.animation[entity.id]).toBeDefined()
-    expect(state.component.collideBox[entity.id]).toBeDefined()
-    expect(state.component.collideCircle[entity.id]).toBeDefined()
+    expect(state.entity[0]).toEqual(entity)
+    expect(state.component.sprite[entityId]).toBeDefined()
+    expect(state.component.animation[entityId]).toBeDefined()
+    expect(state.component.collideBox[entityId]).toBeDefined()
+    expect(state.component.collideCircle[entityId]).toBeDefined()
 
     const stateWithoutEntity = removeEntity({
       state,
-      entity,
+      entityId,
     })
 
     expect(stateWithoutEntity.entity[0]).not.toBeDefined()
-    expect(stateWithoutEntity.component.sprite[entity.id]).not.toBeDefined()
-    expect(stateWithoutEntity.component.animation[entity.id]).not.toBeDefined()
-    expect(stateWithoutEntity.component.collideBox[entity.id]).not.toBeDefined()
+    expect(stateWithoutEntity.component.sprite[entityId]).not.toBeDefined()
+    expect(stateWithoutEntity.component.animation[entityId]).not.toBeDefined()
+    expect(stateWithoutEntity.component.collideBox[entityId]).not.toBeDefined()
     expect(
-      stateWithoutEntity.component.collideCircle[entity.id],
+      stateWithoutEntity.component.collideCircle[entityId],
     ).not.toBeDefined()
   })
 

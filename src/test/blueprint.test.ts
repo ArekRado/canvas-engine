@@ -18,6 +18,10 @@ describe('blueprint', () => {
     const entity2 = generateEntity('e2')
     const entity3 = generateEntity('e3')
 
+    const entityId1 = entity1.id 
+    const entityId2 = entity2.id 
+    const entityId3 = entity3.id 
+
     const gameObjectCreator = (
       entity: Entity,
       state: State,
@@ -30,13 +34,13 @@ describe('blueprint', () => {
       const v2 = setComponent<Sprite>(componentName.sprite, {
         state: v1,
         data: defaultSprite({
-          entity,
+          entityId: entity.id,
         }),
       })
       const v3 = setComponent<CollideBox>(componentName.collideBox, {
         state: v2,
         data: defaultCollideBox({
-          entity,
+          entityId: entity.id,
         }),
       })
 
@@ -44,7 +48,7 @@ describe('blueprint', () => {
         ? setComponent<Blueprint>(componentName.blueprint, {
             state: v3,
             data: defaultBlueprint({
-              entity,
+              entityId: entity.id,
               id: 'testBlueprint',
             }),
           })
@@ -54,11 +58,11 @@ describe('blueprint', () => {
     const stateWithBlueprint = addBlueprint({
       state: initialStateWithDisabledDraw,
       data: {
-        entity: generateEntity('-'),
+        entityId: generateEntity('-').id,
         name: 'test',
         data: {
           collideBox: defaultCollideBox({
-            entity: generateEntity('-'),
+            entityId: generateEntity('-').id,
             position: [1, 1],
           }),
         },
@@ -75,13 +79,13 @@ describe('blueprint', () => {
     expect(
       getComponent<Sprite>(componentName.sprite, {
         state,
-        entity: entity1,
+        entityId: entity1.id,
       })?.scale,
     ).toEqual([0, 0])
     expect(
       getComponent<Sprite>(componentName.sprite, {
         state,
-        entity: entity2,
+        entityId: entity2.id,
       })?.scale,
     ).toEqual([0, 0])
 
@@ -89,13 +93,13 @@ describe('blueprint', () => {
     expect(
       getComponent<CollideBox>(componentName.collideBox, {
         state,
-        entity: entity1,
+        entityId: entity1.id,
       })?.position,
     ).toEqual([1, 1])
     expect(
       getComponent<CollideBox>(componentName.collideBox, {
         state,
-        entity: entity2,
+        entityId: entity2.id,
       })?.position,
     ).toEqual([1, 1])
 
@@ -103,13 +107,13 @@ describe('blueprint', () => {
     expect(
       getComponent<Sprite>(componentName.sprite, {
         state,
-        entity: entity3,
+        entityId: entity3.id,
       })?.scale,
     ).toEqual([0, 0])
     expect(
       getComponent<CollideBox>(componentName.collideBox, {
         state,
-        entity: entity3,
+        entityId: entity3.id,
       })?.position,
     ).toEqual([0, 0])
   })

@@ -10,10 +10,10 @@ import {
 import { generateEntity } from './entity'
 
 export const defaultAnimation: GetDefaultComponent<Animation> = ({
-  entity,
+  entityId,
   ...data
 }) => ({
-  entity,
+  entityId,
   name: componentName.animation,
   keyframes: [],
   isPlaying: false,
@@ -30,10 +30,10 @@ export const defaultAnimation: GetDefaultComponent<Animation> = ({
 })
 
 export const defaultCollideBox: GetDefaultComponent<CollideBox> = ({
-  entity,
+  entityId,
   ...data
 }) => ({
-  entity,
+  entityId,
   name: componentName.collideBox,
   size: vectorZero(),
   position: vectorZero(),
@@ -42,10 +42,10 @@ export const defaultCollideBox: GetDefaultComponent<CollideBox> = ({
 })
 
 export const defaultCollideCircle: GetDefaultComponent<CollideCircle> = ({
-  entity,
+  entityId,
   ...data
 }) => ({
-  entity,
+  entityId,
   name: componentName.collideCircle,
   radius: 1,
   position: vectorZero(),
@@ -54,10 +54,10 @@ export const defaultCollideCircle: GetDefaultComponent<CollideCircle> = ({
 })
 
 export const defaultSprite: GetDefaultComponent<Sprite> = ({
-  entity,
+  entityId,
   ...data
 }) => ({
-  entity,
+  entityId,
   name: componentName.sprite,
   src: '',
   rotation: 0,
@@ -66,20 +66,20 @@ export const defaultSprite: GetDefaultComponent<Sprite> = ({
 })
 
 export const defaultBlueprint: GetDefaultComponent<Blueprint> = ({
-  entity,
+  entityId,
   ...data
 }) => ({
-  entity,
+  entityId,
   name: componentName.blueprint,
   id: '',
   ...data,
 })
 
 export const defaultMouseInteraction: GetDefaultComponent<MouseInteraction> = ({
-  entity,
+  entityId,
   ...data
 }) => ({
-  entity,
+  entityId,
   name: componentName.mouseInteraction,
   clickSpeed: 200,
   doubleClickSpeed: 200,
