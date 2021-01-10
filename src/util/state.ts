@@ -37,6 +37,7 @@ const v1: State = {
       buttons: 0,
     },
   },
+  keyboard: {},
   system: {},
   isDebugInitialized: false,
   isDrawEnabled: true,

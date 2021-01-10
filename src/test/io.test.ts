@@ -10,6 +10,8 @@ describe('io', () => {
   let mouseleaveCallback: Function
   let mouseupCallback: Function
   let mousedownCallback: Function
+  let keyupCallback: Function
+  let keydownCallback: Function
 
   beforeEach(() => {
     mousemoveCallback = () => {}
@@ -17,6 +19,8 @@ describe('io', () => {
     mouseleaveCallback = () => {}
     mouseupCallback = () => {}
     mousedownCallback = () => {}
+    keyupCallback = () => {}
+    keydownCallback = () => {}
 
     createInitialize('', {
       document: {
@@ -41,6 +45,12 @@ describe('io', () => {
                 break
               case 'mousedown':
                 mousedownCallback = callback
+                break
+              case 'keyup':
+                keyupCallback = callback
+                break
+              case 'keydown':
+                keydownCallback = callback
                 break
             }
           },
@@ -91,5 +101,62 @@ describe('io', () => {
     })
 
     expect(v2.mouse.position).toEqual(vector(1, 1))
+  })
+
+  it('should set keyboard isUp and isDown flags', () => {
+    const key1 = 'a'
+    const key2 = 'b'
+
+    const v1 = runOneFrame({
+      state: initialStateWithDisabledDraw,
+      timeNow: 0,
+    })
+
+    expect(v1.keyboard[key1]).toBeUndefined()
+
+    keydownCallback({ key: key1 })
+
+    const v2 = runOneFrame({
+      state: v1,
+      timeNow: 0,
+    })
+
+    expect(v2.keyboard[key1]).toEqual({
+      isDown: true,
+      isUp: false,
+      isPressed: false,
+    })
+
+    keydownCallback({ key: key2 })
+
+    const v3 = runOneFrame({
+      state: v2,
+      timeNow: 0,
+    })
+
+    // runOneFrame should 
+    expect(v3.keyboard[key1]).toEqual({
+      isDown: false,
+      isUp: false,
+      isPressed: false,
+    })
+    expect(v3.keyboard[key2]).toEqual({
+      isDown: true,
+      isUp: false,
+      isPressed: false,
+    })
+
+    keyupCallback({ key: key1 })
+
+    const v4 = runOneFrame({
+      state: v3,
+      timeNow: 0,
+    })
+
+    expect(v4.keyboard[key1]).toEqual({
+      isDown: false,
+      isUp: true,
+      isPressed: false,
+    })
   })
 })

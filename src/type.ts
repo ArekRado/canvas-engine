@@ -165,10 +165,23 @@ export type Mouse = {
   }
 }
 
+export type KeyData = {
+  // Key was released.
+  isUp: boolean,
+  // Key was pressed.
+  isDown: boolean,
+  // @TODO Key is held.
+  isPressed: boolean,
+}
+
+export type Keyboard = {
+  [key: string]: KeyData | undefined
+}
+
 /* blueprint: Belt.Map.String.t({
       connectedEntites: []
     }), */
-// TODO
+// @TODO
 // event
 // scene
 export type State = {
@@ -183,6 +196,7 @@ export type State = {
   system: Dictionary<System<any> | GlobalSystem>
   asset: Asset
   mouse: Mouse
+  keyboard: Keyboard
   time: Time
   isDebugInitialized: boolean
   isDrawEnabled: boolean

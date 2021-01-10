@@ -1,4 +1,4 @@
-import { Entity, Guid, State } from './type'
+import { Guid, State } from './type'
 import { Component, Dictionary } from './type'
 
 export enum componentName {

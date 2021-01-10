@@ -1,5 +1,5 @@
 import { vector, vectorZero } from '@arekrado/vector-2d'
-import { Mouse, State } from '../type'
+import { Keyboard, Mouse, State } from '../type'
 import { createGlobalSystem } from './createSystem'
 
 let buttons = 0
@@ -12,6 +12,8 @@ let isMoving = false
 let isButtonUp = false
 let isButtonDown = false
 let isInitialized = false
+
+let keyboard: Keyboard = {}
 
 export const createInitialize = (
   containerId = 'canvas-engine',
@@ -61,6 +63,29 @@ export const createInitialize = (
       false,
     )
 
+    document.addEventListener(
+      'keydown',
+      (e) => {
+        keyboard[e.key] = {
+          isDown: true,
+          isUp: false,
+          isPressed: false,
+        }
+      },
+      false,
+    )
+    document.addEventListener(
+      'keyup',
+      (e) => {
+        keyboard[e.key] = {
+          isDown: false,
+          isUp: true,
+          isPressed: false,
+        }
+      },
+      false,
+    )
+
     isInitialized = true
   }
 }
@@ -91,9 +116,24 @@ export const ioSystem = (state: State) =>
       isButtonDown = false
       isMoving = false
 
+      const keyboardBeforeReset = {
+        ...keyboard,
+      }
+
+      keyboard = Object.keys(keyboard).reduce((acc, key) => {
+        acc[key] = {
+          isDown: false,
+          isUp: false,
+          isPressed: false,
+        }
+
+        return acc
+      }, {})
+
       return {
         ...state,
         mouse: mouseBeforeReset,
+        keyboard: keyboardBeforeReset,
       }
     },
   })

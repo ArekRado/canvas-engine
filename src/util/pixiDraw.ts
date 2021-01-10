@@ -1,3 +1,4 @@
+import { add } from '@arekrado/vector-2d'
 import { DrawState } from '../system/draw'
 
 declare namespace PIXI {
@@ -8,12 +9,12 @@ declare namespace PIXI {
 
 type EnhancedPixiImage = PIXI.Sprite & {
   id: string
+  debugGraphics?: PIXI.Graphics
 }
 
 let isInitialized = false
 let pixiApp: PIXI.Application | null = null
 let images: Map<string, EnhancedPixiImage> = new Map()
-let debugGraphics: PIXI.Graphics | null = null
 let PIXI: any = null
 
 const getGameContainerDimensions = (containerId: string) => {
@@ -48,21 +49,18 @@ export const initialize = async (containerId = 'canvas-engine') => {
   }
 
   images = new Map()
-  debugGraphics = new PIXI.Graphics() as PIXI.Graphics
-  pixiApp.stage.addChild(debugGraphics)
 
   isInitialized = true
 }
 
 type Render = (state: DrawState, devMode: boolean) => void
 export const render: Render = (state, devMode = false) => {
-  if (!isInitialized || !debugGraphics) {
+  if (!isInitialized) {
     console.error('Pixi is not initialized')
     return
   }
-  debugGraphics.clear()
 
-  const pixiImage = images.get(state.sprite.entity.id)
+  const pixiImage = images.get(state.sprite.entityId)
 
   if (pixiApp) {
     if (pixiImage) {
@@ -71,13 +69,12 @@ export const render: Render = (state, devMode = false) => {
       ) {
         changeImage({ pixiImage, image: state })
       }
-      drawImage({ pixiImage, image: state, devMode, debugGraphics })
+      drawImage({ pixiImage, image: state, devMode })
     } else {
       drawImage({
         pixiImage: createImage({ images, pixiApp, image: state }),
         image: state,
         devMode,
-        debugGraphics,
       })
     }
   }
@@ -87,9 +84,8 @@ type DrawImage = (params: {
   pixiImage: EnhancedPixiImage
   image: DrawState
   devMode: boolean
-  debugGraphics: PIXI.Graphics
 }) => void
-const drawImage: DrawImage = ({ pixiImage, image, devMode, debugGraphics }) => {
+const drawImage: DrawImage = ({ pixiImage, image, devMode }) => {
   const position = image.entity.position
   const rotation = image.entity.rotation
   const scale = image.entity.scale
@@ -102,16 +98,36 @@ const drawImage: DrawImage = ({ pixiImage, image, devMode, debugGraphics }) => {
 
   pixiImage.anchor.set(0, 0)
 
-  if (devMode) {
-    debugGraphics.lineStyle(1, 0x0000ff, 1)
-    debugGraphics.drawRect(
-      image.entity.position[0],
-      image.entity.position[1],
-      20,
-      20,
-    )
+  if (pixiImage.debugGraphics && devMode) {
+    const debugGraphics = pixiImage.debugGraphics
 
-    // debugGraphics.drawRect(r.position.x, r.position.y, r.size.x, r.size.y)
+    debugGraphics.clear()
+
+    const collideBox = image.collideBox
+    const collideCircle = image.collideCircle
+
+    if (collideBox) {
+      const collideBoxPosition = add(collideBox.position, position)
+
+      debugGraphics.lineStyle(1, 0x0000ff, 1)
+      debugGraphics.drawRect(
+        collideBoxPosition[0],
+        collideBoxPosition[1],
+        collideBox.size[0],
+        collideBox.size[1],
+      )
+    }
+
+    if (collideCircle) {
+      const collideCirclePosition = add(collideCircle.position, position)
+
+      debugGraphics.lineStyle(1, 0x0000ff, 1)
+      debugGraphics.drawCircle(
+        collideCirclePosition[0],
+        collideCirclePosition[1],
+        collideCircle.radius,
+      )
+    }
   }
 }
 type CreateImage = (params: {
@@ -122,8 +138,12 @@ type CreateImage = (params: {
 
 const createImage: CreateImage = ({ images, pixiApp, image }) => {
   const pixiImage = PIXI.Sprite.from(image.sprite.src) as EnhancedPixiImage
-  pixiImage.id = image.sprite.entity.id
+  pixiImage.id = image.sprite.entityId
+  pixiImage.debugGraphics = new PIXI.Graphics() as PIXI.Graphics
+
   pixiApp.stage.addChild(pixiImage)
+  pixiApp.stage.addChild(pixiImage.debugGraphics)
+
   images.set(pixiImage.id, pixiImage)
 
   return pixiImage
