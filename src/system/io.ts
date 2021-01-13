@@ -69,7 +69,7 @@ export const createInitialize = (
         keyboard[e.key] = {
           isDown: true,
           isUp: false,
-          isPressed: false,
+          isPressed: true,
         }
       },
       false,
@@ -120,11 +120,11 @@ export const ioSystem = (state: State) =>
         ...keyboard,
       }
 
-      keyboard = Object.keys(keyboard).reduce((acc, key) => {
+      keyboard = Object.entries(keyboard).reduce((acc, [key, value]) => {
         acc[key] = {
           isDown: false,
           isUp: false,
-          isPressed: false,
+          isPressed: value?.isPressed || false,
         }
 
         return acc

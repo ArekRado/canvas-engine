@@ -109,7 +109,7 @@ const drawImage: DrawImage = ({ pixiImage, image, devMode }) => {
     if (collideBox) {
       const collideBoxPosition = add(collideBox.position, position)
 
-      debugGraphics.lineStyle(1, 0x0000ff, 1)
+      debugGraphics.lineStyle(1, 0x0000ff, 0.5)
       debugGraphics.drawRect(
         collideBoxPosition[0],
         collideBoxPosition[1],
@@ -121,7 +121,7 @@ const drawImage: DrawImage = ({ pixiImage, image, devMode }) => {
     if (collideCircle) {
       const collideCirclePosition = add(collideCircle.position, position)
 
-      debugGraphics.lineStyle(1, 0x0000ff, 1)
+      debugGraphics.lineStyle(1, 0x0000ff, 0.5)
       debugGraphics.drawCircle(
         collideCirclePosition[0],
         collideCirclePosition[1],

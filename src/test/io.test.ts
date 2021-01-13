@@ -46,15 +46,22 @@ describe('io', () => {
               case 'mousedown':
                 mousedownCallback = callback
                 break
-              case 'keyup':
-                keyupCallback = callback
-                break
-              case 'keydown':
-                keydownCallback = callback
-                break
             }
           },
         }),
+        addEventListener: (
+          type: keyof HTMLElementEventMap,
+          callback: Function,
+        ) => {
+          switch (type) {
+            case 'keyup':
+              keyupCallback = callback
+              break
+            case 'keydown':
+              keydownCallback = callback
+              break
+          }
+        },
       },
     })
   })
@@ -124,7 +131,7 @@ describe('io', () => {
     expect(v2.keyboard[key1]).toEqual({
       isDown: true,
       isUp: false,
-      isPressed: false,
+      isPressed: true,
     })
 
     keydownCallback({ key: key2 })
@@ -134,16 +141,16 @@ describe('io', () => {
       timeNow: 0,
     })
 
-    // runOneFrame should 
+    // runOneFrame should reset isDown
     expect(v3.keyboard[key1]).toEqual({
       isDown: false,
       isUp: false,
-      isPressed: false,
+      isPressed: true,
     })
     expect(v3.keyboard[key2]).toEqual({
       isDown: true,
       isUp: false,
-      isPressed: false,
+      isPressed: true,
     })
 
     keyupCallback({ key: key1 })
