@@ -25,7 +25,8 @@ export const defaultAnimation: GetDefaultComponent<Animation> = ({
     entity: generateEntity('-'),
     index: -1,
   },
-  wrapMode: 'Once',
+  wrapMode: 'once',
+  timingMode: 'smooth',
   ...data,
 })
 

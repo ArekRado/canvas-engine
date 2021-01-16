@@ -28,16 +28,6 @@ export type CollideCircle = Component<{
   collisions: CollideType[]
 }>
 
-// export type Transform = Component<{
-//   rotation: number
-//   fromParentRotation: number
-//   scale: Vector2D
-//   fromParentScale: Vector2D
-//   position: Vector2D
-//   fromParentPosition: Vector2D
-//   parent?: Entity
-// }>
-
 export type Blueprint = Component<{
   id: Guid
 }>
@@ -50,28 +40,36 @@ export type AnimationProperty = {
 }
 
 export type AnimationValueRangeNumber = {
-  type: 'Number'
+  type: 'number'
   value: Vector2D
 }
 
 export type AnimationValueRangeVector2D = {
-  type: 'Vector2D'
+  type: 'vector2D'
   value: [Vector2D, Vector2D]
 }
+
+export type AnimationValueRangeString = {
+  type: 'string'
+  value: string
+}
+
+export type TimingMode = 'smooth' | 'step'
 
 export type AnimationValueRange =
   | AnimationValueRangeNumber
   | AnimationValueRangeVector2D
+  | AnimationValueRangeString
 
 export type WrapMode =
   //When time reaches the end of the animation clip, the clip will automatically stop playing and time will be reset to beginning of the clip.
-  | 'Once'
+  | 'once'
   // When time reaches the end of the animation clip, time will continue at the beginning.
-  | 'Loop'
+  | 'loop'
   // When time reaches the end of the animation clip, time will ping pong back between beginning and end.
-  | 'PingPong'
+  | 'pingPong'
   // Plays back the animation. When it reaches the end, it will keep playing the last frame and never stop playing.
-  | 'ClampForever'
+  | 'clampForever'
 
 export type Keyframe = {
   duration: number
@@ -86,6 +84,7 @@ export type Animation = Component<{
   currentTime: number
   property: AnimationProperty
   wrapMode: WrapMode
+  timingMode: TimingMode
 }>
 
 export type SpriteSrc = string
@@ -114,7 +113,7 @@ export type MouseInteraction = Component<{
 
 export type AnimatedProperty = {
   path: string
-  type: 'number' | 'Vector2D'
+  type: 'number' | 'vector2D'
 }
 
 export type Entity = {
@@ -167,11 +166,11 @@ export type Mouse = {
 
 export type KeyData = {
   // Key was released.
-  isUp: boolean,
+  isUp: boolean
   // Key was pressed.
-  isDown: boolean,
+  isDown: boolean
   // @TODO Key is held.
-  isPressed: boolean,
+  isPressed: boolean
 }
 
 export type Keyboard = {

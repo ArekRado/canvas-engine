@@ -30,20 +30,20 @@ describe('animation', () => {
         property: {
           component: 'animation',
           path: 'FieldNumber',
-          entity: entity,
+          entity,
         },
         keyframes: [
           {
             duration: 10,
             timingFunction: 'Linear',
             valueRange: {
-              type: 'Number',
+              type: 'number',
               value: vector(0, 1),
             },
           },
         ],
         isFinished: false,
-        wrapMode: 'Once',
+        wrapMode: 'once',
       })
 
       const { keyframeCurrentTime, keyframeIndex } = getActiveKeyframe(
@@ -63,20 +63,20 @@ describe('animation', () => {
         property: {
           component: 'animation',
           path: 'FieldNumber',
-          entity: entity,
+          entity,
         },
         keyframes: [
           {
             duration: 10,
             timingFunction: 'Linear',
             valueRange: {
-              type: 'Number',
+              type: 'number',
               value: vector(0, 1),
             },
           },
         ],
         isFinished: false,
-        wrapMode: 'Once',
+        wrapMode: 'once',
       })
 
       const { keyframeCurrentTime, keyframeIndex } = getActiveKeyframe(
@@ -96,14 +96,14 @@ describe('animation', () => {
         property: {
           component: 'animation',
           path: 'FieldNumber',
-          entity: entity,
+          entity,
         },
         keyframes: [
           {
             duration: 10,
             timingFunction: 'Linear',
             valueRange: {
-              type: 'Number',
+              type: 'number',
               value: vector(0, 1),
             },
           },
@@ -111,7 +111,7 @@ describe('animation', () => {
             duration: 1,
             timingFunction: 'Linear',
             valueRange: {
-              type: 'Number',
+              type: 'number',
               value: vector(0, 1),
             },
           },
@@ -119,7 +119,7 @@ describe('animation', () => {
             duration: 2,
             timingFunction: 'Linear',
             valueRange: {
-              type: 'Number',
+              type: 'number',
               value: vector(0, 1),
             },
           },
@@ -127,13 +127,13 @@ describe('animation', () => {
             duration: 100,
             timingFunction: 'Linear',
             valueRange: {
-              type: 'Number',
+              type: 'number',
               value: vector(0, 1),
             },
           },
         ],
         isFinished: false,
-        wrapMode: 'Once',
+        wrapMode: 'once',
       })
 
       const {
@@ -155,14 +155,14 @@ describe('animation', () => {
         property: {
           component: 'animation',
           path: 'FieldNumber',
-          entity: entity,
+          entity,
         },
         keyframes: [
           {
             duration: 10,
             timingFunction: 'Linear',
             valueRange: {
-              type: 'Number',
+              type: 'number',
               value: vector(0, 1),
             },
           },
@@ -170,7 +170,7 @@ describe('animation', () => {
             duration: 1,
             timingFunction: 'Linear',
             valueRange: {
-              type: 'Number',
+              type: 'number',
               value: vector(0, 1),
             },
           },
@@ -178,7 +178,7 @@ describe('animation', () => {
             duration: 2,
             timingFunction: 'Linear',
             valueRange: {
-              type: 'Number',
+              type: 'number',
               value: vector(0, 1),
             },
           },
@@ -186,13 +186,13 @@ describe('animation', () => {
             duration: 100,
             timingFunction: 'Linear',
             valueRange: {
-              type: 'Number',
+              type: 'number',
               value: vector(0, 1),
             },
           },
         ],
         isFinished: false,
-        wrapMode: 'Loop',
+        wrapMode: 'loop',
       })
 
       const {
@@ -224,18 +224,18 @@ describe('animation', () => {
               duration: 10,
               timingFunction: 'Linear',
               valueRange: {
-                type: 'Number',
+                type: 'number',
                 value: vector(0, 1),
               },
             },
           ],
           currentTime: 0,
-          wrapMode: 'Once',
+          wrapMode: 'once',
           isFinished: false,
           property: {
             path: 'rotation',
             component: 'sprite',
-            entity: entity,
+            entity,
           },
         }),
       })
@@ -284,18 +284,18 @@ describe('animation', () => {
               duration: 10,
               timingFunction: 'Linear',
               valueRange: {
-                type: 'Number',
+                type: 'number',
                 value: vector(-1, -2),
               },
             },
           ],
           currentTime: 0,
-          wrapMode: 'Once',
+          wrapMode: 'once',
           isFinished: false,
           property: {
             path: 'rotation',
             component: 'sprite',
-            entity: entity,
+            entity,
           },
         }),
       })
@@ -331,31 +331,31 @@ describe('animation', () => {
             {
               duration: 10,
               timingFunction: 'Linear',
-              valueRange: { type: 'Number', value: vector(0, 1) },
+              valueRange: { type: 'number', value: vector(0, 1) },
             },
             {
               duration: 1,
               timingFunction: 'Linear',
-              valueRange: { type: 'Number', value: vector(0, 1) },
+              valueRange: { type: 'number', value: vector(0, 1) },
             },
             {
               duration: 2,
               timingFunction: 'Linear',
-              valueRange: { type: 'Number', value: vector(0, 1) },
+              valueRange: { type: 'number', value: vector(0, 1) },
             },
             {
               duration: 100,
               timingFunction: 'Linear',
-              valueRange: { type: 'Number', value: vector(0, 1) },
+              valueRange: { type: 'number', value: vector(0, 1) },
             },
           ],
           currentTime: 0,
-          wrapMode: 'Once',
+          wrapMode: 'once',
           isFinished: false,
           property: {
             path: 'rotation',
             component: 'sprite',
-            entity: entity,
+            entity,
           },
         }),
       })
@@ -402,31 +402,31 @@ describe('animation', () => {
             {
               duration: 10,
               timingFunction: 'Linear',
-              valueRange: { type: 'Number', value: vector(0, 1) },
+              valueRange: { type: 'number', value: vector(0, 1) },
             },
             {
               duration: 1,
               timingFunction: 'Linear',
-              valueRange: { type: 'Number', value: vector(0, 1) },
+              valueRange: { type: 'number', value: vector(0, 1) },
             },
             {
               duration: 2,
               timingFunction: 'Linear',
-              valueRange: { type: 'Number', value: vector(0, 1) },
+              valueRange: { type: 'number', value: vector(0, 1) },
             },
             {
               duration: 100,
               timingFunction: 'Linear',
-              valueRange: { type: 'Number', value: vector(0, 1) },
+              valueRange: { type: 'number', value: vector(0, 1) },
             },
           ],
           currentTime: 0,
-          wrapMode: 'Loop',
+          wrapMode: 'loop',
           isFinished: false,
           property: {
             path: 'rotation',
             component: 'sprite',
-            entity: entity,
+            entity,
           },
         }),
       })
@@ -445,4 +445,137 @@ describe('animation', () => {
       expect(getAnimation(v6)?.currentTime).toBe(76)
     })
   })
+
+  it('timingMode step - should change value only once per keyframe', () => {
+    const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
+    const v2 = setComponent<Sprite>(componentName.sprite, {
+      state: v1,
+      data: defaultSprite({ entityId }),
+    })
+    const v3 = setComponent<Animation>(componentName.animation, {
+      state: v2,
+      data: defaultAnimation({
+        entityId,
+        isPlaying: true,
+        keyframes: [
+          {
+            duration: 10,
+            timingFunction: 'Linear',
+            valueRange: { type: 'number', value: vector(1, 2) },
+          },
+          {
+            duration: 10,
+            timingFunction: 'Linear',
+            valueRange: { type: 'number', value: vector(3, 4) },
+          },
+        ],
+        currentTime: 0,
+        wrapMode: 'once',
+        isFinished: false,
+        property: {
+          path: 'rotation',
+          component: 'sprite',
+          entity,
+        },
+        timingMode: 'step',
+      }),
+    })
+
+    const v4 = tick(0, v3)
+    expect(getSprite(v4)?.rotation).toBe(1)
+
+    const v5 = tick(5, v4)
+    expect(getSprite(v5)?.rotation).toBe(1)
+
+    const v6 = tick(7, v5)
+    expect(getSprite(v6)?.rotation).toBe(1)
+
+    const v7 = tick(8, v6)
+    expect(getSprite(v7)?.rotation).toBe(1)
+
+    const v8 = tick(10.5, v7)
+    expect(getSprite(v8)?.rotation).toBe(1)
+
+    const v9 = tick(12, v8)
+    expect(getSprite(v9)?.rotation).toBe(3)
+
+    const v10 = tick(100, v9)
+    expect(getSprite(v10)?.rotation).toBe(3)
+
+    const v11 = tick(300, v10)
+    expect(getSprite(v11)?.rotation).toBe(3)
+  })
+
+  describe('string', () => {
+    it('Linear animation should change value in proper way', () => {
+      const src1 = 'walk1.png'
+      const src2 = 'walk2.png'
+
+      const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
+      const v2 = setComponent<Sprite>(componentName.sprite, {
+        state: v1,
+        data: defaultSprite({ entityId }),
+      })
+      const v3 = setComponent<Animation>(componentName.animation, {
+        state: v2,
+        data: defaultAnimation({
+          entityId,
+          isPlaying: true,
+          keyframes: [
+            {
+              duration: 10,
+              timingFunction: 'Linear',
+              valueRange: {
+                type: 'string',
+                value: src1
+              },
+            },
+            {
+              duration: 10,
+              timingFunction: 'Linear',
+              valueRange: {
+                type: 'string',
+                value: src2
+              },
+            },
+          ],
+          currentTime: 0,
+          wrapMode: 'once',
+          isFinished: false,
+          property: {
+            path: 'src',
+            component: 'sprite',
+            entity,
+          },
+          timingMode: 'smooth' // string animation should always works as step
+        }),
+      })
+
+      const v4 = tick(0, v3)
+      expect(getSprite(v4)?.src).toBe(src1)
+  
+      const v5 = tick(5, v4)
+      expect(getSprite(v5)?.src).toBe(src1)
+  
+      const v6 = tick(7, v5)
+      expect(getSprite(v6)?.src).toBe(src1)
+  
+      const v7 = tick(8, v6)
+      expect(getSprite(v7)?.src).toBe(src1)
+  
+      const v8 = tick(10.5, v7)
+      expect(getSprite(v8)?.src).toBe(src1)
+  
+      const v9 = tick(12, v8)
+      expect(getSprite(v9)?.src).toBe(src2)
+  
+      const v10 = tick(100, v9)
+      expect(getSprite(v10)?.src).toBe(src2)
+  
+      const v11 = tick(300, v10)
+      expect(getSprite(v11)?.src).toBe(src2)
+    })
+  })
+
+  it.todo('should animate entity properties')
 })

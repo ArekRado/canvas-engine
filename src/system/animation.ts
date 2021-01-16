@@ -30,7 +30,7 @@ export const getActiveKeyframe = (
 ): ActiveKeyframe => {
   const size = animation.keyframes.length
 
-  if (size === 1 && animation.wrapMode === 'Once') {
+  if (size === 1 && animation.wrapMode === 'once') {
     return {
       keyframeCurrentTime: animation.currentTime,
       keyframeIndex: 0,
@@ -67,7 +67,7 @@ export const getActiveKeyframe = (
       },
     )
 
-    if (activeIndex === -1 && animation.wrapMode === 'Loop') {
+    if (activeIndex === -1 && animation.wrapMode === 'loop') {
       return getActiveKeyframe(
         {
           ...animation,
@@ -102,8 +102,23 @@ const updateNumberAnimation: UpdateNumberAnimation = ({
   keyframeCurrentTime,
   timeExceeded,
 }) => {
+  const currentTime = timeExceeded
+    ? keyframeCurrentTime + time.delta
+    : animation.currentTime + time.delta
+
   const v1 = keyframe.valueRange.value[0] as number
   const v2 = keyframe.valueRange.value[1] as number
+
+  if (animation.timingMode === 'step') {
+    return [
+      v1,
+      {
+        ...animation,
+        currentTime,
+        isFinished: timeExceeded,
+      },
+    ]
+  }
 
   const normalizedMax = v2 - v1
   const newValue = (progress * normalizedMax) / 100
@@ -120,9 +135,7 @@ const updateNumberAnimation: UpdateNumberAnimation = ({
       : newValue,
     {
       ...animation,
-      currentTime: timeExceeded
-        ? keyframeCurrentTime + time.delta
-        : animation.currentTime + time.delta,
+      currentTime,
       isFinished: timeExceeded,
     },
   ]
@@ -150,8 +163,23 @@ const updateVectorAnimation: UpdateVectorAnimation = ({
   keyframeCurrentTime,
   timeExceeded,
 }) => {
+  const currentTime = timeExceeded
+    ? keyframeCurrentTime + time.delta
+    : animation.currentTime + time.delta
+
   const v1 = keyframe.valueRange.value[0] as Vector2D
   const v2 = keyframe.valueRange.value[1] as Vector2D
+
+  if (animation.timingMode === 'step') {
+    return [
+      v1,
+      {
+        ...animation,
+        currentTime,
+        isFinished: timeExceeded,
+      },
+    ]
+  }
 
   const normalizedMax = sub(v2, v1)
   const newValue = scale(1.0 / 100, scale(progress, normalizedMax))
@@ -167,9 +195,35 @@ const updateVectorAnimation: UpdateVectorAnimation = ({
       : newValue,
     {
       ...animation,
-      currentTime: timeExceeded
-        ? keyframeCurrentTime + time.delta
-        : animation.currentTime + time.delta,
+      currentTime,
+      isFinished: timeExceeded,
+    },
+  ]
+}
+
+type UpdateStringAnimation = (params: {
+  keyframe: Keyframe
+  time: Time
+  animation: Animation
+  keyframeCurrentTime: number
+  timeExceeded: boolean
+}) => [string, Animation]
+const updateStringAnimation: UpdateStringAnimation = ({
+  keyframe,
+  time,
+  animation,
+  keyframeCurrentTime,
+  timeExceeded,
+}) => {
+  const currentTime = timeExceeded
+    ? keyframeCurrentTime + time.delta
+    : animation.currentTime + time.delta
+
+  return [
+    keyframe.valueRange.value as string,
+    {
+      ...animation,
+      currentTime,
       isFinished: timeExceeded,
     },
   ]
@@ -192,7 +246,7 @@ export const animationSystem = (state: State) =>
         timeExceeded,
       } = getActiveKeyframe(animation, false)
 
-      if (timeExceeded === true && animation.wrapMode === 'Once') {
+      if (timeExceeded === true && animation.wrapMode === 'once') {
         animation = {
           ...animation,
           currentTime: 0,
@@ -209,10 +263,19 @@ export const animationSystem = (state: State) =>
           keyframe.timingFunction,
         )
 
-        const updateFunction =
-          keyframe.valueRange.type === 'Number'
-            ? updateNumberAnimation
-            : updateVectorAnimation
+        let updateFunction
+
+        switch (keyframe.valueRange.type) {
+          case 'number':
+            updateFunction = updateNumberAnimation
+            break
+          case 'vector2D':
+            updateFunction = updateVectorAnimation
+            break
+          case 'string':
+            updateFunction = updateStringAnimation
+            break
+        }
 
         const [value, newAnimation] = updateFunction({
           keyframe,
