@@ -1,5 +1,5 @@
 import { v4 } from 'uuid'
-import { Entity, Guid, State } from '../type'
+import { Dictionary, Entity, Guid, State } from '../type'
 import { removeComponent } from '../component'
 import { vector, Vector2D, vectorZero } from '@arekrado/vector-2d'
 
@@ -34,20 +34,13 @@ export const generateEntity: Generate = (
 
 type SetEntity = (params: { entity: Entity; state: State }) => State
 
-export const setEntity: SetEntity = ({ entity, state }) => {
-  const exist = state.entity.find((x) => x.id === entity.id)
-  if (exist) {
-    return {
-      ...state,
-      entity: state.entity.map((x) => (x.id === entity.id ? entity : x)),
-    }
-  }
-
-  return {
-    ...state,
-    entity: [...state.entity, entity],
-  }
-}
+export const setEntity: SetEntity = ({ entity, state }) => ({
+  ...state,
+  entity: {
+    ...state.entity,
+    [entity.id]: entity,
+  },
+})
 
 type GetEntity = (params: {
   entityId: Guid
@@ -55,16 +48,18 @@ type GetEntity = (params: {
 }) => Entity | undefined
 
 export const getEntity: GetEntity = ({ entityId, state }) =>
-  state.entity.find((e) => e.id === entityId)
+  state.entity[entityId]
 
 type RemoveEntity = (params: { entityId: Guid; state: State }) => State
 export const removeEntity: RemoveEntity = ({ entityId, state }) => {
+  const { [entityId]: _, ...stateWithoutEntity } = state.entity
+
   const newState = {
     ...state,
-    entity: state.entity.filter((item) => item.id !== entityId),
+    entity: stateWithoutEntity,
   }
 
-  const v1 = Object.keys(state.component).reduce(
+  const v1 = Object.keys(newState.component).reduce(
     (state, name) =>
       removeComponent(name, {
         state,

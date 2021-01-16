@@ -34,7 +34,7 @@ export type Blueprint = Component<{
 
 export type AnimationProperty = {
   path: string
-  component: keyof State['component']
+  component?: keyof State['component']
   entity: Entity
   index?: number
 }
@@ -113,7 +113,7 @@ export type MouseInteraction = Component<{
 
 export type AnimatedProperty = {
   path: string
-  type: 'number' | 'vector2D'
+  type: 'number' | 'vector2D' | 'string'
 }
 
 export type Entity = {
@@ -184,7 +184,7 @@ export type Keyboard = {
 // event
 // scene
 export type State = {
-  entity: Entity[]
+  entity: Dictionary<Entity>
   component: Dictionary<Dictionary<Component<any>>> & {
     sprite: Dictionary<Sprite>
     animation: Dictionary<Animation>

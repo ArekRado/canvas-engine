@@ -44,7 +44,7 @@ describe('entity', () => {
       data: defaultSprite({ entityId }),
     })
 
-    expect(state.entity[0]).toEqual(entity)
+    expect(state.entity[entity.id]).toEqual(entity)
     expect(state.component.sprite[entityId]).toBeDefined()
     expect(state.component.animation[entityId]).toBeDefined()
     expect(state.component.collideBox[entityId]).toBeDefined()
@@ -55,7 +55,7 @@ describe('entity', () => {
       entityId,
     })
 
-    expect(stateWithoutEntity.entity[0]).not.toBeDefined()
+    expect(stateWithoutEntity.entity[entity.id]).not.toBeDefined()
     expect(stateWithoutEntity.component.sprite[entityId]).not.toBeDefined()
     expect(stateWithoutEntity.component.animation[entityId]).not.toBeDefined()
     expect(stateWithoutEntity.component.collideBox[entityId]).not.toBeDefined()
@@ -68,14 +68,14 @@ describe('entity', () => {
     const entity = generateEntity('test', { rotation: 1 })
     const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
 
-    expect(v1.entity[0]).toEqual(entity)
-    expect(v1.entity[0].rotation).toBe(1)
+    expect(v1.entity[entity.id]).toEqual(entity)
+    expect(v1.entity[entity.id].rotation).toBe(1)
 
     const v2 = setEntity({
       state: v1,
       entity: { ...entity, rotation: 2 },
     })
 
-    expect(v2.entity[0].rotation).toBe(2)
+    expect(v2.entity[entity.id].rotation).toBe(2)
   })
 })

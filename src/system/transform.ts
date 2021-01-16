@@ -5,7 +5,10 @@ import { setEntity, getEntity } from '../util/entity'
 
 const getParentPosition = (state: State, parentEntity: Entity): Vector2D => {
   if (parentEntity.parentId) {
-    const parentParentEntity = getEntity({ entityId: parentEntity.parentId, state })
+    const parentParentEntity = getEntity({
+      entityId: parentEntity.parentId,
+      state,
+    })
 
     if (parentParentEntity) {
       return add(
@@ -25,7 +28,7 @@ export const transformSystem = (state: State) =>
     state,
     name: 'transform',
     tick: (params) => {
-      return params.state.entity.reduce((state, entity) => {
+      return Object.values(params.state.entity).reduce((state, entity) => {
         if (entity.parentId) {
           const parentEntity = getEntity({ entityId: entity.parentId, state })
 

@@ -2,7 +2,7 @@ import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
 import { defaultAnimation, defaultSprite } from '../util/defaultComponents'
 import { getActiveKeyframe } from '../system/animation'
-import { generateEntity, setEntity } from '../util/entity'
+import { generateEntity, getEntity, setEntity } from '../util/entity'
 import { State, Sprite, Animation } from '../type'
 import { initialStateWithDisabledDraw } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
@@ -527,7 +527,7 @@ describe('animation', () => {
               timingFunction: 'Linear',
               valueRange: {
                 type: 'string',
-                value: src1
+                value: src1,
               },
             },
             {
@@ -535,7 +535,7 @@ describe('animation', () => {
               timingFunction: 'Linear',
               valueRange: {
                 type: 'string',
-                value: src2
+                value: src2,
               },
             },
           ],
@@ -547,35 +547,110 @@ describe('animation', () => {
             component: 'sprite',
             entity,
           },
-          timingMode: 'smooth' // string animation should always works as step
+          timingMode: 'smooth', // string animation should always works as step
         }),
       })
 
       const v4 = tick(0, v3)
       expect(getSprite(v4)?.src).toBe(src1)
-  
+
       const v5 = tick(5, v4)
       expect(getSprite(v5)?.src).toBe(src1)
-  
+
       const v6 = tick(7, v5)
       expect(getSprite(v6)?.src).toBe(src1)
-  
+
       const v7 = tick(8, v6)
       expect(getSprite(v7)?.src).toBe(src1)
-  
+
       const v8 = tick(10.5, v7)
       expect(getSprite(v8)?.src).toBe(src1)
-  
+
       const v9 = tick(12, v8)
       expect(getSprite(v9)?.src).toBe(src2)
-  
+
       const v10 = tick(100, v9)
       expect(getSprite(v10)?.src).toBe(src2)
-  
+
       const v11 = tick(300, v10)
       expect(getSprite(v11)?.src).toBe(src2)
     })
   })
 
-  it.todo('should animate entity properties')
+  it('should animate entity properties', () => {
+    const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
+    const v2 = setComponent<Sprite>(componentName.sprite, {
+      state: v1,
+      data: defaultSprite({ entityId }),
+    })
+    const v3 = setComponent<Animation>(componentName.animation, {
+      state: v2,
+      data: defaultAnimation({
+        entityId,
+        isPlaying: true,
+        keyframes: [
+          {
+            duration: 10,
+            timingFunction: 'Linear',
+            valueRange: {
+              type: 'vector2D',
+              value: [vector(-2, -2), vector(10, 10)],
+            },
+          },
+        ],
+        currentTime: 0,
+        wrapMode: 'once',
+        isFinished: false,
+        property: {
+          path: 'position',
+          entity,
+        },
+      }),
+    })
+
+    const v4 = tick(0, v3)
+    expect(getEntity({ state: v4, entityId: entity.id })?.position).toEqual(
+      vector(0, 0),
+    )
+
+    const v5 = tick(1, v4)
+    expect(getEntity({ state: v5, entityId: entity.id })?.position).toEqual(
+      vector(0, 0),
+    )
+
+    const v6 = tick(2, v5)
+    expect(getEntity({ state: v6, entityId: entity.id })?.position).toEqual(
+      vector(1.2, 1.2),
+    )
+
+    const v7 = tick(2, v6)
+    expect(getEntity({ state: v7, entityId: entity.id })?.position).toEqual(
+      vector(2.4, 2.4),
+    )
+
+    const v8 = tick(10, v7)
+    expect(getEntity({ state: v8, entityId: entity.id })?.position).toEqual(
+      vector(2.4, 2.4),
+    )
+
+    const v9 = tick(10, v8)
+    expect(getEntity({ state: v9, entityId: entity.id })?.position).toEqual(
+      vector(10, 10),
+    )
+
+    const v10 = tick(12, v9)
+    expect(getEntity({ state: v10, entityId: entity.id })?.position).toEqual(
+      vector(10, 10),
+    )
+
+    const v11 = tick(120, v10)
+    expect(getEntity({ state: v11, entityId: entity.id })?.position).toEqual(
+      vector(10, 10),
+    )
+
+    const v12 = tick(1020, v11)
+    expect(getEntity({ state: v12, entityId: entity.id })?.position).toEqual(
+      vector(10, 10),
+    )
+  })
 })
