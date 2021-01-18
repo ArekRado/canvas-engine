@@ -9,7 +9,7 @@ import { timeSystem } from '../system/time'
 import { mouseInteractionSystem } from '../system/mouseInteraction'
 
 const v1: State = {
-  entity: [],
+  entity: {},
   component: {
     [componentName.sprite]: {},
     [componentName.animation]: {},

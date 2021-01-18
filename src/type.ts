@@ -35,7 +35,7 @@ export type Blueprint = Component<{
 export type AnimationProperty = {
   path: string
   component?: keyof State['component']
-  entity: Entity
+  entityId: Guid
   index?: number
 }
 

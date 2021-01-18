@@ -1,5 +1,5 @@
 import { v4 } from 'uuid'
-import { Dictionary, Entity, Guid, State } from '../type'
+import { Entity, Guid, State } from '../type'
 import { removeComponent } from '../component'
 import { vector, Vector2D, vectorZero } from '@arekrado/vector-2d'
 

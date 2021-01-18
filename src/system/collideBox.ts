@@ -49,7 +49,11 @@ export const collideBoxSystem = (state: State) =>
     state,
     name: componentName.collideBox,
     create: ({ state }) => state,
-    remove: ({ state }) => state,
+    remove: ({ state }) => {
+      // clear debugGraphics
+
+      return state 
+    },
     tick: ({ state, component: collideBox }) => {
       const entity = getEntity({
         state,

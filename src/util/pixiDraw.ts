@@ -1,5 +1,5 @@
 import { add } from '@arekrado/vector-2d'
-import { DrawState } from '../system/draw'
+import { CollideBox, CollideCircle, Entity, Sprite } from '../type'
 
 declare namespace PIXI {
   type Sprite = any
@@ -15,6 +15,7 @@ type EnhancedPixiImage = PIXI.Sprite & {
 let isInitialized = false
 let pixiApp: PIXI.Application | null = null
 let images: Map<string, EnhancedPixiImage> = new Map()
+let debugGraphics: Map<string, PIXI.Graphics> = new Map()
 let PIXI: any = null
 
 const getGameContainerDimensions = (containerId: string) => {
@@ -27,6 +28,8 @@ export const initialize = async (containerId = 'canvas-engine') => {
   // https://github.com/formium/tsdx/pull/367
   const module = await import('pixi.js')
   PIXI = module
+
+  PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
 
   const [x, y] = getGameContainerDimensions(containerId)
 
@@ -53,28 +56,28 @@ export const initialize = async (containerId = 'canvas-engine') => {
   isInitialized = true
 }
 
-type Render = (state: DrawState, devMode: boolean) => void
-export const render: Render = (state, devMode = false) => {
+type Render = (entity: Entity, sprite: Sprite) => void
+export const renderSprite: Render = (entity, sprite) => {
   if (!isInitialized) {
     console.error('Pixi is not initialized')
     return
   }
 
-  const pixiImage = images.get(state.sprite.entityId)
+  const pixiImage = images.get(entity.id)
 
   if (pixiApp) {
     if (pixiImage) {
       if (
-        (pixiImage.texture.baseTexture as any).imageUrl !== state.sprite.src
+        sprite !== undefined &&
+        (pixiImage.texture.baseTexture as any).imageUrl !== sprite.src
       ) {
-        changeImage({ pixiImage, image: state })
+        changeImage({ pixiImage, sprite: sprite })
       }
-      drawImage({ pixiImage, image: state, devMode })
-    } else {
+      drawImage({ pixiImage, entity: entity })
+    } else if (sprite) {
       drawImage({
-        pixiImage: createImage({ images, pixiApp, image: state }),
-        image: state,
-        devMode,
+        pixiImage: createImage({ images, pixiApp, sprite: sprite }),
+        entity: entity,
       })
     }
   }
@@ -82,13 +85,12 @@ export const render: Render = (state, devMode = false) => {
 
 type DrawImage = (params: {
   pixiImage: EnhancedPixiImage
-  image: DrawState
-  devMode: boolean
+  entity: Entity
 }) => void
-const drawImage: DrawImage = ({ pixiImage, image, devMode }) => {
-  const position = image.entity.position
-  const rotation = image.entity.rotation
-  const scale = image.entity.scale
+const drawImage: DrawImage = ({ pixiImage, entity }) => {
+  const position = entity.position
+  const rotation = entity.rotation
+  const scale = entity.scale
 
   pixiImage.x = position[0]
   pixiImage.y = position[1]
@@ -97,48 +99,17 @@ const drawImage: DrawImage = ({ pixiImage, image, devMode }) => {
   pixiImage.rotation = rotation
 
   pixiImage.anchor.set(0, 0)
-
-  if (pixiImage.debugGraphics && devMode) {
-    const debugGraphics = pixiImage.debugGraphics
-
-    debugGraphics.clear()
-
-    const collideBox = image.collideBox
-    const collideCircle = image.collideCircle
-
-    if (collideBox) {
-      const collideBoxPosition = add(collideBox.position, position)
-
-      debugGraphics.lineStyle(1, 0x0000ff, 0.5)
-      debugGraphics.drawRect(
-        collideBoxPosition[0],
-        collideBoxPosition[1],
-        collideBox.size[0],
-        collideBox.size[1],
-      )
-    }
-
-    if (collideCircle) {
-      const collideCirclePosition = add(collideCircle.position, position)
-
-      debugGraphics.lineStyle(1, 0x0000ff, 0.5)
-      debugGraphics.drawCircle(
-        collideCirclePosition[0],
-        collideCirclePosition[1],
-        collideCircle.radius,
-      )
-    }
-  }
 }
+
 type CreateImage = (params: {
   images: Map<string, EnhancedPixiImage>
   pixiApp: PIXI.Application
-  image: DrawState
+  sprite: Sprite
 }) => PIXI.Sprite
 
-const createImage: CreateImage = ({ images, pixiApp, image }) => {
-  const pixiImage = PIXI.Sprite.from(image.sprite.src) as EnhancedPixiImage
-  pixiImage.id = image.sprite.entityId
+const createImage: CreateImage = ({ images, pixiApp, sprite }) => {
+  const pixiImage = PIXI.Sprite.from(sprite.src) as EnhancedPixiImage
+  pixiImage.id = sprite.entityId
   pixiImage.debugGraphics = new PIXI.Graphics() as PIXI.Graphics
 
   pixiApp.stage.addChild(pixiImage)
@@ -151,9 +122,48 @@ const createImage: CreateImage = ({ images, pixiApp, image }) => {
 
 type ChangeImage = (params: {
   pixiImage: EnhancedPixiImage
-  image: DrawState
-}) => PIXI.Sprite
-const changeImage: ChangeImage = ({ pixiImage, image }) => {
-  pixiImage.texture = PIXI.Texture.from(image.sprite.src)
-  return image
+  sprite: Sprite
+}) => void
+const changeImage: ChangeImage = ({ pixiImage, sprite }) => {
+  pixiImage.texture = PIXI.Texture.from(sprite.src)
+}
+
+export const renderCollide = (
+  entity: Entity,
+  collideBox?: CollideBox,
+  collideCircle?: CollideCircle,
+) => {
+  let debugGraphic = debugGraphics.get(entity.id)
+
+  if (!debugGraphic) {
+    debugGraphic = debugGraphics = new PIXI.Graphics() as PIXI.Graphics
+    debugGraphics.set(entity.id, debugGraphic)
+  }
+
+  const { position } = entity
+
+  debugGraphic.clear()
+
+  if (collideBox) {
+    const collideBoxPosition = add(collideBox.position, position)
+
+    debugGraphic.lineStyle(1, 0x0000ff, 0.5)
+    debugGraphic.drawRect(
+      collideBoxPosition[0],
+      collideBoxPosition[1],
+      collideBox.size[0],
+      collideBox.size[1],
+    )
+  }
+
+  if (collideCircle) {
+    const collideCirclePosition = add(collideCircle.position, position)
+
+    debugGraphic.lineStyle(1, 0x0000ff, 0.5)
+    debugGraphic.drawCircle(
+      collideCirclePosition[0],
+      collideCirclePosition[1],
+      collideCircle.radius,
+    )
+  }
 }
