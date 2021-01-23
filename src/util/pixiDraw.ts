@@ -50,6 +50,7 @@ export const initialize = async (containerId = 'canvas-engine') => {
     }
   }
 
+  debugGraphics = new Map()
   images = new Map()
 }
 
@@ -143,7 +144,8 @@ export const createCollide = (collide: CollideBox): void => {
   let debugGraphic = debugGraphics.get(collide.entityId)
 
   if (!debugGraphic) {
-    debugGraphic = debugGraphics = new PIXI.Graphics() as PIXI.Graphics
+    debugGraphic = new PIXI.Graphics() as PIXI.Graphics
+    pixiApp.stage.addChild(debugGraphic);
     debugGraphics.set(collide.entityId, debugGraphic)
   }
 }
