@@ -6,6 +6,7 @@ import { createSystem } from './createSystem'
 import { componentName } from '../component'
 import { detectAABBcollision } from '../util/detectCollision'
 import { getEntity } from '../util/entity'
+import { createCollide, removeCollide } from '../util/pixiDraw'
 
 type FindCollisionsWith = (pramams: {
   state: State
@@ -48,11 +49,19 @@ export const collideBoxSystem = (state: State) =>
   createSystem<CollideBox>({
     state,
     name: componentName.collideBox,
-    create: ({ state }) => state,
-    remove: ({ state }) => {
-      // clear debugGraphics
+    create: ({ state, component }) => {
+      if (state.isDrawEnabled) {
+        createCollide(component)
+      }
 
-      return state 
+      return state
+    },
+    remove: ({ state, component }) => {
+      if (state.isDrawEnabled) {
+        removeCollide(component)
+      }
+
+      return state
     },
     tick: ({ state, component: collideBox }) => {
       const entity = getEntity({

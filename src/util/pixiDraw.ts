@@ -56,38 +56,16 @@ export const initialize = async (containerId = 'canvas-engine') => {
   isInitialized = true
 }
 
-type Render = (entity: Entity, sprite: Sprite) => void
-export const renderSprite: Render = (entity, sprite) => {
-  if (!isInitialized) {
-    console.error('Pixi is not initialized')
-    return
+export const drawSprite = (entity: Entity, sprite: Sprite): void => {
+  const pixiImage = images.get(sprite.entityId)
+
+  if (
+    sprite !== undefined &&
+    (pixiImage.texture.baseTexture as any).imageUrl !== sprite.src
+  ) {
+    changeSprite(pixiImage, sprite)
   }
 
-  const pixiImage = images.get(entity.id)
-
-  if (pixiApp) {
-    if (pixiImage) {
-      if (
-        sprite !== undefined &&
-        (pixiImage.texture.baseTexture as any).imageUrl !== sprite.src
-      ) {
-        changeImage({ pixiImage, sprite: sprite })
-      }
-      drawImage({ pixiImage, entity: entity })
-    } else if (sprite) {
-      drawImage({
-        pixiImage: createImage({ images, pixiApp, sprite: sprite }),
-        entity: entity,
-      })
-    }
-  }
-}
-
-type DrawImage = (params: {
-  pixiImage: EnhancedPixiImage
-  entity: Entity
-}) => void
-const drawImage: DrawImage = ({ pixiImage, entity }) => {
   const position = entity.position
   const rotation = entity.rotation
   const scale = entity.scale
@@ -101,38 +79,33 @@ const drawImage: DrawImage = ({ pixiImage, entity }) => {
   pixiImage.anchor.set(0, 0)
 }
 
-type CreateImage = (params: {
-  images: Map<string, EnhancedPixiImage>
-  pixiApp: PIXI.Application
-  sprite: Sprite
-}) => PIXI.Sprite
+export const createSprite = (sprite: Sprite): void => {
+  let debugGraphic = debugGraphics.get(sprite.entityId)
 
-const createImage: CreateImage = ({ images, pixiApp, sprite }) => {
-  const pixiImage = PIXI.Sprite.from(sprite.src) as EnhancedPixiImage
-  pixiImage.id = sprite.entityId
-  pixiImage.debugGraphics = new PIXI.Graphics() as PIXI.Graphics
+  if (!debugGraphic) {
+    const pixiImage = PIXI.Sprite.from(sprite.src) as EnhancedPixiImage
+    pixiImage.id = sprite.entityId
+    pixiApp.stage.addChild(pixiImage)
 
-  pixiApp.stage.addChild(pixiImage)
-  pixiApp.stage.addChild(pixiImage.debugGraphics)
-
-  images.set(pixiImage.id, pixiImage)
-
-  return pixiImage
+    images.set(pixiImage.id, pixiImage)
+  }
 }
 
-type ChangeImage = (params: {
-  pixiImage: EnhancedPixiImage
-  sprite: Sprite
-}) => void
-const changeImage: ChangeImage = ({ pixiImage, sprite }) => {
+type ChangeImage = (pixiImage: EnhancedPixiImage, sprite: Sprite) => void
+const changeSprite: ChangeImage = (pixiImage, sprite): void => {
   pixiImage.texture = PIXI.Texture.from(sprite.src)
+}
+
+export const removeSprite = (pixiImage: EnhancedPixiImage): void => {
+  pixiApp.stage.removeChild(pixiImage)
+  images.delete(pixiImage.id)
 }
 
 export const renderCollide = (
   entity: Entity,
   collideBox?: CollideBox,
   collideCircle?: CollideCircle,
-) => {
+): void => {
   let debugGraphic = debugGraphics.get(entity.id)
 
   if (!debugGraphic) {
@@ -143,6 +116,7 @@ export const renderCollide = (
   const { position } = entity
 
   debugGraphic.clear()
+  debugGraphic.rotation = entity.rotation
 
   if (collideBox) {
     const collideBoxPosition = add(collideBox.position, position)
@@ -165,5 +139,23 @@ export const renderCollide = (
       collideCirclePosition[1],
       collideCircle.radius,
     )
+  }
+}
+
+export const createCollide = (collide: CollideBox): void => {
+  let debugGraphic = debugGraphics.get(collide.entityId)
+
+  if (!debugGraphic) {
+    debugGraphic = debugGraphics = new PIXI.Graphics() as PIXI.Graphics
+    debugGraphics.set(collide.entityId, debugGraphic)
+  }
+}
+
+export const removeCollide = (collide: CollideBox): void => {
+  const debugGraphic = debugGraphics.get(collide.entityId)
+
+  if (debugGraphic) {
+    pixiApp.stage.removeChild(debugGraphic)
+    debugGraphics.delete(debugGraphic.id)
   }
 }

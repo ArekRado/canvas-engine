@@ -1,5 +1,10 @@
-import { Entity, Sprite } from '../type'
-import { initialize as initializePixi, renderSprite } from '../util/pixiDraw'
+import { Sprite } from '../type'
+import {
+  initialize as initializePixi,
+  createSprite,
+  drawSprite,
+  removeSprite,
+} from '../util/pixiDraw'
 import { createSystem } from './createSystem'
 import { State } from '../type'
 import { componentName } from '../component'
@@ -11,20 +16,29 @@ export const drawSystem = (state: State) =>
   createSystem<Sprite>({
     state,
     name: componentName.sprite,
-    create: ({ state }) => state,
-    remove: ({ state }) => state,
-    tick: ({ state, component: sprite }) => {
+    create: ({ state, component }) => {
+      if (state.isDrawEnabled) {
+        createSprite(component)
+      }
+
+      return state
+    },
+    remove: ({ state, component }) => {
+      if (state.isDrawEnabled) {
+        removeSprite(component)
+      }
+
+      return state
+    },
+    tick: ({ state, component }) => {
       if (state.isDrawEnabled) {
         const entity = getEntity({
           state,
-          entityId: sprite.entityId,
+          entityId: component.entityId,
         })
 
         if (entity) {
-          renderSprite(
-            entity,
-            sprite,
-          )
+          drawSprite(entity, component)
         }
       }
 
