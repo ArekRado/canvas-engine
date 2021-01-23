@@ -22,7 +22,7 @@ export const defaultAnimation: GetDefaultComponent<Animation> = ({
   property: {
     component: 'collideBox',
     path: '-',
-    entity: generateEntity('-'),
+    entityId: generateEntity('-').id,
     index: -1,
   },
   wrapMode: 'once',

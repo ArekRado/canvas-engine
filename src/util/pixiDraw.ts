@@ -12,7 +12,6 @@ type EnhancedPixiImage = PIXI.Sprite & {
   debugGraphics?: PIXI.Graphics
 }
 
-let isInitialized = false
 let pixiApp: PIXI.Application | null = null
 let images: Map<string, EnhancedPixiImage> = new Map()
 let debugGraphics: Map<string, PIXI.Graphics> = new Map()
@@ -52,8 +51,6 @@ export const initialize = async (containerId = 'canvas-engine') => {
   }
 
   images = new Map()
-
-  isInitialized = true
 }
 
 export const drawSprite = (entity: Entity, sprite: Sprite): void => {
