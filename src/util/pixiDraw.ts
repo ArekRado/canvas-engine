@@ -69,7 +69,7 @@ export const drawSprite = (entity: Entity, sprite: Sprite): void => {
   const scale = entity.scale
 
   pixiImage.x = position[0]
-  pixiImage.y = position[1]
+  pixiImage.y = -position[1]
   pixiImage.scale.x = scale[0]
   pixiImage.scale.y = scale[1]
   pixiImage.rotation = rotation
@@ -122,7 +122,7 @@ export const renderCollide = (
     debugGraphic.lineStyle(1, 0x0000ff, 0.5)
     debugGraphic.drawRect(
       collideBoxPosition[0],
-      collideBoxPosition[1],
+      -collideBoxPosition[1],
       collideBox.size[0],
       collideBox.size[1],
     )
@@ -134,7 +134,7 @@ export const renderCollide = (
     debugGraphic.lineStyle(1, 0x0000ff, 0.5)
     debugGraphic.drawCircle(
       collideCirclePosition[0],
-      collideCirclePosition[1],
+      -collideCirclePosition[1],
       collideCircle.radius,
     )
   }
