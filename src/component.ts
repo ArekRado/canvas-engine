@@ -8,6 +8,7 @@ export enum componentName {
   collideCircle = 'collideCircle',
   blueprint = 'blueprint',
   mouseInteraction = 'mouseInteraction',
+  camera = 'camera',
 }
 
 type SetComponentParams<Data> = {

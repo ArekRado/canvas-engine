@@ -177,6 +177,12 @@ export type Keyboard = {
   [key: string]: KeyData | undefined
 }
 
+export type Camera = Component<{
+  position: Vector2D
+  zoom: number
+  pivot: Vector2D
+}>
+
 /* blueprint: Belt.Map.String.t({
       connectedEntites: []
     }), */
@@ -191,6 +197,7 @@ export type State = {
     collideBox: Dictionary<CollideBox>
     collideCircle: Dictionary<CollideCircle>
     mouseInteraction: Dictionary<MouseInteraction>
+    camera: Dictionary<Camera>
   }
   system: Dictionary<System<any> | GlobalSystem>
   asset: Asset

@@ -1,5 +1,5 @@
 import { add } from '@arekrado/vector-2d'
-import { CollideBox, CollideCircle, Entity, Sprite } from '../type'
+import { Camera, CollideBox, CollideCircle, Entity, Sprite } from '../type'
 
 declare namespace PIXI {
   type Sprite = any
@@ -145,7 +145,7 @@ export const createCollide = (collide: CollideBox): void => {
 
   if (!debugGraphic) {
     debugGraphic = new PIXI.Graphics() as PIXI.Graphics
-    pixiApp.stage.addChild(debugGraphic);
+    pixiApp.stage.addChild(debugGraphic)
     debugGraphics.set(collide.entityId, debugGraphic)
   }
 }
@@ -157,4 +157,13 @@ export const removeCollide = (collide: CollideBox): void => {
     pixiApp.stage.removeChild(debugGraphic)
     debugGraphics.delete(debugGraphic.id)
   }
+}
+
+export const setCamera = (camera: Camera): void => {
+  pixiApp.stage.position.set(
+    pixiApp.renderer.screen.width / 2,
+    pixiApp.renderer.screen.height / 2,
+  )
+  pixiApp.stage.scale.set(camera.zoom)
+  pixiApp.stage.pivot.set(camera.position[0], camera.position[1])
 }

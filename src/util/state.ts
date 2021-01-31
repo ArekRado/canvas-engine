@@ -7,6 +7,7 @@ import { componentName } from '../component'
 import { ioSystem } from '../system/io'
 import { timeSystem } from '../system/time'
 import { mouseInteractionSystem } from '../system/mouseInteraction'
+import { cameraSystem } from '../system/camera'
 
 const v1: State = {
   entity: {},
@@ -16,6 +17,7 @@ const v1: State = {
     [componentName.collideBox]: {},
     [componentName.collideCircle]: {},
     [componentName.mouseInteraction]: {},
+    [componentName.camera]: {},
   },
   asset: {
     sprite: [],
@@ -50,8 +52,9 @@ const v5 = drawSystem(v4)
 const v6 = collideBoxSystem(v5)
 const v7 = animationSystem(v6)
 const v8 = mouseInteractionSystem(v7)
+const v9 = cameraSystem(v8)
 
-export const initialState = v8
+export const initialState = v9
 
 export const initialStateWithDisabledDraw: State = {
   ...initialState,
