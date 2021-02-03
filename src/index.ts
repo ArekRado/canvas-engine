@@ -12,20 +12,15 @@ export {
   componentName,
 } from './component'
 
-import {
-  defaultAnimation,
-  defaultBlueprint,
-  defaultCollideBox,
-  defaultCollideCircle,
-  defaultSprite,
-  defaultMouseInteraction,
-} from './util/defaultComponents'
+export * as defaultData from './util/defaultComponents'
+
 import {
   addSprite,
   removeSprite,
   addBlueprint,
   removeBlueprint,
 } from './util/asset'
+
 export {
   getEntity,
   generateEntity,
@@ -38,15 +33,6 @@ export const asset = {
   removeSprite,
   addBlueprint,
   removeBlueprint,
-}
-
-export const defaultData = {
-  animation: defaultAnimation,
-  collideBox: defaultCollideBox,
-  collideCircle: defaultCollideCircle,
-  sprite: defaultSprite,
-  blueprint: defaultBlueprint,
-  mouseInteraction: defaultMouseInteraction,
 }
 
 // @todo

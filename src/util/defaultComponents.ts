@@ -1,15 +1,15 @@
 import { vectorZero } from '@arekrado/vector-2d'
 import { componentName } from '../component'
-import { Blueprint, GetDefaultComponent, MouseInteraction } from '../type'
 import {
-  Animation,
-  CollideBox,
-  CollideCircle,
-  Sprite,
+  Blueprint,
+  Camera,
+  GetDefaultComponent,
+  MouseInteraction,
 } from '../type'
+import { Animation, CollideBox, CollideCircle, Sprite } from '../type'
 import { generateEntity } from './entity'
 
-export const defaultAnimation: GetDefaultComponent<Animation> = ({
+export const animation: GetDefaultComponent<Animation> = ({
   entityId,
   ...data
 }) => ({
@@ -30,7 +30,7 @@ export const defaultAnimation: GetDefaultComponent<Animation> = ({
   ...data,
 })
 
-export const defaultCollideBox: GetDefaultComponent<CollideBox> = ({
+export const collideBox: GetDefaultComponent<CollideBox> = ({
   entityId,
   ...data
 }) => ({
@@ -42,7 +42,7 @@ export const defaultCollideBox: GetDefaultComponent<CollideBox> = ({
   ...data,
 })
 
-export const defaultCollideCircle: GetDefaultComponent<CollideCircle> = ({
+export const collideCircle: GetDefaultComponent<CollideCircle> = ({
   entityId,
   ...data
 }) => ({
@@ -54,7 +54,7 @@ export const defaultCollideCircle: GetDefaultComponent<CollideCircle> = ({
   ...data,
 })
 
-export const defaultSprite: GetDefaultComponent<Sprite> = ({
+export const sprite: GetDefaultComponent<Sprite> = ({
   entityId,
   ...data
 }) => ({
@@ -66,7 +66,7 @@ export const defaultSprite: GetDefaultComponent<Sprite> = ({
   ...data,
 })
 
-export const defaultBlueprint: GetDefaultComponent<Blueprint> = ({
+export const blueprint: GetDefaultComponent<Blueprint> = ({
   entityId,
   ...data
 }) => ({
@@ -76,7 +76,7 @@ export const defaultBlueprint: GetDefaultComponent<Blueprint> = ({
   ...data,
 })
 
-export const defaultMouseInteraction: GetDefaultComponent<MouseInteraction> = ({
+export const mouseInteraction: GetDefaultComponent<MouseInteraction> = ({
   entityId,
   ...data
 }) => ({
@@ -89,5 +89,17 @@ export const defaultMouseInteraction: GetDefaultComponent<MouseInteraction> = ({
   isMouseOver: false,
   isMouseEnter: false,
   isMouseLeave: false,
+  ...data,
+})
+
+export const camera: GetDefaultComponent<Camera> = ({
+  entityId,
+  ...data
+}) => ({
+  entityId,
+  name: componentName.camera,
+  position: vectorZero(),
+  zoom: 1,
+  pivot: vectorZero(),
   ...data,
 })

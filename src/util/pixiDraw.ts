@@ -165,5 +165,5 @@ export const setCamera = (camera: Camera): void => {
     pixiApp.renderer.screen.height / 2,
   )
   pixiApp.stage.scale.set(camera.zoom)
-  pixiApp.stage.pivot.set(camera.position[0], camera.position[1])
+  pixiApp.stage.pivot.set(camera.position[0], -camera.position[1])
 }

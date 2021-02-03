@@ -30,7 +30,7 @@ describe('animation', () => {
         property: {
           component: 'animation',
           path: 'FieldNumber',
-          entity,
+          entityId,
         },
         keyframes: [
           {
@@ -63,7 +63,7 @@ describe('animation', () => {
         property: {
           component: 'animation',
           path: 'FieldNumber',
-          entity,
+          entityId,
         },
         keyframes: [
           {
@@ -96,7 +96,7 @@ describe('animation', () => {
         property: {
           component: 'animation',
           path: 'FieldNumber',
-          entity,
+          entityId,
         },
         keyframes: [
           {
@@ -155,7 +155,7 @@ describe('animation', () => {
         property: {
           component: 'animation',
           path: 'FieldNumber',
-          entity,
+          entityId,
         },
         keyframes: [
           {
@@ -235,7 +235,7 @@ describe('animation', () => {
           property: {
             path: 'rotation',
             component: 'sprite',
-            entity,
+            entityId,
           },
         }),
       })
@@ -295,7 +295,7 @@ describe('animation', () => {
           property: {
             path: 'rotation',
             component: 'sprite',
-            entity,
+            entityId,
           },
         }),
       })
@@ -355,7 +355,7 @@ describe('animation', () => {
           property: {
             path: 'rotation',
             component: 'sprite',
-            entity,
+            entityId,
           },
         }),
       })
@@ -426,7 +426,7 @@ describe('animation', () => {
           property: {
             path: 'rotation',
             component: 'sprite',
-            entity,
+            entityId,
           },
         }),
       })
@@ -475,7 +475,7 @@ describe('animation', () => {
         property: {
           path: 'rotation',
           component: 'sprite',
-          entity,
+          entityId,
         },
         timingMode: 'step',
       }),
@@ -545,7 +545,7 @@ describe('animation', () => {
           property: {
             path: 'src',
             component: 'sprite',
-            entity,
+            entityId,
           },
           timingMode: 'smooth', // string animation should always works as step
         }),
@@ -603,7 +603,7 @@ describe('animation', () => {
         isFinished: false,
         property: {
           path: 'position',
-          entity,
+          entityId,
         },
       }),
     })
