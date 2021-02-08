@@ -1,10 +1,10 @@
 import 'regenerator-runtime/runtime'
 import { initialStateWithDisabledDraw } from '../util/state'
-import { setEntity as setEntity, generateEntity } from '../util/entity'
+import { setEntity, generateEntity } from '../util/entity'
 import {
-  defaultBlueprint,
-  defaultCollideBox,
-  defaultSprite,
+  blueprint as defaultBlueprint,
+  collideBox as defaultCollideBox,
+  sprite as defaultSprite,
 } from '../util/defaultComponents'
 import { getComponent, setComponent } from '../component'
 import { Blueprint, CollideBox, Entity, State, Sprite } from '../type'
@@ -18,9 +18,9 @@ describe('blueprint', () => {
     const entity2 = generateEntity('e2')
     const entity3 = generateEntity('e3')
 
-    const entityId1 = entity1.id 
-    const entityId2 = entity2.id 
-    const entityId3 = entity3.id 
+    const entityId1 = entity1.id
+    const entityId2 = entity2.id
+    const entityId3 = entity3.id
 
     const gameObjectCreator = (
       entity: Entity,

@@ -4,7 +4,11 @@ export * as bezierFunction from './util/bezierFunction'
 export { initialState, setScene } from './util/state'
 export { initializeEngine } from './util/initializeEngine'
 export { jsonToState, stateToJson } from './util/jsonState'
-export { createSystem, createGlobalSystem } from './system/createSystem'
+export {
+  createSystem,
+  createGlobalSystem,
+  systemPriority,
+} from './system/createSystem'
 export {
   setComponent,
   removeComponent,

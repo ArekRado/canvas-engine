@@ -40,7 +40,7 @@ const v1: State = {
     },
   },
   keyboard: {},
-  system: {},
+  system: [],
   isDebugInitialized: false,
   isDrawEnabled: true,
 }

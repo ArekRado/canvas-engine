@@ -1,21 +1,15 @@
 import { Sprite } from '../type'
-import {
-  initialize as initializePixi,
-  createSprite,
-  drawSprite,
-  removeSprite,
-} from '../util/pixiDraw'
-import { createSystem } from './createSystem'
+import { createSprite, drawSprite, removeSprite } from '../util/pixiDraw'
+import { createSystem, systemPriority } from './createSystem'
 import { State } from '../type'
 import { componentName } from '../component'
 import { getEntity } from '..'
-
-export const initialize = initializePixi
 
 export const drawSystem = (state: State) =>
   createSystem<Sprite>({
     state,
     name: componentName.sprite,
+    priority: systemPriority.draw,
     create: ({ state, component }) => {
       if (state.isDrawEnabled) {
         createSprite(component)

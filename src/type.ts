@@ -93,6 +93,7 @@ export type Sprite = Component<{
   src: SpriteSrc
   rotation: number
   scale: Vector2D
+  anchor: Vector2D
 }>
 
 export type MouseInteraction = Component<{
@@ -199,7 +200,7 @@ export type State = {
     mouseInteraction: Dictionary<MouseInteraction>
     camera: Dictionary<Camera>
   }
-  system: Dictionary<System<any> | GlobalSystem>
+  system: Array<System<any> | GlobalSystem>
   asset: Asset
   mouse: Mouse
   keyboard: Keyboard

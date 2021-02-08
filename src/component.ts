@@ -1,6 +1,9 @@
 import { Guid, State } from './type'
 import { Component, Dictionary } from './type'
 
+const getSystemByName = (name: string, system: State['system']) =>
+  system.find((x) => x.name === name)
+
 export enum componentName {
   sprite = 'sprite',
   animation = 'animation',
@@ -30,12 +33,14 @@ export const setComponent = <Data>(
     },
   }
 
+  const system = getSystemByName(name, state.system)
+
   if (
-    state.system[name] !== undefined &&
+    system !== undefined &&
     (state.component[name] === undefined ||
       state.component[name][data.entityId] === undefined)
   ) {
-    return state.system[name].create({ state: newState, component: data })
+    return system.create({ state: newState, component: data })
   }
 
   return newState
@@ -62,9 +67,10 @@ export const removeComponent: RemoveComponent = (name, { entityId, state }) => {
   }
 
   const component = getComponent(name, { state, entityId })
+  const system = getSystemByName(name, newState.system)
 
-  if (newState.system[name]) {
-    return newState.system[name].remove({ state: newState, component })
+  if (system) {
+    return system.remove({ state: newState, component })
   }
 
   return newState

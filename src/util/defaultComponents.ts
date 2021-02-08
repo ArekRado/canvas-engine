@@ -1,4 +1,4 @@
-import { vectorZero } from '@arekrado/vector-2d'
+import { vector, vectorZero } from '@arekrado/vector-2d'
 import { componentName } from '../component'
 import {
   Blueprint,
@@ -54,15 +54,13 @@ export const collideCircle: GetDefaultComponent<CollideCircle> = ({
   ...data,
 })
 
-export const sprite: GetDefaultComponent<Sprite> = ({
-  entityId,
-  ...data
-}) => ({
+export const sprite: GetDefaultComponent<Sprite> = ({ entityId, ...data }) => ({
   entityId,
   name: componentName.sprite,
   src: '',
   rotation: 0,
   scale: vectorZero(),
+  anchor: vector(0, 1),
   ...data,
 })
 
@@ -92,10 +90,7 @@ export const mouseInteraction: GetDefaultComponent<MouseInteraction> = ({
   ...data,
 })
 
-export const camera: GetDefaultComponent<Camera> = ({
-  entityId,
-  ...data
-}) => ({
+export const camera: GetDefaultComponent<Camera> = ({ entityId, ...data }) => ({
   entityId,
   name: componentName.camera,
   position: vectorZero(),

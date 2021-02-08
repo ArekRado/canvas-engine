@@ -1,6 +1,6 @@
 import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
 import { Entity, State } from '../type'
-import { createGlobalSystem } from './createSystem'
+import { createGlobalSystem, systemPriority } from './createSystem'
 import { setEntity, getEntity } from '../util/entity'
 
 const getParentPosition = (state: State, parentEntity: Entity): Vector2D => {
@@ -27,6 +27,7 @@ export const transformSystem = (state: State) =>
   createGlobalSystem({
     state,
     name: 'transform',
+    priority: systemPriority.transform,
     tick: (params) => {
       return Object.values(params.state.entity).reduce((state, entity) => {
         if (entity.parentId) {

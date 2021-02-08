@@ -1,6 +1,6 @@
 import { vector, vectorZero } from '@arekrado/vector-2d'
 import { Keyboard, Mouse, State } from '../type'
-import { createGlobalSystem } from './createSystem'
+import { createGlobalSystem, systemPriority } from './createSystem'
 
 let buttons = 0
 let position = vectorZero()
@@ -99,6 +99,7 @@ export const ioSystem = (state: State) =>
   createGlobalSystem({
     name: 'io',
     state,
+    priority: systemPriority.io,
     tick: ({ state }) => {
       const mouseBeforeReset: Mouse = isInitialized
         ? {

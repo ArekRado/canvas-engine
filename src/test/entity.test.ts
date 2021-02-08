@@ -1,25 +1,16 @@
 import 'regenerator-runtime/runtime'
 import { initialStateWithDisabledDraw } from '../util/state'
 
+import { setEntity, removeEntity, generateEntity } from '../util/entity'
 import {
-  setEntity,
-  removeEntity,
-  generateEntity,
-} from '../util/entity'
-import {
-  defaultAnimation,
-  defaultCollideBox,
-  defaultCollideCircle,
-  defaultSprite,
+  collideCircle as defaultCollideCircle,
+  collideBox as defaultCollideBox,
+  sprite as defaultSprite,
+  animation as defaultAnimation,
 } from '../util/defaultComponents'
 import { setComponent } from '../component'
 import { componentName } from '../component'
-import {
-  CollideBox,
-  Animation,
-  CollideCircle,
-  Sprite,
-} from '../type'
+import { CollideBox, Animation, CollideCircle, Sprite } from '../type'
 
 describe('entity', () => {
   it('remove - should remove components by entity', () => {

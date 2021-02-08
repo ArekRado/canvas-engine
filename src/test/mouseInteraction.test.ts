@@ -4,9 +4,9 @@ import { initialStateWithDisabledDraw } from '../util/state'
 import { setEntity, generateEntity } from '../util/entity'
 import { runOneFrame } from '../util/runOneFrame'
 import {
-  defaultCollideBox,
-  defaultCollideCircle,
-  defaultMouseInteraction,
+  collideBox as defaultCollideBox,
+  collideCircle as defaultCollideCircle,
+  mouseInteraction as defaultMouseInteraction
 } from '../util/defaultComponents'
 import { getComponent, setComponent } from '../component'
 import { CollideBox, CollideCircle, MouseInteraction } from '../type'

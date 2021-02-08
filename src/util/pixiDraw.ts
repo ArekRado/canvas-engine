@@ -1,6 +1,5 @@
 import { add } from '@arekrado/vector-2d'
 import { Camera, CollideBox, CollideCircle, Entity, Sprite } from '../type'
-
 declare namespace PIXI {
   type Sprite = any
   type Application = any
@@ -20,14 +19,17 @@ let PIXI: any = null
 const getGameContainerDimensions = (containerId: string) => {
   const element = document.querySelector(`#${containerId}`)
 
-  return element ? [element.clientWidth, element.clientHeight] : [100, 100]
+  const { width, height } = element
+    ? element.getBoundingClientRect()
+    : { width: 0, height: 0 }
+
+  return [width, height]
 }
 
 export const initialize = async (containerId = 'canvas-engine') => {
   // https://github.com/formium/tsdx/pull/367
   const module = await import('pixi.js')
   PIXI = module
-
   PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
 
   const [x, y] = getGameContainerDimensions(containerId)
@@ -36,7 +38,7 @@ export const initialize = async (containerId = 'canvas-engine') => {
     width: x,
     height: y,
     backgroundColor: 0x1099bb,
-  }) as PIXI.Application
+  })
   ;(pixiApp.renderer as any).autoResize = true
 
   if (!document || !document.body) {
@@ -44,7 +46,7 @@ export const initialize = async (containerId = 'canvas-engine') => {
   } else {
     const element = document.querySelector(`#${containerId}`)
     if (!element) {
-      console.log(`Container with id ${containerId} doesn't exists`)
+      console.warn(`Container with id ${containerId} doesn't exists`)
     } else {
       element.appendChild(pixiApp.view)
     }
@@ -64,17 +66,14 @@ export const drawSprite = (entity: Entity, sprite: Sprite): void => {
     changeSprite(pixiImage, sprite)
   }
 
-  const position = entity.position
-  const rotation = entity.rotation
-  const scale = entity.scale
+  pixiImage.x = entity.position[0]
+  pixiImage.y = -entity.position[1]
+  pixiImage.scale.x = sprite.scale[0]
+  pixiImage.scale.y = sprite.scale[1]
 
-  pixiImage.x = position[0]
-  pixiImage.y = -position[1]
-  pixiImage.scale.x = scale[0]
-  pixiImage.scale.y = scale[1]
-  pixiImage.rotation = rotation
+  pixiImage.rotation = sprite.rotation
 
-  pixiImage.anchor.set(0, 0)
+  pixiImage.anchor.set(sprite.anchor[0], sprite.anchor[1])
 }
 
 export const createSprite = (sprite: Sprite): void => {
@@ -124,7 +123,7 @@ export const renderCollide = (
       collideBoxPosition[0],
       -collideBoxPosition[1],
       collideBox.size[0],
-      collideBox.size[1],
+      -collideBox.size[1],
     )
   }
 
@@ -135,7 +134,7 @@ export const renderCollide = (
     debugGraphic.drawCircle(
       collideCirclePosition[0],
       -collideCirclePosition[1],
-      collideCircle.radius,
+      -collideCircle.radius,
     )
   }
 }
@@ -166,4 +165,8 @@ export const setCamera = (camera: Camera): void => {
   )
   pixiApp.stage.scale.set(camera.zoom)
   pixiApp.stage.pivot.set(camera.position[0], -camera.position[1])
+}
+
+export const extractImage = (): HTMLImageElement => {
+  return pixiApp.renderer.plugins.extract.base64(pixiApp.stage)
 }

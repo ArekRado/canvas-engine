@@ -1,6 +1,15 @@
 import { Dictionary } from '../type'
 import { State } from '../type'
 
+export enum systemPriority {
+  last = 3,
+  time = 3,
+  io = 2,
+  transform = 1,
+  zero = 0,
+  draw = -1,
+}
+
 const doNothing = <Component>(params: SystemMethodParams<Component>) =>
   params.state
 
@@ -15,6 +24,7 @@ export type CreateSystemParams<Component> = {
   create?: (params: SystemMethodParams<Component>) => State
   tick?: (params: SystemMethodParams<Component>) => State
   remove?: (params: SystemMethodParams<Component>) => State
+  priority?: number
 }
 
 export type System<Component> = {
@@ -22,6 +32,7 @@ export type System<Component> = {
   create: (params: SystemMethodParams<Component>) => State
   tick: (params: { state: State }) => State
   remove: (params: SystemMethodParams<Component>) => State
+  priority: number
 }
 
 export const createSystem = <Component>({
@@ -31,6 +42,7 @@ export const createSystem = <Component>({
 }: CreateSystemParams<Component>): State => {
   const system: System<Component> = {
     name: params.name,
+    priority: params.priority || systemPriority.zero,
     create: params.create || doNothing,
     tick: ({ state }) => {
       if (tick) {
@@ -50,10 +62,7 @@ export const createSystem = <Component>({
 
   return {
     ...state,
-    system: {
-      ...state.system,
-      [params.name]: system,
-    },
+    system: [...state.system, system],
   }
 }
 
@@ -61,6 +70,7 @@ export type CreateGlobalSystemParams = {
   state: State
   name: string
   tick: (params: { state: State }) => State
+  priority?: number
 }
 
 export type GlobalSystem = {
@@ -68,6 +78,7 @@ export type GlobalSystem = {
   tick: (params: { state: State }) => State
   create: (params: { state: State }) => State
   remove: (params: { state: State }) => State
+  priority: number
 }
 
 export const createGlobalSystem = ({
@@ -77,6 +88,7 @@ export const createGlobalSystem = ({
 }: CreateGlobalSystemParams): State => {
   const system: GlobalSystem = {
     name: params.name,
+    priority: params.priority || systemPriority.zero,
     tick,
     create: ({ state }) => state,
     remove: ({ state }) => state,
@@ -84,9 +96,6 @@ export const createGlobalSystem = ({
 
   return {
     ...state,
-    system: {
-      ...state.system,
-      [params.name]: system,
-    },
+    system: [...state.system, system],
   }
 }
