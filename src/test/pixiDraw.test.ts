@@ -96,4 +96,42 @@ describe('pixiDraw', () => {
       )
     }
   })
+
+  it('should not throw error when sprite src has been changed', async () => {
+    await initializeEngine()
+
+    const entity = generateEntity('')
+
+    let state = setEntity({
+      entity,
+      state: initialState,
+    })
+
+    state = setEntity({
+      entity,
+      state,
+    })
+
+    state = setComponent<Sprite>(componentName.sprite, {
+      state,
+      data: sprite({
+        entityId: entity.id,
+        src: 'data:image/png;base64,01',
+      }),
+    })
+
+    runOneFrame({ state, timeNow: 0 })
+
+    state = setComponent<Sprite>(componentName.sprite, {
+      state,
+      data: sprite({
+        entityId: entity.id,
+        src: 'data:image/png;base64,02',
+      }),
+    })
+
+    runOneFrame({ state, timeNow: 0 })
+
+    expect(true).toBeTruthy()
+  })
 })

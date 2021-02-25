@@ -1,7 +1,7 @@
 import { State } from '../type'
 import { animationSystem } from '../system/animation'
 import { collideBoxSystem } from '../system/collideBox'
-import { drawSystem } from '../system/draw'
+import { drawSystem } from '../system/sprite'
 import { transformSystem } from '../system/transform'
 import { componentName } from '../component'
 import { ioSystem } from '../system/io'

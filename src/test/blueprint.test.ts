@@ -81,13 +81,13 @@ describe('blueprint', () => {
         state,
         entityId: entity1.id,
       })?.scale,
-    ).toEqual([0, 0])
+    ).toEqual([1, 1])
     expect(
       getComponent<Sprite>(componentName.sprite, {
         state,
         entityId: entity2.id,
       })?.scale,
-    ).toEqual([0, 0])
+    ).toEqual([1, 1])
 
     // ALL Collidebox properties should be changed to match blueprint
     expect(
@@ -109,7 +109,7 @@ describe('blueprint', () => {
         state,
         entityId: entity3.id,
       })?.scale,
-    ).toEqual([0, 0])
+    ).toEqual([1, 1])
     expect(
       getComponent<CollideBox>(componentName.collideBox, {
         state,

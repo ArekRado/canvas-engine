@@ -1,5 +1,12 @@
 import { add } from '@arekrado/vector-2d'
-import { Camera, CollideBox, CollideCircle, Entity, Sprite } from '../type'
+import {
+  Camera,
+  CollideBox,
+  CollideCircle,
+  Entity,
+  Guid,
+  Sprite,
+} from '../type'
 declare namespace PIXI {
   type Sprite = any
   type Application = any
@@ -59,21 +66,23 @@ export const initialize = async (containerId = 'canvas-engine') => {
 export const drawSprite = (entity: Entity, sprite: Sprite): void => {
   const pixiImage = images.get(sprite.entityId)
 
-  if (
-    sprite !== undefined &&
-    (pixiImage.texture.baseTexture as any).imageUrl !== sprite.src
-  ) {
-    changeSprite(pixiImage, sprite)
+  if (pixiImage) {
+    if (
+      sprite !== undefined &&
+      pixiImage.texture.baseTexture.resource.url !== sprite.src
+    ) {
+      changeSprite(pixiImage, sprite)
+    }
+
+    pixiImage.x = entity.position[0]
+    pixiImage.y = -entity.position[1]
+    pixiImage.scale.x = sprite.scale[0]
+    pixiImage.scale.y = sprite.scale[1]
+
+    pixiImage.rotation = sprite.rotation
+
+    pixiImage.anchor.set(sprite.anchor[0], sprite.anchor[1])
   }
-
-  pixiImage.x = entity.position[0]
-  pixiImage.y = -entity.position[1]
-  pixiImage.scale.x = sprite.scale[0]
-  pixiImage.scale.y = sprite.scale[1]
-
-  pixiImage.rotation = sprite.rotation
-
-  pixiImage.anchor.set(sprite.anchor[0], sprite.anchor[1])
 }
 
 export const createSprite = (sprite: Sprite): void => {
@@ -93,7 +102,9 @@ const changeSprite: ChangeImage = (pixiImage, sprite): void => {
   pixiImage.texture = PIXI.Texture.from(sprite.src)
 }
 
-export const removeSprite = (pixiImage: EnhancedPixiImage): void => {
+export const removeSprite = (entityId: Guid): void => {
+  const pixiImage = images.get(entityId)
+
   pixiApp.stage.removeChild(pixiImage)
   images.delete(pixiImage.id)
 }

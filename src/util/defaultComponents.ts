@@ -59,7 +59,7 @@ export const sprite: GetDefaultComponent<Sprite> = ({ entityId, ...data }) => ({
   name: componentName.sprite,
   src: '',
   rotation: 0,
-  scale: vectorZero(),
+  scale: vector(1, 1),
   anchor: vector(0, 1),
   ...data,
 })

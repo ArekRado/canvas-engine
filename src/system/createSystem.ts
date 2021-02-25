@@ -7,7 +7,7 @@ export enum systemPriority {
   io = 2,
   transform = 1,
   zero = 0,
-  draw = -1,
+  sprite = -1,
 }
 
 const doNothing = <Component>(params: SystemMethodParams<Component>) =>

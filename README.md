@@ -4,6 +4,15 @@
 npm i
 npm run test:watch
 ```
+
+# DevTools
+
+https://github.com/ArekRado/canvas-engine-devtools
+
+# Example
+
+https://github.com/ArekRado/canvas-engine-devtools/tree/master/example
+
 # ECS
 
 [What is entity component system?](https://en.wikipedia.org/wiki/Entity_component_system)
@@ -13,11 +22,11 @@ npm run test:watch
 It's just a uniq string - think about it as uniq ID from SQL database.
 
 ```ts
-import { entity, initialState } from '@arekrado/canvas-engine';
+import { entity, initialState } from '@arekrado/canvas-engine'
 
-const newEntity = entity.generate("human-friendly-name"); // { id: "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d", name: "human-friendly-name" }
+const newEntity = entity.generate('human-friendly-name')
 
-const stateWithEntity = entity.set({ state: initialState, entity: newEntity });
+const stateWithEntity = entity.set({ state: initialState, entity: newEntity })
 ```
 
 # Component
@@ -50,7 +59,7 @@ export type GunMagazine = Component<{
 }>
 
 // I prefer to call it "default data" rather than component. Component sounds like something complex but this is only function which returns simple JSON.
-export const gunMagazine: GetDefaultComponent<GunMagazine> = data => ({
+export const gunMagazine: GetDefaultComponent<GunMagazine> = (data) => ({
   name: 'gunMagazine',
   bullets: 0,
   type: 'rotary',
@@ -71,43 +80,36 @@ import { gunMagazine } from './components/gunMagazine'
 import gunImg from './assets/gun.png'
 
 // blueprint helps you avoid excessive code - It's common pattern used in gamedev
-export const GunBlueprint = ({state}): State => {
+export const GunBlueprint = ({ state }): State => {
   // create new entity
-  const gunEntity = entity.generate('gun');
+  const gunEntity = entity.generate('gun', {
+      position: vector(10, 50),
+  })
 
   // add new entity to state
   // btw can't wait for a pipeline operator
-  const v1 = entity.set({ state, entity });
+  let newState = entity.set({ state, entity })
 
   // create and push gun sprite and connect it with entity
-  const v2 = setComponent(componentName.sprite, {
-    state: v1,
+  newState = setComponent(componentName.sprite, {
+    state: state1,
     data: defaultData.sprite({
       entity: gunEntity,
       src: gunImg,
     }),
   })
 
-  // do same with a transform
-  const v3 = setComponent(componentName.transform, {
-    state: v2,
-    data: defaultData.transform({
-      entity: gunEntity,
-      position: vectorZero(),
-    }),
-  })
-
   // finally add our own component
-  const v4 = setComponent('gunMagazine', {
-    state: v3,
+  newState = setComponent('gunMagazine', {
+    state: state1,
     data: gunMagazine({
       entity: gunEntity,
       bullets: 5,
     }),
   })
- 
-  return v4
-};
+
+  return newState
+}
 ```
 
 # System
@@ -117,7 +119,25 @@ Pure logic without state. Every system receives whole state then modifies it and
 `createSystem` provides simple abstraction with lifecycle methods connecting components with systems by name.
 
 ```ts
-@todo example :D 
+export const playerSystem = (state: State) =>
+  createSystem<Component<Player>>({
+    name: 'gun',
+    state,
+    tick: ({ state, component }) => {
+      const entity = getEntity({
+        entityId: component.entityId,
+        state,
+      })
+
+      if (state.keyboard['a']?.isPressed) {
+        return bulletBlueprint({
+          position: entity.position,
+        })
+      }
+
+      return state
+    },
+  })
 ```
 
 # Easy start
@@ -147,11 +167,11 @@ const gameLogic = (state: State) => {
 
 // do side effects - initialize will attach event listeners and pixi.js
 initializeEngine().then(() => {
-  const v1 = gunBlueprint(initialState)
+  let state = gunBlueprint(initialState)
 
   // devtools will display this img in sprite list
-  const v2 = asset.addSprite({
-    state: v1,
+  state = asset.addSprite({
+    state,
     src: gunImg,
     name: gunImg,
   })
@@ -160,9 +180,9 @@ initializeEngine().then(() => {
   // const v4 = mySystem1(v3)
   // const v5 = mySystem2(v4)
 
-  const v3 = registerDebugSystem(v2)
+  state = registerDebugSystem(state)
 
-  gameLogic(v3)
+  gameLogic(state)
 })
 
 // if you want to see devtools mount CanvasEngineDevtools and use registerDebugSystem

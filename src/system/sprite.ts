@@ -9,7 +9,7 @@ export const drawSystem = (state: State) =>
   createSystem<Sprite>({
     state,
     name: componentName.sprite,
-    priority: systemPriority.draw,
+    priority: systemPriority.sprite,
     create: ({ state, component }) => {
       if (state.isDrawEnabled) {
         createSprite(component)
@@ -19,7 +19,7 @@ export const drawSystem = (state: State) =>
     },
     remove: ({ state, component }) => {
       if (state.isDrawEnabled) {
-        removeSprite(component)
+        removeSprite(component.entityId)
       }
 
       return state

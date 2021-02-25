@@ -184,11 +184,33 @@ export type Camera = Component<{
   pivot: Vector2D
 }>
 
-/* blueprint: Belt.Map.String.t({
-      connectedEntites: []
-    }), */
+export type Text = Component<{
+  position: Vector2D
+  skew: Vector2D
+  anchor: Vector2D
+  // skewText.skew.set(0.65,-0.3);
+  // skewText.anchor.set(0.5, 0.5);
+  // skewText.x = 300;
+  // skewText.y = 480;
+
+  fontFamily: string
+  dropShadow: boolean
+  dropShadowAlpha: number
+  dropShadowAngle: number
+  dropShadowBlur: number
+  dropShadowColor: string
+  dropShadowDistance: number
+  fill: string[]
+  stroke: string
+  fontSize: number
+  fontStyle: 'italic'
+  fontWeight: 'lighter' | 'bold'
+  lineJoin: 'round'
+  wordWrap: boolean
+  strokeThickness: number
+}>
+
 // @TODO
-// event
 // scene
 export type State = {
   entity: Dictionary<Entity>
@@ -199,6 +221,12 @@ export type State = {
     collideCircle: Dictionary<CollideCircle>
     mouseInteraction: Dictionary<MouseInteraction>
     camera: Dictionary<Camera>
+    
+    text: Dictionary<Text>
+    line: Dictionary<Line>
+    rectangle: Dictionary<Rectangle>
+    circle: Dictionary<Circle>
+    ellipse: Dictionary<Ellipse>
   }
   system: Array<System<any> | GlobalSystem>
   asset: Asset
