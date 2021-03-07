@@ -5,6 +5,10 @@ src/assets
 
 # dependencies
 /node_modules
+/e2e/node_modules
+/e2e/.cache
+/e2e/.yalc
+/e2e/yalc.lock
 
 # testing
 /coverage

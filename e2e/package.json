@@ -1,0 +1,21 @@
+{
+  "main": "e2e",
+  "scripts": {
+    "start": "parcel ./src/index.html",
+    "test": "ts-node ./puppeteer.ts",
+    "build": "parcel build ./src/index.html"
+  },
+  "dependencies": {
+    "@arekrado/canvas-engine": "file:.yalc/@arekrado/canvas-engine",
+    "@arekrado/vector-2d": "0.0.2",
+    "@types/puppeteer": "^5.4.3",
+    "parcel-bundler": "1.12.3",
+    "puppeteer": "^8.0.0",
+    "puppeteer-core": "^8.0.0",
+    "ts-node": "^9.1.1"
+  },
+  "devDependencies": {
+    "@types/@arekrado/canvas-engine": "file:.yalc/@arekrado/canvas-engine",
+    "@babel/core": "^7.13.8"
+  }
+}
