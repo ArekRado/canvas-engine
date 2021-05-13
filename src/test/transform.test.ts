@@ -1,15 +1,15 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
 import { initialStateWithDisabledDraw } from '../util/state'
-import { setEntity, generateEntity, getEntity } from '../util/entity'
+import { setEntity, createEntity, getEntity } from '../entity'
 import { runOneFrame } from '../util/runOneFrame'
 
 describe('transform', () => {
   it('should set proper position using fromParentPosition and parent.position - simple example', () => {
-    const entity1 = generateEntity('e1', {
+    const entity1 = createEntity('e1', {
       position: vector(1, 1),
     })
-    const entity2 = generateEntity('e2', {
+    const entity2 = createEntity('e2', {
       fromParentPosition: vector(2, 2),
       parentId: entity1.id,
     })
@@ -40,18 +40,18 @@ describe('transform', () => {
   })
 
   it('should set proper position using fromParentPosition and parent.position', () => {
-    const entity1 = generateEntity('e1', {
+    const entity1 = createEntity('e1', {
       position: vector(1, 1),
     })
-    const entity2 = generateEntity('e2', {
+    const entity2 = createEntity('e2', {
       fromParentPosition: vector(1, 1),
       parentId: entity1.id,
     })
-    const entity3 = generateEntity('e3', {
+    const entity3 = createEntity('e3', {
       fromParentPosition: vector(-10, -10),
       parentId: entity2.id,
     })
-    const entity4 = generateEntity('e4', {
+    const entity4 = createEntity('e4', {
       fromParentPosition: vector(10, 10),
       parentId: entity2.id,
     })
@@ -89,28 +89,28 @@ describe('transform', () => {
   })
 
   it('Nested entities should has equal position after one frame', () => {
-    const entity1 = generateEntity('e1', {
+    const entity1 = createEntity('e1', {
       position: vector(1, 1),
     })
-    const entity2 = generateEntity('e2', {
+    const entity2 = createEntity('e2', {
       parentId: entity1.id,
     })
-    const entity3 = generateEntity('e3', {
+    const entity3 = createEntity('e3', {
       parentId: entity2.id,
     })
-    const entity4 = generateEntity('e4', {
+    const entity4 = createEntity('e4', {
       parentId: entity3.id,
     })
-    const entity5 = generateEntity('e5', {
+    const entity5 = createEntity('e5', {
       parentId: entity4.id,
     })
-    const entity6 = generateEntity('e6', {
+    const entity6 = createEntity('e6', {
       parentId: entity5.id,
     })
-    const entity7 = generateEntity('e7', {
+    const entity7 = createEntity('e7', {
       parentId: entity6.id,
     })
-    const entity8 = generateEntity('e8', {
+    const entity8 = createEntity('e8', {
       parentId: entity7.id,
     })
 

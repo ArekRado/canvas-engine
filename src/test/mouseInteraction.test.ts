@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
 import { initialStateWithDisabledDraw } from '../util/state'
-import { setEntity, generateEntity } from '../util/entity'
+import { setEntity, createEntity } from '../entity'
 import { runOneFrame } from '../util/runOneFrame'
 import {
   collideBox as defaultCollideBox,
@@ -15,7 +15,7 @@ import { isMouseOver } from '../system/mouseInteraction'
 
 describe('mouseInteraction', () => {
   it('isMouseOver', () => {
-    const entity = generateEntity('entity')
+    const entity = createEntity('entity')
     const entityId = entity.id
     const mouse = initialStateWithDisabledDraw.mouse
 
@@ -58,7 +58,7 @@ describe('mouseInteraction', () => {
   })
 
   it('should set proper mouse interaction values', () => {
-    const entity = generateEntity('entity')
+    const entity = createEntity('entity')
     const entityId = entity.id
 
     const v1 = setEntity({

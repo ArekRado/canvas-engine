@@ -1,7 +1,7 @@
 import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
 import { Entity, State } from '../type'
 import { createGlobalSystem, systemPriority } from './createSystem'
-import { setEntity, getEntity } from '../util/entity'
+import { setEntity, getEntity } from '../entity'
 
 const getParentPosition = (state: State, parentEntity: Entity): Vector2D => {
   if (parentEntity.parentId) {

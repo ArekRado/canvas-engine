@@ -1,9 +1,26 @@
 export * from './type'
 export { runOneFrame } from './util/runOneFrame'
-export * as bezierFunction from './util/bezierFunction'
 export { initialState, setScene } from './util/state'
 export { initializeEngine } from './util/initializeEngine'
 export { jsonToState, stateToJson } from './util/jsonState'
+export {
+  TimingFunction,
+  CommonBezierFunction,
+  linear,
+  easeInQuad,
+  easeOutQuad,
+  easeInOutQuad,
+  easeInCubic,
+  easeOutCubic,
+  easeInOutCubic,
+  easeInQuart,
+  easeOutQuart,
+  easeInOutQuart,
+  easeInQuint,
+  easeOutQuint,
+  easeInOutQuint,
+  getValue,
+} from './util/bezierFunction'
 export {
   createSystem,
   createGlobalSystem,
@@ -27,10 +44,10 @@ import {
 
 export {
   getEntity,
-  generateEntity,
+  createEntity as generateEntity,
   setEntity,
   removeEntity,
-} from './util/entity'
+} from './entity'
 
 export const asset = {
   addSprite,

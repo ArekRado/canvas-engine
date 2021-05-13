@@ -1,10 +1,8 @@
 import { Camera } from '../type'
-import { initialize as initializePixi, setCamera } from '../util/pixiDraw'
 import { createSystem } from './createSystem'
 import { State } from '../type'
 import { componentName } from '../component'
-
-export const initialize = initializePixi
+import { camera } from '../draw/camera'
 
 export const cameraSystem = (state: State) =>
   createSystem<Camera>({
@@ -12,14 +10,14 @@ export const cameraSystem = (state: State) =>
     name: componentName.camera,
     create: ({ state, component }) => {
       if (state.isDrawEnabled) {
-        setCamera(component)
+        camera(component)
       }
 
       return state
     },
-    tick: ({ state, component }) => {
+    tick: ({ state }) => {
       if (state.isDrawEnabled) {
-        setCamera(component)
+        // setCamera(component)
       }
 
       return state

@@ -1,9 +1,11 @@
 import { Sprite } from '../type'
-import { createSprite, drawSprite, removeSprite } from '../util/pixiDraw'
 import { createSystem, systemPriority } from './createSystem'
 import { State } from '../type'
 import { componentName } from '../component'
 import { getEntity } from '..'
+import { drawSprite } from '../draw/drawSprite'
+import { createTexture } from '../draw/texture'
+import { regl } from '../draw/regl'
 
 export const drawSystem = (state: State) =>
   createSystem<Sprite>({
@@ -12,15 +14,24 @@ export const drawSystem = (state: State) =>
     priority: systemPriority.sprite,
     create: ({ state, component }) => {
       if (state.isDrawEnabled) {
-        createSprite(component)
+        const texture = createTexture({
+          src: component.src,
+          regl: regl(),
+        })
+
+        texture.then(() => {})
       }
+
+      // add texture
 
       return state
     },
-    remove: ({ state, component }) => {
+    remove: ({ state }) => {
       if (state.isDrawEnabled) {
-        removeSprite(component.entityId)
+        // removeSprite(component.entityId)
       }
+
+      // remove texture
 
       return state
     },
@@ -32,7 +43,7 @@ export const drawSystem = (state: State) =>
         })
 
         if (entity) {
-          drawSprite(entity, component)
+          drawSprite({ entity, sprite: component })
         }
       }
 

@@ -14,7 +14,7 @@ import {
   detectPointBoxCollision,
   detectPointCircleCollision,
 } from '../util/detectCollision'
-import { getEntity } from '../util/entity'
+import { getEntity } from '../entity'
 
 type IsMouseOver = (params: {
   mouse: Mouse

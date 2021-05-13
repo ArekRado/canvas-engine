@@ -1,9 +1,9 @@
 import { v4 } from 'uuid'
-import { Entity, Guid, State } from '../type'
-import { removeComponent } from '../component'
+import { Entity, Guid, State } from './type'
+import { removeComponent } from './component'
 import { vector, Vector2D, vectorZero } from '@arekrado/vector-2d'
 
-type Generate = (
+type CreateEntity = (
   name: string,
   options?: Partial<{
     persistOnSceneChange: boolean
@@ -16,7 +16,7 @@ type Generate = (
     parentId?: Guid
   }>,
 ) => Entity
-export const generateEntity: Generate = (
+export const createEntity: CreateEntity = (
   name: string,
   options = {},
 ): Entity => ({

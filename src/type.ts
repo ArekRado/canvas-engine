@@ -1,10 +1,13 @@
 import { Vector2D } from '@arekrado/vector-2d'
 import { GlobalSystem, System } from './system/createSystem'
 import { TimingFunction } from './util/bezierFunction'
+import REGL from 'regl'
 
 export type Dictionary<Value> = { [key: string]: Value }
 
 export type Guid = string
+
+export type Color = [number, number, number, number]
 
 export type Component<Data> = {
   entityId: Guid
@@ -94,6 +97,7 @@ export type Sprite = Component<{
   rotation: number
   scale: Vector2D
   anchor: Vector2D
+  texture: undefined | REGL.Texture | Promise<REGL.Texture>
 }>
 
 export type MouseInteraction = Component<{
@@ -178,14 +182,23 @@ export type Keyboard = {
   [key: string]: KeyData | undefined
 }
 
-export type Camera = Component<{
+export type Camera = {
   position: Vector2D
   zoom: number
   pivot: Vector2D
-}>
+
+  // todo
+  theta?: number
+  phi?: number
+  distance?: number
+  up?: Vector2D
+  minDistance?: number
+  maxDistance?: number
+}
 
 export type Text = Component<{
-  position: Vector2D
+  value: string
+  rotation: number
   skew: Vector2D
   anchor: Vector2D
   // skewText.skew.set(0.65,-0.3);
@@ -198,7 +211,7 @@ export type Text = Component<{
   dropShadowAlpha: number
   dropShadowAngle: number
   dropShadowBlur: number
-  dropShadowColor: string
+  dropShadowColor: Color
   dropShadowDistance: number
   fill: string[]
   stroke: string
@@ -208,6 +221,21 @@ export type Text = Component<{
   lineJoin: 'round'
   wordWrap: boolean
   strokeThickness: number
+}>
+
+export type Line = Component<{
+  path: Vector2D[]
+  borderColor: Color
+}>
+
+export type Rectangle = Component<{
+  size: Vector2D
+  fillColor: Color
+}>
+
+export type Ellipse = Component<{
+  size: Vector2D
+  fillColor: Color
 }>
 
 // @TODO
@@ -220,14 +248,13 @@ export type State = {
     collideBox: Dictionary<CollideBox>
     collideCircle: Dictionary<CollideCircle>
     mouseInteraction: Dictionary<MouseInteraction>
-    camera: Dictionary<Camera>
-    
+
     text: Dictionary<Text>
     line: Dictionary<Line>
     rectangle: Dictionary<Rectangle>
-    circle: Dictionary<Circle>
     ellipse: Dictionary<Ellipse>
   }
+  camera: Camera
   system: Array<System<any> | GlobalSystem>
   asset: Asset
   mouse: Mouse

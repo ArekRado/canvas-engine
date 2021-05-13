@@ -8,8 +8,11 @@ import { ioSystem } from '../system/io'
 import { timeSystem } from '../system/time'
 import { mouseInteractionSystem } from '../system/mouseInteraction'
 import { cameraSystem } from '../system/camera'
+import { primitiveSystem } from '../system/primitive'
+import { textSystem } from '../system/text'
+import { vector, vectorZero } from '@arekrado/vector-2d'
 
-const v1: State = {
+let state: State = {
   entity: {},
   component: {
     [componentName.sprite]: {},
@@ -17,7 +20,15 @@ const v1: State = {
     [componentName.collideBox]: {},
     [componentName.collideCircle]: {},
     [componentName.mouseInteraction]: {},
-    [componentName.camera]: {},
+    [componentName.text]: {},
+    [componentName.line]: {},
+    [componentName.rectangle]: {},
+    [componentName.ellipse]: {},
+  },
+  camera: {
+    position: vectorZero(),
+    zoom: 1,
+    pivot: vector(1, 1),
   },
   asset: {
     sprite: [],
@@ -45,16 +56,18 @@ const v1: State = {
   isDrawEnabled: true,
 }
 
-const v2 = timeSystem(v1)
-const v3 = ioSystem(v2)
-const v4 = transformSystem(v3)
-const v5 = drawSystem(v4)
-const v6 = collideBoxSystem(v5)
-const v7 = animationSystem(v6)
-const v8 = mouseInteractionSystem(v7)
-const v9 = cameraSystem(v8)
+state = timeSystem(state)
+state = ioSystem(state)
+state = transformSystem(state)
+state = drawSystem(state)
+state = collideBoxSystem(state)
+state = animationSystem(state)
+state = mouseInteractionSystem(state)
+state = cameraSystem(state)
+state = primitiveSystem(state)
+state = textSystem(state)
 
-export const initialState = v9
+export const initialState = state
 
 export const initialStateWithDisabledDraw: State = {
   ...initialState,

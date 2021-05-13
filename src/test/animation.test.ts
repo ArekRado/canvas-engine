@@ -5,7 +5,7 @@ import {
   animation as defaultAnimation,
 } from '../util/defaultComponents'
 import { getActiveKeyframe } from '../system/animation'
-import { generateEntity, getEntity, setEntity } from '../util/entity'
+import { createEntity, getEntity, setEntity } from '../entity'
 import { State, Sprite, Animation } from '../type'
 import { initialStateWithDisabledDraw } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
@@ -13,7 +13,7 @@ import { getComponent, setComponent } from '../component'
 import { componentName } from '../component'
 
 describe('animation', () => {
-  const entity = generateEntity('entity')
+  const entity = createEntity('entity')
   const entityId = entity.id
 
   const getSprite = (state: State) =>

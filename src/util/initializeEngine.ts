@@ -1,7 +1,27 @@
-import { initialize as initializePixi } from '../util/pixiDraw'
 import { initialize as initializeIO } from '../system/io'
 
-export const initializeEngine = async (params?: { containerId?: string }) => {
+// const getGameContainerDimensions = (containerId: string) => {
+//   const element = document.querySelector(`#${containerId}`)
+
+//   const { width, height } = element
+//     ? element.getBoundingClientRect()
+//     : { width: 0, height: 0 }
+
+//   return [width, height]
+// }
+
+// if (!document || !document.body) {
+//   console.warn("Couldn't find document body")
+// } else {
+//   const element = document.querySelector(`#${containerId}`)
+//   if (!element) {
+//     console.warn(`Container with id ${containerId} doesn't exists`)
+//   } else {
+//     element.appendChild(pixiApp.view)
+//   }
+// }
+
+export const initializeEngine = (params?: { containerId?: string }) => {
   const containerId = params?.containerId || 'canvas-engine'
 
   const isContainerAlreadyExist = document.getElementById(containerId) !== null
@@ -14,5 +34,5 @@ export const initializeEngine = async (params?: { containerId?: string }) => {
   }
 
   initializeIO()
-  await initializePixi(containerId)
+  // await initiaglizePixi(containerId)
 }

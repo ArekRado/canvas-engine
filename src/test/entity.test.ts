@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime'
 import { initialStateWithDisabledDraw } from '../util/state'
 
-import { setEntity, removeEntity, generateEntity } from '../util/entity'
+import { setEntity, removeEntity, createEntity } from '../entity'
 import {
   collideCircle as defaultCollideCircle,
   collideBox as defaultCollideBox,
@@ -14,24 +14,24 @@ import { CollideBox, Animation, CollideCircle, Sprite } from '../type'
 
 describe('entity', () => {
   it('remove - should remove components by entity', () => {
-    const entity = generateEntity('test')
+    const entity = createEntity('test')
     const entityId = entity.id
-    const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
+    let state = setEntity({ state: initialStateWithDisabledDraw, entity })
 
-    const v2 = setComponent<Animation>(componentName.animation, {
-      state: v1,
+    state = setComponent<Animation>(componentName.animation, {
+      state,
       data: defaultAnimation({ entityId }),
     })
-    const v3 = setComponent<CollideBox>(componentName.collideBox, {
-      state: v2,
+    state = setComponent<CollideBox>(componentName.collideBox, {
+      state,
       data: defaultCollideBox({ entityId }),
     })
-    const v4 = setComponent<CollideCircle>(componentName.collideCircle, {
-      state: v3,
+    state = setComponent<CollideCircle>(componentName.collideCircle, {
+      state,
       data: defaultCollideCircle({ entityId }),
     })
-    const state = setComponent<Sprite>(componentName.sprite, {
-      state: v4,
+    state = setComponent<Sprite>(componentName.sprite, {
+      state,
       data: defaultSprite({ entityId }),
     })
 
@@ -56,7 +56,7 @@ describe('entity', () => {
   })
 
   it('set - should set and update entity', () => {
-    const entity = generateEntity('test', { rotation: 1 })
+    const entity = createEntity('test', { rotation: 1 })
     const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
 
     expect(v1.entity[entity.id]).toEqual(entity)

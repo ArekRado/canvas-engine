@@ -8,6 +8,8 @@ export enum systemPriority {
   transform = 1,
   zero = 0,
   sprite = -1,
+  primitive = -2,
+  text = -3,
 }
 
 const doNothing = <Component>(params: SystemMethodParams<Component>) =>

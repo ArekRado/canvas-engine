@@ -12,6 +12,11 @@ export enum componentName {
   blueprint = 'blueprint',
   mouseInteraction = 'mouseInteraction',
   camera = 'camera',
+  text = 'text',
+  line = 'line',
+  rectangle = 'rectangle',
+  circle = 'circle',
+  ellipse = 'ellipse',
 }
 
 type SetComponentParams<Data> = {
@@ -69,7 +74,7 @@ export const removeComponent: RemoveComponent = (name, { entityId, state }) => {
   const component = getComponent(name, { state, entityId })
   const system = getSystemByName(name, newState.system)
 
-  if (system) {
+  if (system && component) {
     return system.remove({ state: newState, component })
   }
 
