@@ -1,4 +1,5 @@
 import { initialize as initializeIO } from '../system/io'
+// import { setCamera } from './camera'
 
 // const getGameContainerDimensions = (containerId: string) => {
 //   const element = document.querySelector(`#${containerId}`)

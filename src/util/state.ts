@@ -7,7 +7,6 @@ import { componentName } from '../component'
 import { ioSystem } from '../system/io'
 import { timeSystem } from '../system/time'
 import { mouseInteractionSystem } from '../system/mouseInteraction'
-import { cameraSystem } from '../system/camera'
 import { primitiveSystem } from '../system/primitive'
 import { textSystem } from '../system/text'
 import { vector, vectorZero } from '@arekrado/vector-2d'
@@ -63,7 +62,6 @@ state = drawSystem(state)
 state = collideBoxSystem(state)
 state = animationSystem(state)
 state = mouseInteractionSystem(state)
-state = cameraSystem(state)
 state = primitiveSystem(state)
 state = textSystem(state)
 

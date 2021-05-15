@@ -1,5 +1,5 @@
 {
-  "version": "0.0.57",
+  "version": "0.0.59",
   "name": "@arekrado/canvas-engine",
   "umd:main": "dist/canvas-engine.umd.production.js",
   "main": "dist/index.js",
@@ -29,6 +29,7 @@
   "scripts": {
     "test": "tsdx test --env=jsdom",
     "test:watch": "tsdx test --env=jsdom --watch --coverage=false",
+    "test:ci": "tsdx test --env=jsdom --runInBand",
     "build": "tsdx build --tsconfig tsconfig.build.json",
     "prepublish": "npm run build",
     "publish:local": "yalc publish",

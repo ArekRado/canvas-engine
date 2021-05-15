@@ -1,4 +1,4 @@
-import REGL from 'regl'
+import REGL, { Texture2D } from 'regl'
 
 // because node can't into webgl
 export let reglMock = ((() => () => {}) as unknown) as REGL.Regl
@@ -12,6 +12,7 @@ reglMock.prop = () => ({
   type: 0,
   data: '',
 })
+reglMock.texture = () => ({} as unknown as Texture2D)
 // limits are readonly
 reglMock['limits' + ''] = {
   colorBits: [1, 1, 1, 1],

@@ -97,7 +97,7 @@ export type Sprite = Component<{
   rotation: number
   scale: Vector2D
   anchor: Vector2D
-  texture: undefined | REGL.Texture | Promise<REGL.Texture>
+  texture: undefined | REGL.Texture
 }>
 
 export type MouseInteraction = Component<{

@@ -8,10 +8,11 @@ type CreateTexture = (params: {
 export const createTexture: CreateTexture = ({ src, regl }) => {
   const texture = new Promise<REGL.Texture2D>((resolve) => {
     const image = new Image()
-    image.src = src
     image.onload = () => {
       resolve(regl.texture(image))
     }
+
+    image.src = src
   })
 
   return texture

@@ -1,4 +1,4 @@
-import { Sprite } from '../type'
+import { Guid, Sprite } from '../type'
 import { createSystem, systemPriority } from './createSystem'
 import { State } from '../type'
 import { componentName } from '../component'
@@ -6,6 +6,9 @@ import { getEntity } from '..'
 import { drawSprite } from '../draw/drawSprite'
 import { createTexture } from '../draw/texture'
 import { regl } from '../draw/regl'
+import REGL from 'regl'
+
+let textureBuffer: { entityId: Guid; texture: REGL.Texture2D }[] = []
 
 export const drawSystem = (state: State) =>
   createSystem<Sprite>({
@@ -14,12 +17,14 @@ export const drawSystem = (state: State) =>
     priority: systemPriority.sprite,
     create: ({ state, component }) => {
       if (state.isDrawEnabled) {
-        const texture = createTexture({
+        const texturePromise = createTexture({
           src: component.src,
           regl: regl(),
         })
 
-        texture.then(() => {})
+        texturePromise.then((texture) => {
+          textureBuffer.push({ entityId: component.entityId, texture })
+        })
       }
 
       // add texture
@@ -27,9 +32,9 @@ export const drawSystem = (state: State) =>
       return state
     },
     remove: ({ state }) => {
-      if (state.isDrawEnabled) {
-        // removeSprite(component.entityId)
-      }
+      // if (state.isDrawEnabled) {
+      // removeSprite(component.entityId)
+      // }
 
       // remove texture
 
@@ -41,6 +46,18 @@ export const drawSystem = (state: State) =>
           state,
           entityId: component.entityId,
         })
+
+        // set async texture
+        if (!component.texture && textureBuffer.length > 0) {
+          const index = textureBuffer.findIndex(
+            ({ entityId }) => entityId === component.entityId,
+          )
+
+          if (index !== -1) {
+            component.texture = textureBuffer[index]?.texture
+            textureBuffer.splice(index, 1)
+          }
+        }
 
         if (entity) {
           drawSprite({ entity, sprite: component })

@@ -12,8 +12,7 @@ export enum systemPriority {
   text = -3,
 }
 
-const doNothing = <Component>(params: SystemMethodParams<Component>) =>
-  params.state
+const doNothing = (params: { state: State }) => params.state
 
 type SystemMethodParams<Component> = {
   state: State
@@ -71,7 +70,8 @@ export const createSystem = <Component>({
 export type CreateGlobalSystemParams = {
   state: State
   name: string
-  tick: (params: { state: State }) => State
+  create?: (params: { state: State }) => State
+  tick?: (params: { state: State }) => State
   priority?: number
 }
 
@@ -85,14 +85,15 @@ export type GlobalSystem = {
 
 export const createGlobalSystem = ({
   state,
+  create,
   tick,
   ...params
 }: CreateGlobalSystemParams): State => {
   const system: GlobalSystem = {
     name: params.name,
     priority: params.priority || systemPriority.zero,
-    tick,
-    create: ({ state }) => state,
+    tick: tick || doNothing,
+    create: create || doNothing,
     remove: ({ state }) => state,
   }
 

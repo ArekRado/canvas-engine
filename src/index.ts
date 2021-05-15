@@ -42,6 +42,8 @@ import {
   removeBlueprint,
 } from './util/asset'
 
+export { setCamera } from './util/camera'
+
 export {
   getEntity,
   createEntity as generateEntity,
