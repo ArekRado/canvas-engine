@@ -3,12 +3,12 @@ import { createSystem, systemPriority } from './createSystem'
 import { State } from '../type'
 import { componentName } from '../component'
 import { getEntity } from '..'
-import { drawSprite } from '../draw/drawSprite'
+import { createDrawSprite, DrawSprite } from '../draw/drawSprite'
 import { createTexture } from '../draw/texture'
-import { regl } from '../draw/regl'
 import REGL from 'regl'
 
 let textureBuffer: { entityId: Guid; texture: REGL.Texture2D }[] = []
+let drawSprite: DrawSprite | null = null
 
 export const drawSystem = (state: State) =>
   createSystem<Sprite>({
@@ -16,10 +16,12 @@ export const drawSystem = (state: State) =>
     name: componentName.sprite,
     priority: systemPriority.sprite,
     create: ({ state, component }) => {
-      if (state.isDrawEnabled) {
+      if (state.isDrawEnabled && state.regl) {
+        drawSprite = createDrawSprite(state.regl)
+
         const texturePromise = createTexture({
           src: component.src,
-          regl: regl(),
+          regl: state.regl,
         })
 
         texturePromise.then((texture) => {
@@ -59,7 +61,7 @@ export const drawSystem = (state: State) =>
           }
         }
 
-        if (entity) {
+        if (drawSprite && entity && component.texture) {
           drawSprite({ entity, sprite: component })
         }
       }

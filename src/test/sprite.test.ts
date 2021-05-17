@@ -10,17 +10,22 @@ import {
 } from '../component'
 import { defaultData } from '..'
 import { Sprite } from '../type'
+import { initializeEngine } from '../util/initializeEngine'
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 describe('sprite', () => {
+  beforeEach(() => {})
+
   it('should pass through sprite render lifecycle without any errors', () => {
     expect(() => {
+      let state = initializeEngine({ state: initialState })
+
       const entity = createEntity('e')
 
-      let state = setEntity({
+      state = setEntity({
         entity,
-        state: initialState,
+        state,
       })
 
       state = setComponent(componentName.sprite, {
@@ -46,13 +51,15 @@ describe('sprite', () => {
           ;(this as any).onload() // simulate success
         }, 0)
       }
-    } as any
+    } as typeof Image
+
+    let state = initializeEngine({ state: initialState })
 
     const entity = createEntity('e')
 
-    let state = setEntity({
+    state = setEntity({
       entity,
-      state: initialState,
+      state,
     })
 
     state = setComponent(componentName.sprite, {

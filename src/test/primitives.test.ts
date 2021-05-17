@@ -3,16 +3,18 @@ import { initialState } from '../util/state'
 import { setEntity, createEntity } from '../entity'
 import { runOneFrame } from '../util/runOneFrame'
 import { componentName, removeComponent, setComponent } from '../component'
-import { defaultData } from '..'
+import { defaultData, initializeEngine } from '..'
 
 describe('primitive', () => {
   it('should pass through primitive render lifecycle without any errors', () => {
     expect(() => {
+      let state = initializeEngine({ state: initialState })
+
       const entity = createEntity('e')
 
-      let state = setEntity({
+      state = setEntity({
         entity,
-        state: initialState,
+        state,
       })
 
       state = setComponent(componentName.line, {

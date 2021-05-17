@@ -2,7 +2,6 @@
 
 import REGL from 'regl'
 import { Camera } from '../type'
-import { regl } from './regl'
 
 var identity = require('gl-mat4/identity')
 var perspective = require('gl-mat4/perspective')
@@ -133,4 +132,5 @@ export const reglCamera = (regl: REGL.Regl, camera: Camera) => {
   return setupCamera
 }
 
-export const camera = (props: Camera) => reglCamera(regl(), props)
+export const camera = ({ camera, regl }: { camera: Camera; regl: REGL.Regl }) =>
+  reglCamera(regl, camera)

@@ -24,6 +24,7 @@ let state: State = {
     [componentName.rectangle]: {},
     [componentName.ellipse]: {},
   },
+  regl: undefined,
   camera: {
     position: vectorZero(),
     zoom: 1,

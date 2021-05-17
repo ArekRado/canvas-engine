@@ -1,6 +1,5 @@
 import { Entity, Sprite } from '../type'
 import REGL from 'regl'
-import { regl } from './regl'
 
 export const loadTexture = (src: string, regl: REGL.Regl) =>
   new Promise((resolve) => {
@@ -16,9 +15,11 @@ type CreateDrawSpriteProps = {
   entity: Entity
 }
 
-type CreateDrawSprite = (regl: REGL.Regl) => (props: CreateDrawSpriteProps) => void
+export type DrawSprite = (props: CreateDrawSpriteProps) => void
 
-const createDrawSprite: CreateDrawSprite = (regl) => {
+type CreateDrawSprite = (regl: REGL.Regl) => DrawSprite
+
+export const createDrawSprite: CreateDrawSprite = (regl) => {
   const drawSprite = regl({
     blend: {
       enable: true,
@@ -96,6 +97,3 @@ const createDrawSprite: CreateDrawSprite = (regl) => {
     })
   }
 }
-
-export const drawSprite = (props: CreateDrawSpriteProps) =>
-  createDrawSprite(regl())(props)

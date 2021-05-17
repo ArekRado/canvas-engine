@@ -1,4 +1,6 @@
+import { getRegl } from '../draw/getRegl'
 import { initialize as initializeIO } from '../system/io'
+import { State } from '../type'
 // import { setCamera } from './camera'
 
 // const getGameContainerDimensions = (containerId: string) => {
@@ -22,18 +24,38 @@ import { initialize as initializeIO } from '../system/io'
 //   }
 // }
 
-export const initializeEngine = (params?: { containerId?: string }) => {
+export const initializeEngine = (params: {
+  containerId?: string
+  state: State
+}) => {
   const containerId = params?.containerId || 'canvas-engine'
 
-  const isContainerAlreadyExist = document.getElementById(containerId) !== null
-  const body = document.body
+  const maybeContainer = document.getElementById(containerId)
 
-  if (body && isContainerAlreadyExist === false) {
-    const gameContainer = document.createElement('div')
-    gameContainer.setAttribute('id', containerId)
-    body.appendChild(gameContainer)
+  if (maybeContainer === null) {
+    const body = document.body
+
+    if (body) {
+      const gameContainer = document.createElement('div')
+      gameContainer.setAttribute('id', containerId)
+      body.appendChild(gameContainer)
+
+      params.state = getRegl({
+        container: gameContainer,
+        state: params.state,
+      })
+    } else {
+      console.error("document.body doesn't exist")
+    }
+  } else {
+    params.state = getRegl({
+      container: maybeContainer,
+      state: params.state,
+    })
   }
 
   initializeIO()
   // await initiaglizePixi(containerId)
+
+  return params.state
 }

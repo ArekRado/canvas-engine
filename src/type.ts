@@ -254,6 +254,7 @@ export type State = {
     rectangle: Dictionary<Rectangle>
     ellipse: Dictionary<Ellipse>
   }
+  regl: REGL.Regl | undefined
   camera: Camera
   system: Array<System<any> | GlobalSystem>
   asset: Asset

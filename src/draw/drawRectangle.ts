@@ -1,13 +1,13 @@
 import { Rectangle, Entity } from '../type'
 import REGL from 'regl'
 import { createDrawLineCommand } from './drawLine'
-import { regl } from './regl'
 
 type CreateDrawRectangleParams = { rectangle: Rectangle; entity: Entity }
-type CreateDrawRectangle = (
-  regl: REGL.Regl,
-) => (params: CreateDrawRectangleParams) => void
-const createDrawRectangle: CreateDrawRectangle = (regl) => {
+
+export type DrawRectangle = (params: CreateDrawRectangleParams) => void
+
+type CreateDrawRectangle = (regl: REGL.Regl) => DrawRectangle
+export const createDrawRectangle: CreateDrawRectangle = (regl) => {
   const drawLine = createDrawLineCommand(regl)
 
   return ({ entity, rectangle }) => {
@@ -39,6 +39,3 @@ const createDrawRectangle: CreateDrawRectangle = (regl) => {
     })
   }
 }
-
-export const drawRectangle = (props: CreateDrawRectangleParams) =>
-createDrawRectangle(regl())(props)

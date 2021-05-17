@@ -1,16 +1,29 @@
 import { createGlobalSystem, systemPriority } from './createSystem'
 import { State } from '../type'
 import { getEntity } from '../entity'
-import { drawLine } from '../draw/drawLine'
-import { drawRectangle } from '../draw/drawRectangle'
-import { drawEllipse } from '../draw/drawEllipse'
+import { DrawLine, createDrawLine } from '../draw/drawLine'
+import { DrawRectangle, createDrawRectangle } from '../draw/drawRectangle'
+import { DrawEllipse, createDrawEllipse } from '../draw/drawEllipse'
+
+const doNothing = () => {}
+let drawLine: DrawLine | (() => void) = doNothing
+let drawRectangle: DrawRectangle | (() => void) = doNothing
+let drawEllipse: DrawEllipse | (() => void) = doNothing
 
 export const primitiveSystem = (state: State) =>
   createGlobalSystem({
     state,
     name: 'primitive',
     priority: systemPriority.primitive,
+    create: ({ state }) => {
+      if (state.isDrawEnabled && state.regl) {
+        drawLine = createDrawLine(state.regl)
+        drawRectangle = createDrawRectangle(state.regl)
+        drawEllipse = createDrawEllipse(state.regl)
+      }
 
+      return state
+    },
     tick: ({ state }) => {
       if (state.isDrawEnabled) {
         Object.values(state.component.line).forEach((line) => {
@@ -39,20 +52,6 @@ export const primitiveSystem = (state: State) =>
               ellipse,
             })
         })
-
-        // Object.values(state.component.collideBox).forEach((collideBox) => {
-        //   const entity = getEntity({ entityId: collideBox.entityId, state })
-        //   entity && renderCollideBox(entity, collideBox)
-        // })
-        // Object.values(state.component.collideCircle).forEach(
-        //   (collideCircle) => {
-        //     const entity = getEntity({
-        //       entityId: collideCircle.entityId,
-        //       state,
-        //     })
-        //     entity && renderCollideCircle(entity, collideCircle)
-        //   },
-        // )
       }
 
       return state

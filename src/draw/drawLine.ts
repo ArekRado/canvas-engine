@@ -1,7 +1,6 @@
 import { Line, Entity } from '../type'
 import { Vector2D } from '@arekrado/vector-2d'
 import REGL from 'regl'
-import { regl } from './regl'
 
 export const createDrawLineCommand = (regl: REGL.Regl) => {
   var lineWidth = 1
@@ -51,7 +50,9 @@ type CreateDrawLineProps = {
   entity: Entity
 }
 
-type CreateDrawLine = (regl: REGL.Regl) => (params: CreateDrawLineProps) => void
+export type DrawLine = (params: CreateDrawLineProps) => void
+
+type CreateDrawLine = (regl: REGL.Regl) => DrawLine
 export const createDrawLine: CreateDrawLine = (regl) => {
   const drawLine = createDrawLineCommand(regl)
 
@@ -65,6 +66,3 @@ export const createDrawLine: CreateDrawLine = (regl) => {
     })
   }
 }
-
-export const drawLine = (props: CreateDrawLineProps) =>
-createDrawLine(regl())(props)

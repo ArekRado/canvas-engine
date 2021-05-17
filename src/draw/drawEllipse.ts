@@ -1,15 +1,16 @@
 import { Entity, Ellipse } from '../type'
 import { scale, sub, vector } from '@arekrado/vector-2d'
 import REGL from 'regl'
-import { regl } from './regl'
 
 type CreateDrawEllipseParams = {
   ellipse: Ellipse
   entity: Entity
 }
 
-type CreateDrawEllipse = (regl: REGL.Regl) => (props: CreateDrawEllipseParams) => void
-const createDrawEllipse: CreateDrawEllipse = (regl) => {
+export type DrawEllipse = (props: CreateDrawEllipseParams) => void
+
+type CreateDrawEllipse = (regl: REGL.Regl) => DrawEllipse
+export const createDrawEllipse: CreateDrawEllipse = (regl) => {
   const drawEllipse = regl({
     blend: {
       enable: true,
@@ -43,7 +44,7 @@ const createDrawEllipse: CreateDrawEllipse = (regl) => {
       float distance = sqrt(dx*dx + dy*dy);
   
       if (distance < radius / 2.0) {
-        gl_FragColor = fillColor
+        gl_FragColor = fillColor;
       } else {
         gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
       }
@@ -140,6 +141,3 @@ const createDrawEllipse: CreateDrawEllipse = (regl) => {
     })
   }
 }
-
-export const drawEllipse = (props: CreateDrawEllipseParams) =>
-createDrawEllipse(regl())(props)
