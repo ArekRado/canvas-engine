@@ -7,7 +7,16 @@ var identity = require('gl-mat4/identity')
 var perspective = require('gl-mat4/perspective')
 var lookAt = require('gl-mat4/lookAt')
 
-export const reglCamera = (regl: REGL.Regl, camera: Camera) => {
+export type DrawCamera = (camera: Camera, callback: () => void) => void
+type CreateCamera = (params: { camera: Camera; regl: REGL.Regl }) => DrawCamera
+
+export const createCamera: CreateCamera = ({
+  camera,
+  regl,
+}: {
+  camera: Camera
+  regl: REGL.Regl
+}) => {
   var cameraState = {
     view: identity(new Float32Array(16)),
     projection: identity(new Float32Array(16)),
@@ -120,9 +129,9 @@ export const reglCamera = (regl: REGL.Regl, camera: Camera) => {
     {}),
   })
 
-  function setupCamera(block: any) {
+  function setupCamera(camera: Camera) {
     updateCamera()
-    injectContext(block)
+    injectContext(camera)
   }
 
   Object.keys(cameraState).forEach(function (name: any) {
@@ -131,6 +140,3 @@ export const reglCamera = (regl: REGL.Regl, camera: Camera) => {
 
   return setupCamera
 }
-
-export const camera = ({ camera, regl }: { camera: Camera; regl: REGL.Regl }) =>
-  reglCamera(regl, camera)

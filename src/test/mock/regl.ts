@@ -12,7 +12,24 @@ reglMock.prop = () => ({
   type: 0,
   data: '',
 })
-reglMock.texture = () => ({} as unknown as Texture2D)
+
+reglMock.frame = (callback) => {
+  callback({
+    tick: 0,
+    time: 0,
+    viewportWidth: 0,
+    viewportHeight: 0,
+    drawingBufferWidth: 0,
+    drawingBufferHeight: 0,
+    pixelRatio: 0,
+  })
+
+  return {
+    cancel: () => {},
+  }
+}
+reglMock.clear = () => {}
+reglMock.texture = () => (({} as unknown) as Texture2D)
 // limits are readonly
 reglMock['limits' + ''] = {
   colorBits: [1, 1, 1, 1],

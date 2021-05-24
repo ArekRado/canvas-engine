@@ -1,14 +1,13 @@
 import { State } from '../type'
 import { animationSystem } from '../system/animation'
 import { collideBoxSystem } from '../system/collideBox'
-import { drawSystem } from '../system/sprite'
+import { spriteSystem } from '../system/sprite'
 import { transformSystem } from '../system/transform'
 import { componentName } from '../component'
 import { ioSystem } from '../system/io'
 import { timeSystem } from '../system/time'
 import { mouseInteractionSystem } from '../system/mouseInteraction'
-import { primitiveSystem } from '../system/primitive'
-import { textSystem } from '../system/text'
+import { drawSystem } from '../system/draw'
 import { vector, vectorZero } from '@arekrado/vector-2d'
 
 let state: State = {
@@ -63,8 +62,7 @@ state = drawSystem(state)
 state = collideBoxSystem(state)
 state = animationSystem(state)
 state = mouseInteractionSystem(state)
-state = primitiveSystem(state)
-state = textSystem(state)
+state = spriteSystem(state)
 
 export const initialState = state
 
