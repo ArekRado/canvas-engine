@@ -55,10 +55,11 @@ export const createDrawSprite: CreateDrawSprite = (regl) => {
     uniform float viewportHeight;
     uniform vec2 scale;
     uniform vec2 anchor;
+    uniform vec2 translate;
 
     void main () {
       float aspect = viewportWidth / viewportHeight;
-      vec2 anchoredPosition = position - anchor;
+      vec2 anchoredPosition = translate + position - anchor;
 
       uv = position;
 
@@ -78,6 +79,7 @@ export const createDrawSprite: CreateDrawSprite = (regl) => {
       viewportWidth: regl.context('viewportWidth'),
       viewportHeight: regl.context('viewportHeight'),
 
+      translate: regl.prop<Entity, 'position'>('position'),
       texture: regl.prop<Sprite, 'texture'>('texture'),
       scale: regl.prop<Entity, 'scale'>('scale'),
       rotation: regl.prop<Entity, 'rotation'>('rotation'),
@@ -94,6 +96,7 @@ export const createDrawSprite: CreateDrawSprite = (regl) => {
       scale: entity.scale,
       rotation: entity.rotation,
       anchor: sprite.anchor,
+      position: entity.position,
     })
   }
 }

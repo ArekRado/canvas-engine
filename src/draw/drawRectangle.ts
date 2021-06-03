@@ -22,18 +22,22 @@ export const createDrawRectangle: CreateDrawRectangle = (regl) => {
 
     // borders
     drawLine({
+      position: entity.position,
       path: [vert[0], vert[1]],
       borderColor: rectangle.fillColor, // todo - should actually use color to fill not to render borders
     })
     drawLine({
+      position: entity.position,
       path: [vert[1], vert[2]],
       borderColor: rectangle.fillColor,
     })
     drawLine({
+      position: entity.position,
       path: [vert[2], vert[3]],
       borderColor: rectangle.fillColor,
     })
     drawLine({
+      position: entity.position,
       path: [vert[3], vert[0]],
       borderColor: rectangle.fillColor,
     })

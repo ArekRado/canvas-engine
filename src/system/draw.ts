@@ -19,7 +19,7 @@ export const drawSystem = (state: State) =>
     state,
     name: 'draw',
     priority: systemPriority.draw,
-    create: ({ state }) => {
+    initialize: ({ state }) => {
       if (state.isDrawEnabled && state.regl) {
         drawSprite = createDrawSprite(state.regl)
         drawLine = createDrawLine(state.regl)
@@ -36,40 +36,39 @@ export const drawSystem = (state: State) =>
           state.regl?.clear({
             color: [0, 0, 0, 1],
           })
-          camera(state.camera, () => {
-            Object.values(state.component.line).forEach((line) => {
-              const entity = getEntity({ state, entityId: line.entityId })
-              entity &&
-                drawLine({
-                  entity,
-                  line,
-                })
-            })
+          camera(state.camera)
+          Object.values(state.component.line).forEach((line) => {
+            const entity = getEntity({ state, entityId: line.entityId })
+            entity &&
+              drawLine({
+                entity,
+                line,
+              })
+          })
 
-            Object.values(state.component.rectangle).forEach((rectangle) => {
-              const entity = getEntity({ state, entityId: rectangle.entityId })
-              entity &&
-                drawRectangle({
-                  entity,
-                  rectangle,
-                })
-            })
+          Object.values(state.component.rectangle).forEach((rectangle) => {
+            const entity = getEntity({ state, entityId: rectangle.entityId })
+            entity &&
+              drawRectangle({
+                entity,
+                rectangle,
+              })
+          })
 
-            Object.values(state.component.ellipse).forEach((ellipse) => {
-              const entity = getEntity({ state, entityId: ellipse.entityId })
-              entity &&
-                drawEllipse({
-                  entity,
-                  ellipse,
-                })
-            })
+          Object.values(state.component.ellipse).forEach((ellipse) => {
+            const entity = getEntity({ state, entityId: ellipse.entityId })
+            entity &&
+              drawEllipse({
+                entity,
+                ellipse,
+              })
+          })
 
-            Object.values(state.component.sprite).forEach((sprite) => {
-              const entity = getEntity({ state, entityId: sprite.entityId })
-              if (entity && sprite.texture) {
-                drawSprite({ entity, sprite })
-              }
-            })
+          Object.values(state.component.sprite).forEach((sprite) => {
+            const entity = getEntity({ state, entityId: sprite.entityId })
+            if (entity && sprite.texture) {
+              drawSprite({ entity, sprite })
+            }
           })
         })
       }

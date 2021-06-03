@@ -57,5 +57,7 @@ export const initializeEngine = (params: {
   initializeIO()
   // await initiaglizePixi(containerId)
 
-  return params.state
+  return [...params.state.system]
+    // .sort((a, b) => (a > b ? -1 : 1))
+    .reduce((acc, system) => system.initialize({ state: acc }), params.state)
 }

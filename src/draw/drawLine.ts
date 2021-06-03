@@ -1,5 +1,5 @@
 import { Line, Entity } from '../type'
-import { Vector2D } from '@arekrado/vector-2d'
+import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
 import REGL from 'regl'
 
 export const createDrawLineCommand = (regl: REGL.Regl) => {
@@ -23,11 +23,12 @@ export const createDrawLineCommand = (regl: REGL.Regl) => {
 
     uniform float viewportWidth;
     uniform float viewportHeight;
+    uniform vec2 translate;
 
     void main() {
       float aspect = viewportWidth / viewportHeight;
 
-      gl_Position = vec4(position.x, aspect * position.y, 0, 1);
+      gl_Position = vec4(translate.x + position.x, aspect * (translate.y + position.y), 0, 1);
     }`,
 
     attributes: {
@@ -37,6 +38,7 @@ export const createDrawLineCommand = (regl: REGL.Regl) => {
       viewportWidth: regl.context('viewportWidth'),
       viewportHeight: regl.context('viewportHeight'),
 
+      translate: regl.prop<Entity, 'position'>('position'),
       borderColor: regl.prop<Line, 'borderColor'>('borderColor'),
     },
     lineWidth: lineWidth,
@@ -56,11 +58,15 @@ type CreateDrawLine = (regl: REGL.Regl) => DrawLine
 export const createDrawLine: CreateDrawLine = (regl) => {
   const drawLine = createDrawLineCommand(regl)
 
-  return ({ line }) => {
+  return ({ entity, line }) => {
     line.path.forEach((_, i) => {
-      const path = [line.path[i], line.path[i + 1] || 0]
+      const path = [
+        add(line.path[i], entity.position),
+        add(line.path[i + 1] || vectorZero(), entity.position),
+      ]
       drawLine({
         path,
+        position: entity.position,
         borderColor: line.borderColor,
       })
     })

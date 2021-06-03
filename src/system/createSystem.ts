@@ -21,6 +21,7 @@ type SystemMethodParams<Component> = {
 export type CreateSystemParams<Component> = {
   state: State
   name: string
+  initialize?: (params: { state: State }) => State
   create?: (params: SystemMethodParams<Component>) => State
   tick?: (params: SystemMethodParams<Component>) => State
   remove?: (params: SystemMethodParams<Component>) => State
@@ -29,6 +30,13 @@ export type CreateSystemParams<Component> = {
 
 export type System<Component> = {
   name: string
+  /**
+   * Called only once when engine is initializing
+   */
+  initialize: (params: { state: State }) => State
+  /**
+   * Called on each component create if state.component[name] and system name are the same
+   */
   create: (params: SystemMethodParams<Component>) => State
   tick: (params: { state: State }) => State
   remove: (params: SystemMethodParams<Component>) => State
@@ -43,6 +51,7 @@ export const createSystem = <Component>({
   const system: System<Component> = {
     name: params.name,
     priority: params.priority || systemPriority.zero,
+    initialize: params.initialize || doNothing,
     create: params.create || doNothing,
     tick: ({ state }) => {
       if (tick) {
@@ -69,6 +78,7 @@ export const createSystem = <Component>({
 export type CreateGlobalSystemParams = {
   state: State
   name: string
+  initialize?: (params: { state: State }) => State
   create?: (params: { state: State }) => State
   tick?: (params: { state: State }) => State
   priority?: number
@@ -77,6 +87,10 @@ export type CreateGlobalSystemParams = {
 export type GlobalSystem = {
   name: string
   tick: (params: { state: State }) => State
+  /**
+   * Called only once when engine is initializing
+   */
+  initialize: (params: { state: State }) => State
   create: (params: { state: State }) => State
   remove: (params: { state: State }) => State
   priority: number
@@ -84,7 +98,7 @@ export type GlobalSystem = {
 
 export const createGlobalSystem = ({
   state,
-  create,
+  initialize,
   tick,
   ...params
 }: CreateGlobalSystemParams): State => {
@@ -92,7 +106,8 @@ export const createGlobalSystem = ({
     name: params.name,
     priority: params.priority || systemPriority.zero,
     tick: tick || doNothing,
-    create: create || doNothing,
+    initialize: initialize || doNothing,
+    create: doNothing,
     remove: ({ state }) => state,
   }
 
