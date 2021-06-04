@@ -59,6 +59,7 @@ export const createDrawEllipse: CreateDrawEllipse = (regl) => {
     uniform float pixelRatio;
 
     varying float vRadius;
+    uniform mat4 projection, view;
 
     void main () {
       float aspect = viewportWidth / viewportHeight;
@@ -68,7 +69,7 @@ export const createDrawEllipse: CreateDrawEllipse = (regl) => {
         position.y * aspect
       );
 
-      gl_Position = vec4(
+      gl_Position = projection * view * vec4(
         positionAspect / pixelRatio,
         0,
         1.0

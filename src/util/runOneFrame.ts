@@ -10,7 +10,8 @@ export const runOneFrame: RunOneFrame = ({ state, timeNow }): State => {
     },
   }
 
-  return [...state.system]
+  return state.system
+    .concat()
     .sort((a, b) => (a > b ? -1 : 1))
     .reduce((acc, system) => system.tick({ state: acc }), v1)
 }

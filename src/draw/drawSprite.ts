@@ -56,6 +56,7 @@ export const createDrawSprite: CreateDrawSprite = (regl) => {
     uniform vec2 scale;
     uniform vec2 anchor;
     uniform vec2 translate;
+    uniform mat4 projection, view;
 
     void main () {
       float aspect = viewportWidth / viewportHeight;
@@ -63,7 +64,7 @@ export const createDrawSprite: CreateDrawSprite = (regl) => {
 
       uv = position;
 
-      gl_Position = vec4(
+      gl_Position = projection * view * vec4(
         scale.x * (cos(rotation) * anchoredPosition.x - sin(rotation) * anchoredPosition.y),
         aspect * scale.y * (sin(rotation) * anchoredPosition.x + cos(rotation) * anchoredPosition.y),
         0,

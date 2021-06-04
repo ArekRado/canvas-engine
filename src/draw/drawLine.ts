@@ -24,11 +24,12 @@ export const createDrawLineCommand = (regl: REGL.Regl) => {
     uniform float viewportWidth;
     uniform float viewportHeight;
     uniform vec2 translate;
+    uniform mat4 projection, view;
 
     void main() {
       float aspect = viewportWidth / viewportHeight;
 
-      gl_Position = vec4(translate.x + position.x, aspect * (translate.y + position.y), 0, 1);
+      gl_Position = projection * view * vec4(translate.x + position.x, aspect * (translate.y + position.y), 0, 1);
     }`,
 
     attributes: {

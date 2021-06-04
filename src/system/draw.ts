@@ -32,11 +32,12 @@ export const drawSystem = (state: State) =>
     },
     tick: ({ state }) => {
       if (state.regl && state.isDrawEnabled) {
-        state.regl?.frame(() => {
-          state.regl?.clear({
-            color: [0, 0, 0, 1],
-          })
-          camera(state.camera)
+        state.regl.poll();
+        
+        state.regl?.clear({
+          color: [0, 0, 0, 1],
+        })
+        camera(state.camera, () => {
           Object.values(state.component.line).forEach((line) => {
             const entity = getEntity({ state, entityId: line.entityId })
             entity &&

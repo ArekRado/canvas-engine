@@ -29,6 +29,7 @@ reglMock.frame = (callback) => {
   }
 }
 reglMock.clear = () => {}
+reglMock.poll = () => (({} as unknown) as Texture2D)
 reglMock.texture = () => (({} as unknown) as Texture2D)
 // limits are readonly
 reglMock['limits' + ''] = {
