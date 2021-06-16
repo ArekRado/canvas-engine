@@ -25,7 +25,7 @@ export const drawSystem = (state: State) =>
         drawLine = createDrawLine(state.regl)
         drawRectangle = createDrawRectangle(state.regl)
         drawEllipse = createDrawEllipse(state.regl)
-        camera = createCamera({ regl: state.regl, camera: state.camera })
+        camera = createCamera(state.regl)
       }
 
       return state
@@ -37,7 +37,7 @@ export const drawSystem = (state: State) =>
         state.regl?.clear({
           color: [0, 0, 0, 1],
         })
-        camera(state.camera, () => {
+        camera(state, () => {
           Object.values(state.component.line).forEach((line) => {
             const entity = getEntity({ state, entityId: line.entityId })
             entity &&

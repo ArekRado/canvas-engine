@@ -13,6 +13,13 @@ let isButtonUp = false
 let isButtonDown = false
 let isInitialized = false
 
+let wheel = {
+  deltaMode: 0,
+  deltaX: 0,
+  deltaY: 0,
+  deltaZ: 0,
+}
+
 let keyboard: Keyboard = {}
 
 export const createInitialize = (
@@ -62,6 +69,14 @@ export const createInitialize = (
       },
       false,
     )
+    container.addEventListener('wheel', (e) => {
+      wheel = {
+        deltaMode: e.deltaMode,
+        deltaX: e.deltaX,
+        deltaY: e.deltaY,
+        deltaZ: e.deltaZ,
+      }
+    })
 
     document.addEventListener(
       'keydown',
@@ -109,6 +124,7 @@ export const ioSystem = (state: State) =>
             isButtonUp,
             isButtonDown,
             isMoving,
+            wheel: { ...wheel },
           }
         : state.mouse
 
@@ -116,6 +132,12 @@ export const ioSystem = (state: State) =>
       isButtonUp = false
       isButtonDown = false
       isMoving = false
+      wheel = {
+        deltaMode: 0,
+        deltaX: 0,
+        deltaY: 0,
+        deltaZ: 0,
+      }
 
       const keyboardBeforeReset = {
         ...keyboard,

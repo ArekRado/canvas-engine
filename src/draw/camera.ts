@@ -1,156 +1,101 @@
 // https://github.com/toji/gl-matrix
 
 import REGL from 'regl'
-import { Camera } from '../type'
+import { Camera, State } from '../type'
 
+var translate = require('gl-mat4/translate')
 var identity = require('gl-mat4/identity')
-var perspective = require('gl-mat4/perspective')
-var lookAt = require('gl-mat4/lookAt')
-// var invert = require('gl-mat4/invert')
+var ortho = require('gl-mat4/ortho')
 
-export type DrawCamera = (camera: Camera, block: any) => void
-type CreateCamera = (params: { camera: Camera; regl: REGL.Regl }) => DrawCamera
+const clamp = (x: number, lo: number, hi: number) =>
+  Math.min(Math.max(x, lo), hi)
 
-export const createCamera: CreateCamera = ({
-  // camera,
-  regl,
-}: {
-  camera: Camera
-  regl: REGL.Regl
-}) => {
-  var cameraState = {
-    // view: identity(new Float32Array(16)),
-    // projection: identity(new Float32Array(16)),
-    // position: new Float32Array(camera.position || 3),
-    // center: new Float32Array(camera.position || 3),
-    // theta: camera.theta || 0,
-    // phi: camera.phi || 0,
-    // distance: Math.log(camera.distance || 10.0),
-    // eye: new Float32Array(3),
-    // up: new Float32Array(camera.up || [0, 1, 0])
+export type DrawCamera = (camera: State, block: any) => void
+type CreateCamera = (regl: REGL.Regl) => DrawCamera
 
-    view: identity(new Float32Array(16)),
-    projection: identity(new Float32Array(16)),
-    position: new Float32Array(3),
-    center: new Float32Array([0, 2.5, 0] || 3),
-    theta: 0,
-    phi: 0,
-    distance: Math.log(10.0),
-    eye: new Float32Array(3),
-    up: new Float32Array([0, 1, 0]),
-  }
+export const createCamera: CreateCamera = (regl) => {
+  const view = identity(new Float32Array(16))
+  const projection = identity(new Float32Array(16))
 
-  var right = new Float32Array([1, 0, 0])
-  var front = new Float32Array([0, 0, 1])
+  var minDistance = 1
+  var maxDistance = 5000
 
-  var minDistance = Math.log(0.1)
-  var maxDistance = Math.log(1000)
+  // document.addEventListener(
+  //   'mousemove',
+  //   (e) => {
+  //     const { buttons, x, y } = e
 
-  var dtheta = 0
-  var dphi = 0
-  var ddistance = 0
+  //     if (buttons & 1) {
+  //       var dx = (x - prevX) / window.innerWidth
+  //       var dy = (y - prevY) / window.innerHeight
+  //       var w = Math.max(cameraState.distance, 0.5)
 
-  var prevX = 0
-  var prevY = 0
+  //       dtheta += w * dx
+  //       dphi += w * dy
+  //     }
+  //     prevX = x
+  //     prevY = y
+  //   },
+  //   false,
+  // )
 
-  function damp(x: any) {
-    var xd = x * 0.9
-    if (Math.abs(xd) < 0.1) {
-      return 0
-    }
-    return xd
-  }
+  // document.addEventListener('wheel', (e) => {
+  //   const { deltaY } = e
+  //   // const delta = deltaY / window.innerHeight;
+  //   // distance = clamp(Math.abs(distance + delta), minDistance, maxDistance);
+  //   // console.log(delta, distance);
 
-  function clamp(x: any, lo: any, hi: any) {
-    return Math.min(Math.max(x, lo), hi)
-  }
-
-  document.addEventListener(
-    'mousemove',
-    (e) => {
-      const { buttons, x, y } = e
-
-      if (buttons & 1) {
-        var dx = (x - prevX) / window.innerWidth
-        var dy = (y - prevY) / window.innerHeight
-        var w = Math.max(cameraState.distance, 0.5)
-
-        dtheta += w * dx
-        dphi += w * dy
-      }
-      prevX = x
-      prevY = y
-    },
-    false,
-  )
-
-  document.addEventListener('wheel', (e) => {
-    const { deltaY } = e
-    ddistance += deltaY / window.innerHeight
-  })
-
-  function updateCamera(_: any) {
-    var center = cameraState.center
-    var eye = cameraState.eye
-    var up = cameraState.up
-
-    cameraState.theta += dtheta
-    cameraState.phi = clamp(
-      cameraState.phi + dphi,
-      -Math.PI / 2.0,
-      Math.PI / 2.0,
-    )
-    cameraState.distance = clamp(
-      cameraState.distance + ddistance,
-      minDistance,
-      maxDistance,
-    )
-
-    dtheta = damp(dtheta)
-    dphi = damp(dphi)
-    ddistance = damp(ddistance)
-
-    var theta = cameraState.theta
-    var phi = cameraState.phi
-    var r = Math.exp(cameraState.distance)
-
-    var vf = r * Math.sin(theta) * Math.cos(phi)
-    var vr = r * Math.cos(theta) * Math.cos(phi)
-    var vu = r * Math.sin(phi)
-
-    for (var i = 0; i < 3; ++i) {
-      eye[i] = center[i] + vf * front[i] + vr * right[i] + vu * up[i]
-    }
-
-    lookAt(cameraState.view, eye, center, up)
-  }
+  // })
 
   var injectContext = regl({
-    context: Object.assign({}, cameraState, {
-      projection: function ({ viewportWidth, viewportHeight }: any) {
-        return perspective(
-          cameraState.projection,
-          Math.PI / 4.0,
-          viewportWidth / viewportHeight,
-          0.01,
-          1000.0,
+    context: {
+      view,
+      projection: function (
+        { viewportWidth, viewportHeight }: any,
+        { size, position }: any,
+      ) {
+        // const tmpSize = Math.pow(size, 2)
+
+        const tmpSize = clamp(
+          Math.pow(size, 2),
+          // tmpDistance + state.mouse.wheel.deltaY / window.innerHeight,
+          minDistance,
+          maxDistance,
+        )
+
+        return translate(
+          identity(new Float32Array(16)),
+          ortho(
+            projection,
+            -viewportWidth / tmpSize,
+            viewportWidth / tmpSize,
+            -viewportHeight / tmpSize,
+            viewportHeight / tmpSize,
+            0,
+            1,
+          ),
+          [-position[0], -position[1], 0],
         )
       },
-    }),
-    uniforms: Object.keys(cameraState).reduce(function (uniforms, name: any) {
-      uniforms[name] = regl.context(name)
-      return uniforms
-    }, {}),
+    },
+    // uniforms: Object.keys(cameraState).reduce(function (uniforms, name: any) {
+    //   uniforms[name] = regl.context(name)
+    //   return uniforms
+    // }, {}),
+
+    uniforms: {
+      position: regl.prop<Camera, 'position'>('position'),
+      size: regl.prop<Camera, 'size'>('size'),
+      view: regl.context<any, 'view'>('view'),
+      projection: regl.context<any, 'projection'>('projection'),
+    },
   })
 
-  function setupCamera(camera: Camera, block: any) {
-    updateCamera(camera)
-    injectContext(block)
+  // Object.keys(cameraState).forEach(function (name: any) {
+  //   ;(setupCamera as any)[name] = (cameraState as any)[name]
+  // })
+
+  return (state, block) => {
+    injectContext(state.camera, block)
   }
-
-  Object.keys(cameraState).forEach(function (name: any) {
-    ;(setupCamera as any)[name] = (cameraState as any)[name]
-  })
-
-  return setupCamera
 }

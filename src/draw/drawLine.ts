@@ -1,5 +1,5 @@
 import { Line, Entity } from '../type'
-import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
+import { Vector2D, vectorZero } from '@arekrado/vector-2d'
 import REGL from 'regl'
 
 export const createDrawLineCommand = (regl: REGL.Regl) => {
@@ -25,11 +25,50 @@ export const createDrawLineCommand = (regl: REGL.Regl) => {
     uniform float viewportHeight;
     uniform vec2 translate;
     uniform mat4 projection, view;
+    uniform vec2 scale;
+    uniform float rotation;
 
     void main() {
       float aspect = viewportWidth / viewportHeight;
 
-      gl_Position = projection * view * vec4(translate.x + position.x, aspect * (translate.y + position.y), 0, 1);
+      // Scale the position
+      vec2 scaledPosition = position * scale;
+
+      vec2 aspectPosition = vec2(scaledPosition.x, scaledPosition.y * aspect);
+    
+      vec2 rotationV = vec2(
+        sin(rotation),
+        cos(rotation)
+      );
+
+      // Rotate the position
+      vec2 rotatedPosition = vec2(
+         scaledPosition.x * rotation.y + scaledPosition.y * rotation.x,
+         scaledPosition.y * rotation.y - scaledPosition.x * rotation.x
+      );
+
+      // Add in the translation.
+      vec2 translatedPosition = rotatedPosition + translate;
+
+      // Set projection and view from camera
+      gl_Position = projection * view * vec4(
+        translatedPosition.x,
+        translatedPosition.y,
+        0,
+        1.0
+      );
+
+
+      // float aspect = viewportWidth / viewportHeight;
+      // vec2 anchoredPosition = translate + position - (anchor * scale);
+
+      // gl_Position = projection 
+      //   * view 
+      //   * vec4(
+      //       anchoredPosition.x,
+      //       aspect * anchoredPosition.y,
+      //        0, 1
+      //     );
     }`,
 
     attributes: {
@@ -40,7 +79,10 @@ export const createDrawLineCommand = (regl: REGL.Regl) => {
       viewportHeight: regl.context('viewportHeight'),
 
       translate: regl.prop<Entity, 'position'>('position'),
+      scale: regl.prop<Entity, 'scale'>('scale'),
+      rotation: regl.prop<Entity, 'rotation'>('rotation'),
       borderColor: regl.prop<Line, 'borderColor'>('borderColor'),
+
     },
     lineWidth: lineWidth,
     count: 2,
@@ -62,12 +104,14 @@ export const createDrawLine: CreateDrawLine = (regl) => {
   return ({ entity, line }) => {
     line.path.forEach((_, i) => {
       const path = [
-        add(line.path[i], entity.position),
-        add(line.path[i + 1] || vectorZero(), entity.position),
+        line.path[i],
+        line.path[i + 1] || vectorZero(),
       ]
       drawLine({
         path,
         position: entity.position,
+        scale: entity.scale,
+        rotation: entity.rotation,
         borderColor: line.borderColor,
       })
     })

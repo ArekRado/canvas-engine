@@ -33,7 +33,7 @@ export const createDrawSprite: CreateDrawSprite = (regl) => {
         rgb: 'add',
         alpha: 'add',
       },
-      color: [0, 0, 0, 0],
+      color: [0, 0, 0, 1],
     },
 
     frag: `
@@ -59,17 +59,51 @@ export const createDrawSprite: CreateDrawSprite = (regl) => {
     uniform mat4 projection, view;
 
     void main () {
-      float aspect = viewportWidth / viewportHeight;
-      vec2 anchoredPosition = translate + position - anchor;
-
       uv = position;
+        
+      float aspect = viewportWidth / viewportHeight;
+      
+      // Scale the position
+      vec2 scaledPosition = position * scale;
+      
+      vec2 aspectPosition = vec2(scaledPosition.x, scaledPosition.y * aspect);
+    
+      vec2 rotationV = vec2(
+        sin(rotation),
+        cos(rotation)
+      );
 
+      // Rotate the position
+      vec2 rotatedPosition = vec2(
+        scaledPosition.x * rotationV.y + scaledPosition.y * rotationV.x,
+        scaledPosition.y * rotationV.y - scaledPosition.x * rotationV.x
+      );
+    
+      // Add in the translation.
+      vec2 translatedPosition = rotatedPosition + translate;
+      
+      // Set projection and view from camera
       gl_Position = projection * view * vec4(
-        scale.x * (cos(rotation) * anchoredPosition.x - sin(rotation) * anchoredPosition.y),
-        aspect * scale.y * (sin(rotation) * anchoredPosition.x + cos(rotation) * anchoredPosition.y),
+        translatedPosition.x,
+        translatedPosition.y,
         0,
         1.0
       );
+      
+
+      // float aspect = viewportWidth / viewportHeight;
+      // vec2 anchoredPosition = translate + position - (anchor * scale);
+
+      uv = position;
+
+      // gl_Position = projection
+      //   * view 
+      //   * vec4(
+      //       (cos(rotation) * anchoredPosition.x - sin(rotation) * anchoredPosition.y),
+      //       aspect * (sin(rotation) * anchoredPosition.x + cos(rotation) * anchoredPosition.y),
+      //       0,
+      //       1.0
+      //     );
     }`,
 
     attributes: {

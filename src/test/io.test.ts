@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { initialStateWithDisabledDraw } from '../util/state'
+import { initialState, initialStateWithDisabledDraw } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
 import { createInitialize } from '../system/io'
 import { vector, vectorZero } from '@arekrado/vector-2d'
@@ -10,6 +10,7 @@ describe('io', () => {
   let mouseleaveCallback: Function
   let mouseupCallback: Function
   let mousedownCallback: Function
+  let wheelCallback: Function
   let keyupCallback: Function
   let keydownCallback: Function
 
@@ -19,6 +20,7 @@ describe('io', () => {
     mouseleaveCallback = () => {}
     mouseupCallback = () => {}
     mousedownCallback = () => {}
+    wheelCallback = () => {}
     keyupCallback = () => {}
     keydownCallback = () => {}
 
@@ -45,6 +47,9 @@ describe('io', () => {
                 break
               case 'mousedown':
                 mousedownCallback = callback
+                break
+              case 'wheel':
+                wheelCallback = callback
                 break
             }
           },
@@ -165,5 +170,41 @@ describe('io', () => {
       isUp: true,
       isPressed: false,
     })
+  })
+
+  it('wheel', () => {
+    let state = runOneFrame({
+      state: initialStateWithDisabledDraw,
+      timeNow: 0,
+    })
+
+    expect(state.mouse.wheel).toEqual(initialState.mouse.wheel)
+
+    wheelCallback({
+      deltaMode: 1,
+      deltaX: 2,
+      deltaY: 3,
+      deltaZ: 4,
+    })
+
+    state = runOneFrame({
+      state,
+      timeNow: 0,
+    })
+
+    expect(state.mouse.wheel).toEqual({
+      deltaMode: 1,
+      deltaX: 2,
+      deltaY: 3,
+      deltaZ: 4,
+    })
+
+    state = runOneFrame({
+      state,
+      timeNow: 0,
+    })
+
+    // Next tick should reset wheel
+    expect(state.mouse.wheel).toEqual(initialState.mouse.wheel)
   })
 })

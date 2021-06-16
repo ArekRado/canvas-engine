@@ -167,6 +167,12 @@ export type Mouse = {
     timestamp: number
     buttons: number
   }
+  wheel: {
+    deltaMode: number
+    deltaX: number
+    deltaY: number
+    deltaZ: number
+  }
 }
 
 export type KeyData = {
@@ -184,16 +190,7 @@ export type Keyboard = {
 
 export type Camera = {
   position: Vector2D
-  zoom: number
-  pivot: Vector2D
-
-  // todo
-  theta?: number
-  phi?: number
-  distance?: number
-  up?: Vector2D
-  minDistance?: number
-  maxDistance?: number
+  size: number
 }
 
 export type Text = Component<{

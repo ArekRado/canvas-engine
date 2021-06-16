@@ -23,7 +23,7 @@ export const createEntity: CreateEntity = (
   name,
   id: v4(),
   persistOnSceneChange: options.persistOnSceneChange || false,
-  rotation: options.rotation || 0,
+  rotation: options.rotation || Math.PI,
   fromParentRotation: options.fromParentRotation || 0,
   scale: options.scale || vector(1, 1),
   fromParentScale: options.fromParentScale || vector(1, 1),

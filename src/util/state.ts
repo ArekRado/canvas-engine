@@ -8,7 +8,7 @@ import { ioSystem } from '../system/io'
 import { timeSystem } from '../system/time'
 import { mouseInteractionSystem } from '../system/mouseInteraction'
 import { drawSystem } from '../system/draw'
-import { vector, vectorZero } from '@arekrado/vector-2d'
+import { vectorZero } from '@arekrado/vector-2d'
 
 let state: State = {
   entity: {},
@@ -26,8 +26,7 @@ let state: State = {
   regl: undefined,
   camera: {
     position: vectorZero(),
-    zoom: 1,
-    pivot: vector(1, 1),
+    size: 1,
   },
   asset: {
     sprite: [],
@@ -48,6 +47,12 @@ let state: State = {
       timestamp: -1,
       buttons: 0,
     },
+    wheel: {
+      deltaMode: 0,
+      deltaX: 0,
+      deltaY: 0,
+      deltaZ: 0,
+    }
   },
   keyboard: {},
   system: [],
