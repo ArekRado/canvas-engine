@@ -1,5 +1,4 @@
-import { Dictionary } from '../type'
-import { State } from '../type'
+import { State, Dictionary, Component, EventHandler } from '../type'
 
 export enum systemPriority {
   last = 3,
@@ -13,9 +12,9 @@ export enum systemPriority {
 
 const doNothing = (params: { state: State }) => params.state
 
-type SystemMethodParams<Component> = {
+type SystemMethodParams<ComponentData> = {
   state: State
-  component: Component
+  component: Component<ComponentData>
 }
 
 export type CreateSystemParams<Component> = {
@@ -23,6 +22,7 @@ export type CreateSystemParams<Component> = {
   name: string
   initialize?: (params: { state: State }) => State
   create?: (params: SystemMethodParams<Component>) => State
+  update?: (params: SystemMethodParams<Component>) => State
   tick?: (params: SystemMethodParams<Component>) => State
   remove?: (params: SystemMethodParams<Component>) => State
   priority?: number
@@ -38,34 +38,44 @@ export type System<Component> = {
    * Called on each component create if state.component[name] and system name are the same
    */
   create: (params: SystemMethodParams<Component>) => State
+  /**
+   * Called on each setComponent
+   */
+  update?: (params: SystemMethodParams<Component>) => State
+  /**
+   * Called on each runOneFrame
+   */
   tick: (params: { state: State }) => State
   remove: (params: SystemMethodParams<Component>) => State
   priority: number
 }
 
-export const createSystem = <Component>({
+export const createSystem = <ComponentData>({
   state,
   tick,
   ...params
-}: CreateSystemParams<Component>): State => {
-  const system: System<Component> = {
+}: CreateSystemParams<ComponentData>): State => {
+  const system: System<ComponentData> = {
     name: params.name,
     priority: params.priority || systemPriority.zero,
     initialize: params.initialize || doNothing,
     create: params.create || doNothing,
     tick: ({ state }) => {
-      if (tick) {
-        const component = state.component[params.name] as Dictionary<Component>
-        if (component) {
-          return Object.values(component).reduce(
-            (acc, component) => tick({ state: acc, component }),
-            state,
-          )
-        }
+      const component = state.component[params.name] as Dictionary<
+        Component<ComponentData>
+      >
+      if (component) {
+        return Object.values(component).reduce(
+          (acc, component: Component<ComponentData>) => {
+            return tick ? tick({ state: acc, component }) : acc
+          },
+          state,
+        )
       }
 
       return state
     },
+    update: params.update,
     remove: params.remove || doNothing,
   }
 
@@ -75,17 +85,19 @@ export const createSystem = <Component>({
   }
 }
 
-export type CreateGlobalSystemParams = {
+export type CreateGlobalSystemParams<Events> = {
   state: State
   name: string
   initialize?: (params: { state: State }) => State
   create?: (params: { state: State }) => State
   tick?: (params: { state: State }) => State
   priority?: number
+  event?: EventHandler<Events>
 }
 
 export type GlobalSystem = {
   name: string
+  // update: undefined
   tick: (params: { state: State }) => State
   /**
    * Called only once when engine is initializing
@@ -94,21 +106,24 @@ export type GlobalSystem = {
   create: (params: { state: State }) => State
   remove: (params: { state: State }) => State
   priority: number
+  // event: Dictionary<EventHandler>;
 }
 
-export const createGlobalSystem = ({
+export const createGlobalSystem = <Events>({
   state,
   initialize,
   tick,
   ...params
-}: CreateGlobalSystemParams): State => {
+}: CreateGlobalSystemParams<Events>): State => {
   const system: GlobalSystem = {
     name: params.name,
     priority: params.priority || systemPriority.zero,
+    // update: undefined,
     tick: tick || doNothing,
     initialize: initialize || doNothing,
     create: doNothing,
     remove: ({ state }) => state,
+    // event: params.event || {},
   }
 
   return {

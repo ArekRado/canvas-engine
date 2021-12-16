@@ -105,6 +105,25 @@ export const createInitialize = (
   }
 }
 
+// mouse: {
+//   buttons: 0,
+//   position: [0, 0],
+//   isButtonUp: false,
+//   isButtonDown: false,
+//   isMoving: false,
+//   lastClick: {
+//     timestamp: -1,
+//     buttons: 0,
+//   },
+//   wheel: {
+//     deltaMode: 0,
+//     deltaX: 0,
+//     deltaY: 0,
+//     deltaZ: 0,
+//   }
+// },
+// keyboard: {},
+
 export const initialize = (containerId = 'canvas-engine') =>
   createInitialize(containerId, {
     document: document,

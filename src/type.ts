@@ -1,18 +1,17 @@
 import { Vector2D } from '@arekrado/vector-2d'
 import { GlobalSystem, System } from './system/createSystem'
 import { TimingFunction } from './util/bezierFunction'
-import REGL from 'regl'
+
+export type Component<Data> = {
+  entity: Guid
+  name: string
+} & Data
 
 export type Dictionary<Value> = { [key: string]: Value }
 
 export type Guid = string
 
 export type Color = [number, number, number, number]
-
-export type Component<Data> = {
-  entityId: Guid
-  name: string
-} & Data
 
 export type CollideType = {
   type: 'box' | 'circle'
@@ -37,7 +36,7 @@ export type Blueprint = Component<{
 
 export type AnimationProperty = {
   path: string
-  component?: keyof State['component']
+  component: keyof State['component']
   entityId: Guid
   index?: number
 }
@@ -52,6 +51,11 @@ export type AnimationValueRangeVector2D = {
   value: [Vector2D, Vector2D]
 }
 
+export type AnimationValueRangeVector3D = {
+  type: 'vector3D'
+  value: [[number, number, number], [number, number, number]]
+}
+
 export type AnimationValueRangeString = {
   type: 'string'
   value: string
@@ -62,6 +66,7 @@ export type TimingMode = 'smooth' | 'step'
 export type AnimationValueRange =
   | AnimationValueRangeNumber
   | AnimationValueRangeVector2D
+  | AnimationValueRangeVector3D
   | AnimationValueRangeString
 
 export type WrapMode =
@@ -92,14 +97,6 @@ export type Animation = Component<{
 
 export type SpriteSrc = string
 
-export type Sprite = Component<{
-  src: SpriteSrc
-  rotation: number
-  scale: Vector2D
-  anchor: Vector2D
-  texture: undefined | REGL.Texture
-}>
-
 export type MouseInteraction = Component<{
   // doubleClickSpeed: number
 
@@ -121,25 +118,13 @@ export type AnimatedProperty = {
   type: 'number' | 'vector2D' | 'string'
 }
 
-export type Entity = {
-  id: Guid
-  name: string
-  persistOnSceneChange: boolean
+export type Entity = Guid;
 
-  rotation: number
-  fromParentRotation: number
-  scale: Vector2D
-  fromParentScale: Vector2D
-  position: Vector2D
-  fromParentPosition: Vector2D
-  parentId?: Guid
-}
-
-export type Time = {
+export type Time = Component<{
   previousTimeNow: number
   timeNow: number
   delta: number
-}
+}>
 
 export type AssetSprite = {
   src: string
@@ -235,29 +220,49 @@ export type Ellipse = Component<{
   fillColor: Color
 }>
 
+export type Event = Component<{}>
+
+export type EventHandler<Event> = (params: {
+  event: Event
+  state: State
+}) => State
+
+export type Transform = Component<{
+  rotation: [number, number, number]
+  fromParentRotation: [number, number, number]
+  scale: Vector2D
+  fromParentScale: Vector2D
+  position: Vector2D
+  fromParentPosition: Vector2D
+  parentId?: Guid
+}>
+
 // @TODO
 // scene
 export type State = {
   entity: Dictionary<Entity>
   component: Dictionary<Dictionary<Component<any>>> & {
-    sprite: Dictionary<Sprite>
     animation: Dictionary<Animation>
     collideBox: Dictionary<CollideBox>
     collideCircle: Dictionary<CollideCircle>
     mouseInteraction: Dictionary<MouseInteraction>
+    time: Dictionary<Time>
+    camera: Dictionary<Camera>
+    transform: Dictionary<Transform>
+    event: Dictionary<Event>
+    mouse: Dictionary<Mouse>
+    keyboard: Dictionary<Keyboard>
 
-    text: Dictionary<Text>
-    line: Dictionary<Line>
-    rectangle: Dictionary<Rectangle>
-    ellipse: Dictionary<Ellipse>
+    // text: Dictionary<Text>
+    // line: Dictionary<Line>
+    // rectangle: Dictionary<Rectangle>
+    // ellipse: Dictionary<Ellipse>
   }
-  regl: REGL.Regl | undefined
-  camera: Camera
+  // camera: Camera
   system: Array<System<any> | GlobalSystem>
-  asset: Asset
-  mouse: Mouse
-  keyboard: Keyboard
-  time: Time
+  // asset: Asset
+  // mouse: Mouse
+  // keyboard: Keyboard
   isDebugInitialized: boolean
   isDrawEnabled: boolean
 }

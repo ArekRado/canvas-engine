@@ -657,3 +657,67 @@ describe('animation', () => {
     )
   })
 })
+
+
+
+
+// 0 0.8333333333333333
+// 0 0.8933333333333333
+// 0 0.9466666666666668
+// 1 -0.003333333333333333
+// 1 -0.06
+// 1 -0.11333333333333334
+
+
+// state = setComponent<Animation>({
+//   state,
+//   data: {
+//     name: componentName.animation,
+//     entity: boxEntity,
+
+//     isPlaying: true,
+//     isFinished: false,
+//     property: {
+//       path: 'rotation',
+//       component: componentName.transform,
+//       entityId: boxEntity,
+//     },
+//     keyframes: [
+//       {
+//         duration: 300,
+//         timingFunction: 'Linear',
+//         value: {
+//           type: 'vector3D',
+//           value: [0, 0, 0],
+//         },
+//       },
+//       {
+//         duration: 600,
+//         timingFunction: 'Linear',
+//         value: {
+//           type: 'vector3D',
+//           value: [0, 0, 1],
+//         },
+//       },
+//       {
+//         duration: 300,
+//         timingFunction: 'Linear',
+//         value: {
+//           type: 'vector3D',
+//           value: [0, 0, -1],
+//         },
+//       },
+//       {
+//         duration: 0,
+//         timingFunction: 'Linear',
+//         value: {
+//           type: 'vector3D',
+//           value: [0, 0, 0],
+//         },
+//       },
+//     ],
+//     currentTime: 0,
+//     wrapMode: 'once',
+//     timingMode: 'smooth', // string animation should always works as step
+//   },
+// });
