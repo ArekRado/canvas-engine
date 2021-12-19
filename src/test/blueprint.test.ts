@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { initialStateWithDisabledDraw } from '../util/state'
+import { getInitialState } from '../util/state'
 import { setEntity, createEntity } from '../entity'
 import {
   blueprint as defaultBlueprint,
@@ -56,7 +56,7 @@ describe('blueprint', () => {
     }
 
     const stateWithBlueprint = addBlueprint({
-      state: initialStateWithDisabledDraw,
+      state: getInitialState({}),
       data: {
         entityId: createEntity('-').id,
         name: 'test',

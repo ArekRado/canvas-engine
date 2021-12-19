@@ -1,4 +1,5 @@
 import { Vector2D } from '@arekrado/vector-2d'
+import { componentName } from '.'
 import { GlobalSystem, System } from './system/createSystem'
 import { TimingFunction } from './util/bezierFunction'
 
@@ -15,7 +16,7 @@ export type Color = [number, number, number, number]
 
 export type CollideType = {
   type: 'box' | 'circle'
-  entityId: Guid
+  entity: Guid
 }
 
 export type CollideBox = Component<{
@@ -37,7 +38,7 @@ export type Blueprint = Component<{
 export type AnimationProperty = {
   path: string
   component: keyof State['component']
-  entityId: Guid
+  entity: Guid
   index?: number
 }
 
@@ -118,12 +119,19 @@ export type AnimatedProperty = {
   type: 'number' | 'vector2D' | 'string'
 }
 
-export type Entity = Guid;
+export type Entity = Guid
 
 export type Time = Component<{
   previousTimeNow: number
   timeNow: number
   delta: number
+  dataOverwrite:
+    | {
+        previousTimeNow?: number
+        timeNow?: number
+        delta?: number
+      }
+    | undefined
 }>
 
 export type AssetSprite = {
@@ -170,7 +178,7 @@ export type KeyData = {
 }
 
 export type Keyboard = {
-  [key: string]: KeyData | undefined
+  keys: { [key: string]: KeyData | undefined }
 }
 
 export type Camera = {
@@ -227,13 +235,15 @@ export type EventHandler<Event> = (params: {
   state: State
 }) => State
 
+export type Vector3D = [number, number, number]
+
 export type Transform = Component<{
-  rotation: [number, number, number]
-  fromParentRotation: [number, number, number]
-  scale: Vector2D
-  fromParentScale: Vector2D
-  position: Vector2D
-  fromParentPosition: Vector2D
+  rotation: Vector2D | Vector3D
+  fromParentRotation: Vector2D | Vector3D
+  scale: Vector2D | Vector3D
+  fromParentScale: Vector2D | Vector3D
+  position: Vector2D | Vector3D
+  fromParentPosition: Vector2D | Vector3D
   parentId?: Guid
 }>
 
@@ -268,5 +278,7 @@ export type State = {
 }
 
 export type GetDefaultComponent<X> = (
-  params: Partial<Component<X>> & { entityId: Guid },
-) => X
+  params: Omit<Partial<Component<X>>, 'name'> & {
+    entity: Guid
+  },
+) => Component<X>

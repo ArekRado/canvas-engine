@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { initialState, initialStateWithDisabledDraw } from '../util/state'
+import { getInitialState } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
 import { createInitialize } from '../system/io'
 import { vector, vectorZero } from '@arekrado/vector-2d'
@@ -73,7 +73,7 @@ describe('io', () => {
 
   it('should set buttons on mousedown event', () => {
     const v1 = runOneFrame({
-      state: initialStateWithDisabledDraw,
+      state: getInitialState({}),
       timeNow: 0,
     })
 
@@ -99,7 +99,7 @@ describe('io', () => {
 
   it('should set mouse position on mousemove event', () => {
     const v1 = runOneFrame({
-      state: initialStateWithDisabledDraw,
+      state: getInitialState({}),
       timeNow: 0,
     })
 
@@ -120,7 +120,7 @@ describe('io', () => {
     const key2 = 'b'
 
     const v1 = runOneFrame({
-      state: initialStateWithDisabledDraw,
+      state: getInitialState({}),
       timeNow: 0,
     })
 
@@ -174,7 +174,7 @@ describe('io', () => {
 
   it('wheel', () => {
     let state = runOneFrame({
-      state: initialStateWithDisabledDraw,
+      state: getInitialState({}),
       timeNow: 0,
     })
 

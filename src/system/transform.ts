@@ -1,18 +1,17 @@
 import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
-import { State, Transform } from '../type'
+import { State, Transform, Vector3D } from '../type'
 import { createGlobalSystem, systemPriority } from '../system/createSystem'
 import { componentName, getComponent, setComponent } from '../component'
+import { parseV3ToV2 } from '../util/parseV3ToV2'
 // import { scene } from '..'
 
 const syncTransformWithBabylon = ({ transform }: { transform: Transform }) => {
   // const transformNode = scene.getTransformNodeByUniqueId(
   //   parseFloat(transform.entity),
   // )
-
   // if (transformNode) {
   //   transformNode.position.x = transform.position[0]
   //   transformNode.position.y = transform.position[1]
-
   //   transformNode.rotation.x = transform.rotation[0]
   //   transformNode.rotation.y = transform.rotation[1]
   //   transformNode.rotation.z = transform.rotation[2]
@@ -22,7 +21,7 @@ const syncTransformWithBabylon = ({ transform }: { transform: Transform }) => {
 const getParentPosition = (
   state: State,
   parentTransform: Transform,
-): Vector2D => {
+): Vector2D | Vector3D => {
   if (parentTransform.parentId) {
     const parentParentTransform = getComponent<Transform>({
       name: componentName.transform,
@@ -31,10 +30,9 @@ const getParentPosition = (
     })
 
     if (parentParentTransform) {
-      return add(
-        getParentPosition(state, parentParentTransform),
-        parentTransform.fromParentPosition,
-      )
+      const position = getParentPosition(state, parentParentTransform)
+      const fromParentPosition = parentTransform.fromParentPosition
+      return add(parseV3ToV2(position), parseV3ToV2(fromParentPosition))
     } else {
       return vectorZero()
     }
@@ -59,9 +57,11 @@ export const transformSystem = (state: State) =>
             })
 
             if (parentTransform) {
+              const fromParentPosition = transform.fromParentPosition
+              const parentPosition = getParentPosition(state, parentTransform)
               const newPosition = add(
-                transform.fromParentPosition,
-                getParentPosition(state, parentTransform),
+                parseV3ToV2(fromParentPosition),
+                parseV3ToV2(parentPosition),
               )
 
               return setComponent<Transform>({

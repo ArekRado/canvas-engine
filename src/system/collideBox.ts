@@ -1,42 +1,54 @@
 import { add } from '@arekrado/vector-2d'
 import { setComponent } from '../component'
-import { Entity, State } from '../type'
+import { State } from '../type'
 import { CollideBox, CollideType } from '../type'
 import { createSystem } from './createSystem'
 import { componentName } from '../component'
 import { detectAABBcollision } from '../util/detectCollision'
-import { getEntity } from '../entity'
+import { getComponent, Transform } from '..'
 
 type FindCollisionsWith = (pramams: {
   state: State
   collideBox: CollideBox
-  entity: Entity
 }) => CollideType[]
-const findCollisionsWith: FindCollisionsWith = ({
-  state,
-  collideBox,
-  entity,
-}) => {
+const findCollisionsWith: FindCollisionsWith = ({ state, collideBox }) => {
+  const transform = getComponent<Transform>({
+    state,
+    entity: collideBox.entity,
+    name: componentName.transform,
+  })
+  if (!transform) return []
   const collisionList: CollideType[] = []
 
   Object.values(state.component.collideBox).forEach((collideBox2) => {
-    const entity2 = getEntity({
+    if (collideBox.entity === collideBox2.entity) {
+      return
+    }
+
+    const transform2 = getComponent<Transform>({
       state,
-      entityId: collideBox2.entityId,
+      entity: collideBox2.entity,
+      name: componentName.transform,
     })
 
-    if (entity2 && entity.id !== entity2.id) {
+    if (transform2) {
       const isColliding = detectAABBcollision({
-        v1: add(entity.position, collideBox.position),
+        v1: add(
+          [transform.position[0], transform.position[1]],
+          collideBox.position,
+        ),
         size1: collideBox.size,
-        v2: add(entity2.position, collideBox2.position),
+        v2: add(
+          [transform2.position[0], transform2.position[1]],
+          collideBox2.position,
+        ),
         size2: collideBox2.size,
       })
 
       isColliding &&
         collisionList.push({
           type: 'box',
-          entityId: collideBox2.entityId,
+          entity: collideBox2.entity,
         })
     }
   })
@@ -49,27 +61,17 @@ export const collideBoxSystem = (state: State) =>
     state,
     name: componentName.collideBox,
     tick: ({ state, component: collideBox }) => {
-      const entity = getEntity({
+      const collisions = findCollisionsWith({
         state,
-        entityId: collideBox.entityId,
+        collideBox,
       })
 
-      if (entity) {
-        const collisions = findCollisionsWith({
-          state,
-          collideBox,
-          entity,
-        })
-
-        return setComponent<CollideBox>(componentName.collideBox, {
-          state,
-          data: {
-            ...collideBox,
-            collisions,
-          },
-        })
-      }
-
-      return state
+      return setComponent<CollideBox>({
+        state,
+        data: {
+          ...collideBox,
+          collisions,
+        },
+      })
     },
   })

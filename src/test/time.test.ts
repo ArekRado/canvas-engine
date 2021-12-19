@@ -1,57 +1,86 @@
 import 'regenerator-runtime/runtime'
-import { initialStateWithDisabledDraw } from '../util/state'
+import { getInitialState } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
+import { getTime, setTime } from '../system/time'
 
 describe('time', () => {
   it('should change time - start from 0 case', () => {
-    const v1 = runOneFrame({
-      state: initialStateWithDisabledDraw,
-      timeNow: 0,
+    let state = setTime({
+      state: getInitialState({}),
+      data: {
+        dataOverwrite: {
+          delta: 0,
+          timeNow: 0,
+          previousTimeNow: 0,
+        },
+      },
+    })
+    state = runOneFrame({ state })
+
+    expect(getTime({ state })?.timeNow).toBe(0)
+    expect(getTime({ state })?.delta).toBe(0)
+
+    state = setTime({
+      state,
+      data: { dataOverwrite: { timeNow: 1000, previousTimeNow: 0 } },
+    })
+    state = runOneFrame({ state })
+
+    expect(getTime({ state })?.timeNow).toBe(1000)
+    expect(getTime({ state })?.delta).toBe(1000)
+
+    state = setTime({
+      state,
+      data: { dataOverwrite: { timeNow: 1002, previousTimeNow: 1000 } },
     })
 
-      expect(v1.time.timeNow).toBe(0);
-      expect(v1.time.delta).toBe(0);
+    state = runOneFrame({ state })
 
-    const v2 = runOneFrame({
-      state: v1,
-      timeNow: 1000,
-    })
-
-    expect(v2.time.timeNow).toBe(1000);
-    expect(v2.time.delta).toBe(1000);
-
-    const v3 = runOneFrame({
-      state: v2,
-      timeNow: 1002,
-    })
-
-    expect(v3.time.timeNow).toBe(1002);
-    expect(v3.time.delta).toBe(2);
+    expect(getTime({ state })?.timeNow).toBe(1002)
+    expect(getTime({ state })?.delta).toBe(2)
   })
 
   it('should change time - start from non 0 case', () => {
-    const v1 = runOneFrame({
-      state: initialStateWithDisabledDraw,
-      timeNow: 10,
+    let state = setTime({
+      state: getInitialState({}),
+      data: {
+        dataOverwrite: {
+          timeNow: 10,
+          previousTimeNow: 0,
+        },
+      },
     })
+    state = runOneFrame({ state })
 
-      expect(v1.time.timeNow).toBe(10);
-      expect(v1.time.delta).toBe(10);
+    expect(getTime({ state })?.timeNow).toBe(10)
+    expect(getTime({ state })?.delta).toBe(10)
 
-    const v2 = runOneFrame({
-      state: v1,
-      timeNow: 1000,
+    state = setTime({
+      state,
+      data: {
+        dataOverwrite: {
+          timeNow: 1000,
+          previousTimeNow: 10,
+        },
+      },
     })
+    state = runOneFrame({ state })
 
-    expect(v2.time.timeNow).toBe(1000);
-    expect(v2.time.delta).toBe(990);
+    expect(getTime({ state })?.timeNow).toBe(1000)
+    expect(getTime({ state })?.delta).toBe(990)
 
-    const v3 = runOneFrame({
-      state: v2,
-      timeNow: 1002,
+    state = setTime({
+      state,
+      data: {
+        dataOverwrite: {
+          timeNow: 1002,
+          previousTimeNow: 1000,
+        },
+      },
     })
+    state = runOneFrame({ state })
 
-    expect(v3.time.timeNow).toBe(1002);
-    expect(v3.time.delta).toBe(2);
+    expect(getTime({ state })?.timeNow).toBe(1002)
+    expect(getTime({ state })?.delta).toBe(2)
   })
 })

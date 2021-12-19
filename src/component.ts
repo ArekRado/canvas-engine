@@ -110,7 +110,7 @@ export const removeComponentsByName = <Data>({
 };
 
 export const getComponent = <Data>({
-  name,
+  name, // TODO - Data should be connected with componentName
   entity,
   state,
 }: {

@@ -3,7 +3,8 @@ import { State, Dictionary, Component, EventHandler } from '../type'
 export enum systemPriority {
   last = 3,
   time = 3,
-  io = 2,
+  mouse = 2,
+  keyboard = 2,
   transform = 1,
   zero = 0,
   sprite = -1,

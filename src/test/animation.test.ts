@@ -7,7 +7,7 @@ import {
 import { getActiveKeyframe } from '../system/animation'
 import { createEntity, getEntity, setEntity } from '../entity'
 import { State, Sprite, Animation } from '../type'
-import { initialStateWithDisabledDraw } from '../util/state'
+import { getInitialState } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
 import { getComponent, setComponent } from '../component'
 import { componentName } from '../component'
@@ -212,7 +212,7 @@ describe('animation', () => {
 
   describe('number', () => {
     it('Linear animation should change value in proper way', () => {
-      const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
+      const v1 = setEntity({ state: getInitialState({}), entity })
       const v2 = setComponent<Sprite>(componentName.sprite, {
         state: v1,
         data: defaultSprite({ entityId }),
@@ -272,7 +272,7 @@ describe('animation', () => {
     })
 
     it('Should works with negative values', () => {
-      const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
+      const v1 = setEntity({ state: getInitialState({}), entity })
       const v2 = setComponent<Sprite>(componentName.sprite, {
         state: v1,
         data: defaultSprite({ entityId }),
@@ -320,7 +320,7 @@ describe('animation', () => {
     })
 
     it('Should works with multiple frames', () => {
-      const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
+      const v1 = setEntity({ state: getInitialState({}), entity })
       const v2 = setComponent<Sprite>(componentName.sprite, {
         state: v1,
         data: defaultSprite({ entityId }),
@@ -391,7 +391,7 @@ describe('animation', () => {
     })
 
     it('Should works with looped animations', () => {
-      const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
+      const v1 = setEntity({ state: getInitialState({}), entity })
       const v2 = setComponent<Sprite>(componentName.sprite, {
         state: v1,
         data: defaultSprite({ entityId }),
@@ -450,7 +450,7 @@ describe('animation', () => {
   })
 
   it('timingMode step - should change value only once per keyframe', () => {
-    const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
+    const v1 = setEntity({ state: getInitialState({}), entity })
     const v2 = setComponent<Sprite>(componentName.sprite, {
       state: v1,
       data: defaultSprite({ entityId }),
@@ -514,7 +514,7 @@ describe('animation', () => {
       const src1 = 'walk1.png'
       const src2 = 'walk2.png'
 
-      const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
+      const v1 = setEntity({ state: getInitialState({}), entity })
       const v2 = setComponent<Sprite>(componentName.sprite, {
         state: v1,
         data: defaultSprite({ entityId }),
@@ -581,7 +581,7 @@ describe('animation', () => {
   })
 
   it('should animate entity properties', () => {
-    const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
+    const v1 = setEntity({ state: getInitialState({}), entity })
     const v2 = setComponent<Sprite>(componentName.sprite, {
       state: v1,
       data: defaultSprite({ entityId }),

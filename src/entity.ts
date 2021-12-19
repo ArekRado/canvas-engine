@@ -1,36 +1,9 @@
 import { v4 } from 'uuid'
 import { Entity, Guid, State } from './type'
 import { removeComponent } from './component'
-import { vector, Vector2D, vectorZero } from '@arekrado/vector-2d'
 
-type CreateEntity = (
-  name: string,
-  options?: Partial<{
-    persistOnSceneChange: boolean
-    rotation: number
-    fromParentRotation: number
-    scale: Vector2D
-    fromParentScale: Vector2D
-    position: Vector2D
-    fromParentPosition: Vector2D
-    parentId?: Guid
-  }>,
-) => Entity
-export const createEntity: CreateEntity = (
-  name: string,
-  options = {},
-): Entity => ({
-  name,
-  id: v4(),
-  persistOnSceneChange: options.persistOnSceneChange || false,
-  rotation: options.rotation || Math.PI,
-  fromParentRotation: options.fromParentRotation || 0,
-  scale: options.scale || vector(1, 1),
-  fromParentScale: options.fromParentScale || vector(1, 1),
-  position: options.position || vectorZero(),
-  fromParentPosition: options.fromParentPosition || vectorZero(),
-  parentId: options.parentId,
-})
+export const createEntity = ({ name }: { name: string }): Entity =>
+  name ? `${name}---${v4()}` : v4()
 
 type SetEntity = (params: { entity: Entity; state: State }) => State
 
@@ -38,21 +11,16 @@ export const setEntity: SetEntity = ({ entity, state }) => ({
   ...state,
   entity: {
     ...state.entity,
-    [entity.id]: entity,
+    [entity]: entity,
   },
 })
 
-type GetEntity = (params: {
-  entityId: Guid
-  state: State
-}) => Entity | undefined
+type GetEntity = (params: { entity: Guid; state: State }) => Entity | undefined
+export const getEntity: GetEntity = ({ entity, state }) => state.entity[entity]
 
-export const getEntity: GetEntity = ({ entityId, state }) =>
-  state.entity[entityId]
-
-type RemoveEntity = (params: { entityId: Guid; state: State }) => State
-export const removeEntity: RemoveEntity = ({ entityId, state }) => {
-  const { [entityId]: _, ...stateWithoutEntity } = state.entity
+type RemoveEntity = (params: { entity: Guid; state: State }) => State
+export const removeEntity: RemoveEntity = ({ entity, state }) => {
+  const { [entity]: _, ...stateWithoutEntity } = state.entity
 
   const newState = {
     ...state,
@@ -61,9 +29,10 @@ export const removeEntity: RemoveEntity = ({ entityId, state }) => {
 
   const v1 = Object.keys(newState.component).reduce(
     (state, name) =>
-      removeComponent(name, {
+      removeComponent({
+        name,
         state,
-        entityId,
+        entity,
       }),
     newState,
   )

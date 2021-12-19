@@ -1,72 +1,64 @@
 import 'regenerator-runtime/runtime'
-import { initialStateWithDisabledDraw } from '../util/state'
+import { getInitialState } from '../util/state'
 
 import { setEntity, removeEntity, createEntity } from '../entity'
 import {
   collideCircle as defaultCollideCircle,
   collideBox as defaultCollideBox,
-  sprite as defaultSprite,
   animation as defaultAnimation,
 } from '../util/defaultComponents'
 import { setComponent } from '../component'
-import { componentName } from '../component'
-import { CollideBox, Animation, CollideCircle, Sprite } from '../type'
+import { CollideBox, Animation, CollideCircle } from '../type'
 
 describe('entity', () => {
   it('remove - should remove components by entity', () => {
-    const entity = createEntity('test')
-    const entityId = entity.id
-    let state = setEntity({ state: initialStateWithDisabledDraw, entity })
+    const entity = createEntity({ name: 'test' })
+    let state = setEntity({ state: getInitialState({}), entity })
 
-    state = setComponent<Animation>(componentName.animation, {
+    state = setComponent<Animation>({
       state,
-      data: defaultAnimation({ entityId }),
+      data: defaultAnimation({ entity }),
     })
-    state = setComponent<CollideBox>(componentName.collideBox, {
+    state = setComponent<CollideBox>({
       state,
-      data: defaultCollideBox({ entityId }),
+      data: defaultCollideBox({ entity }),
     })
-    state = setComponent<CollideCircle>(componentName.collideCircle, {
+    state = setComponent<CollideCircle>({
       state,
-      data: defaultCollideCircle({ entityId }),
-    })
-    state = setComponent<Sprite>(componentName.sprite, {
-      state,
-      data: defaultSprite({ entityId }),
+      data: defaultCollideCircle({ entity }),
     })
 
-    expect(state.entity[entity.id]).toEqual(entity)
-    expect(state.component.sprite[entityId]).toBeDefined()
-    expect(state.component.animation[entityId]).toBeDefined()
-    expect(state.component.collideBox[entityId]).toBeDefined()
-    expect(state.component.collideCircle[entityId]).toBeDefined()
+    expect(state.entity[entity]).toEqual(entity)
+    expect(state.component.animation[entity]).toBeDefined()
+    expect(state.component.collideBox[entity]).toBeDefined()
+    expect(state.component.collideCircle[entity]).toBeDefined()
 
     const stateWithoutEntity = removeEntity({
       state,
-      entityId,
+      entity,
     })
 
-    expect(stateWithoutEntity.entity[entity.id]).not.toBeDefined()
-    expect(stateWithoutEntity.component.sprite[entityId]).not.toBeDefined()
-    expect(stateWithoutEntity.component.animation[entityId]).not.toBeDefined()
-    expect(stateWithoutEntity.component.collideBox[entityId]).not.toBeDefined()
+    expect(stateWithoutEntity.entity[entity]).not.toBeDefined()
+    expect(stateWithoutEntity.component.animation[entity]).not.toBeDefined()
+    expect(stateWithoutEntity.component.collideBox[entity]).not.toBeDefined()
     expect(
-      stateWithoutEntity.component.collideCircle[entityId],
+      stateWithoutEntity.component.collideCircle[entity],
     ).not.toBeDefined()
   })
 
-  it('set - should set and update entity', () => {
-    const entity = createEntity('test', { rotation: 1 })
-    const v1 = setEntity({ state: initialStateWithDisabledDraw, entity })
+  // TODO - why do we want to update entity?
+  // it('set - should set and update entity', () => {
+  //   const entity = createEntity('test', { rotation: 1 })
+  //   const v1 = setEntity({ state: getInitialState({}), entity })
 
-    expect(v1.entity[entity.id]).toEqual(entity)
-    expect(v1.entity[entity.id].rotation).toBe(1)
+  //   expect(v1.entity[entity]).toEqual(entity)
+  //   expect(v1.entity[entity].rotation).toBe(1)
 
-    const v2 = setEntity({
-      state: v1,
-      entity: { ...entity, rotation: 2 },
-    })
+  //   const v2 = setEntity({
+  //     state: v1,
+  //     entity: { ...entity, rotation: 2 },
+  //   })
 
-    expect(v2.entity[entity.id].rotation).toBe(2)
-  })
+  //   expect(v2.entity[entity].rotation).toBe(2)
+  // })
 })

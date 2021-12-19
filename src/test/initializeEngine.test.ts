@@ -1,13 +1,13 @@
 import 'regenerator-runtime/runtime'
-import { initialStateWithDisabledDraw } from '../util/state'
+import { getInitialState } from '../util/state'
 import { createGlobalSystem, createSystem, initializeEngine, State } from '..'
 
 describe('initializeEngine', () => {
   it('should return state with regl', () => {
-    expect(initialStateWithDisabledDraw.regl).toBeUndefined()
+    expect(getInitialState({}).regl).toBeUndefined()
 
     const state = initializeEngine({
-      state: initialStateWithDisabledDraw,
+      state: getInitialState({}),
     })
 
     expect(state.regl).toBeDefined()
@@ -25,7 +25,7 @@ describe('initializeEngine', () => {
     expect(systemInitialize).not.toHaveBeenCalled()
 
     let state = createGlobalSystem({
-      state: initialStateWithDisabledDraw,
+      state: getInitialState({}),
       name: 'globalSystem',
       initialize: globalSystemInitialize,
     })

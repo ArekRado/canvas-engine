@@ -5,57 +5,28 @@ exports[`jsonState jsonToState  1`] = `Object {}`;
 exports[`jsonState jsonToState  2`] = `
 Object {
   "animation": Object {},
+  "camera": Object {},
   "collideBox": Object {},
   "collideCircle": Object {},
-  "ellipse": Object {},
-  "line": Object {},
+  "event": Object {},
+  "keyboard": Object {},
+  "mouse": Object {},
   "mouseInteraction": Object {},
-  "rectangle": Object {},
-  "sprite": Object {},
-  "text": Object {},
-}
-`;
-
-exports[`jsonState jsonToState  3`] = `
-Object {
-  "delta": 0,
-  "previousTimeNow": 0,
-  "timeNow": 0,
-}
-`;
-
-exports[`jsonState jsonToState  4`] = `
-Object {
-  "blueprint": Array [],
-  "sprite": Array [],
-}
-`;
-
-exports[`jsonState jsonToState  5`] = `
-Object {
-  "buttons": 0,
-  "isButtonDown": false,
-  "isButtonUp": false,
-  "isMoving": false,
-  "lastClick": Object {
-    "buttons": 0,
-    "timestamp": -1,
+  "time": Object {
+    "timeEntity": Object {
+      "delta": 0,
+      "entity": "timeEntity",
+      "name": "time",
+      "previousTimeNow": 0,
+      "timeNow": 0,
+    },
   },
-  "position": Array [
-    0,
-    0,
-  ],
-  "wheel": Object {
-    "deltaMode": 0,
-    "deltaX": 0,
-    "deltaY": 0,
-    "deltaZ": 0,
-  },
+  "transform": Object {},
 }
 `;
 
-exports[`jsonState jsonToState  6`] = `false`;
+exports[`jsonState jsonToState  3`] = `false`;
 
-exports[`jsonState jsonToState  7`] = `false`;
+exports[`jsonState jsonToState  4`] = `false`;
 
-exports[`jsonState jsonToState 1`] = `"{\\"entity\\":{},\\"component\\":{\\"sprite\\":{},\\"animation\\":{},\\"collideBox\\":{},\\"collideCircle\\":{},\\"mouseInteraction\\":{},\\"text\\":{},\\"line\\":{},\\"rectangle\\":{},\\"ellipse\\":{}},\\"time\\":{\\"previousTimeNow\\":0,\\"timeNow\\":0,\\"delta\\":0},\\"asset\\":{\\"sprite\\":[],\\"blueprint\\":[]},\\"mouse\\":{\\"buttons\\":0,\\"position\\":[0,0],\\"isButtonUp\\":false,\\"isButtonDown\\":false,\\"isMoving\\":false,\\"lastClick\\":{\\"timestamp\\":-1,\\"buttons\\":0},\\"wheel\\":{\\"deltaMode\\":0,\\"deltaX\\":0,\\"deltaY\\":0,\\"deltaZ\\":0}},\\"isDebugInitialized\\":false,\\"isDrawEnabled\\":false}"`;
+exports[`jsonState jsonToState 1`] = `"{\\"entity\\":{},\\"component\\":{\\"animation\\":{},\\"collideBox\\":{},\\"collideCircle\\":{},\\"mouseInteraction\\":{},\\"time\\":{\\"timeEntity\\":{\\"entity\\":\\"timeEntity\\",\\"name\\":\\"time\\",\\"delta\\":0,\\"timeNow\\":0,\\"previousTimeNow\\":0}},\\"camera\\":{},\\"transform\\":{},\\"event\\":{},\\"mouse\\":{},\\"keyboard\\":{}},\\"isDebugInitialized\\":false,\\"isDrawEnabled\\":false}"`;

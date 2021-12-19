@@ -1,9 +1,10 @@
+import { createSystem } from '..'
 import {
   componentName,
   createGetSetForUniqComponent,
   setComponent,
 } from '../component'
-import { createGlobalSystem, systemPriority } from '../system/createSystem'
+import { systemPriority } from '../system/createSystem'
 import { State, Time } from '../type'
 
 const timeEntity = 'timeEntity'
@@ -25,27 +26,30 @@ export const timeSystem = (state: State) => {
       delta: 0,
       timeNow: performance.now(),
       previousTimeNow: performance.now(),
+      dataOverwrite: undefined,
     },
   })
 
-  return createGlobalSystem<Time>({
+  return createSystem<Time>({
     name: componentName.time,
     priority: systemPriority.time,
     state,
-    tick: ({ state }) => {
-      const time = getTime({ state })
+    tick: ({ state, component }) => {
+      const timeNow = component.dataOverwrite?.timeNow ?? performance.now()
+      const previousTimeNow =
+        component.dataOverwrite?.previousTimeNow ?? component.timeNow
+      const delta = component.dataOverwrite?.delta ?? timeNow - previousTimeNow
 
-      if (time) {
-        state = setTime({
-          state,
-          data: {
-            ...time,
-            delta: time.timeNow - time.previousTimeNow,
-            timeNow: performance.now(),
-            previousTimeNow: time.timeNow,
-          },
-        })
-      }
+      state = setTime({
+        state,
+        data: {
+          entity: component.entity,
+          name: component.name,
+          delta,
+          timeNow,
+          previousTimeNow,
+        },
+      })
 
       return state
     },

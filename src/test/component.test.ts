@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { initialStateWithDisabledDraw } from '../util/state'
+import { getInitialState } from '../util/state'
 import { setEntity, createEntity } from '../entity'
 import { runOneFrame } from '../util/runOneFrame'
 import { removeComponent, setComponent } from '../component'
@@ -17,7 +17,7 @@ describe('component', () => {
 
     const v1 = setEntity({
       entity: entity1,
-      state: initialStateWithDisabledDraw,
+      state: getInitialState({}),
     })
 
     const v2 = createSystem({

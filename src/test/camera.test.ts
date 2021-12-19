@@ -1,16 +1,16 @@
 import 'regenerator-runtime/runtime'
-import { initialState, initialStateWithDisabledDraw } from '../util/state'
-import { setEntity, createEntity } from '../entity'
+import { getInitialState } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
-import { componentName, removeComponent, setComponent } from '../component'
-import { defaultData, initializeEngine } from '..'
+import { initializeEngine } from '..'
+import { setTime } from '../system/time'
 
 describe('camera', () => {
   it('should pass through camera render lifecycle without any errors', () => {
-    let state = initializeEngine({ state: initialStateWithDisabledDraw })
+    let state = initializeEngine({ state: getInitialState({}) })
 
-    state = runOneFrame({ state, timeNow: 20 })
+    state = setTime({ timeNow: 20 })
+    state = runOneFrame({ state })
 
-    expect(state.camera).toEqual(initialState.camera)
+    expect(state.camera).toEqual(getInitialState({}).camera)
   })
 })

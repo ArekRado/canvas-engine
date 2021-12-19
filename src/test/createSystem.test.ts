@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { initialStateWithDisabledDraw } from '../util/state'
+import { getInitialState } from '../util/state'
 import { createGlobalSystem } from '../system/createSystem'
 import { State } from '../type'
 
@@ -11,7 +11,7 @@ describe('createGlobalSystem', () => {
     const tick = jest.fn<State, [{ state: State }]>(({ state }) => state)
 
     createGlobalSystem({
-      state: initialStateWithDisabledDraw,
+      state: getInitialState({}),
       name: 'test',
       initialize,
       create,
