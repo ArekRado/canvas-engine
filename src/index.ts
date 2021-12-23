@@ -1,6 +1,5 @@
 export * from './type'
 export { runOneFrame } from './util/runOneFrame'
-export { initialState, setScene } from './util/state'
 export { initializeEngine } from './util/initializeEngine'
 export { jsonToState, stateToJson } from './util/jsonState'
 export {
@@ -41,8 +40,6 @@ import {
   addBlueprint,
   removeBlueprint,
 } from './util/asset'
-
-export { setCamera } from './util/camera'
 
 export {
   getEntity,

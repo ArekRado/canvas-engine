@@ -1,39 +1,47 @@
-import { Camera, EventHandler } from '../../ecs/type';
-import { CameraEvent, getCamera, getCameraSize, setCamera } from '../cameraSystem';
-import { camera, scene } from '../..';
-import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { Camera, EventHandler, State } from '../../type'
+import { CameraEvent, getCamera, setCamera } from '../cameraSystem'
+import { getCameraSize } from './getCameraSize'
 
 export const adjustBabylonCameraToComponentCamera = ({
   component,
+  aspectRatio,
+  cameraRef,
 }: {
-  component: Partial<Camera>;
+  component: Partial<Camera>
+  aspectRatio: number
+  cameraRef: State['babylonjs']['cameraRef']
 }) => {
+  if (!cameraRef) return
+
   if (component.position) {
-    camera.position.x = component.position[1];
-    camera.position.y = component.position[0];
-    camera.position.z = -10;
-    camera.setTarget(new Vector3(component.position[1], component.position[0]));
+    cameraRef.position.x = component.position[1]
+    cameraRef.position.y = component.position[0]
+    cameraRef.position.z = -10
+    cameraRef.setTarget(
+      new Vector3(component.position[1], component.position[0]),
+    )
   }
 
-  const size = getCameraSize(component.distance ?? 0, scene);
+  const size = getCameraSize(component.distance ?? 0, aspectRatio)
 
-  camera.orthoLeft = size.left;
-  camera.orthoRight = size.right;
-  camera.orthoBottom = size.bottom;
-  camera.orthoTop = size.top;
+  cameraRef.orthoLeft = size.left
+  cameraRef.orthoRight = size.right
+  cameraRef.orthoBottom = size.bottom
+  cameraRef.orthoTop = size.top
 
-  return size;
-};
+  return size
+}
 
-export const handleResize: EventHandler<Camera, CameraEvent.ResizeEvent> = ({
+export const handleResize: EventHandler<CameraEvent.ResizeEvent> = ({
   state,
 }) => {
-  const camera = getCamera({ state });
+  const camera = getCamera({ state })
 
   state = setCamera({
     state,
     data: camera || {},
-  });
+  })
 
-  return state;
-};
+  return state
+}

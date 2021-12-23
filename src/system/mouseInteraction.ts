@@ -1,12 +1,6 @@
 import { add } from '@arekrado/vector-2d'
 import { getComponent, setComponent } from '../component'
-import {
-  CollideBox,
-  CollideCircle,
-  Entity,
-  Mouse,
-  MouseInteraction,
-} from '../type'
+import { CollideBox, CollideCircle, Mouse, MouseInteraction } from '../type'
 import { State } from '../type'
 import { createSystem } from './createSystem'
 import { componentName } from '../component'
@@ -14,40 +8,40 @@ import {
   detectPointBoxCollision,
   detectPointCircleCollision,
 } from '../util/detectCollision'
-import { getEntity } from '../entity'
+import { getMouse } from './mouse'
+import { Transform } from '..'
+import { parseV3ToV2 } from '../util/parseV3ToV2'
 
 type IsMouseOver = (params: {
   mouse: Mouse
   collideBox?: CollideBox
   collideCircle?: CollideCircle
-  entity: Entity
+  transform: Transform
 }) => boolean
 export const isMouseOver: IsMouseOver = ({
   mouse,
   collideBox,
   collideCircle,
-  entity,
+  transform,
 }) => {
   let hasCollision = false
-  if (entity) {
-    if (collideBox) {
-      hasCollision = detectPointBoxCollision({
-        point: mouse.position,
-        box: {
-          position: add(entity.position, collideBox.position),
-          size: collideBox.size,
-        },
-      })
-    }
-    if (!hasCollision && collideCircle) {
-      hasCollision = detectPointCircleCollision({
-        point: mouse.position,
-        circle: {
-          position: add(entity.position, collideCircle.position),
-          radius: collideCircle.radius,
-        },
-      })
-    }
+  if (collideBox) {
+    hasCollision = detectPointBoxCollision({
+      point: mouse.position,
+      box: {
+        position: add(parseV3ToV2(transform.position), collideBox.position),
+        size: collideBox.size,
+      },
+    })
+  }
+  if (!hasCollision && collideCircle) {
+    hasCollision = detectPointCircleCollision({
+      point: mouse.position,
+      circle: {
+        position: add(parseV3ToV2(transform.position), collideCircle.position),
+        radius: collideCircle.radius,
+      },
+    })
   }
 
   return hasCollision
@@ -60,52 +54,50 @@ export const mouseInteractionSystem = (state: State) =>
     create: ({ state }) => state,
     remove: ({ state }) => state,
     tick: ({ state, component }) => {
-      const entityId = component.entityId
-      const entity = getEntity({
+      const entity = component.entity
+
+      const collideBox = getComponent<CollideBox>({
+        name: componentName.collideBox,
         state,
-        entityId: component.entityId,
+        entity,
+      })
+      const collideCircle = getComponent<CollideCircle>({
+        name: componentName.collideCircle,
+        state,
+        entity,
+      })
+      const transform = getComponent<Transform>({
+        name: componentName.transform,
+        state,
+        entity,
       })
 
-      if (entity) {
-        const collideBox = getComponent<CollideBox>(componentName.collideBox, {
-          state,
-          entityId,
+      const mouse = getMouse({ state })
+
+      if ((collideBox || collideCircle) && mouse && transform) {
+        const isMouseOverFlag = isMouseOver({
+          transform,
+          mouse,
+          collideBox,
+          collideCircle,
         })
-        const collideCircle = getComponent<CollideCircle>(
-          componentName.collideCircle,
-          { state, entityId },
-        )
 
-        const mouse = state.mouse
+        const isMouseEnter = !component.isMouseOver && isMouseOverFlag
+        const isMouseLeave = component.isMouseOver && !isMouseOverFlag
+        const isClicked = component.isMouseOver && mouse.buttons === 1
 
-        if (collideBox || collideCircle) {
-          const isMouseOverFlag = isMouseOver({
+        return setComponent<MouseInteraction>({
+          state,
+          data: {
             entity,
-            mouse,
-            collideBox,
-            collideCircle,
-          })
-
-          const isMouseEnter = !component.isMouseOver && isMouseOverFlag
-          const isMouseLeave = component.isMouseOver && !isMouseOverFlag
-          const isClicked = component.isMouseOver && state.mouse.buttons === 1
-
-          return setComponent<MouseInteraction>(
-            componentName.mouseInteraction,
-            {
-              state,
-              data: {
-                entityId,
-                name: componentName.mouseInteraction,
-                isClicked,
-                isDoubleClicked: false, // TODO
-                isMouseOver: isMouseOverFlag,
-                isMouseEnter,
-                isMouseLeave,
-              },
-            },
-          )
-        }
+            name: componentName.mouseInteraction,
+            isClicked,
+            isDoubleClicked: false, // TODO
+            isMouseOver: isMouseOverFlag,
+            isMouseEnter,
+            isMouseLeave,
+          },
+        })
       }
 
       return state

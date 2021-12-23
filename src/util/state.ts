@@ -7,17 +7,24 @@ import { timeSystem } from '../system/time'
 import { mouseInteractionSystem } from '../system/mouseInteraction'
 import { mouseSystem } from '../system/mouse'
 import { keyboardSystem } from '../system/keyboard'
+import { Scene } from '@babylonjs/core/scene'
+import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera'
+import { cameraSystem } from '../system/cameraSystem'
 
 export const getInitialState = ({
   state,
   document,
   containerId,
   isDrawEnabled = false,
+  scene,
+  camera,
 }: {
   state?: State
   isDrawEnabled?: boolean
   document?: Document
   containerId?: string
+  scene?: Scene
+  camera?: UniversalCamera
 }): State => {
   let initialState: State = {
     entity: {},
@@ -41,9 +48,14 @@ export const getInitialState = ({
     system: [],
     isDebugInitialized: false,
     isDrawEnabled: true,
+    babylonjs: {
+      sceneRef: scene,
+      cameraRef: camera,
+    },
   }
 
   initialState = timeSystem(initialState)
+  initialState = cameraSystem(initialState)
   initialState = transformSystem(initialState)
   initialState = collideBoxSystem(initialState)
   initialState = animationSystem(initialState)

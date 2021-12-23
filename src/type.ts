@@ -1,5 +1,6 @@
 import { Vector2D } from '@arekrado/vector-2d'
-import { componentName } from '.'
+import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera'
+import { Scene } from '@babylonjs/core/scene'
 import { GlobalSystem, System } from './system/createSystem'
 import { TimingFunction } from './util/bezierFunction'
 
@@ -181,10 +182,15 @@ export type Keyboard = {
   keys: { [key: string]: KeyData | undefined }
 }
 
-export type Camera = {
+export type Camera = Component<{
   position: Vector2D
-  size: number
-}
+  distance: number
+  // ortho
+  bottom: number
+  top: number
+  left: number
+  right: number
+}>
 
 export type Text = Component<{
   value: string
@@ -275,6 +281,12 @@ export type State = {
   // keyboard: Keyboard
   isDebugInitialized: boolean
   isDrawEnabled: boolean
+
+  // Babylonjs
+  babylonjs: {
+    sceneRef?: Scene
+    cameraRef?: UniversalCamera
+  }
 }
 
 export type GetDefaultComponent<X> = (

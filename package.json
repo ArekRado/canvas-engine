@@ -40,9 +40,8 @@
   },
   "dependencies": {
     "@arekrado/vector-2d": "0.0.2",
-    "gl-mat4": "^1.2.0",
+    "@babylonjs/core": "^5.0.0-alpha.59",
     "just-safe-set": "^2.2.3",
-    "regl": "^2.1.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -52,14 +51,9 @@
     "@types/jest": "^26.0.15",
     "@types/just-safe-set": "^2.1.0",
     "@types/uuid": "^8.3.0",
-    "husky": "^4.3.0",
     "jest": "^26.6.3",
-    "jest-canvas-mock": "^2.3.1",
-    "jest-webgl-canvas-mock": "^0.2.3",
-    "lint-staged": "^10.5.1",
+    "prettier": "^2.1.2",
     "ts-jest": "^26.4.4",
-    "tsdx": "^0.14.1",
-    "typescript": "^4.0.5",
-    "prettier": "^2.1.2"
+    "typescript": "^4.0.5"
   }
 }
