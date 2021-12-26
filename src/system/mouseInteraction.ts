@@ -54,6 +54,9 @@ export const mouseInteractionSystem = (state: State) =>
     create: ({ state }) => state,
     remove: ({ state }) => state,
     tick: ({ state, component }) => {
+      // todo rewrite it to set/getMouseInteraction
+      // set mouse interaction on mouse move events
+      
       const entity = component.entity
 
       const collideBox = getComponent<CollideBox>({

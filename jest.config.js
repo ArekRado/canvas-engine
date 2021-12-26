@@ -1,13 +1,7 @@
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'jsdom',
-  moduleDirectories: ['node_modules', 'src'],
-  collectCoverage: true,
   verbose: false,
-  globals: {
-    'ts-jest': {
-      babelConfig: true,
-      diagnostics: false
-    }
+  transform: {
+    '\\.[jt]sx?$': 'babel-jest',
   },
+  // transformIgnorePatterns: ['node_modules/(?!@@babylonjs/core/Maths/math.vector.js)'],
 }

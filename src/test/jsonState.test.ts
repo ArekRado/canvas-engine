@@ -6,7 +6,7 @@ import { setTime } from '../system/time'
 describe('jsonState', () => {
   it('jsonToState ', () => {
     let state = setTime({
-      state: getInitialState({}),
+      state: getState({}),
       data: {
         timeNow: 0,
         previousTimeNow: 0,
@@ -23,7 +23,7 @@ describe('jsonState', () => {
 
   it('jsonToState', () => {
     let state = setTime({
-      state: getInitialState({}),
+      state: getState({}),
       data: {
         timeNow: 0,
         previousTimeNow: 0,

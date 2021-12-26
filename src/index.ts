@@ -1,6 +1,5 @@
 export * from './type'
 export { runOneFrame } from './util/runOneFrame'
-export { initializeEngine } from './util/initializeEngine'
 export { jsonToState, stateToJson } from './util/jsonState'
 export {
   TimingFunction,

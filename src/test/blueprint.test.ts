@@ -56,7 +56,7 @@ describe('blueprint', () => {
     }
 
     const stateWithBlueprint = addBlueprint({
-      state: getInitialState({}),
+      state: getState({}),
       data: {
         entityId: createEntity('-').id,
         name: 'test',

@@ -28,12 +28,12 @@ export const keyboardSystem = ({
   containerId: string
 }) => {
   const container = document.getElementById(containerId)
-
+  
   if (container) {
     document.addEventListener(
       'keydown',
       (e) => {
-        keyboard[e.key] = {
+        keyboard.keys[e.key] = {
           isDown: true,
           isUp: false,
           isPressed: true,
@@ -44,7 +44,7 @@ export const keyboardSystem = ({
     document.addEventListener(
       'keyup',
       (e) => {
-        keyboard[e.key] = {
+        keyboard.keys[e.key] = {
           isDown: false,
           isUp: true,
           isPressed: false,

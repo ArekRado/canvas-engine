@@ -367,10 +367,10 @@ export const animationSystem = (state: State) =>
           timeExceeded,
         })
 
-        const { component, entityId, path } = animation.property
+        const { component, entity, path } = animation.property
 
         component &&
-          set(state.component, `${component}.${entityId}.${path}`, value)
+          set(state.component, `${component}.${entity}.${path}`, value)
 
         return setComponent<Animation>({
           state,

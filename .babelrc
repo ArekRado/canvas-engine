@@ -1,13 +1,21 @@
 {
   "presets": [
+    // [
+    //   "@babel/preset-env",
+    //   {
+    //     "targets": {
+    //       "firefox": "96"
+    //     }
+    //   }
+    // ],
     [
       "@babel/preset-env",
       {
         "targets": {
-          "firefox": "83",
-          "esmodules": true
+          "node": "current"
         }
       }
     ],
+    "@babel/preset-typescript"
   ]
 }

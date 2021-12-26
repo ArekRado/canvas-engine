@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
-import { getInitialState } from '../util/state'
+import { getInitialState, getState } from '../util/state'
 import { setEntity, createEntity, getEntity } from '../entity'
 import { runOneFrame } from '../util/runOneFrame'
 import { componentName, getComponent, setComponent, Transform } from '..'
@@ -12,7 +12,7 @@ describe('transform', () => {
     const entity2 = createEntity({ name: 'e2' })
 
     let state = setComponent<Transform>({
-      state: getInitialState({}),
+      state: getState({}),
       data: transform({
         entity: entity1,
         position: vector(1, 1),
@@ -31,7 +31,7 @@ describe('transform', () => {
     state = setEntity({ entity: entity1, state })
     state = setEntity({ entity: entity2, state })
 
-    state = runOneFrame({ state, timeNow: 0 })
+    state = runOneFrame({ state })
 
     const t1 = getComponent<Transform>({
       state,
@@ -59,7 +59,7 @@ describe('transform', () => {
     const entity4 = createEntity({ name: 'e4' })
 
     let state = setComponent<Transform>({
-      state: getInitialState({}),
+      state: getState({}),
       data: transform({
         entity: entity1,
         position: vector(1, 1),
@@ -97,7 +97,7 @@ describe('transform', () => {
     state = setEntity({ entity: entity3, state })
     state = setEntity({ entity: entity4, state })
 
-    state = runOneFrame({ state, timeNow: 0 })
+    state = runOneFrame({ state })
 
     const t1 = getComponent<Transform>({
       name: componentName.transform,
@@ -149,7 +149,7 @@ describe('transform', () => {
 
     let state = setEntity({
       entity: entity1,
-      state: getInitialState({}),
+      state: getState({}),
     })
     state = setEntity({ entity: entity2, state })
     state = setEntity({ entity: entity3, state })
@@ -192,7 +192,7 @@ describe('transform', () => {
       data: transform({ entity: entity8, parentId: entity7 }),
     })
 
-    state = runOneFrame({ state, timeNow: 0 })
+    state = runOneFrame({ state })
 
     const e1 = getComponent<Transform>({
       state,

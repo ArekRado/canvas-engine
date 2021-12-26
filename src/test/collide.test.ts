@@ -1,6 +1,5 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
-import { getInitialState } from '../util/state'
 import { setEntity, createEntity } from '../entity'
 import { runOneFrame } from '../util/runOneFrame'
 import {
@@ -11,6 +10,7 @@ import { getComponent, setComponent } from '../component'
 import { CollideBox } from '../type'
 import { componentName } from '../component'
 import { Transform } from '..'
+import { getState } from '../util/state'
 
 describe('collide', () => {
   it('detect collisions box-box', () => {
@@ -20,7 +20,7 @@ describe('collide', () => {
 
     let state = setEntity({
       entity: entity1,
-      state: getInitialState({}),
+      state: getState({}),
     })
     state = setEntity({ entity: entity2, state })
     state = setEntity({ entity: entity3, state })

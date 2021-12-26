@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { getInitialState } from '../util/state'
+import { getInitialState, getState } from '../util/state'
 import { setEntity, createEntity } from '../entity'
 import { runOneFrame } from '../util/runOneFrame'
 import { removeComponent, setComponent } from '../component'
@@ -8,53 +8,53 @@ import { Dictionary, State } from '../type'
 
 describe('component', () => {
   it('should call system create and remove methods', () => {
-    const entity1 = createEntity('e1')
-    const entity2 = createEntity('e2')
+    const entity1 = createEntity({ name: 'e1' })
+    const entity2 = createEntity({ name: 'e2' })
 
     const create = jest.fn<State, [{ state: State }]>(({ state }) => state)
     const remove = jest.fn<State, [{ state: State }]>(({ state }) => state)
     const tick = jest.fn<State, [{ state: State }]>(({ state }) => state)
 
-    const v1 = setEntity({
+    let state = setEntity({
       entity: entity1,
-      state: getInitialState({}),
+      state: getState({}),
     })
 
-    const v2 = createSystem({
-      state: v1,
+    state = createSystem({
+      state,
       name: 'test',
       create,
       remove,
       tick,
     })
 
-    const v3 = setComponent<Dictionary<{}>>('test', {
-      state: v2,
+    state = setComponent<Dictionary<{}>>({
+      state,
       data: {
-        entityId: entity1.id,
+        entity: entity1,
         name: 'test',
       },
     })
-    const v4 = setComponent<Dictionary<{}>>('test', {
-      state: v3,
+    state = setComponent<Dictionary<{}>>({
+      state,
       data: {
-        entityId: entity2.id,
+        entity: entity2,
         name: 'test',
       },
     })
 
-    const v5 = runOneFrame({ state: v4, timeNow: 0 })
-    const v6 = removeComponent('test', { entityId: entity1.id, state: v5 })
+    state = runOneFrame({ state })
+    state = removeComponent({ name: 'test', entity: entity1, state })
 
     expect(create).toHaveBeenCalledTimes(2)
     expect(remove).toHaveBeenCalled()
     expect(tick).toHaveBeenCalled()
 
     // create new component after remove
-    const v7 = setComponent<Partial<{}>>('test', {
-      state: v6,
+    state = setComponent<Partial<{}>>({
+      state,
       data: {
-        entityId: entity1.id,
+        entity: entity1,
         name: 'test',
       },
     })
@@ -62,10 +62,10 @@ describe('component', () => {
     expect(create).toHaveBeenCalledTimes(3)
 
     // updating existing component
-    const v8 = setComponent<Partial<{}>>('test', {
-      state: v7,
+    state = setComponent<Partial<{}>>({
+      state,
       data: {
-        entityId: entity1.id,
+        entity: entity1,
         name: 'test',
       },
     })

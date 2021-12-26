@@ -34,7 +34,7 @@ export type System<Component> = {
   /**
    * Called only once when engine is initializing
    */
-  initialize: (params: { state: State }) => State
+  // initialize: (params: { state: State }) => State
   /**
    * Called on each component create if state.component[name] and system name are the same
    */
@@ -59,7 +59,7 @@ export const createSystem = <ComponentData>({
   const system: System<ComponentData> = {
     name: params.name,
     priority: params.priority || systemPriority.zero,
-    initialize: params.initialize || doNothing,
+    // initialize: params.initialize || doNothing,
     create: params.create || doNothing,
     tick: ({ state }) => {
       const component = state.component[params.name] as Dictionary<
@@ -89,7 +89,7 @@ export const createSystem = <ComponentData>({
 export type CreateGlobalSystemParams<Events> = {
   state: State
   name: string
-  initialize?: (params: { state: State }) => State
+  // initialize?: (params: { state: State }) => State
   create?: (params: { state: State }) => State
   tick?: (params: { state: State }) => State
   priority?: number
@@ -103,7 +103,7 @@ export type GlobalSystem = {
   /**
    * Called only once when engine is initializing
    */
-  initialize: (params: { state: State }) => State
+  // initialize: (params: { state: State }) => State
   create: (params: { state: State }) => State
   remove: (params: { state: State }) => State
   priority: number
@@ -112,7 +112,7 @@ export type GlobalSystem = {
 
 export const createGlobalSystem = <Events>({
   state,
-  initialize,
+  // initialize,
   tick,
   ...params
 }: CreateGlobalSystemParams<Events>): State => {
@@ -121,7 +121,7 @@ export const createGlobalSystem = <Events>({
     priority: params.priority || systemPriority.zero,
     // update: undefined,
     tick: tick || doNothing,
-    initialize: initialize || doNothing,
+    // initialize: initialize || doNothing,
     create: doNothing,
     remove: ({ state }) => state,
     // event: params.event || {},

@@ -11,7 +11,80 @@ import { Scene } from '@babylonjs/core/scene'
 import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera'
 import { cameraSystem } from '../system/cameraSystem'
 
-export const getInitialState = ({
+export const getInitialState = () => ({
+  entity: {},
+  component: {
+    [componentName.animation]: {},
+    [componentName.collideBox]: {},
+    [componentName.collideCircle]: {},
+    [componentName.mouseInteraction]: {},
+
+    [componentName.time]: {},
+    [componentName.camera]: {},
+    [componentName.transform]: {},
+    [componentName.event]: {},
+    [componentName.mouse]: {},
+    [componentName.keyboard]: {},
+  },
+  // asset: {
+  //   sprite: [],
+  //   blueprint: [],
+  // },
+  system: [],
+  isDebugInitialized: false,
+  isDrawEnabled: true,
+  babylonjs: {
+    sceneRef: undefined,
+    cameraRef: undefined,
+  },
+})
+
+export const getSystems = ({
+  state,
+  document,
+  containerId,
+  isDrawEnabled = false,
+  scene,
+  camera,
+}: {
+  state: State
+  isDrawEnabled?: boolean
+  document?: Document
+  containerId?: string
+  scene?: Scene
+  camera?: UniversalCamera
+}): State => {
+  state.babylonjs.cameraRef = camera
+  state.babylonjs.sceneRef = scene
+
+  state = timeSystem(state)
+  state = cameraSystem(state)
+  state = transformSystem(state)
+  state = collideBoxSystem(state)
+  state = animationSystem(state)
+  state = mouseInteractionSystem(state)
+
+  if (containerId) {
+    state = mouseSystem({
+      state: state,
+      document: document ?? window.document,
+      containerId,
+    })
+    state = keyboardSystem({
+      state: state,
+      document: document ?? window.document,
+      containerId,
+    })
+  }
+
+  return {
+    ...(state ?? {}),
+    ...state,
+    isDrawEnabled,
+  }
+}
+
+export const getState = ({
   state,
   document,
   containerId,
@@ -25,58 +98,12 @@ export const getInitialState = ({
   containerId?: string
   scene?: Scene
   camera?: UniversalCamera
-}): State => {
-  let initialState: State = {
-    entity: {},
-    component: {
-      [componentName.animation]: {},
-      [componentName.collideBox]: {},
-      [componentName.collideCircle]: {},
-      [componentName.mouseInteraction]: {},
-
-      [componentName.time]: {},
-      [componentName.camera]: {},
-      [componentName.transform]: {},
-      [componentName.event]: {},
-      [componentName.mouse]: {},
-      [componentName.keyboard]: {},
-    },
-    // asset: {
-    //   sprite: [],
-    //   blueprint: [],
-    // },
-    system: [],
-    isDebugInitialized: false,
-    isDrawEnabled: true,
-    babylonjs: {
-      sceneRef: scene,
-      cameraRef: camera,
-    },
-  }
-
-  initialState = timeSystem(initialState)
-  initialState = cameraSystem(initialState)
-  initialState = transformSystem(initialState)
-  initialState = collideBoxSystem(initialState)
-  initialState = animationSystem(initialState)
-  initialState = mouseInteractionSystem(initialState)
-
-  if (containerId) {
-    initialState = mouseSystem({
-      state: initialState,
-      document: document ?? window.document,
-      containerId,
-    })
-    initialState = keyboardSystem({
-      state: initialState,
-      document: document ?? window.document,
-      containerId,
-    })
-  }
-
-  return {
-    ...(initialState ?? {}),
-    ...state,
+}): State =>
+  getSystems({
+    state: state || getInitialState(),
+    document,
+    containerId,
     isDrawEnabled,
-  }
-}
+    scene,
+    camera,
+  })

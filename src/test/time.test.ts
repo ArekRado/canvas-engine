@@ -1,12 +1,12 @@
 import 'regenerator-runtime/runtime'
-import { getInitialState } from '../util/state'
+import { getInitialState, getState } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
 import { getTime, setTime } from '../system/time'
 
 describe('time', () => {
   it('should change time - start from 0 case', () => {
     let state = setTime({
-      state: getInitialState({}),
+      state: getState({}),
       data: {
         dataOverwrite: {
           delta: 0,
@@ -42,7 +42,7 @@ describe('time', () => {
 
   it('should change time - start from non 0 case', () => {
     let state = setTime({
-      state: getInitialState({}),
+      state: getState({}),
       data: {
         dataOverwrite: {
           timeNow: 10,

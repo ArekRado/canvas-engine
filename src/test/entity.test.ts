@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { getInitialState } from '../util/state'
+import { getInitialState, getState } from '../util/state'
 
 import { setEntity, removeEntity, createEntity } from '../entity'
 import {
@@ -13,7 +13,7 @@ import { CollideBox, Animation, CollideCircle } from '../type'
 describe('entity', () => {
   it('remove - should remove components by entity', () => {
     const entity = createEntity({ name: 'test' })
-    let state = setEntity({ state: getInitialState({}), entity })
+    let state = setEntity({ state: getState({}), entity })
 
     state = setComponent<Animation>({
       state,
@@ -49,7 +49,7 @@ describe('entity', () => {
   // TODO - why do we want to update entity?
   // it('set - should set and update entity', () => {
   //   const entity = createEntity('test', { rotation: 1 })
-  //   const v1 = setEntity({ state: getInitialState({}), entity })
+  //   const v1 = setEntity({ state: getState({}), entity })
 
   //   expect(v1.entity[entity]).toEqual(entity)
   //   expect(v1.entity[entity].rotation).toBe(1)

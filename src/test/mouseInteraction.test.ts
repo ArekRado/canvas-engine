@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
-import { getInitialState } from '../util/state'
+import { getState } from '../util/state'
 import { setEntity, createEntity } from '../entity'
 import { runOneFrame } from '../util/runOneFrame'
 import {
@@ -20,7 +20,10 @@ describe('mouseInteraction', () => {
   it('isMouseOver', () => {
     const entity = createEntity({ name: '' })
     const mouse = getMouse({
-      state: getInitialState({}),
+      state: getState({
+        containerId: 'containerId',
+        document: window.document,
+      }),
     })
 
     if (!mouse) return
@@ -68,8 +71,12 @@ describe('mouseInteraction', () => {
 
     let state = setEntity({
       entity,
-      state: getInitialState({}),
+      state: getState({
+        document: window.document,
+        containerId: 'containerId',
+      }),
     })
+
     state = setEntity({ entity, state })
 
     state = setComponent<MouseInteraction>({
@@ -147,6 +154,7 @@ describe('mouseInteraction', () => {
         position: vector(200, 200),
       },
     })
+    state = runOneFrame({ state })
 
     const mouseInteraction3 = getComponent<MouseInteraction>({
       name: componentName.mouseInteraction,
@@ -165,6 +173,7 @@ describe('mouseInteraction', () => {
         position: vector(300, 300),
       },
     })
+    state = runOneFrame({ state })
 
     const mouseInteraction4 = getComponent<MouseInteraction>({
       name: componentName.mouseInteraction,
