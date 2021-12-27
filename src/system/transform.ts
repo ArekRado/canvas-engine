@@ -3,19 +3,29 @@ import { State, Transform, Vector3D } from '../type'
 import { createGlobalSystem, systemPriority } from '../system/createSystem'
 import { componentName, getComponent, setComponent } from '../component'
 import { parseV3ToV2 } from '../util/parseV3ToV2'
-// import { scene } from '..'
+import { Scene } from '@babylonjs/core/scene'
 
-const syncTransformWithBabylon = ({ transform }: { transform: Transform }) => {
-  // const transformNode = scene.getTransformNodeByUniqueId(
-  //   parseFloat(transform.entity),
-  // )
-  // if (transformNode) {
-  //   transformNode.position.x = transform.position[0]
-  //   transformNode.position.y = transform.position[1]
-  //   transformNode.rotation.x = transform.rotation[0]
-  //   transformNode.rotation.y = transform.rotation[1]
-  //   transformNode.rotation.z = transform.rotation[2]
-  // }
+const syncTransformWithBabylon = ({
+  transform,
+  scene,
+}: {
+  transform: Transform
+  scene: Scene
+}) => {
+  const transformNode = scene.getTransformNodeByUniqueId(
+    parseFloat(transform.entity),
+  )
+  if (transformNode) {
+    transformNode.position.x = transform.position[0]
+    transformNode.position.y = transform.position[1]
+
+    transformNode.rotation.x = transform.rotation[0]
+    transformNode.rotation.y = transform.rotation[1]
+
+    if (transform.rotation[2]) {
+      transformNode.rotation.z = transform.rotation[2]
+    }
+  }
 }
 
 const getParentPosition = (
@@ -74,9 +84,12 @@ export const transformSystem = (state: State) =>
             }
           }
 
-          syncTransformWithBabylon({
-            transform: transform,
-          })
+          if (state.babylonjs.sceneRef) {
+            syncTransformWithBabylon({
+              scene: state.babylonjs.sceneRef,
+              transform: transform,
+            })
+          }
 
           return state
         },

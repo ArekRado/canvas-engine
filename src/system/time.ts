@@ -39,7 +39,6 @@ export const timeSystem = (state: State) => {
       const previousTimeNow =
         component.dataOverwrite?.previousTimeNow ?? component.timeNow
       const delta = component.dataOverwrite?.delta ?? timeNow - previousTimeNow
-
       state = setTime({
         state,
         data: {

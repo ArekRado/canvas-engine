@@ -24,7 +24,6 @@ let lastClick = {
 let isMoving = false
 let isButtonUp = false
 let isButtonDown = false
-let isInitialized = false
 
 let wheel = {
   deltaMode: 0,
@@ -93,8 +92,6 @@ export const mouseSystem = ({
         deltaZ: e.deltaZ,
       }
     })
-
-    isInitialized = true
   }
 
   state = setComponent<Mouse>({

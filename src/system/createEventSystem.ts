@@ -1,6 +1,6 @@
-import { componentName } from './component'
-import { createGlobalSystem, createSystem } from './createSystem'
-import { Entity, State } from './type'
+import { componentName } from '../component'
+import { createGlobalSystem } from './createSystem'
+import { State } from '../type'
 
 export type ECSEvent<Type, Payload> = {
   type: Type

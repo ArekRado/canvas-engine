@@ -26,7 +26,6 @@
     "noUnusedParameters": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "noEmit": true,
   },
   "include": ["src/**/*"],
   "exclude": [

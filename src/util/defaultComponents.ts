@@ -1,4 +1,4 @@
-import { vector, vectorZero } from '@arekrado/vector-2d'
+import { vectorZero } from '@arekrado/vector-2d'
 import { componentName } from '../component'
 import {
   Blueprint,
