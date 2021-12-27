@@ -192,48 +192,6 @@ export type Camera = Component<{
   right: number
 }>
 
-export type Text = Component<{
-  value: string
-  rotation: number
-  skew: Vector2D
-  anchor: Vector2D
-  // skewText.skew.set(0.65,-0.3);
-  // skewText.anchor.set(0.5, 0.5);
-  // skewText.x = 300;
-  // skewText.y = 480;
-
-  fontFamily: string
-  dropShadow: boolean
-  dropShadowAlpha: number
-  dropShadowAngle: number
-  dropShadowBlur: number
-  dropShadowColor: Color
-  dropShadowDistance: number
-  fill: string[]
-  stroke: string
-  fontSize: number
-  fontStyle: 'italic'
-  fontWeight: 'lighter' | 'bold'
-  lineJoin: 'round'
-  wordWrap: boolean
-  strokeThickness: number
-}>
-
-export type Line = Component<{
-  path: Vector2D[]
-  borderColor: Color
-}>
-
-export type Rectangle = Component<{
-  size: Vector2D
-  fillColor: Color
-}>
-
-export type Ellipse = Component<{
-  size: Vector2D
-  fillColor: Color
-}>
-
 export type Event = Component<{}>
 
 export type EventHandler<Event> = (params: {

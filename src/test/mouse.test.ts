@@ -92,10 +92,7 @@ describe('mouse', () => {
 
   it('wheel', () => {
     let state = getInitialStateWithMouse()
-
-    expect(getMouse({ state })?.wheel).toEqual(
-      getMouse({ state: getInitialState() })?.wheel,
-    )
+    const initialMouse = getMouse({ state })
 
     wheelCallback({
       deltaMode: 1,
@@ -116,8 +113,6 @@ describe('mouse', () => {
     state = runOneFrame({ state })
 
     // Next tick should reset wheel
-    expect(getMouse({ state })?.wheel).toEqual(
-      getMouse({ state: getInitialState() })?.wheel,
-    )
+    expect(getMouse({ state })?.wheel).toEqual(initialMouse?.wheel)
   })
 })

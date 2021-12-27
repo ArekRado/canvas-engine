@@ -304,6 +304,7 @@ const updateStringAnimation: UpdateStringAnimation = ({
   ]
 }
 
+// todo split animationSystem into number, string, vector systems
 export const animationSystem = (state: State) =>
   createSystem<Animation>({
     state,

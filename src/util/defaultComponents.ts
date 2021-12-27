@@ -24,7 +24,7 @@ export const animation: GetDefaultComponent<Animation> = ({
   property: {
     component: 'collideBox',
     path: '-',
-    entity: createEntity(),
+    entity: createEntity({ name: '-' }),
     index: -1,
   },
   wrapMode: 'once',

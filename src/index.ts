@@ -1,6 +1,5 @@
 export * from './type'
 export { runOneFrame } from './util/runOneFrame'
-export { jsonToState, stateToJson } from './util/jsonState'
 export {
   TimingFunction,
   CommonBezierFunction,

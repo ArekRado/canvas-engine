@@ -119,11 +119,6 @@ export const mouseSystem = ({
         wheel: { ...wheel },
       }
 
-      state = setMouse({
-        state,
-        data: mouseBeforeReset,
-      })
-
       buttons = 0
       isButtonUp = false
       isButtonDown = false
@@ -134,6 +129,11 @@ export const mouseSystem = ({
         deltaY: 0,
         deltaZ: 0,
       }
+
+      state = setMouse({
+        state,
+        data: mouseBeforeReset,
+      })
 
       return state
     },

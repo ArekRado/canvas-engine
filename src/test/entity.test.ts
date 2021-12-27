@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { getInitialState, getState } from '../util/state'
+import { getState } from '../util/state'
 
 import { setEntity, removeEntity, createEntity } from '../entity'
 import {
@@ -41,9 +41,7 @@ describe('entity', () => {
     expect(stateWithoutEntity.entity[entity]).not.toBeDefined()
     expect(stateWithoutEntity.component.animation[entity]).not.toBeDefined()
     expect(stateWithoutEntity.component.collideBox[entity]).not.toBeDefined()
-    expect(
-      stateWithoutEntity.component.collideCircle[entity],
-    ).not.toBeDefined()
+    expect(stateWithoutEntity.component.collideCircle[entity]).not.toBeDefined()
   })
 
   // TODO - why do we want to update entity?
