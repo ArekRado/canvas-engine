@@ -12,7 +12,13 @@ export enum componentName {
   keyboard = 'keyboard',
 
   sprite = 'sprite',
-  animation = 'animation',
+  // animation = 'animation',
+
+  animationNumber = 'animationNumber',
+  animationString = 'animationString',
+  animationVector2D = 'animationVector2D',
+  animationVector3D = 'animationVector3D',
+  
   collideBox = 'collideBox',
   collideCircle = 'collideCircle',
   blueprint = 'blueprint',

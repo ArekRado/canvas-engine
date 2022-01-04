@@ -17,8 +17,6 @@
     "noUnusedLocals": true,
     "baseUrl": "src",
     "declaration": true,
-    // "declarationDir": "./dist/typings.d.ts",
-
     "importHelpers": true,
     "alwaysStrict": true,    
     "strict": true,

@@ -1,7 +1,24 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Camera, EventHandler, State } from '../../type'
 import { CameraEvent, getCamera, setCamera } from '../cameraSystem'
-import { getCameraSize } from './getCameraSize'
+
+export const getCameraSize = (distance: number, aspectRatio: number) => {
+  if (aspectRatio > 1) {
+    return {
+      left: -distance,
+      right: distance,
+      bottom: -distance * aspectRatio,
+      top: distance * aspectRatio,
+    }
+  } else {
+    return {
+      bottom: -distance,
+      top: distance,
+      left: -distance / aspectRatio,
+      right: distance / aspectRatio,
+    }
+  }
+}
 
 export const adjustBabylonCameraToComponentCamera = ({
   component,

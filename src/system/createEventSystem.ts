@@ -9,9 +9,16 @@ export type ECSEvent<Type, Payload> = {
 
 type AcitveBuffer = 'first' | 'second'
 
+export type EventHandler<AllEvents> = ({
+  state,
+  event,
+}: {
+  state: State
+  event: AllEvents
+}) => State
 // TODO add internal eventSystemHandler
 export const createEventSystem = <AllEvents>(
-  eventHandler: ({ state, event }: { state: State; event: AllEvents }) => State,
+  eventHandler: EventHandler<AllEvents>,
 ) => {
   let activeBuffer: AcitveBuffer = 'first'
 

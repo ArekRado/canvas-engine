@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "module": "ES2020",
-    "target": "ES2020",
+    "module": "esnext",
+    "target": "esnext",
     "lib": ["es6", "dom", "es2015", "es2017.object", "ES2019"],
     "sourceMap": true,
     "jsx": "react",
@@ -17,8 +17,6 @@
     "noUnusedLocals": false,
     // "baseUrl": "src",
     "declaration": true,
-    "declarationDir": "./dist/typings.d.ts",
-
     "importHelpers": true,
     "alwaysStrict": true,    
     "strict": true,
@@ -26,7 +24,6 @@
     "noUnusedParameters": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "noEmit": true,
   },
   "include": ["src/**/*"],
   "exclude": [

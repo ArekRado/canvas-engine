@@ -32,10 +32,6 @@ export type CollideCircle = Component<{
   collisions: CollideType[]
 }>
 
-export type Blueprint = Component<{
-  id: Guid
-}>
-
 export type AnimationProperty = {
   path: string
   component: keyof State['component']
@@ -55,7 +51,7 @@ export type AnimationValueRangeVector2D = {
 
 export type AnimationValueRangeVector3D = {
   type: 'vector3D'
-  value: [[number, number, number], [number, number, number]]
+  value: [Vector3D, Vector3D]
 }
 
 export type AnimationValueRangeString = {
@@ -65,11 +61,11 @@ export type AnimationValueRangeString = {
 
 export type TimingMode = 'smooth' | 'step'
 
-export type AnimationValueRange =
-  | AnimationValueRangeNumber
-  | AnimationValueRangeVector2D
-  | AnimationValueRangeVector3D
-  | AnimationValueRangeString
+// export type AnimationValueRange =
+//   | AnimationValueRangeNumber
+//   | AnimationValueRangeVector2D
+//   | AnimationValueRangeVector3D
+//   | AnimationValueRangeString
 
 export type WrapMode =
   //When time reaches the end of the animation clip, the clip will automatically stop playing and time will be reset to beginning of the clip.
@@ -81,14 +77,14 @@ export type WrapMode =
   // Plays back the animation. When it reaches the end, it will keep playing the last frame and never stop playing.
   | 'clampForever'
 
-export type Keyframe = {
+export type Keyframe<AnimationValueRange> = {
   duration: number
   timingFunction: TimingFunction
   valueRange: AnimationValueRange
 }
 
-export type Animation = Component<{
-  keyframes: Keyframe[]
+export type AnimationComponent<AnimationValueRange> = Component<{
+  keyframes: Keyframe<AnimationValueRange>[]
   isPlaying: boolean
   isFinished: boolean
   currentTime: number
@@ -97,7 +93,10 @@ export type Animation = Component<{
   timingMode: TimingMode
 }>
 
-export type SpriteSrc = string
+export type AnimationNumber = AnimationComponent<[number, number]>
+export type AnimationString = AnimationComponent<string>
+export type AnimationVector2D = AnimationComponent<[Vector2D, Vector2D]>
+export type AnimationVector3D = AnimationComponent<[Vector3D, Vector3D]>
 
 export type MouseInteraction = Component<{
   // doubleClickSpeed: number
@@ -134,22 +133,6 @@ export type Time = Component<{
       }
     | undefined
 }>
-
-export type AssetSprite = {
-  src: string
-  name: string
-}
-
-export type AssetBlueprint = {
-  name: string
-  entityId: Guid
-  data: Dictionary<Component<any>>
-}
-
-export type Asset = {
-  sprite: AssetSprite[]
-  blueprint: AssetBlueprint[]
-}
 
 export type Mouse = {
   buttons: number
@@ -216,7 +199,13 @@ export type Transform = Component<{
 export type State = {
   entity: Dictionary<Entity>
   component: Dictionary<Dictionary<Component<any>>> & {
-    animation: Dictionary<Animation>
+    // animation: Dictionary<Animation>
+
+    animationNumber: Dictionary<AnimationNumber>
+    animationString: Dictionary<AnimationString>
+    animationVector2D: Dictionary<AnimationVector2D>
+    animationVector3D: Dictionary<AnimationVector3D>
+
     collideBox: Dictionary<CollideBox>
     collideCircle: Dictionary<CollideCircle>
     mouseInteraction: Dictionary<MouseInteraction>

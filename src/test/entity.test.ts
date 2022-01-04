@@ -5,19 +5,19 @@ import { setEntity, removeEntity, createEntity } from '../entity'
 import {
   collideCircle as defaultCollideCircle,
   collideBox as defaultCollideBox,
-  animation as defaultAnimation,
+  animationNumber
 } from '../util/defaultComponents'
 import { setComponent } from '../component'
-import { CollideBox, Animation, CollideCircle } from '../type'
+import { CollideBox, CollideCircle, AnimationNumber } from '../type'
 
 describe('entity', () => {
   it('remove - should remove components by entity', () => {
     const entity = createEntity({ name: 'test' })
     let state = setEntity({ state: getState({}), entity })
 
-    state = setComponent<Animation>({
+    state = setComponent<AnimationNumber>({
       state,
-      data: defaultAnimation({ entity }),
+      data: animationNumber({ entity }),
     })
     state = setComponent<CollideBox>({
       state,

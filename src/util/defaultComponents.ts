@@ -1,22 +1,91 @@
 import { vectorZero } from '@arekrado/vector-2d'
 import { componentName } from '../component'
 import {
-  Blueprint,
   Camera,
   GetDefaultComponent,
   Mouse,
   MouseInteraction,
 } from '../type'
-import { Animation, CollideBox, CollideCircle } from '../type'
+import { CollideBox, CollideCircle } from '../type'
 import { createEntity } from '../entity'
-import { Keyboard, Transform } from '..'
+import {
+  AnimationNumber,
+  AnimationString,
+  AnimationVector2D,
+  AnimationVector3D,
+  Keyboard,
+  Transform,
+} from '..'
 
-export const animation: GetDefaultComponent<Animation> = ({
+export const animationNumber: GetDefaultComponent<AnimationNumber> = ({
   entity,
   ...data
 }) => ({
   entity,
-  name: componentName.animation,
+  name: componentName.animationNumber,
+  keyframes: [],
+  isPlaying: false,
+  isFinished: false,
+  currentTime: 0,
+  property: {
+    component: 'collideBox',
+    path: '-',
+    entity: createEntity({ name: '-' }),
+    index: -1,
+  },
+  wrapMode: 'once',
+  timingMode: 'smooth',
+  ...data,
+})
+
+export const animationString: GetDefaultComponent<AnimationString> = ({
+  entity,
+  ...data
+}) => ({
+  entity,
+  name: componentName.animationString,
+  keyframes: [],
+  isPlaying: false,
+  isFinished: false,
+  currentTime: 0,
+  property: {
+    component: 'collideBox',
+    path: '-',
+    entity: createEntity({ name: '-' }),
+    index: -1,
+  },
+  wrapMode: 'once',
+  timingMode: 'smooth',
+  ...data,
+})
+
+export const animationVector2D: GetDefaultComponent<AnimationVector2D> = ({
+  entity,
+  ...data
+}) => ({
+  entity, 
+  name: componentName.animationVector2D,
+  keyframes: [],
+  isPlaying: false,
+  isFinished: false,
+  currentTime: 0,
+  property: {
+    component: 'collideBox',
+    path: '-',
+    entity: createEntity({ name: '-' }),
+    index: -1,
+  },
+  wrapMode: 'once',
+  timingMode: 'smooth',
+  ...data,
+})
+
+export const animationVector3D: GetDefaultComponent<AnimationVector3D> = ({
+  entity,
+  ...data
+}) => ({
+  entity,
+  name: componentName.animationVector3D,
   keyframes: [],
   isPlaying: false,
   isFinished: false,
@@ -53,16 +122,6 @@ export const collideCircle: GetDefaultComponent<CollideCircle> = ({
   radius: 1,
   position: vectorZero(),
   collisions: [],
-  ...data,
-})
-
-export const blueprint: GetDefaultComponent<Blueprint> = ({
-  entity,
-  ...data
-}) => ({
-  entity,
-  name: componentName.blueprint,
-  id: '',
   ...data,
 })
 

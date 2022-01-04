@@ -1,5 +1,5 @@
 import { State } from '../type'
-import { animationSystem } from '../system/animation'
+import { animationNumberSystem, animationStringSystem, animationVector2DSystem, animationVector3DSystem } from '../system/animation'
 import { collideBoxSystem } from '../system/collideBox'
 import { transformSystem } from '../system/transform'
 import { componentName } from '../component'
@@ -14,7 +14,11 @@ import { cameraSystem } from '../system/cameraSystem'
 export const getInitialState = () => ({
   entity: {},
   component: {
-    [componentName.animation]: {},
+    [componentName.animationNumber]: {},
+    [componentName.animationString]: {},
+    [componentName.animationVector2D]: {},
+    [componentName.animationVector3D]: {},
+
     [componentName.collideBox]: {},
     [componentName.collideCircle]: {},
     [componentName.mouseInteraction]: {},
@@ -61,7 +65,10 @@ export const getSystems = ({
   state = cameraSystem(state)
   state = transformSystem(state)
   state = collideBoxSystem(state)
-  state = animationSystem(state)
+  state = animationNumberSystem(state)
+  state = animationStringSystem(state)
+  state = animationVector2DSystem(state)
+  state = animationVector3DSystem(state)
   state = mouseInteractionSystem(state)
 
   if (containerId) {
