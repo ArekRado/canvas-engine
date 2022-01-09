@@ -8,5 +8,9 @@ export const runOneFrame = <State extends AnyState = AnyState>({
   return state.system
     .concat()
     .sort((a, b) => (a > b ? -1 : 1))
-    .reduce((acc, system) => system.tick({ state: acc }), state)
+    .reduce(
+      (acc, system) =>
+        system.tick ? (system.tick({ state: acc }) as State) : acc,
+      state,
+    )
 }

@@ -9,7 +9,7 @@ import {
 } from '../util/defaultComponents'
 import { getActiveKeyframe } from '../system/animation'
 import { createEntity, setEntity } from '../entity'
-import { State, Vector3D } from '../type'
+import { InternalInitialState, Vector3D } from '../type'
 import { runOneFrame } from '../util/runOneFrame'
 import { getComponent, setComponent } from '../component'
 import { componentName } from '../component'
@@ -41,55 +41,55 @@ const vector3DComponentName = 'vector3DComponentName'
 describe('animation', () => {
   const entity = createEntity({ name: 'entity' })
 
-  const getNumberComponent = (state: State) =>
+  const getNumberComponent = (state: InternalInitialState) =>
     getComponent<NumberComponent>({ name: numberComponentName, state, entity })
 
-  const getStringComponent = (state: State) =>
+  const getStringComponent = (state: InternalInitialState) =>
     getComponent<StringComponent>({ name: stringComponentName, state, entity })
 
-  const getVector2DComponent = (state: State) =>
+  const getVector2DComponent = (state: InternalInitialState) =>
     getComponent<Vector2DComponent>({
       name: vector2DComponentName,
       state,
       entity,
     })
 
-  const getVector3DComponent = (state: State) =>
+  const getVector3DComponent = (state: InternalInitialState) =>
     getComponent<Vector3DComponent>({
       name: vector3DComponentName,
       state,
       entity,
     })
 
-  const getAnimationNumber = (state: State) =>
+  const getAnimationNumber = (state: InternalInitialState) =>
     getComponent<AnimationNumber>({
       name: componentName.animationNumber,
       state,
       entity,
     })
 
-  const getAnimationString = (state: State) =>
+  const getAnimationString = (state: InternalInitialState) =>
     getComponent<AnimationString>({
       name: componentName.animationString,
       state,
       entity,
     })
 
-  const getAnimationVector2D = (state: State) =>
+  const getAnimationVector2D = (state: InternalInitialState) =>
     getComponent<AnimationVector2D>({
       name: componentName.animationVector2D,
       state,
       entity,
     })
 
-  const getAnimationVector3D = (state: State) =>
+  const getAnimationVector3D = (state: InternalInitialState) =>
     getComponent<AnimationVector3D>({
       name: componentName.animationVector3D,
       state,
       entity,
     })
 
-  const tick = (timeNow: number, state: State) => {
+  const tick = (timeNow: number, state: InternalInitialState) => {
     state = setTime({
       state,
       data: {
@@ -257,7 +257,7 @@ describe('animation', () => {
   describe('number', () => {
     it('Linear animation should change value in proper way', () => {
       let state = setEntity({ state: getState({}), entity })
-      state = setComponent<NumberComponent>({
+      state = setComponent<NumberComponent, InternalInitialState>({
         state,
         data: {
           entity,
@@ -265,7 +265,7 @@ describe('animation', () => {
           value: 0,
         },
       })
-      state = setComponent<AnimationNumber>({
+      state = setComponent<AnimationNumber, InternalInitialState>({
         state,
         data: animationNumber({
           entity,
@@ -317,17 +317,17 @@ describe('animation', () => {
     })
 
     it('Should works with negative values', () => {
-      const v1 = setEntity({ state: getState({}), entity })
-      const v2 = setComponent<NumberComponent>({
-        state: v1,
+      let state = setEntity({ state: getState({}), entity })
+      state = setComponent<NumberComponent, InternalInitialState>({
+        state,
         data: {
           entity,
           name: numberComponentName,
           value: 0,
         },
       })
-      const v3 = setComponent<AnimationNumber>({
-        state: v2,
+      state = setComponent<AnimationNumber, InternalInitialState>({
+        state,
         data: animationNumber({
           entity,
           isPlaying: true,
@@ -349,34 +349,34 @@ describe('animation', () => {
         }),
       })
 
-      const v4 = tick(0, v3)
-      expect(getNumberComponent(v4)?.value).toBe(-0)
+      state = tick(0, state)
+      expect(getNumberComponent(state)?.value).toBe(-0)
 
-      const v5 = tick(1, v4)
-      expect(getNumberComponent(v5)?.value).toBe(-0)
+      state = tick(1, state)
+      expect(getNumberComponent(state)?.value).toBe(-0)
 
-      const v6 = tick(22, v5)
-      expect(getNumberComponent(v6)?.value).toBe(-0.1)
+      state = tick(22, state)
+      expect(getNumberComponent(state)?.value).toBe(-0.1)
 
-      const v7 = tick(22, v6)
-      expect(getNumberComponent(v7)?.value).toBe(-2)
+      state = tick(22, state)
+      expect(getNumberComponent(state)?.value).toBe(-2)
 
-      const v8 = tick(2, v7)
-      expect(getNumberComponent(v8)?.value).toBe(-2)
+      state = tick(2, state)
+      expect(getNumberComponent(state)?.value).toBe(-2)
     })
 
     it('Should works with multiple frames', () => {
-      const v1 = setEntity({ state: getState({}), entity })
-      const v2 = setComponent<NumberComponent>({
-        state: v1,
+      let state = setEntity({ state: getState({}), entity })
+      state = setComponent<NumberComponent, InternalInitialState>({
+        state,
         data: {
           entity,
           name: numberComponentName,
           value: 0,
         },
       })
-      const v3 = setComponent<AnimationNumber>({
-        state: v2,
+      state = setComponent<AnimationNumber, InternalInitialState>({
+        state,
         data: animationNumber({
           entity,
           isPlaying: true,
@@ -413,36 +413,36 @@ describe('animation', () => {
         }),
       })
 
-      const v4 = tick(0, v3)
-      expect(getNumberComponent(v4)?.value).toBe(0)
+      state = tick(0, state)
+      expect(getNumberComponent(state)?.value).toBe(0)
 
-      const v5 = tick(5, v4)
-      expect(getNumberComponent(v5)?.value).toBe(0)
+      state = tick(5, state)
+      expect(getNumberComponent(state)?.value).toBe(0)
 
-      const v6 = tick(10.5, v5)
-      expect(getNumberComponent(v6)?.value).toBe(0.5)
+      state = tick(10.5, state)
+      expect(getNumberComponent(state)?.value).toBe(0.5)
 
-      const v7 = tick(12, v6)
-      expect(getNumberComponent(v7)?.value).toBe(0.5)
+      state = tick(12, state)
+      expect(getNumberComponent(state)?.value).toBe(0.5)
 
-      const v8 = tick(100, v7)
-      expect(getNumberComponent(v8)?.value).toBe(0.5)
+      state = tick(100, state)
+      expect(getNumberComponent(state)?.value).toBe(0.5)
 
-      const v9 = tick(300, v8)
-      expect(getNumberComponent(v9)?.value).toBe(0.87)
+      state = tick(300, state)
+      expect(getNumberComponent(state)?.value).toBe(0.87)
 
-      const v10 = tick(100, v9)
+      state = tick(100, state)
 
       // (getTransform(newState)?.value === 0.0);
       // expect(getAnimation(v10)?.isPlaying).toBe(false)
       // expect(getAnimation(v10)?.currentTime).toBe(0)
-      expect(getAnimationNumber(v10)?.isPlaying).toBe(true)
-      expect(getAnimationNumber(v10)?.currentTime).toBe(300)
+      expect(getAnimationNumber(state)?.isPlaying).toBe(true)
+      expect(getAnimationNumber(state)?.currentTime).toBe(300)
     })
 
     it('Should works with looped animations', () => {
       let state = setEntity({ state: getState({}), entity })
-      state = setComponent<NumberComponent>({
+      state = setComponent<NumberComponent, InternalInitialState>({
         state,
         data: {
           entity,
@@ -450,7 +450,7 @@ describe('animation', () => {
           value: 0,
         },
       })
-      state = setComponent<AnimationNumber>({
+      state = setComponent<AnimationNumber, InternalInitialState>({
         state,
         data: animationNumber({
           entity,
@@ -506,11 +506,11 @@ describe('animation', () => {
 
   it('timingMode step - should change value only once per keyframe', () => {
     let state = setEntity({ state: getState({}), entity })
-    state = setComponent<Transform>({
+    state = setComponent<Transform, InternalInitialState>({
       state,
       data: defaultTransform({ entity }),
     })
-    state = setComponent<AnimationNumber>({
+    state = setComponent<AnimationNumber, InternalInitialState>({
       state,
       data: animationNumber({
         entity,
@@ -570,12 +570,12 @@ describe('animation', () => {
       const parentId2 = 'walk2.png'
 
       let state = setEntity({ state: getState({}), entity })
-      state = setComponent<StringComponent>({
+      state = setComponent<StringComponent, InternalInitialState>({
         state,
         data: { name: stringComponentName, entity, value: '' },
       })
 
-      state = setComponent<AnimationString>({
+      state = setComponent<AnimationString, InternalInitialState>({
         state,
         data: animationString({
           entity,
@@ -633,11 +633,11 @@ describe('animation', () => {
   describe('vector2d', () => {
     it('Linear animation should change value in a proper way', () => {
       let state = setEntity({ state: getState({}), entity })
-      state = setComponent<Vector2DComponent>({
+      state = setComponent<Vector2DComponent, InternalInitialState>({
         state,
         data: { name: vector2DComponentName, entity, value: vector(-1, -1) },
       })
-      state = setComponent<AnimationVector2D>({
+      state = setComponent<AnimationVector2D, InternalInitialState>({
         state,
         data: animationVector2D({
           entity,
@@ -712,12 +712,12 @@ describe('animation', () => {
     it('Linear animation should change value in a proper way', () => {
       let state = setEntity({ state: getState({}), entity })
 
-      state = setComponent<Vector3DComponent>({
+      state = setComponent<Vector3DComponent, InternalInitialState>({
         state,
         data: { name: vector3DComponentName, entity, value: [-1, -1, -1] },
       })
 
-      state = setComponent<AnimationVector3D>({
+      state = setComponent<AnimationVector3D, InternalInitialState>({
         state,
         data: animationVector3D({
           entity,
@@ -769,43 +769,58 @@ describe('animation', () => {
       })
 
       state = tick(0, state)
-      expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(0, 0).toString(),
+      expect(getVector3DComponent(state)?.value.toString()).toBe(
+        [0, 0, 0].toString(),
       )
 
       state = tick(5, state)
-      expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(0, 0).toString(),
+      expect(getVector3DComponent(state)?.value.toString()).toBe(
+        [0, 0, 0].toString(),
       )
 
       state = tick(7, state)
-      expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(10, -4).toString(),
+      expect(getVector3DComponent(state)?.value.toString()).toBe(
+        [0, 0, 0.016666666666666666].toString(),
       )
 
       state = tick(8, state)
-      expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(14, -5.6000000000000005).toString(),
+      expect(getVector3DComponent(state)?.value.toString()).toBe(
+        [0, 0, 0.023333333333333334].toString(),
       )
 
       state = tick(10.5, state)
-      expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(16, -6.4).toString(),
+      expect(getVector3DComponent(state)?.value.toString()).toBe(
+        [0, 0, 0.026666666666666665].toString(),
       )
 
       state = tick(12, state)
-      expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(3, 21).toString(),
+      expect(getVector3DComponent(state)?.value.toString()).toBe(
+        [0, 0, 0.035].toString(),
       )
 
       state = tick(100, state)
-      expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(3, 21).toString(),
+      expect(getVector3DComponent(state)?.value.toString()).toBe(
+        [0, 0, 0.04].toString(),
       )
 
       state = tick(300, state)
-      expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(3, 21).toString(),
+      expect(getVector3DComponent(state)?.value.toString()).toBe(
+        [0, 0, 0.33333333333333337].toString(),
+      )
+
+      state = tick(600, state)
+      expect(getVector3DComponent(state)?.value.toString()).toBe(
+        [0, 0, 1].toString(),
+      )
+
+      state = tick(1000, state)
+      expect(getVector3DComponent(state)?.value.toString()).toBe(
+        [0, 0, -1].toString(),
+      )
+
+      state = tick(4000, state)
+      expect(getVector3DComponent(state)?.value.toString()).toBe(
+        [0, 0, 0].toString(),
       )
     })
   })

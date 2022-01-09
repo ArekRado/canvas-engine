@@ -1,7 +1,5 @@
-import { AnimationVector3D } from '.'
 import { AnyState, Entity, Guid } from './type'
 import { Component, Dictionary } from './type'
-import { getState } from './util/state'
 
 export enum componentName {
   event = 'event',
@@ -33,7 +31,7 @@ export const getComponent = <Data, State extends AnyState = AnyState>({
   entity: Guid
   state: State
 }): Component<Data> | undefined =>
-  state.component[name][entity] as Component<Data> | undefined
+  state.component[name]?.[entity] as Component<Data> | undefined
 
 const getSystemByName = <State extends AnyState = AnyState>(
   name: string,

@@ -1,4 +1,5 @@
 import { v4 } from 'uuid'
+import { removeComponent } from './component'
 import { Entity, Guid, AnyState } from './type'
 
 export const createEntity = ({ name }: { name: string }): Entity =>
@@ -26,21 +27,8 @@ export const getEntity: GetEntity = ({ entity, state }) => state.entity[entity]
 type RemoveEntity = <State extends AnyState>(params: {
   entity: Guid
   state: State
-  removeComponent: ({
-    name,
-    entity,
-    state,
-  }: {
-    name: string
-    entity: string
-    state: State
-  }) => State
 }) => State
-export const removeEntity: RemoveEntity = ({
-  entity,
-  state,
-  removeComponent,
-}) => {
+export const removeEntity: RemoveEntity = ({ entity, state }) => {
   const { [entity]: _, ...stateWithoutEntity } = state.entity
 
   const newState = {

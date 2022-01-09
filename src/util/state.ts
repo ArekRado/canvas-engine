@@ -59,30 +59,32 @@ export const getSystems = ({
   state.babylonjs.cameraRef = camera
   state.babylonjs.sceneRef = scene
 
-  state = timeSystem(state)
-  state = cameraSystem(state)
-  state = transformSystem(state)
-  state = collideBoxSystem(state)
-  state = animationNumberSystem(state)
-  state = animationStringSystem(state)
-  state = animationVector2DSystem(state)
-  state = animationVector3DSystem(state)
-  state = mouseInteractionSystem(state)
+  let internatlState = state as InternalInitialState
+
+  internatlState = timeSystem(internatlState)
+  internatlState = cameraSystem(internatlState)
+  internatlState = transformSystem(internatlState)
+  internatlState = collideBoxSystem(internatlState)
+  internatlState = animationNumberSystem(internatlState)
+  internatlState = animationStringSystem(internatlState)
+  internatlState = animationVector2DSystem(internatlState)
+  internatlState = animationVector3DSystem(internatlState)
+  internatlState = mouseInteractionSystem(internatlState)
 
   if (containerId) {
     state = mouseSystem({
-      state: state,
+      state: internatlState,
       document: document ?? window.document,
       containerId,
     })
     state = keyboardSystem({
-      state: state,
+      state: internatlState,
       document: document ?? window.document,
       containerId,
     })
   }
 
-  return state
+  return internatlState
 }
 
 export const getState = ({

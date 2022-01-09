@@ -1,4 +1,5 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { AnyState } from '../..'
 import { Camera, EventHandler, InternalInitialState } from '../../type'
 import { CameraEvent, getCamera, setCamera } from '../cameraSystem'
 
@@ -27,7 +28,7 @@ export const adjustBabylonCameraToComponentCamera = ({
 }: {
   component: Partial<Camera>
   aspectRatio: number
-  cameraRef: State['babylonjs']['cameraRef']
+  cameraRef: AnyState['babylonjs']['cameraRef']
 }) => {
   if (!cameraRef) return
 
