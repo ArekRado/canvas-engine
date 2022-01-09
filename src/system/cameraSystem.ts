@@ -1,6 +1,6 @@
 import { createSystem } from '../system/createSystem'
 import { componentName, createGetSetForUniqComponent } from '../component'
-import { Camera, State } from '../type'
+import { Camera, InternalInitialState } from '../type'
 import { adjustBabylonCameraToComponentCamera } from './cameraSystem/handleResize'
 import { ECSEvent } from './createEventSystem'
 import { getAspectRatio } from '../util/getAspectRatio'
@@ -16,7 +16,7 @@ export namespace CameraEvent {
   export type ResizeEvent = ECSEvent<Type.resize, {}>
 }
 
-const cameraGetSet = createGetSetForUniqComponent<Camera>({
+const cameraGetSet = createGetSetForUniqComponent<Camera, InternalInitialState>({
   entity: cameraEntity,
   name: componentName.camera,
 })
@@ -26,7 +26,7 @@ export const setCamera = ({
   state,
   data,
 }: {
-  state: State
+  state: InternalInitialState
   data: Partial<Camera>
 }) => {
   if (state.babylonjs.sceneRef) {
@@ -38,14 +38,11 @@ export const setCamera = ({
     state = cameraGetSet.setComponent({ state, data: { ...data, ...size } })
   }
 
-  // state = setBackground({ state, data: {} });
-  // state = setLogo({ state, data: {} });
-
   return state
 }
 
-export const cameraSystem = (state: State) =>
-  createSystem<Camera>({
+export const cameraSystem = (state: InternalInitialState) =>
+  createSystem<Camera, InternalInitialState>({
     state,
     name: componentName.camera,
     create: ({ state, component }) => {

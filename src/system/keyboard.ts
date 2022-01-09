@@ -1,12 +1,12 @@
 import { componentName, createSystem, setComponent } from '..'
 import { createGetSetForUniqComponent } from '../component'
-import { Keyboard, State } from '../type'
+import { Keyboard, InternalInitialState } from '../type'
 import { keyboard as keyboardDefaultComponent } from '../util/defaultComponents'
 import { systemPriority } from './createSystem'
 
 const keyboardEntity = 'keyboardEntity'
 
-const keyboardGetSet = createGetSetForUniqComponent<Keyboard>({
+const keyboardGetSet = createGetSetForUniqComponent<Keyboard, InternalInitialState>({
   entity: keyboardEntity,
   name: componentName.keyboard,
 })
@@ -23,7 +23,7 @@ export const keyboardSystem = ({
   containerId,
   document,
 }: {
-  state: State
+  state: InternalInitialState
   document: Document
   containerId: string
 }) => {
@@ -54,7 +54,7 @@ export const keyboardSystem = ({
     )
   }
 
-  state = setComponent<Keyboard>({
+  state = setComponent<Keyboard, InternalInitialState>({
     state,
     data: keyboardDefaultComponent({
       entity: keyboardEntity,

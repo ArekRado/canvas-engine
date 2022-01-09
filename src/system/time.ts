@@ -5,11 +5,11 @@ import {
   setComponent,
 } from '../component'
 import { systemPriority } from '../system/createSystem'
-import { State, Time } from '../type'
+import { InternalInitialState, Time } from '../type'
 
 const timeEntity = 'timeEntity'
 
-const timeGetSet = createGetSetForUniqComponent<Time>({
+const timeGetSet = createGetSetForUniqComponent<Time, InternalInitialState>({
   entity: timeEntity,
   name: componentName.time,
 })
@@ -17,8 +17,8 @@ const timeGetSet = createGetSetForUniqComponent<Time>({
 export const getTime = timeGetSet.getComponent
 export const setTime = timeGetSet.setComponent
 
-export const timeSystem = (state: State) => {
-  state = setComponent<Time>({
+export const timeSystem = (state: InternalInitialState) => {
+  state = setComponent<Time, InternalInitialState>({
     state,
     data: {
       entity: timeEntity,
@@ -30,7 +30,7 @@ export const timeSystem = (state: State) => {
     },
   })
 
-  return createSystem<Time>({
+  return createSystem<Time, InternalInitialState>({
     name: componentName.time,
     priority: systemPriority.time,
     state,

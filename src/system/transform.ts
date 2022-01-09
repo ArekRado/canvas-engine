@@ -1,5 +1,5 @@
 import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
-import { State, Transform, Vector3D } from '../type'
+import { InternalInitialState, Transform, Vector3D } from '../type'
 import { createGlobalSystem, systemPriority } from '../system/createSystem'
 import { componentName, getComponent, setComponent } from '../component'
 import { parseV3ToV2 } from '../util/parseV3ToV2'
@@ -29,7 +29,7 @@ const syncTransformWithBabylon = ({
 }
 
 const getParentPosition = (
-  state: State,
+  state: InternalInitialState,
   parentTransform: Transform,
 ): Vector2D | Vector3D => {
   if (parentTransform.parentId) {
@@ -51,13 +51,13 @@ const getParentPosition = (
   }
 }
 
-export const transformSystem = (state: State) =>
-  createGlobalSystem<Transform>({
+export const transformSystem = (state: InternalInitialState) =>
+  createGlobalSystem({
     state,
     name: componentName.transform,
     priority: systemPriority.transform,
-    tick: (params) => {
-      return Object.values(params.state.component.transform).reduce(
+    tick: ({ state }) => {
+      return Object.values(state.component.transform).reduce(
         (state, transform) => {
           if (transform.parentId) {
             const parentTransform = getComponent<Transform>({
@@ -74,7 +74,7 @@ export const transformSystem = (state: State) =>
                 parseV3ToV2(parentPosition),
               )
 
-              return setComponent<Transform>({
+              return setComponent<Transform, InternalInitialState>({
                 state,
                 data: {
                   ...transform,
@@ -93,7 +93,7 @@ export const transformSystem = (state: State) =>
 
           return state
         },
-        params.state,
+        state,
       )
     },
   })

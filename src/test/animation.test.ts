@@ -707,6 +707,108 @@ describe('animation', () => {
       )
     })
   })
+
+  describe('vector3d', () => {
+    it('Linear animation should change value in a proper way', () => {
+      let state = setEntity({ state: getState({}), entity })
+
+      state = setComponent<Vector3DComponent>({
+        state,
+        data: { name: vector3DComponentName, entity, value: [-1, -1, -1] },
+      })
+
+      state = setComponent<AnimationVector3D>({
+        state,
+        data: animationVector3D({
+          entity,
+          isPlaying: true,
+          isFinished: false,
+          property: {
+            path: 'value',
+            component: vector3DComponentName,
+            entity,
+          },
+          keyframes: [
+            {
+              duration: 300,
+              timingFunction: 'Linear',
+              valueRange: [
+                [0, 0, 0],
+                [0, 0, 1],
+              ],
+            },
+            {
+              duration: 600,
+              timingFunction: 'Linear',
+              valueRange: [
+                [0, 0, 1],
+                [0, 0, -1],
+              ],
+            },
+            {
+              duration: 300,
+              timingFunction: 'Linear',
+              valueRange: [
+                [0, 0, -1],
+                [0, 0, 0],
+              ],
+            },
+            {
+              duration: 0,
+              timingFunction: 'Linear',
+              valueRange: [
+                [0, 0, 0],
+                [0, 0, 0],
+              ],
+            },
+          ],
+          currentTime: 0,
+          wrapMode: 'once',
+          timingMode: 'smooth', // string animation should always works as step
+        }),
+      })
+
+      state = tick(0, state)
+      expect(getVector2DComponent(state)?.value.toString()).toBe(
+        vector(0, 0).toString(),
+      )
+
+      state = tick(5, state)
+      expect(getVector2DComponent(state)?.value.toString()).toBe(
+        vector(0, 0).toString(),
+      )
+
+      state = tick(7, state)
+      expect(getVector2DComponent(state)?.value.toString()).toBe(
+        vector(10, -4).toString(),
+      )
+
+      state = tick(8, state)
+      expect(getVector2DComponent(state)?.value.toString()).toBe(
+        vector(14, -5.6000000000000005).toString(),
+      )
+
+      state = tick(10.5, state)
+      expect(getVector2DComponent(state)?.value.toString()).toBe(
+        vector(16, -6.4).toString(),
+      )
+
+      state = tick(12, state)
+      expect(getVector2DComponent(state)?.value.toString()).toBe(
+        vector(3, 21).toString(),
+      )
+
+      state = tick(100, state)
+      expect(getVector2DComponent(state)?.value.toString()).toBe(
+        vector(3, 21).toString(),
+      )
+
+      state = tick(300, state)
+      expect(getVector2DComponent(state)?.value.toString()).toBe(
+        vector(3, 21).toString(),
+      )
+    })
+  })
 })
 
 // 0 0.8333333333333333

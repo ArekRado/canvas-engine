@@ -1,13 +1,13 @@
 import { vector, vectorZero } from '@arekrado/vector-2d'
 import { componentName, createSystem, setComponent } from '..'
 import { createGetSetForUniqComponent } from '../component'
-import { Mouse, State } from '../type'
+import { InternalInitialState, Mouse } from '../type'
 import { mouse } from '../util/defaultComponents'
 import { systemPriority } from './createSystem'
 
 const mouseEntity = 'mouseEntity'
 
-const mouseGetSet = createGetSetForUniqComponent<Mouse>({
+const mouseGetSet = createGetSetForUniqComponent<Mouse, InternalInitialState>({
   entity: mouseEntity,
   name: componentName.mouse,
 })
@@ -37,7 +37,7 @@ export const mouseSystem = ({
   containerId,
   document,
 }: {
-  state: State
+  state: InternalInitialState
   document: Document
   containerId: string
 }) => {
@@ -94,7 +94,7 @@ export const mouseSystem = ({
     })
   }
 
-  state = setComponent<Mouse>({
+  state = setComponent<Mouse, InternalInitialState>({
     state,
     data: mouse({
       entity: mouseEntity,

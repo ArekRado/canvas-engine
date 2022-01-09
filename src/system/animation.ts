@@ -3,7 +3,7 @@ import {
   AnimationString,
   AnimationVector2D,
   Component,
-  State,
+  InternalInitialState,
   Vector3D,
 } from '../type'
 import { TimingFunction, getValue } from '../util/bezierFunction'
@@ -328,8 +328,8 @@ export const createAnimationSystem =
       | UpdateAnimation<[Vector3D, Vector3D], Vector3D, AnimationVector3D>
       | UpdateAnimation<string, string, AnimationString>
   }) =>
-  (state: State) =>
-    createSystem<AnimationType>({
+  (state: InternalInitialState) =>
+    createSystem<AnimationType, InternalInitialState>({
       state,
       name,
       create: ({ state }) => state,
@@ -397,7 +397,8 @@ export const createAnimationSystem =
             | AnimationNumber
             | AnimationVector2D
             | AnimationVector3D
-            | AnimationString
+            | AnimationString,
+            InternalInitialState
           >({
             state,
             data: newAnimation,

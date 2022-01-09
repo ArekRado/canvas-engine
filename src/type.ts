@@ -1,19 +1,38 @@
 import { Vector2D } from '@arekrado/vector-2d'
 import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera'
 import { Scene } from '@babylonjs/core/scene'
-import { GlobalSystem, System } from './system/createSystem'
 import { TimingFunction } from './util/bezierFunction'
 
-export type Component<Data> = {
-  entity: Guid
-  name: string
-} & Data
+////////////////////////////////////
+//
+//
+//
+// Util
+//
+//
+//
+////////////////////////////////////
 
 export type Dictionary<Value> = { [key: string]: Value }
 
 export type Guid = string
 
 export type Color = [number, number, number, number]
+
+////////////////////////////////////
+//
+//
+//
+// Component
+//
+//
+//
+////////////////////////////////////
+
+export type Component<Data> = {
+  entity: Guid
+  name: string
+} & Data
 
 export type CollideType = {
   type: 'box' | 'circle'
@@ -34,7 +53,7 @@ export type CollideCircle = Component<{
 
 export type AnimationProperty = {
   path: string
-  component: keyof State['component']
+  component: string // it should be keyof State['component']
   entity: Guid
   index?: number
 }
@@ -60,12 +79,6 @@ export type AnimationValueRangeString = {
 }
 
 export type TimingMode = 'smooth' | 'step'
-
-// export type AnimationValueRange =
-//   | AnimationValueRangeNumber
-//   | AnimationValueRangeVector2D
-//   | AnimationValueRangeVector3D
-//   | AnimationValueRangeString
 
 export type WrapMode =
   //When time reaches the end of the animation clip, the clip will automatically stop playing and time will be reset to beginning of the clip.
@@ -106,7 +119,6 @@ export type MouseInteraction = Component<{
   // When the user double-clicks on an element
   isDoubleClicked: boolean
   // When the user presses a mouse button over an element
-
   isMouseOver: boolean
   // When the pointer is moved onto an element
   isMouseEnter: boolean
@@ -177,7 +189,7 @@ export type Camera = Component<{
 
 export type Event = Component<{}>
 
-export type EventHandler<Event> = (params: {
+export type EventHandler<Event, State extends AnyState = AnyState> = (params: {
   event: Event
   state: State
 }) => State
@@ -194,40 +206,114 @@ export type Transform = Component<{
   parentId?: Guid
 }>
 
-// @TODO
-// scene
-export type State = {
+////////////////////////////////////
+//
+//
+//
+// System
+//
+//
+//
+////////////////////////////////////
+
+export type AnyStateForSystem = EmptyState<AnyComponent, any, any>
+
+export type GetDefaultComponent<X> = (
+  params: Omit<Partial<Component<X>>, 'name'> & {
+    entity: Guid
+  },
+) => Component<X>
+
+export type SystemMethodParams<
+  ComponentData,
+  State extends AnyStateForSystem,
+> = {
+  state: State
+  component: Component<ComponentData>
+}
+
+export type System<Component, State extends AnyStateForSystem> = {
+  name: string
+  priority: number
+  /**
+   * Called on each component create if state.component[name] and system name are the same
+   */
+  create: ((params: SystemMethodParams<Component, State>) => State) | undefined
+  /**
+   * Called on each runOneFrame
+   */
+  tick: ((params: { state: State }) => State) | undefined
+  remove: ((params: SystemMethodParams<Component, State>) => State) | undefined
+}
+
+export type CreateGlobalSystemParams<State extends AnyStateForSystem> = {
+  state: State
+  name: string
+  create?: (params: { state: State }) => State
+  tick?: (params: { state: State }) => State
+  priority?: number
+}
+
+export type GlobalSystem<State extends AnyStateForSystem> = {
+  name: string
+  tick?: (params: { state: State }) => State
+  create: undefined
+  remove: (params: { state: State }) => State
+  priority: number
+}
+
+////////////////////////////////////
+//
+//
+//
+// State
+//
+//
+//
+////////////////////////////////////
+
+export type StateDefaultComponents = {
+  animationNumber: Dictionary<AnimationNumber>
+  animationString: Dictionary<AnimationString>
+  animationVector2D: Dictionary<AnimationVector2D>
+  animationVector3D: Dictionary<AnimationVector3D>
+
+  collideBox: Dictionary<CollideBox>
+  collideCircle: Dictionary<CollideCircle>
+  mouseInteraction: Dictionary<MouseInteraction>
+  time: Dictionary<Time>
+  camera: Dictionary<Camera>
+  transform: Dictionary<Transform>
+  event: Dictionary<Event>
+  mouse: Dictionary<Mouse>
+  keyboard: Dictionary<Keyboard>
+}
+
+export type StateDefaultSystems =
+  | System<AnimationNumber, AnyStateForSystem>
+  | System<AnimationString, AnyStateForSystem>
+  | System<AnimationVector2D, AnyStateForSystem>
+  | System<AnimationVector3D, AnyStateForSystem>
+  | System<CollideBox, AnyStateForSystem>
+  | System<CollideCircle, AnyStateForSystem>
+  | System<MouseInteraction, AnyStateForSystem>
+  | System<Time, AnyStateForSystem>
+  | System<Camera, AnyStateForSystem>
+  | System<Transform, AnyStateForSystem>
+  | System<Event, AnyStateForSystem>
+  | System<Mouse, AnyStateForSystem>
+  | System<Keyboard, AnyStateForSystem>
+
+export type StateDefaultGlobalSystems = GlobalSystem<AnyState>
+
+/**
+ * Describes empty state without internal components and systems
+ */
+export type EmptyState<Component, System, GlobalSystem> = {
   entity: Dictionary<Entity>
-  component: Dictionary<Dictionary<Component<any>>> & {
-    // animation: Dictionary<Animation>
-
-    animationNumber: Dictionary<AnimationNumber>
-    animationString: Dictionary<AnimationString>
-    animationVector2D: Dictionary<AnimationVector2D>
-    animationVector3D: Dictionary<AnimationVector3D>
-
-    collideBox: Dictionary<CollideBox>
-    collideCircle: Dictionary<CollideCircle>
-    mouseInteraction: Dictionary<MouseInteraction>
-    time: Dictionary<Time>
-    camera: Dictionary<Camera>
-    transform: Dictionary<Transform>
-    event: Dictionary<Event>
-    mouse: Dictionary<Mouse>
-    keyboard: Dictionary<Keyboard>
-
-    // text: Dictionary<Text>
-    // line: Dictionary<Line>
-    // rectangle: Dictionary<Rectangle>
-    // ellipse: Dictionary<Ellipse>
-  }
-  // camera: Camera
-  system: Array<System<any> | GlobalSystem>
-  // asset: Asset
-  // mouse: Mouse
-  // keyboard: Keyboard
-  isDebugInitialized: boolean
-  isDrawEnabled: boolean
+  component: Component
+  system: Array<System>
+  globalSystem: Array<GlobalSystem>
 
   // Babylonjs
   babylonjs: {
@@ -236,8 +322,53 @@ export type State = {
   }
 }
 
-export type GetDefaultComponent<X> = (
-  params: Omit<Partial<Component<X>>, 'name'> & {
-    entity: Guid
-  },
-) => Component<X>
+/**
+ * Describes extendable state with internal components and systems
+ */
+export type InitialState<Component, System, GlobalSystem> = EmptyState<
+  StateDefaultComponents & Component,
+  StateDefaultSystems & System,
+  StateDefaultGlobalSystems & GlobalSystem
+>
+
+export type AnyComponent = Dictionary<Dictionary<Component<unknown | any>>>
+export type AnySystem = System<Component<any>, AnyStateForSystem>
+export type AnyGlobalSystem = GlobalSystem<AnyStateForSystem>
+export type AnyState = EmptyState<AnyComponent, AnySystem, AnyGlobalSystem>
+
+/**
+ * Describes state with internal components and systems
+ */
+export type InternalInitialState = EmptyState<
+  StateDefaultComponents,
+  StateDefaultSystems,
+  StateDefaultGlobalSystems
+>
+
+// export type State = {
+// {
+//   entity: Dictionary<Entity>
+//   component: Dictionary<Dictionary<Component<any>>> & {
+//     animationNumber: Dictionary<AnimationNumber>
+//     animationString: Dictionary<AnimationString>
+//     animationVector2D: Dictionary<AnimationVector2D>
+//     animationVector3D: Dictionary<AnimationVector3D>
+
+//     collideBox: Dictionary<CollideBox>
+//     collideCircle: Dictionary<CollideCircle>
+//     mouseInteraction: Dictionary<MouseInteraction>
+//     time: Dictionary<Time>
+//     camera: Dictionary<Camera>
+//     transform: Dictionary<Transform>
+//     event: Dictionary<Event>
+//     mouse: Dictionary<Mouse>
+//     keyboard: Dictionary<Keyboard>
+//   }
+//   system: Array<System<any> | GlobalSystem>
+
+//   // Babylonjs
+//   babylonjs: {
+//     sceneRef?: Scene
+//     cameraRef?: UniversalCamera
+//   }
+// }

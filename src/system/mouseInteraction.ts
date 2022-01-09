@@ -1,7 +1,6 @@
 import { add } from '@arekrado/vector-2d'
 import { getComponent, setComponent } from '../component'
-import { CollideBox, CollideCircle, Mouse, MouseInteraction } from '../type'
-import { State } from '../type'
+import { CollideBox, CollideCircle, InternalInitialState, Mouse, MouseInteraction } from '../type'
 import { createSystem } from './createSystem'
 import { componentName } from '../component'
 import {
@@ -47,8 +46,8 @@ export const isMouseOver: IsMouseOver = ({
   return hasCollision
 }
 
-export const mouseInteractionSystem = (state: State) =>
-  createSystem<MouseInteraction>({
+export const mouseInteractionSystem = (state: InternalInitialState) =>
+  createSystem<MouseInteraction, InternalInitialState>({
     state,
     name: componentName.mouseInteraction,
     create: ({ state }) => state,
@@ -89,7 +88,7 @@ export const mouseInteractionSystem = (state: State) =>
         const isMouseLeave = component.isMouseOver && !isMouseOverFlag
         const isClicked = component.isMouseOver && mouse.buttons === 1
 
-        return setComponent<MouseInteraction>({
+        return setComponent<MouseInteraction, InternalInitialState>({
           state,
           data: {
             entity,

@@ -1,8 +1,7 @@
-import { Entity, Guid, State } from './type';
-import { Component, Dictionary } from './type';
-
-const getSystemByName = (name: string, system: State['system']) =>
-  system.find((x) => x.name === name);
+import { AnimationVector3D } from '.'
+import { AnyState, Entity, Guid } from './type'
+import { Component, Dictionary } from './type'
+import { getState } from './util/state'
 
 export enum componentName {
   event = 'event',
@@ -10,35 +9,44 @@ export enum componentName {
   transform = 'transform',
   mouse = 'mouse',
   keyboard = 'keyboard',
-
   sprite = 'sprite',
-  // animation = 'animation',
 
   animationNumber = 'animationNumber',
   animationString = 'animationString',
   animationVector2D = 'animationVector2D',
   animationVector3D = 'animationVector3D',
-  
+
   collideBox = 'collideBox',
   collideCircle = 'collideCircle',
   blueprint = 'blueprint',
   mouseInteraction = 'mouseInteraction',
   camera = 'camera',
-  // text = 'text',
-  // line = 'line',
-  // rectangle = 'rectangle',
-  // circle = 'circle',
-  // ellipse = 'ellipse',
 }
 
-type SetComponentParams<Data> = {
-  state: State;
-  data: Component<Data>;
-};
-export const setComponent = <Data>({
+export const getComponent = <Data, State extends AnyState = AnyState>({
+  name, // TODO - Data should be connected with componentName
+  entity,
+  state,
+}: {
+  name: string
+
+  entity: Guid
+  state: State
+}): Component<Data> | undefined =>
+  state.component[name][entity] as Component<Data> | undefined
+
+const getSystemByName = <State extends AnyState = AnyState>(
+  name: string,
+  system: State['system'],
+) => system.find((x) => x.name === name)
+
+export const setComponent = <Data, State extends AnyState = AnyState>({
   state,
   data,
-}: SetComponentParams<Data>): State => {
+}: {
+  state: State
+  data: Component<Data>
+}): State => {
   const newState = {
     ...state,
     component: {
@@ -48,36 +56,35 @@ export const setComponent = <Data>({
         [data.entity]: data,
       },
     },
-  };
+  }
 
-  const system = getSystemByName(data.name, state.system);
+  const system = getSystemByName(data.name, state.system)
 
-  if (system !== undefined) {
+  if (system !== undefined && system.create !== undefined) {
     if (
       state.component[data.name] === undefined ||
       state.component[data.name][data.entity] === undefined
     ) {
-      return system.create({ state: newState, component: data });
-    } 
-    // else if (system.update) {
-    //   return system.update({ state: newState, component: data });
-    // }
-  } else {
-    // todo log error
+      return system.create({
+        state: newState,
+        component: data,
+      }) as State
+    }
   }
 
-  return newState;
-};
+  return newState
+}
 
-type RemoveComponent = (params: {
-  name: string;
-  entity: Guid;
-  state: State;
-}) => State;
-export const removeComponent: RemoveComponent = ({ name, entity, state }) => {
-  const { [entity]: _, ...dictionaryWithoutComponent } = state.component[
-    name
-  ] as Dictionary<Component<any>>;
+export const removeComponent = <State extends AnyState = AnyState>({
+  name,
+  entity,
+  state,
+}: {
+  name: string
+  entity: Guid
+  state: State
+}): State => {
+  const { [entity]: _, ...dictionaryWithoutComponent } = state.component[name]
 
   const newState = {
     ...state,
@@ -85,114 +92,113 @@ export const removeComponent: RemoveComponent = ({ name, entity, state }) => {
       ...state.component,
       [name]: dictionaryWithoutComponent,
     },
-  };
-
-  const component = getComponent({ name, state, entity });
-  const system = getSystemByName(name, newState.system);
-
-  if (system && component) {
-    return system.remove({ state: newState, component });
   }
 
-  return newState;
-};
+  const component = getComponent({ name, state, entity })
+  const system = getSystemByName(name, newState.system)
 
-export const removeComponentsByName = <Data>({
+  if (system && component && system.remove) {
+    return system.remove({ state: newState, component }) as State
+  }
+
+  return newState
+}
+
+export const removeComponentsByName = <
+  Data,
+  State extends AnyState = AnyState,
+>({
   state,
   name,
 }: {
-  name: string;
-  state: State;
+  name: string
+  state: State
 }): State => {
-  const components = getComponentsByName<Data>({ state, name });
+  const components = getComponentsByName<Data>({ state, name })
 
   if (components) {
     return Object.keys(components).reduce((acc, entity) => {
-      return removeComponent({ name, entity, state: acc });
-    }, state);
+      return removeComponent({ name, entity, state: acc })
+    }, state)
   }
 
-  return state;
-};
+  return state
+}
 
-export const getComponent = <Data>({
-  name, // TODO - Data should be connected with componentName
-  entity,
-  state,
-}: {
-  name: string;
-
-  entity: Guid;
-  state: State;
-}): Component<Data> | undefined => {
-  const c: Dictionary<Component<Data>> = state.component[name];
-  return c ? (c[entity] as Component<Data> | undefined) : undefined;
-};
-
-export const getComponentsByName = <Data>({
+const getComponentsByName = <Data, State extends AnyState = AnyState>({
   name,
   state,
 }: {
-  name: string;
-  state: State;
-}): Dictionary<Component<Data>> | undefined => {
-  return state.component[name];
-};
+  name: string
+  state: State
+}) => {
+  return state.component[name] as Dictionary<Component<Data>> | undefined
+}
 
-type RecreateAllComponents = (params: { state: State }) => State;
 /**
  * Calls create system method for all components. Useful when newly loaded components have to call side effects
  */
-export const recreateAllComponents: RecreateAllComponents = ({ state }) => {
+export const recreateAllComponents = <State extends AnyState = AnyState>({
+  state,
+}: {
+  state: State
+}): State => {
   state = Object.entries(state.component).reduce((acc, [key, value]) => {
-    const system = getSystemByName(key, acc.system);
+    const system = getSystemByName(key, acc.system)
 
-    return Object.values(value).reduce(
-      (acc2, component) =>
-        system?.create({
+    if (!system) {
+      return acc
+    }
+
+    return Object.values(value).reduce((acc2, component) => {
+      if (system === undefined || system.create === undefined) {
+        return acc2
+      } else {
+        const newState = system.create({
           state: acc2,
           component,
-        }),
-      acc
-    );
-  }, state);
+        })
+        return newState as State
+      }
+    }, acc)
+  }, state)
 
-  return state;
-};
+  return state
+}
 
 /**
  * Creates get and set component functions for unique entity. Useful when you have always one component eg game settings or camera
- *
- * @param param0
- * @returns
  */
-export const createGetSetForUniqComponent = <ComponentData>({
+export const createGetSetForUniqComponent = <
+  ComponentData,
+  State extends AnyState = AnyState,
+>({
   entity,
   name,
 }: {
-  entity: Entity;
-  name: string;
+  entity: Entity
+  name: string
 }) => {
-  type Getter = (params: { state: State }) => ComponentData | undefined;
+  type Getter = (params: { state: State }) => ComponentData | undefined
   const getter: Getter = ({ state }) =>
     getComponent<Component<ComponentData>>({
       state,
       entity,
       name,
-    });
+    })
 
   type Setter = (params: {
-    state: State;
-    data: Partial<ComponentData>;
-  }) => State;
+    state: State
+    data: Partial<ComponentData>
+  }) => State
   const setter: Setter = ({ state, data: dataPartial }) => {
-    const data = getter({ state });
+    const data = getter({ state })
 
     if (!data) {
-      return state;
+      return state
     }
 
-    state = setComponent<Component<ComponentData>>({
+    state = setComponent<Component<ComponentData>, State>({
       state,
       data: {
         entity,
@@ -200,13 +206,24 @@ export const createGetSetForUniqComponent = <ComponentData>({
         ...data,
         ...dataPartial,
       },
-    });
+    })
 
-    return state;
-  };
+    return state
+  }
 
   return {
     getComponent: getter,
     setComponent: setter,
-  };
-};
+  }
+}
+
+//   return {
+//     getComponent: getComponent,
+//     getComponentsByName: getComponentsByName,
+//     setComponent: setComponent,
+//     removeComponent: removeComponent,
+//     removeComponentsByName: removeComponentsByName,
+//     recreateAllComponents: recreateAllComponents,
+//     createGetSetForUniqComponent: createGetSetForUniqComponent,
+//   }
+// }

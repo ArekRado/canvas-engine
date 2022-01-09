@@ -1,6 +1,6 @@
 import { add } from '@arekrado/vector-2d'
 import { setComponent } from '../component'
-import { State } from '../type'
+import { InternalInitialState } from '../type'
 import { CollideBox, CollideType } from '../type'
 import { createSystem } from './createSystem'
 import { componentName } from '../component'
@@ -8,7 +8,7 @@ import { detectAABBcollision } from '../util/detectCollision'
 import { getComponent, Transform } from '..'
 
 type FindCollisionsWith = (pramams: {
-  state: State
+  state: InternalInitialState
   collideBox: CollideBox
 }) => CollideType[]
 const findCollisionsWith: FindCollisionsWith = ({ state, collideBox }) => {
@@ -56,8 +56,8 @@ const findCollisionsWith: FindCollisionsWith = ({ state, collideBox }) => {
   return collisionList
 }
 
-export const collideBoxSystem = (state: State) =>
-  createSystem<CollideBox>({
+export const collideBoxSystem = (state: InternalInitialState) =>
+  createSystem<CollideBox, InternalInitialState>({
     state,
     name: componentName.collideBox,
     tick: ({ state, component: collideBox }) => {
@@ -66,7 +66,7 @@ export const collideBoxSystem = (state: State) =>
         collideBox,
       })
 
-      return setComponent<CollideBox>({
+      return setComponent<CollideBox, InternalInitialState>({
         state,
         data: {
           ...collideBox,

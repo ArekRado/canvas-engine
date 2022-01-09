@@ -1,6 +1,6 @@
 import { componentName } from '../component'
 import { createGlobalSystem } from './createSystem'
-import { State } from '../type'
+import { AnyState } from '../type'
 
 export type ECSEvent<Type, Payload> = {
   type: Type
@@ -9,7 +9,7 @@ export type ECSEvent<Type, Payload> = {
 
 type AcitveBuffer = 'first' | 'second'
 
-export type EventHandler<AllEvents> = ({
+export type EventHandler<AllEvents, State extends AnyState = AnyState> = ({
   state,
   event,
 }: {
@@ -17,8 +17,8 @@ export type EventHandler<AllEvents> = ({
   event: AllEvents
 }) => State
 // TODO add internal eventSystemHandler
-export const createEventSystem = <AllEvents>(
-  eventHandler: EventHandler<AllEvents>,
+export const createEventSystem = <AllEvents, State extends AnyState = AnyState>(
+  eventHandler: EventHandler<AllEvents, State>,
 ) => {
   let activeBuffer: AcitveBuffer = 'first'
 

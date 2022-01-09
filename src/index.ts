@@ -28,6 +28,9 @@ export {
   removeComponent,
   getComponent,
   componentName,
+  removeComponentsByName,
+  recreateAllComponents,
+  createGetSetForUniqComponent,
 } from './component'
 
 export * as defaultData from './util/defaultComponents'

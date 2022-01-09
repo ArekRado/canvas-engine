@@ -1,5 +1,9 @@
-import { State } from '../type'
-import { animationNumberSystem, animationStringSystem, animationVector2DSystem, animationVector3DSystem } from '../system/animation'
+import {
+  animationNumberSystem,
+  animationStringSystem,
+  animationVector2DSystem,
+  animationVector3DSystem,
+} from '../system/animation'
 import { collideBoxSystem } from '../system/collideBox'
 import { transformSystem } from '../system/transform'
 import { componentName } from '../component'
@@ -10,8 +14,9 @@ import { keyboardSystem } from '../system/keyboard'
 import { Scene } from '@babylonjs/core/scene'
 import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera'
 import { cameraSystem } from '../system/cameraSystem'
+import { AnyState, InternalInitialState } from '..'
 
-export const getInitialState = () => ({
+export const getInitialState = (): InternalInitialState => ({
   entity: {},
   component: {
     [componentName.animationNumber]: {},
@@ -30,13 +35,8 @@ export const getInitialState = () => ({
     [componentName.mouse]: {},
     [componentName.keyboard]: {},
   },
-  // asset: {
-  //   sprite: [],
-  //   blueprint: [],
-  // },
+  globalSystem: [],
   system: [],
-  isDebugInitialized: false,
-  isDrawEnabled: true,
   babylonjs: {
     sceneRef: undefined,
     cameraRef: undefined,
@@ -47,17 +47,15 @@ export const getSystems = ({
   state,
   document,
   containerId,
-  isDrawEnabled = false,
   scene,
   camera,
 }: {
-  state: State
-  isDrawEnabled?: boolean
+  state: AnyState
   document?: Document
   containerId?: string
   scene?: Scene
   camera?: UniversalCamera
-}): State => {
+}): InternalInitialState => {
   state.babylonjs.cameraRef = camera
   state.babylonjs.sceneRef = scene
 
@@ -84,33 +82,26 @@ export const getSystems = ({
     })
   }
 
-  return {
-    ...(state ?? {}),
-    ...state,
-    isDrawEnabled,
-  }
+  return state
 }
 
 export const getState = ({
   state,
   document,
   containerId,
-  isDrawEnabled = false,
   scene,
   camera,
 }: {
-  state?: State
-  isDrawEnabled?: boolean
+  state?: AnyState
   document?: Document
   containerId?: string
   scene?: Scene
   camera?: UniversalCamera
-}): State =>
+}): InternalInitialState =>
   getSystems({
     state: state || getInitialState(),
     document,
     containerId,
-    isDrawEnabled,
     scene,
     camera,
   })

@@ -1,15 +1,10 @@
-import { State } from '../type'
+import { AnyState } from '../type'
 
-type RunOneFrame = (params: { state: State }) => State
-export const runOneFrame: RunOneFrame = ({ state }): State => {
-  // const v1: State = {
-  //   ...state,
-  //   time: {
-  //     ...state.time,
-  //     timeNow: timeNow !== undefined ? timeNow : performance.now(),
-  //   },
-  // }
-
+export const runOneFrame = <State extends AnyState = AnyState>({
+  state,
+}: {
+  state: State
+}): State => {
   return state.system
     .concat()
     .sort((a, b) => (a > b ? -1 : 1))

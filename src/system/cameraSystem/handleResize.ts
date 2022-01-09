@@ -1,5 +1,5 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { Camera, EventHandler, State } from '../../type'
+import { Camera, EventHandler, InternalInitialState } from '../../type'
 import { CameraEvent, getCamera, setCamera } from '../cameraSystem'
 
 export const getCameraSize = (distance: number, aspectRatio: number) => {
@@ -52,9 +52,10 @@ export const adjustBabylonCameraToComponentCamera = ({
   return size
 }
 
-export const handleResize: EventHandler<CameraEvent.ResizeEvent> = ({
-  state,
-}) => {
+export const handleResize: EventHandler<
+  CameraEvent.ResizeEvent,
+  InternalInitialState
+> = ({ state }) => {
   const camera = getCamera({ state })
 
   state = setCamera({
