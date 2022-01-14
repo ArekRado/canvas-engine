@@ -10,7 +10,12 @@ import {
   transform,
 } from '../util/defaultComponents'
 import { getComponent, setComponent } from '../component'
-import { CollideBox, CollideCircle, InternalInitialState, MouseInteraction } from '../type'
+import {
+  CollideBox,
+  CollideCircle,
+  InternalInitialState,
+  MouseInteraction,
+} from '../type'
 import { componentName } from '../component'
 import { isMouseOver } from '../system/mouseInteraction'
 import { getMouse, setMouse } from '../system/mouse'

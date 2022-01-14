@@ -55,7 +55,6 @@ export const mouseInteractionSystem = (state: InternalInitialState) =>
     tick: ({ state, component }) => {
       // todo rewrite it to set/getMouseInteraction
       // set mouse interaction on mouse move events
-      
       const entity = component.entity
 
       const collideBox = getComponent<CollideBox>({

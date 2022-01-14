@@ -72,12 +72,12 @@ export const getSystems = ({
   internatlState = mouseInteractionSystem(internatlState)
 
   if (containerId) {
-    state = mouseSystem({
+    internatlState = mouseSystem({
       state: internatlState,
       document: document ?? window.document,
       containerId,
     })
-    state = keyboardSystem({
+    internatlState = keyboardSystem({
       state: internatlState,
       document: document ?? window.document,
       containerId,
