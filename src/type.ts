@@ -216,7 +216,7 @@ export type Transform = Component<{
 //
 ////////////////////////////////////
 
-export type AnyStateForSystem = EmptyState<AnyComponent, any, any>
+export type AnyStateForSystem = EmptyState<AnyComponent, any>
 
 export type GetDefaultComponent<X> = (
   params: Omit<Partial<Component<X>>, 'name'> & {
@@ -232,7 +232,7 @@ export type SystemMethodParams<
   component: Component<ComponentData>
 }
 
-export type System<Component, State extends AnyStateForSystem> = {
+export type System<Component, State extends AnyStateForSystem = AnyStateForSystem> = {
   name: string
   priority: number
   /**
@@ -304,16 +304,14 @@ export type StateDefaultSystems =
   | System<Mouse, AnyStateForSystem>
   | System<Keyboard, AnyStateForSystem>
 
-export type StateDefaultGlobalSystems = GlobalSystem<AnyState>
-
 /**
  * Describes empty state without internal components and systems
  */
-export type EmptyState<Component, System, GlobalSystem> = {
+export type EmptyState<Component, System> = {
   entity: Dictionary<Entity>
   component: Component
   system: Array<System>
-  globalSystem: Array<GlobalSystem>
+  globalSystem: Array<GlobalSystem<AnyState>>
 
   // Babylonjs
   babylonjs: {
@@ -325,50 +323,20 @@ export type EmptyState<Component, System, GlobalSystem> = {
 /**
  * Describes extendable state with internal components and systems
  */
-export type InitialState<Component, System, GlobalSystem> = EmptyState<
+export type InitialState<Component, System> = EmptyState<
   StateDefaultComponents & Component,
-  StateDefaultSystems & System,
-  StateDefaultGlobalSystems & GlobalSystem
+  StateDefaultSystems & System
 >
 
 export type AnyComponent = Dictionary<Dictionary<Component<unknown | any>>>
 export type AnySystem = System<Component<any>, AnyStateForSystem>
 export type AnyGlobalSystem = GlobalSystem<AnyStateForSystem>
-export type AnyState = EmptyState<AnyComponent, AnySystem, AnyGlobalSystem>
+export type AnyState = EmptyState<AnyComponent, AnySystem>
 
 /**
  * Describes state with internal components and systems
  */
 export type InternalInitialState = EmptyState<
   StateDefaultComponents,
-  StateDefaultSystems,
-  StateDefaultGlobalSystems
+  StateDefaultSystems
 >
-
-// export type State = {
-// {
-//   entity: Dictionary<Entity>
-//   component: Dictionary<Dictionary<Component<any>>> & {
-//     animationNumber: Dictionary<AnimationNumber>
-//     animationString: Dictionary<AnimationString>
-//     animationVector2D: Dictionary<AnimationVector2D>
-//     animationVector3D: Dictionary<AnimationVector3D>
-
-//     collideBox: Dictionary<CollideBox>
-//     collideCircle: Dictionary<CollideCircle>
-//     mouseInteraction: Dictionary<MouseInteraction>
-//     time: Dictionary<Time>
-//     camera: Dictionary<Camera>
-//     transform: Dictionary<Transform>
-//     event: Dictionary<Event>
-//     mouse: Dictionary<Mouse>
-//     keyboard: Dictionary<Keyboard>
-//   }
-//   system: Array<System<any> | GlobalSystem>
-
-//   // Babylonjs
-//   babylonjs: {
-//     sceneRef?: Scene
-//     cameraRef?: UniversalCamera
-//   }
-// }

@@ -87,14 +87,14 @@ export const getSystems = ({
   return internatlState
 }
 
-export const getState = ({
+export const getState = <State extends AnyState = AnyState>({
   state,
   document,
   containerId,
   scene,
   camera,
 }: {
-  state?: AnyState
+  state?: State
   document?: Document
   containerId?: string
   scene?: Scene

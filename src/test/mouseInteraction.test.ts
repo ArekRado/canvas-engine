@@ -10,7 +10,7 @@ import {
   transform,
 } from '../util/defaultComponents'
 import { getComponent, setComponent } from '../component'
-import { CollideBox, CollideCircle, MouseInteraction } from '../type'
+import { CollideBox, CollideCircle, InternalInitialState, MouseInteraction } from '../type'
 import { componentName } from '../component'
 import { isMouseOver } from '../system/mouseInteraction'
 import { getMouse, setMouse } from '../system/mouse'
@@ -79,19 +79,19 @@ describe('mouseInteraction', () => {
 
     state = setEntity({ entity, state })
 
-    state = setComponent<MouseInteraction>({
+    state = setComponent<MouseInteraction, InternalInitialState>({
       state,
       data: defaultMouseInteraction({ entity }),
     })
 
-    state = setComponent<Transform>({
+    state = setComponent<Transform, InternalInitialState>({
       state,
       data: transform({
         entity,
       }),
     })
 
-    state = setComponent<CollideBox>({
+    state = setComponent<CollideBox, InternalInitialState>({
       state,
       data: defaultCollideBox({
         entity,
@@ -100,7 +100,7 @@ describe('mouseInteraction', () => {
       }),
     })
 
-    state = setComponent<CollideCircle>({
+    state = setComponent<CollideCircle, InternalInitialState>({
       state,
       data: defaultCollideCircle({
         entity,

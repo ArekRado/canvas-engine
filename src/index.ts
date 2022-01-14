@@ -23,6 +23,7 @@ export {
   createGlobalSystem,
   systemPriority,
 } from './system/createSystem'
+export { createEventSystem } from './system/createEventSystem'
 export {
   setComponent,
   removeComponent,
@@ -31,9 +32,11 @@ export {
   removeComponentsByName,
   recreateAllComponents,
   createGetSetForUniqComponent,
+  getComponentsByName,
 } from './component'
 
 export * as defaultData from './util/defaultComponents'
+export { getState } from './util/state'
 
 export {
   getEntity,

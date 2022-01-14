@@ -1,16 +1,16 @@
 # canvas-engine
 
 ```
-npm i
-npm run test:watch
+npm install @arekrado/canvas-engine
 ```
 
 # DevTools
 
-https://github.com/ArekRado/canvas-engine-devtools
+(in progress) https://github.com/ArekRado/canvas-engine-devtools
 
 # Example
 
+https://github.com/ArekRado/kostki
 https://github.com/ArekRado/canvas-engine-devtools/tree/master/example
 
 # ECS
@@ -19,7 +19,7 @@ https://github.com/ArekRado/canvas-engine-devtools/tree/master/example
 
 # Entity
 
-It's just a uniq string - think about it as uniq ID from SQL database.
+It's just a unique string - think about it as uniq ID from SQL database.
 
 ```ts
 import { entity, initialState } from '@arekrado/canvas-engine'
@@ -36,13 +36,21 @@ Component describes game state without logic. It's something like a record in a 
 ```ts
 type State = {
   // {...}
-  component: Dictionary<Dictionary<Component<any>>> & {
-    sprite: Dictionary<Sprite>
-    transform: Dictionary<Transform>
-    animation: Dictionary<Animation>
+  component: {
+    animationNumber: Dictionary<AnimationNumber>
+    animationString: Dictionary<AnimationString>
+    animationVector2D: Dictionary<AnimationVector2D>
+    animationVector3D: Dictionary<AnimationVector3D>
+
     collideBox: Dictionary<CollideBox>
     collideCircle: Dictionary<CollideCircle>
     mouseInteraction: Dictionary<MouseInteraction>
+    time: Dictionary<Time>
+    camera: Dictionary<Camera>
+    transform: Dictionary<Transform>
+    event: Dictionary<Event>
+    mouse: Dictionary<Mouse>
+    keyboard: Dictionary<Keyboard>
   }
   // {...}
 }
@@ -58,8 +66,9 @@ export type GunMagazine = Component<{
   bullets: number
 }>
 
-// I prefer to call it "default data" rather than component. Component sounds like something complex but this is only function which returns simple JSON.
-export const gunMagazine: GetDefaultComponent<GunMagazine> = (data) => ({
+export const getDefaultGunMagazine: GetDefaultComponent<GunMagazine> = (
+  data,
+) => ({
   name: 'gunMagazine',
   bullets: 0,
   type: 'rotary',
@@ -73,26 +82,32 @@ import {
   entity,
   defaultData,
   setComponent,
-  State,
+  Transform,
 } from '@arekrado/canvas-engine'
 import { vectorZero } from '@arekrado/vector-2d'
-import { gunMagazine } from './components/gunMagazine'
+import { getDefaultGunMagazine, GunMagazine } from './components/gunMagazine'
 import gunImg from './assets/gun.png'
 
-// blueprint helps you avoid excessive code - It's common pattern used in gamedev
 export const GunBlueprint = ({ state }): State => {
   // create new entity
-  const gunEntity = entity.generate('gun', {
-      position: vector(10, 50),
-  })
+  const gunEntity = createEntity({ name: 'gun' })
 
   // add new entity to state
   // btw can't wait for a pipeline operator
-  let newState = entity.set({ state, entity })
+  state = setEntity({ state, entity })
+
+  state = setComponent<Transform>({
+    name: componentName.transform,
+    state,
+    data: defaultData.transform({
+      position: vector(10, 50),
+    }),
+  })
 
   // create and push gun sprite and connect it with entity
-  newState = setComponent(componentName.sprite, {
-    state: state1,
+  state = setComponent<Sprite>({
+    name: componentName.sprite,
+    state,
     data: defaultData.sprite({
       entity: gunEntity,
       src: gunImg,
@@ -100,9 +115,10 @@ export const GunBlueprint = ({ state }): State => {
   })
 
   // finally add our own component
-  newState = setComponent('gunMagazine', {
-    state: state1,
-    data: gunMagazine({
+  newState = setComponent<GunMagazine>({
+    name: 'gunMagazine',
+    state,
+    data: getDefaultGunMagazine({
       entity: gunEntity,
       bullets: 5,
     }),
@@ -119,17 +135,39 @@ Pure logic without state. Every system receives whole state then modifies it and
 `createSystem` provides simple abstraction with lifecycle methods connecting components with systems by name.
 
 ```ts
+import {
+  Component,
+  State,
+  componentName,
+  createSystem,
+  getComponent,
+  defaultData,
+} from '@arekrado/canvas-engine'
+
 export const playerSystem = (state: State) =>
-  createSystem<Component<Player>>({
-    name: 'gun',
+  createSystem<Player, State>({
+    name: 'player',
     state,
+    create: ({ state, component }) => {
+      state = setComponent<Transform, State>({
+        entity: component.entity,
+        name: componentName.transform,
+        state,
+        data: defaultData.transform({
+          position: vector(5, 150),
+        }),
+      })
+
+      return state
+    },
     tick: ({ state, component }) => {
-      const entity = getEntity({
-        entityId: component.entityId,
+      const transform = getComponent<Transform, State>({
+        entity: component.entity,
+        name: componentName.transform,
         state,
       })
 
-      if (state.keyboard['a']?.isPressed) {
+      if (state.keyboard.keys['a']?.isPressed) {
         return bulletBlueprint({
           position: entity.position,
         })
@@ -143,51 +181,76 @@ export const playerSystem = (state: State) =>
 # Easy start
 
 ```ts
-import * as ReactDOM from 'react-dom'
-import {
-  CanvasEngineDevtools,
-  registerDebugSystem,
-} from '@arekrado/canvas-engine-devtools'
 import {
   runOneFrame,
-  State,
-  initialState,
-  initializeEngine,
-  asset,
+  getState,
+  InitialState,
 } from '@arekrado/canvas-engine'
+import {
+  Engine,
+  NullEngine,
+  Scene,
+  UniversalCamera,
+  Vector3,
+  Camera,
+} from '@babylonjs'
 
+import { GunMagazine, Player } from './types'
 import { gunBlueprint } from './blueprints/gunBlueprint'
 import gunImg from './assets/area.png'
 
-const gameLogic = (state: State) => {
-  const newState = runOneFrame({ state })
+// Setup babylonjs
+const engine = new Engine(document.getElementById('game'))
+const scene = new Scene(engine)
+const camera = new UniversalCamera(
+  'UniversalCamera',
+  new Vector3(0, 0, -1),
+  scene,
+)
+camera.mode = Camera.ORTHOGRAPHIC_CAMERA
 
-  requestAnimationFrame(() => gameLogic(newState))
+// Setup state
+type Components = {
+  player: Player
+  gun: Gun
+}
+type Systems = System<Player>
+type State = InitialState<Components, Systems>
+
+let state = getState({ scene, camera }) as State
+
+// Setup system
+state = playerSystem(state)
+
+// Setup initial state data
+state = gunBlueprint(state)
+
+const beforeRenderCallback = () => {
+  state = runOneFrame({ state })
 }
 
-// do side effects - initialize will attach event listeners and pixi.js
-initializeEngine().then(() => {
-  let state = gunBlueprint(initialState)
-
-  // devtools will display this img in sprite list
-  state = asset.addSprite({
-    state,
-    src: gunImg,
-    name: gunImg,
-  })
-
-  // other custom systems
-  // const v4 = mySystem1(v3)
-  // const v5 = mySystem2(v4)
-
-  state = registerDebugSystem(state)
-
-  gameLogic(state)
-})
-
-// if you want to see devtools mount CanvasEngineDevtools and use registerDebugSystem
-ReactDOM.render(
-  <CanvasEngineDevtools />,
-  document.getElementById('canvas-engine-devtools'),
-)
+scene.registerBeforeRender(beforeRenderCallback)
 ```
+
+# Typescript
+
+```ts
+import { EmptyState, InitialState } from '@arekrado/canvas-engine'
+
+export type Components = {
+  animationNumber: Dictionary<AnimationNumber>
+  collideBox: Dictionary<CollideBox>
+  transform: Dictionary<Transform>
+}
+
+export type Systems =
+  | System<AnimationNumber>
+  | System<CollideBox>
+  | System<Transform>
+
+type YourOwnState = EmptyState<Components, Systems>
+
+type YourOwnStateWithCanvasEngine = InitialState<Components, Systems>
+```
+
+# Event - TODO

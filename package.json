@@ -1,5 +1,5 @@
 {
-  "version": "0.0.76",
+  "version": "0.0.77",
   "name": "@arekrado/canvas-engine",
   "umd:main": "dist/canvas-engine.umd.production.js",
   "main": "dist/index.js",
@@ -30,6 +30,7 @@
     "test": "jest ./src/test --config=jest.config.js --env=jsdom --watch=false --coverage",
     "test:watch": "jest ./src/test --config=jest.config.js --env=jsdom --watch --coverage=false",
     "build": "./node_modules/typescript/bin/tsc --project tsconfig.build.json",
+    "build:clean":"rm -rf dist & npm run build",
     "publish:local": "yalc publish",
     "lint": "tsdx lint"
   },

@@ -1,19 +1,33 @@
 import 'regenerator-runtime/runtime'
-import { getInitialState, getState } from '../util/state'
+import { getState } from '../util/state'
 import { setEntity, createEntity } from '../entity'
 import { runOneFrame } from '../util/runOneFrame'
-import { removeComponent, setComponent } from '../component'
+import {
+  recreateAllComponents,
+  removeComponent,
+  setComponent,
+} from '../component'
 import { createSystem } from '../system/createSystem'
-import { Dictionary, State } from '../type'
+import { Dictionary } from '../type'
+import { InternalInitialState } from '..'
 
 describe('component', () => {
   it('should call system create and remove methods', () => {
     const entity1 = createEntity({ name: 'e1' })
     const entity2 = createEntity({ name: 'e2' })
 
-    const create = jest.fn<State, [{ state: State }]>(({ state }) => state)
-    const remove = jest.fn<State, [{ state: State }]>(({ state }) => state)
-    const tick = jest.fn<State, [{ state: State }]>(({ state }) => state)
+    const create = jest.fn<
+      InternalInitialState,
+      [{ state: InternalInitialState }]
+    >(({ state }) => state)
+    const remove = jest.fn<
+      InternalInitialState,
+      [{ state: InternalInitialState }]
+    >(({ state }) => state)
+    const tick = jest.fn<
+      InternalInitialState,
+      [{ state: InternalInitialState }]
+    >(({ state }) => state)
 
     let state = setEntity({
       entity: entity1,
@@ -28,14 +42,14 @@ describe('component', () => {
       tick,
     })
 
-    state = setComponent<Dictionary<{}>>({
+    state = setComponent<Dictionary<{}>, InternalInitialState>({
       state,
       data: {
         entity: entity1,
         name: 'test',
       },
     })
-    state = setComponent<Dictionary<{}>>({
+    state = setComponent<Dictionary<{}>, InternalInitialState>({
       state,
       data: {
         entity: entity2,
@@ -51,7 +65,7 @@ describe('component', () => {
     expect(tick).toHaveBeenCalled()
 
     // create new component after remove
-    state = setComponent<Partial<{}>>({
+    state = setComponent<Partial<{}>, InternalInitialState>({
       state,
       data: {
         entity: entity1,
@@ -62,7 +76,7 @@ describe('component', () => {
     expect(create).toHaveBeenCalledTimes(3)
 
     // updating existing component
-    state = setComponent<Partial<{}>>({
+    state = setComponent<Partial<{}>, InternalInitialState>({
       state,
       data: {
         entity: entity1,
@@ -73,4 +87,40 @@ describe('component', () => {
     // Update should not trigger create
     expect(create).toHaveBeenCalledTimes(3)
   })
+
+  it('recreateAllComponents - should call create system method for all components', () => {
+    const entity1 = createEntity({ name: 'e1' })
+
+    const create = jest.fn<
+      InternalInitialState,
+      [{ state: InternalInitialState }]
+    >(({ state }) => state)
+
+    let state = setEntity({
+      entity: entity1,
+      state: getState({}),
+    })
+
+    state = createSystem({
+      state,
+      name: 'test',
+      create,
+    })
+
+    state = setComponent<Dictionary<{}>, InternalInitialState>({
+      state,
+      data: {
+        entity: entity1,
+        name: 'test',
+      },
+    })
+
+    expect(create).toHaveBeenCalledTimes(1)
+
+    state = recreateAllComponents<InternalInitialState>({ state })
+
+    expect(create).toHaveBeenCalledTimes(2)
+  })
+
+  it.todo('getComponentsByName')
 })

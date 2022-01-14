@@ -123,7 +123,7 @@ export const removeComponentsByName = <
   return state
 }
 
-const getComponentsByName = <Data, State extends AnyState = AnyState>({
+export const getComponentsByName = <Data, State extends AnyState = AnyState>({
   name,
   state,
 }: {
@@ -214,14 +214,3 @@ export const createGetSetForUniqComponent = <
     setComponent: setter,
   }
 }
-
-//   return {
-//     getComponent: getComponent,
-//     getComponentsByName: getComponentsByName,
-//     setComponent: setComponent,
-//     removeComponent: removeComponent,
-//     removeComponentsByName: removeComponentsByName,
-//     recreateAllComponents: recreateAllComponents,
-//     createGetSetForUniqComponent: createGetSetForUniqComponent,
-//   }
-// }
