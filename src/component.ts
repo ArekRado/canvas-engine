@@ -2,7 +2,6 @@ import { AnyState, Entity, Guid } from './type'
 import { Component, Dictionary } from './type'
 
 export enum componentName {
-  event = 'event',
   time = 'time',
   transform = 'transform',
   mouse = 'mouse',

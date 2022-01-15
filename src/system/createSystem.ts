@@ -1,4 +1,10 @@
-import { Dictionary, Component, SystemMethodParams, AnyStateForSystem, GlobalSystem } from '../type'
+import {
+  Dictionary,
+  Component,
+  SystemMethodParams,
+  AnyStateForSystem,
+  GlobalSystem,
+} from '../type'
 
 export enum systemPriority {
   last = 3,
@@ -11,7 +17,10 @@ export enum systemPriority {
   draw = -2,
 }
 
-export const createSystem = <ComponentData, State extends AnyStateForSystem = AnyStateForSystem>({
+export const createSystem = <
+  ComponentData,
+  State extends AnyStateForSystem = AnyStateForSystem,
+>({
   state,
   tick,
   ...params
@@ -55,17 +64,17 @@ export const createSystem = <ComponentData, State extends AnyStateForSystem = An
 export const createGlobalSystem = <State extends AnyStateForSystem>({
   state,
   tick,
-  ...params
+  name,
+  priority,
 }: {
   state: State
   name: string
-  create?: (params: { state: State }) => State
   tick?: (params: { state: State }) => State
   priority?: number
 }): State => {
-  const system: GlobalSystem<State> = {
-    name: params.name,
-    priority: params.priority || systemPriority.zero,
+  const globalSystem: GlobalSystem<State> = {
+    name,
+    priority: priority || systemPriority.zero,
     tick,
     create: undefined,
     remove: ({ state }) => state,
@@ -73,6 +82,6 @@ export const createGlobalSystem = <State extends AnyStateForSystem>({
 
   return {
     ...state,
-    system: [...(state.system as State['system']), system],
+    globalSystem: [...(state.globalSystem as State['globalSystem']), globalSystem],
   }
 }

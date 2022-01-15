@@ -1,25 +1,45 @@
 import 'regenerator-runtime/runtime'
-import { getInitialState, getState } from '../util/state'
+import { getState } from '../util/state'
 import { createGlobalSystem } from '../system/createSystem'
-import { State } from '../type'
+import { InternalInitialState, runOneFrame } from '..'
 
 describe('createGlobalSystem', () => {
   it('should not call create method when system is creating', () => {
-    const initialize = jest.fn<State, [{ state: State }]>(({ state }) => state)
-    const create = jest.fn<State, [{ state: State }]>(({ state }) => state)
-    const remove = jest.fn<State, [{ state: State }]>(({ state }) => state)
-    const tick = jest.fn<State, [{ state: State }]>(({ state }) => state)
+    const remove = jest.fn<
+      InternalInitialState,
+      [{ state: InternalInitialState }]
+    >(({ state }) => state)
+    const tick = jest.fn<
+      InternalInitialState,
+      [{ state: InternalInitialState }]
+    >(({ state }) => state)
 
     createGlobalSystem({
       state: getState({}),
       name: 'test',
-      create,
       tick,
     })
 
-    expect(initialize).not.toHaveBeenCalled()
-    expect(create).not.toHaveBeenCalled()
     expect(remove).not.toHaveBeenCalled()
     expect(tick).not.toHaveBeenCalled()
   })
+
+  it('should trigger tick after runOneFrame', () => {
+    const tick = jest.fn<
+      InternalInitialState,
+      [{ state: InternalInitialState }]
+    >(({ state }) => state)
+
+    let state = createGlobalSystem({
+      state: getState({}),
+      name: 'test',
+      tick,
+    })
+
+    runOneFrame({ state })
+
+    expect(tick).toHaveBeenCalled()
+  })
+
+  it.todo('test priority')
 })

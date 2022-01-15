@@ -284,7 +284,6 @@ export type StateDefaultComponents = {
   time: Dictionary<Time>
   camera: Dictionary<Camera>
   transform: Dictionary<Transform>
-  event: Dictionary<Event>
   mouse: Dictionary<Mouse>
   keyboard: Dictionary<Keyboard>
 }
@@ -317,6 +316,7 @@ export type EmptyState<Component, System> = {
   babylonjs: {
     sceneRef?: Scene
     cameraRef?: UniversalCamera
+    Vector3?: any // babylonjs is a joke xD
   }
 }
 

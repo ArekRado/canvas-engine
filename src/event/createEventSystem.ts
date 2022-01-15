@@ -1,6 +1,7 @@
-import { componentName } from '../component'
-import { createGlobalSystem } from './createSystem'
+import { InternalInitialState } from '..'
+import { createGlobalSystem } from '../system/createSystem'
 import { AnyState } from '../type'
+import { internalEventHandler } from './internalEventHandler'
 
 export type ECSEvent<Type, Payload> = {
   type: Type
@@ -16,10 +17,19 @@ export type EventHandler<AllEvents, State extends AnyState = AnyState> = ({
   state: State
   event: AllEvents
 }) => State
-// TODO add internal eventSystemHandler
-export const createEventSystem = <AllEvents, State extends AnyState = AnyState>(
-  eventHandler: EventHandler<AllEvents, State>,
-) => {
+export const createEventSystem = <
+  AllEvents,
+  State extends AnyState = AnyState,
+>({
+  eventHandler,
+  _internalEventHandler = internalEventHandler as any,
+}: {
+  eventHandler: EventHandler<AllEvents, State>
+  _internalEventHandler?: (params: {
+    state: InternalInitialState
+    event: AllEvents
+  }) => InternalInitialState
+}) => {
   let activeBuffer: AcitveBuffer = 'first'
 
   let eventBuffer: AllEvents[] = []
@@ -54,12 +64,19 @@ export const createEventSystem = <AllEvents, State extends AnyState = AnyState>(
     eventSystem: (state: State) =>
       createGlobalSystem({
         state,
-        name: componentName.event,
+        name: 'event',
         tick: ({ state }) => {
           lockFirstBuffer()
 
           state = eventBuffer.reduce(
-            (acc, event) => eventHandler({ state: acc, event }),
+            (acc, event) => {
+              acc = _internalEventHandler({
+                state: acc as unknown as InternalInitialState,
+                event,
+              }) as unknown as State
+              return eventHandler({ state: acc, event })
+            },
+
             state,
           )
 

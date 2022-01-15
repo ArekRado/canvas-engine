@@ -5,7 +5,7 @@ export const runOneFrame = <State extends AnyState = AnyState>({
 }: {
   state: State
 }): State => {
-  return state.system
+  return [...state.system, ...state.globalSystem]
     .concat()
     .sort((a, b) => (a > b ? -1 : 1))
     .reduce(

@@ -31,7 +31,6 @@ export const getInitialState = (): InternalInitialState => ({
     [componentName.time]: {},
     [componentName.camera]: {},
     [componentName.transform]: {},
-    [componentName.event]: {},
     [componentName.mouse]: {},
     [componentName.keyboard]: {},
   },
@@ -49,15 +48,36 @@ export const getSystems = ({
   containerId,
   scene,
   camera,
+  Vector3,
 }: {
   state: AnyState
   document?: Document
   containerId?: string
   scene?: Scene
   camera?: UniversalCamera
+  Vector3?: any // babylonjs Vector3
 }): InternalInitialState => {
+  if (process.env.NODE_ENV !== 'test') {
+    if (!camera) {
+      console.warn(
+        'Babylonjs camera is not defined. Some features may not work properly.',
+      )
+    }
+    if (!scene) {
+      console.warn(
+        'Babylonjs scene is not defined. Some features may not work properly.',
+      )
+    }
+    if (!Vector3) {
+      console.warn(
+        'Babylonjs Vector3 is not defined. Some features may not work properly.',
+      )
+    }
+  }
+
   state.babylonjs.cameraRef = camera
   state.babylonjs.sceneRef = scene
+  state.babylonjs.Vector3 = Vector3
 
   let internatlState = state as InternalInitialState
 
@@ -93,12 +113,14 @@ export const getState = <State extends AnyState = AnyState>({
   containerId,
   scene,
   camera,
+  Vector3,
 }: {
   state?: State
   document?: Document
   containerId?: string
   scene?: Scene
   camera?: UniversalCamera
+  Vector3?: any
 }): InternalInitialState =>
   getSystems({
     state: state || getInitialState(),
@@ -106,4 +128,5 @@ export const getState = <State extends AnyState = AnyState>({
     containerId,
     scene,
     camera,
+    Vector3,
   })
