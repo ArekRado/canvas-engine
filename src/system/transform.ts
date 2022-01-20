@@ -18,13 +18,15 @@ const syncTransformWithBabylon = ({
   if (transformNode) {
     transformNode.position.x = transform.position[0]
     transformNode.position.y = transform.position[1]
+    transformNode.position.z = transform.position[2] ?? 0
 
     transformNode.rotation.x = transform.rotation[0]
     transformNode.rotation.y = transform.rotation[1]
+    transformNode.rotation.z = transform.rotation[2] ?? 0
 
-    if (transform.rotation[2]) {
-      transformNode.rotation.z = transform.rotation[2]
-    }
+    transformNode.scaling.x = transform.scale[0]
+    transformNode.scaling.y = transform.scale[1]
+    transformNode.scaling.z = transform.scale[2] ?? 1
   }
 }
 

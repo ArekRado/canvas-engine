@@ -1,11 +1,6 @@
 import { vectorZero } from '@arekrado/vector-2d'
 import { componentName } from '../component'
-import {
-  Camera,
-  GetDefaultComponent,
-  Mouse,
-  MouseInteraction,
-} from '../type'
+import { Camera, GetDefaultComponent, Mouse, MouseInteraction } from '../type'
 import { CollideBox, CollideCircle } from '../type'
 import { createEntity } from '../entity'
 import {
@@ -63,7 +58,7 @@ export const animationVector2D: GetDefaultComponent<AnimationVector2D> = ({
   entity,
   ...data
 }) => ({
-  entity, 
+  entity,
   name: componentName.animationVector2D,
   keyframes: [],
   isPlaying: false,
@@ -161,8 +156,8 @@ export const transform: GetDefaultComponent<Transform> = ({
   name: componentName.transform,
   rotation: vectorZero(),
   fromParentRotation: vectorZero(),
-  scale: vectorZero(),
-  fromParentScale: vectorZero(),
+  scale: [1, 1],
+  fromParentScale: [1, 1],
   position: vectorZero(),
   fromParentPosition: vectorZero(),
   ...data,

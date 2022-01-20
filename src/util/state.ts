@@ -13,7 +13,7 @@ import { mouseSystem } from '../system/mouse'
 import { keyboardSystem } from '../system/keyboard'
 import { Scene } from '@babylonjs/core/scene'
 import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera'
-import { cameraSystem } from '../system/cameraSystem'
+import { cameraSystem } from '../system/camera'
 import { AnyState, InternalInitialState } from '..'
 
 export const getInitialState = (): InternalInitialState => ({

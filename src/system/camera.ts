@@ -1,4 +1,4 @@
-import { createSystem } from '../system/createSystem'
+import { createSystem } from './createSystem'
 import { componentName, createGetSetForUniqComponent } from '../component'
 import { Camera, InternalInitialState } from '../type'
 import { adjustBabylonCameraToComponentCamera } from '../event/cameraSystem/handleResize'

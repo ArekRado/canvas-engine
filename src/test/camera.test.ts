@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime'
 import { getInitialState, getState, getSystems } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
-import { getCamera, setCamera } from '../system/cameraSystem'
+import { getCamera, setCamera } from '../system/camera'
 
 describe('camera', () => {
   it('should pass through camera render lifecycle without any errors', () => {

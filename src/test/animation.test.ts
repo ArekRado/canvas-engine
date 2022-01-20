@@ -7,13 +7,19 @@ import {
   animationVector2D,
   animationVector3D,
 } from '../util/defaultComponents'
-import { getActiveKeyframe } from '../system/animation'
+import {
+  getActiveKeyframe,
+  updateNumberAnimation,
+  updateVector2DAnimation,
+  updateVector3DAnimation,
+  updateStringAnimation,
+} from '../system/animation'
 import { createEntity, setEntity } from '../entity'
 import { InternalInitialState, Vector3D } from '../type'
 import { runOneFrame } from '../util/runOneFrame'
 import { getComponent, setComponent } from '../component'
 import { componentName } from '../component'
-import { setTime } from '../system/time'
+import { getTime, setTime } from '../system/time'
 import {
   AnimationNumber,
   AnimationString,
@@ -209,6 +215,68 @@ describe('animation', () => {
       expect(keyframeIndex).toBe(-1)
     })
 
+    it('should return proper data when animation has multiple keyframes - animation in the middle ', () => {
+      const animation = animationNumber({
+        entity,
+        isPlaying: true,
+        keyframes: [
+          {
+            duration: 2,
+            timingFunction: 'Linear',
+            valueRange: vector(0, 1),
+          },
+          {
+            duration: 2,
+            timingFunction: 'Linear',
+            valueRange: vector(0, 1),
+          },
+        ],
+        currentTime: 3,
+        wrapMode: 'once',
+        isFinished: false,
+        property: {
+          path: 'value',
+          component: numberComponentName,
+          entity,
+        },
+      })
+
+      expect(getActiveKeyframe(animation, false)).toEqual({
+        keyframeCurrentTime: 1,
+        keyframeIndex: 1,
+        timeExceeded: false,
+      })
+    })
+
+    it('should return proper data when animation has one keyframe and currentTime exceeded animation', () => {
+      const animation = animationNumber({
+        entity,
+        isPlaying: true,
+        currentTime: 2000,
+        property: {
+          component: 'animation',
+          path: 'FieldNumber',
+          entity,
+        },
+        keyframes: [
+          {
+            duration: 10,
+            timingFunction: 'Linear',
+            valueRange: vector(0, 1),
+          },
+        ],
+        isFinished: false,
+        wrapMode: 'once',
+      })
+
+      const { keyframeCurrentTime, keyframeIndex, timeExceeded } =
+        getActiveKeyframe(animation, false)
+
+      expect(keyframeCurrentTime).toBe(1990)
+      expect(timeExceeded).toBe(true)
+      expect(keyframeIndex).toBe(-1)
+    })
+
     it('should return proper data when animation has multiple keyframes and is looped', () => {
       const animation = animationNumber({
         entity,
@@ -252,6 +320,162 @@ describe('animation', () => {
       expect(timeExceeded).toBe(true)
       expect(keyframeIndex).toBe(3)
     })
+
+    it('should return proper data when animation has negative value range', () => {
+      const animation1 = animationNumber({
+        entity,
+        isPlaying: true,
+        currentTime: 5,
+        property: {
+          component: 'animation',
+          path: 'FieldNumber',
+          entity,
+        },
+        keyframes: [
+          {
+            duration: 10,
+            timingFunction: 'Linear',
+            valueRange: vector(-1, -2),
+          },
+        ],
+        isFinished: false,
+        wrapMode: 'once',
+      })
+
+      expect(getActiveKeyframe(animation1, false)).toEqual({
+        keyframeCurrentTime: 5,
+        keyframeIndex: 0,
+        timeExceeded: false,
+      })
+
+      const animation2 = animationNumber({
+        entity,
+        isPlaying: true,
+        currentTime: 2000,
+        property: {
+          component: 'animation',
+          path: 'FieldNumber',
+          entity,
+        },
+        keyframes: [
+          {
+            duration: 10,
+            timingFunction: 'Linear',
+            valueRange: vector(-1, -2),
+          },
+        ],
+        isFinished: false,
+        wrapMode: 'once',
+      })
+
+      expect(getActiveKeyframe(animation2, false)).toEqual({
+        keyframeCurrentTime: 1990,
+        keyframeIndex: -1,
+        timeExceeded: true,
+      })
+    })
+  })
+
+  describe('updateNumberAnimation', () => {
+    it('should return correct new value when keyframe has negative value range', () => {
+      const value = updateNumberAnimation({
+        keyframe: {
+          duration: 10,
+          timingFunction: 'Linear',
+          valueRange: [-1, -2],
+        },
+        timingMode: 'smooth',
+        progress: 0.5,
+      })
+
+      expect(value).toBe(-1.5)
+    })
+
+    it('should return correct new value', () => {
+      const value = updateNumberAnimation({
+        keyframe: {
+          duration: 10,
+          timingFunction: 'Linear',
+          valueRange: [1, 2],
+        },
+        timingMode: 'smooth',
+        progress: 0.5,
+      })
+
+      expect(value).toBe(1.5)
+    })
+  })
+
+  describe('updateVector2DAnimation', () => {
+    it('should return correct new value when keyframe has negative value range', () => {
+      const value = updateVector2DAnimation({
+        keyframe: {
+          duration: 10,
+          timingFunction: 'Linear',
+          valueRange: [
+            [-1, -1],
+            [-2, -2],
+          ],
+        },
+        timingMode: 'smooth',
+        progress: 0.5,
+      })
+
+      expect(value.toString()).toBe([-1.5, -1.5].toString())
+    })
+
+    it('should return correct new value', () => {
+      const value = updateVector2DAnimation({
+        keyframe: {
+          duration: 10,
+          timingFunction: 'Linear',
+          valueRange: [
+            [1, 1],
+            [2, 2],
+          ],
+        },
+        timingMode: 'smooth',
+        progress: 0.5,
+      })
+
+      expect(value.toString()).toBe([1.5, 1.5].toString())
+    })
+  })
+
+  describe('updateVector3DAnimation', () => {
+    it('should return correct new value when keyframe has negative value range', () => {
+      const value = updateVector3DAnimation({
+        keyframe: {
+          duration: 10,
+          timingFunction: 'Linear',
+          valueRange: [
+            [-1, -1, -1],
+            [-2, -2, -2],
+          ],
+        },
+        timingMode: 'smooth',
+        progress: 0.5,
+      })
+
+      expect(value.toString()).toBe([-1.5, -1.5, -1.5].toString())
+    })
+
+    it('should return correct new value', () => {
+      const value = updateVector3DAnimation({
+        keyframe: {
+          duration: 10,
+          timingFunction: 'Linear',
+          valueRange: [
+            [1, 1, 1],
+            [2, 2, 2],
+          ],
+        },
+        timingMode: 'smooth',
+        progress: 0.5,
+      })
+
+      expect(value.toString()).toBe([1.5, 1.5, 1.5].toString())
+    })
   })
 
   describe('number', () => {
@@ -290,6 +514,8 @@ describe('animation', () => {
 
       state = tick(0, state)
       expect(getNumberComponent(state)?.value).toBe(0)
+      expect(getAnimationNumber(state)?.isFinished).toBeFalsy()
+      expect(getAnimationNumber(state)?.isPlaying).toBeTruthy()
 
       state = tick(1, state)
       expect(getNumberComponent(state)?.value).toBe(0)
@@ -314,6 +540,9 @@ describe('animation', () => {
 
       state = tick(1020, state)
       expect(getNumberComponent(state)?.value).toBe(1)
+
+      expect(getAnimationNumber(state)?.isFinished).toBeTruthy()
+      expect(getAnimationNumber(state)?.isPlaying).toBeFalsy()
     })
 
     it('Should works with negative values', () => {
@@ -323,7 +552,7 @@ describe('animation', () => {
         data: {
           entity,
           name: numberComponentName,
-          value: 0,
+          value: 5,
         },
       })
       state = setComponent<AnimationNumber, InternalInitialState>({
@@ -349,19 +578,40 @@ describe('animation', () => {
         }),
       })
 
+      // todo animation should not return -0
+      //
+
       state = tick(0, state)
-      expect(getNumberComponent(state)?.value).toBe(-0)
+      expect(getNumberComponent(state)?.value).toBe(-1)
 
       state = tick(1, state)
-      expect(getNumberComponent(state)?.value).toBe(-0)
+      expect(getNumberComponent(state)?.value).toBe(-1)
 
-      state = tick(22, state)
-      expect(getNumberComponent(state)?.value).toBe(-0.1)
+      state = tick(3, state)
+      expect(getNumberComponent(state)?.value).toBe(-1.1)
+
+      state = tick(5, state)
+      expect(getNumberComponent(state)?.value).toBe(-1.3)
+
+      state = tick(8, state)
+      expect(getNumberComponent(state)?.value).toBe(-1.5)
+
+      state = tick(9, state)
+      expect(getNumberComponent(state)?.value).toBe(-1.8)
+
+      state = tick(10, state)
+      expect(getNumberComponent(state)?.value).toBe(-1.9)
 
       state = tick(22, state)
       expect(getNumberComponent(state)?.value).toBe(-2)
 
-      state = tick(2, state)
+      state = tick(23, state)
+      expect(getNumberComponent(state)?.value).toBe(-2)
+
+      state = tick(440, state)
+      expect(getNumberComponent(state)?.value).toBe(-2)
+
+      state = tick(460, state)
       expect(getNumberComponent(state)?.value).toBe(-2)
     })
 
@@ -431,13 +681,14 @@ describe('animation', () => {
       state = tick(300, state)
       expect(getNumberComponent(state)?.value).toBe(0.87)
 
-      state = tick(100, state)
+      // // Last tick updates animation time, first tick runs animaiton with 0 currentTime
+      // // We always want to run animation with 0 frame
+      // // actually Im not sure xD
+      // state = tick(300, state)
 
-      // (getTransform(newState)?.value === 0.0);
-      // expect(getAnimation(v10)?.isPlaying).toBe(false)
-      // expect(getAnimation(v10)?.currentTime).toBe(0)
-      expect(getAnimationNumber(state)?.isPlaying).toBe(true)
-      expect(getAnimationNumber(state)?.currentTime).toBe(300)
+      // expect(getAnimationNumber(state)?.isPlaying).toBe(false)
+      // expect(getAnimationNumber(state)?.isFinished).toBe(true)
+      // expect(getAnimationNumber(state)?.currentTime).toBe(0)
     })
 
     it('Should works with looped animations', () => {
@@ -668,42 +919,42 @@ describe('animation', () => {
 
       state = tick(0, state)
       expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(0, 0).toString(),
+        vector(0, 10).toString(),
       )
 
       state = tick(5, state)
       expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(0, 0).toString(),
+        vector(0, 10).toString(),
       )
 
       state = tick(7, state)
       expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(10, -4).toString(),
+        vector(10, 6).toString(),
       )
 
       state = tick(8, state)
       expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(14, -5.6000000000000005).toString(),
+        vector(14, 4.4).toString(),
       )
 
       state = tick(10.5, state)
       expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(16, -6.4).toString(),
+        vector(16, 3.5999999999999996).toString(),
       )
 
       state = tick(12, state)
       expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(3, 21).toString(),
+        vector(10.6, 67.55).toString(),
       )
 
       state = tick(100, state)
       expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(3, 21).toString(),
+        vector(9.4, 60.2).toString(),
       )
 
       state = tick(300, state)
       expect(getVector2DComponent(state)?.value.toString()).toBe(
-        vector(3, 21).toString(),
+        vector(9.4, 60.2).toString(),
       )
     })
   })
@@ -764,7 +1015,7 @@ describe('animation', () => {
           ],
           currentTime: 0,
           wrapMode: 'once',
-          timingMode: 'smooth', // string animation should always works as step
+          timingMode: 'smooth',
         }),
       })
 
@@ -790,7 +1041,7 @@ describe('animation', () => {
 
       state = tick(10.5, state)
       expect(getVector3DComponent(state)?.value.toString()).toBe(
-        [0, 0, 0.026666666666666665].toString(),
+        [0, 0, 0.02666666666666667].toString(),
       )
 
       state = tick(12, state)
@@ -805,7 +1056,7 @@ describe('animation', () => {
 
       state = tick(300, state)
       expect(getVector3DComponent(state)?.value.toString()).toBe(
-        [0, 0, 0.33333333333333337].toString(),
+        [0, 0, 0.3333333333333333].toString(),
       )
 
       state = tick(600, state)
@@ -815,73 +1066,13 @@ describe('animation', () => {
 
       state = tick(1000, state)
       expect(getVector3DComponent(state)?.value.toString()).toBe(
-        [0, 0, -1].toString(),
+        [0, 0, 0].toString(),
       )
 
       state = tick(4000, state)
       expect(getVector3DComponent(state)?.value.toString()).toBe(
-        [0, 0, 0].toString(),
+        [0, 0, -0.6666666666666667].toString(),
       )
     })
   })
 })
-
-// 0 0.8333333333333333
-// 0 0.8933333333333333
-// 0 0.9466666666666668
-// 1 -0.003333333333333333
-// 1 -0.06
-// 1 -0.11333333333333334
-
-// state = setComponent<Animation>({
-//   state,
-//   data: {
-//     name: componentName.animation,
-//     entity: boxEntity,
-
-//     isPlaying: true,
-//     isFinished: false,
-//     property: {
-//       path: 'rotation',
-//       component: vector2DComponentName,
-//       entity: boxEntity,
-//     },
-//     keyframes: [
-//       {
-//         duration: 300,
-//         timingFunction: 'Linear',
-//         value: {
-//           type: 'vector3D',
-//           value: [0, 0, 0],
-//         },
-//       },
-//       {
-//         duration: 600,
-//         timingFunction: 'Linear',
-//         value: {
-//           type: 'vector3D',
-//           value: [0, 0, 1],
-//         },
-//       },
-//       {
-//         duration: 300,
-//         timingFunction: 'Linear',
-//         value: {
-//           type: 'vector3D',
-//           value: [0, 0, -1],
-//         },
-//       },
-//       {
-//         duration: 0,
-//         timingFunction: 'Linear',
-//         value: {
-//           type: 'vector3D',
-//           value: [0, 0, 0],
-//         },
-//       },
-//     ],
-//     currentTime: 0,
-//     wrapMode: 'once',
-//     timingMode: 'smooth', // string animation should always works as step
-//   },
-// });

@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime'
 import { runOneFrame } from '..'
-import { CameraEvent } from '../system/cameraSystem'
+import { CameraEvent } from '../system/camera'
 import { createEventSystem } from '../event/createEventSystem'
 import { getState } from '../util/state'
 

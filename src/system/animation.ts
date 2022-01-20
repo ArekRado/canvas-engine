@@ -7,8 +7,8 @@ import {
   Vector3D,
 } from '../type'
 import { TimingFunction, getValue } from '../util/bezierFunction'
-import { Keyframe, Time } from '../type'
-import { magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
+import { Keyframe } from '../type'
+import { add, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
 import { createSystem } from '../system/createSystem'
 import { setComponent } from '../component'
@@ -18,20 +18,18 @@ import { AnimationNumber, AnimationVector3D } from '..'
 
 type AnyAnimationType = Component<AnimationComponent<any>>
 
-type UpdateAnimation<
-  KeyframeValue,
-  CurrentValue,
-  AnimationType extends AnyAnimationType,
-> = (params: {
+type UpdateAnimation<KeyframeValue, CurrentValue> = (params: {
   keyframe: Keyframe<KeyframeValue>
-  time: Time
-  animation: AnimationType
+  timingMode: string
   progress: number
-  keyframeCurrentTime: number
-  timeExceeded: boolean
-}) => [CurrentValue, AnimationType]
+}) => CurrentValue
 
 const vector3d = {
+  add: (v1: Vector3D, v2: Vector3D): Vector3D => [
+    v1[0] + v2[0],
+    v1[1] + v2[1],
+    v1[2] + v2[2],
+  ],
   sub: (v1: Vector3D, v2: Vector3D): Vector3D => [
     v1[0] - v2[0],
     v1[1] - v2[1],
@@ -53,8 +51,7 @@ const getPercentageProgress = (
   duration: number,
   timingFunction: TimingFunction,
 ): number => {
-  const percentageProgress =
-    currentTime === 0 ? 0 : (currentTime * 100) / duration
+  const percentageProgress = currentTime === 0 ? 0 : currentTime / duration
 
   return getValue(timingFunction, percentageProgress)
 }
@@ -75,113 +72,82 @@ export const getActiveKeyframe = (
 ): ActiveKeyframe => {
   const size = animation.keyframes.length
 
-  if (size === 1 && animation.wrapMode === 'once') {
-    return {
-      keyframeCurrentTime: animation.currentTime,
-      keyframeIndex: 0,
-      timeExceeded: false,
-    }
-  } else {
-    const { sum, activeIndex } = animation.keyframes
-      .map(({ duration }) => duration)
-      .reduce(
-        (acc, duration, index) => {
-          if (acc.breakLoop === true) {
-            return acc
-          } else if (duration + acc.sum < animation.currentTime) {
-            if (size === index + 1) {
-              return {
-                // timeExceeded
-                sum: duration + acc.sum,
-                activeIndex: -1,
-                breakLoop: true,
-              }
-            } else {
-              return {
-                sum: duration + acc.sum,
-                activeIndex: index,
-                breakLoop: false,
-              }
+  const { sum, activeIndex } = animation.keyframes
+    .map(({ duration }) => duration)
+    .reduce(
+      (acc, duration, index) => {
+        if (acc.breakLoop === true) {
+          return acc
+        } else if (animation.currentTime > duration + acc.sum) {
+          if (size === index + 1) {
+            return {
+              // timeExceeded
+              sum: duration + acc.sum,
+              activeIndex: -1,
+              breakLoop: true,
             }
           } else {
-            return { ...acc, activeIndex: index, breakLoop: true }
+            return {
+              sum: duration + acc.sum,
+              activeIndex: index,
+              breakLoop: false,
+            }
           }
-        },
-        {
-          sum: 0,
-          activeIndex: 0,
-          breakLoop: false,
-        },
-      )
+        } else {
+          return {
+            sum: acc.sum,
+            activeIndex: index,
+            breakLoop: true,
+          }
+        }
+      },
+      {
+        sum: 0,
+        activeIndex: 0,
+        breakLoop: false,
+      },
+    )
 
-    if (activeIndex === -1 && animation.wrapMode === 'loop') {
-      return getActiveKeyframe(
-        {
-          ...animation,
-          // mod_number prevents from unnecessary loops, instantly moves to last keyframe
-          currentTime: animation.currentTime % sum,
-        },
-        true,
-      )
-    } else {
-      return {
-        keyframeCurrentTime: animation.currentTime - sum,
-        keyframeIndex: activeIndex,
-        timeExceeded: secondLoop || activeIndex === -1,
-      }
+  if (activeIndex === -1 && animation.wrapMode === 'loop') {
+    return getActiveKeyframe(
+      {
+        ...animation,
+        // mod_number prevents from unnecessary loops, instantly moves to last keyframe
+        currentTime: animation.currentTime % sum,
+      },
+      true,
+    )
+  } else {
+    return {
+      keyframeCurrentTime: animation.currentTime - sum,
+      keyframeIndex: activeIndex,
+      timeExceeded: secondLoop || activeIndex === -1,
     }
   }
 }
 
-const updateNumberAnimation: UpdateAnimation<
+export const updateNumberAnimation: UpdateAnimation<
   [number, number],
-  number,
-  AnimationNumber
-> = ({
-  keyframe,
-  time,
-  animation,
-  progress,
-  keyframeCurrentTime,
-  timeExceeded,
-}) => {
-  const currentTime = timeExceeded
-    ? keyframeCurrentTime + time.delta
-    : animation.currentTime + time.delta
-
+  number
+> = ({ keyframe, timingMode, progress }) => {
   const v1 = keyframe.valueRange[0] as number
   const v2 = keyframe.valueRange[1] as number
 
-  if (animation.timingMode === 'step') {
-    return [
-      v1,
-      {
-        ...animation,
-        currentTime,
-        isFinished: timeExceeded,
-      },
-    ]
+  if (timingMode === 'step') {
+    return v1
   }
 
-  const normalizedMax = v2 - v1
-  const newValue = (progress * normalizedMax) / 100
-
   const isNegative = v2 > v1
+  const normalizedMax = v2 - v1
+  const newValue = v1 + progress * normalizedMax
 
-  return [
-    isNegative
-      ? newValue > v2
-        ? v2
-        : newValue
-      : newValue < v2
+  return isNegative
+    ? newValue > v2
       ? v2
-      : newValue,
-    {
-      ...animation,
-      currentTime,
-      isFinished: timeExceeded,
-    },
-  ]
+      : newValue
+    : newValue < v2
+    ? v2
+    : newValue
 }
 
 const isGreater = (v1: Vector2D, v2: Vector2D): boolean =>
@@ -190,126 +156,58 @@ const isGreater = (v1: Vector2D, v2: Vector2D): boolean =>
 const isLesser = (v1: Vector2D, v2: Vector2D): boolean =>
   magnitude(v1) < magnitude(v2)
 
-const updateVector2DAnimation: UpdateAnimation<
+export const updateVector2DAnimation: UpdateAnimation<
   [Vector2D, Vector2D],
-  Vector2D,
-  AnimationVector2D
-> = ({
-  keyframe,
-  time,
-  animation,
-  progress,
-  keyframeCurrentTime,
-  timeExceeded,
-}) => {
-  const currentTime = timeExceeded
-    ? keyframeCurrentTime + time.delta
-    : animation.currentTime + time.delta
-
+  Vector2D
+> = ({ keyframe, progress, timingMode }) => {
   const v1 = keyframe.valueRange[0] as Vector2D
   const v2 = keyframe.valueRange[1] as Vector2D
 
-  if (animation.timingMode === 'step') {
-    return [
-      v1,
-      {
-        ...animation,
-        currentTime,
-        isFinished: timeExceeded,
-      },
-    ]
+  if (timingMode === 'step') {
+    return v1
   }
 
-  const normalizedMax = sub(v2, v1)
-  const newValue = scale(1.0 / 100, scale(progress, normalizedMax))
   const isNegative = isLesser(v1, v2)
+  const normalizedMax = sub(v2, v1)
+  const newValue = add(v1, scale(progress, normalizedMax))
 
-  return [
-    isNegative
-      ? isGreater(newValue, v2)
-        ? v2
-        : newValue
-      : isLesser(newValue, v2)
+  return isNegative
+    ? isGreater(newValue, v2)
       ? v2
-      : newValue,
-    {
-      ...animation,
-      currentTime,
-      isFinished: timeExceeded,
-    },
-  ]
+      : newValue
+    : isLesser(newValue, v2)
+    ? v2
+    : newValue
 }
 
-const updateVector3DAnimation: UpdateAnimation<
+export const updateVector3DAnimation: UpdateAnimation<
   [Vector3D, Vector3D],
-  Vector3D,
-  AnimationVector3D
-> = ({
-  keyframe,
-  time,
-  animation,
-  progress,
-  keyframeCurrentTime,
-  timeExceeded,
-}) => {
-  const currentTime = timeExceeded
-    ? keyframeCurrentTime + time.delta
-    : animation.currentTime + time.delta
-
+  Vector3D
+> = ({ keyframe, progress, timingMode }) => {
   const v1 = keyframe.valueRange[0] as Vector3D
   const v2 = keyframe.valueRange[1] as Vector3D
 
-  if (animation.timingMode === 'step') {
-    return [
-      v1,
-      {
-        ...animation,
-        currentTime,
-        isFinished: timeExceeded,
-      },
-    ]
+  if (timingMode === 'step') {
+    return v1
   }
 
   const normalizedMax = vector3d.sub(v2, v1)
-  const newValue = vector3d.scale(
-    1.0 / 100,
-    vector3d.scale(progress, normalizedMax),
-  )
+  const newValue = vector3d.add(v1, vector3d.scale(progress, normalizedMax))
   const isNegative = vector3d.isLesser(v1, v2)
 
-  return [
-    isNegative
-      ? vector3d.isGreater(newValue, v2)
-        ? v2
-        : newValue
-      : vector3d.isLesser(newValue, v2)
+  return isNegative
+    ? vector3d.isGreater(newValue, v2)
       ? v2
-      : newValue,
-    {
-      ...animation,
-      currentTime,
-      isFinished: timeExceeded,
-    },
-  ]
+      : newValue
+    : vector3d.isLesser(newValue, v2)
+    ? v2
+    : newValue
 }
 
-const updateStringAnimation: UpdateAnimation<
-  string,
-  string,
-  AnimationString
-> = ({ keyframe, time, animation, keyframeCurrentTime, timeExceeded }) => {
-  const currentTime = timeExceeded
-    ? keyframeCurrentTime + time.delta
-    : animation.currentTime + time.delta
-
-  return [
-    keyframe.valueRange as string,
-    {
-      ...animation,
-      currentTime,
-      isFinished: timeExceeded,
-    },
-  ]
+export const updateStringAnimation: UpdateAnimation<string, string> = ({
+  keyframe,
+}) => {
+  return keyframe.valueRange
 }
 
 export const createAnimationSystem =
@@ -323,10 +221,10 @@ export const createAnimationSystem =
       | componentName.animationVector2D
       | componentName.animationVector3D
     updateAnimation:
-      | UpdateAnimation<[number, number], number, AnimationNumber>
-      | UpdateAnimation<[Vector2D, Vector2D], Vector2D, AnimationVector2D>
-      | UpdateAnimation<[Vector3D, Vector3D], Vector3D, AnimationVector3D>
-      | UpdateAnimation<string, string, AnimationString>
+      | UpdateAnimation<[number, number], number>
+      | UpdateAnimation<[Vector2D, Vector2D], Vector2D>
+      | UpdateAnimation<[Vector3D, Vector3D], Vector3D>
+      | UpdateAnimation<string, string>
   }) =>
   (state: InternalInitialState) =>
     createSystem<AnimationType, InternalInitialState>({
@@ -343,14 +241,19 @@ export const createAnimationSystem =
           getActiveKeyframe(animation, false)
 
         if (timeExceeded === true && animation.wrapMode === 'once') {
-          animation = {
-            ...animation,
-            currentTime: 0,
-            isPlaying: false,
-            isFinished: true,
-          }
-          return state
+          return setComponent({
+            state,
+            data: {
+              ...animation,
+              currentTime: 0,
+              isPlaying: false,
+              isFinished: true,
+            },
+          })
         } else {
+          const time = getTime({ state })
+          if (!time) return state
+
           const keyframe = animation.keyframes[keyframeIndex]
 
           const progress = getPercentageProgress(
@@ -359,33 +262,15 @@ export const createAnimationSystem =
             keyframe.timingFunction,
           )
 
-          // let updateFunction
+          const currentTime = timeExceeded
+            ? keyframeCurrentTime + time.delta
+            : animation.currentTime + time.delta
 
-          // switch (keyframe.valueRange.type) {
-          //   case 'number':
-          //     updateFunction = updateNumberAnimation
-          //     break
-          //   case 'string':
-          //     updateFunction = updateStringAnimation
-          //     break
-          //   case 'vector2D':
-          //     updateFunction = updateVector2DAnimation
-          //     break
-          //   case 'vector3D':
-          //     updateFunction = updateVector3DAnimation
-          //     break
-          // }
-
-          const time = getTime({ state })
-          if (!time) return state
-
-          const [value, newAnimation] = updateAnimation({
+          // todo next value should be taken from next keyframe, not from valueRange
+          const value = updateAnimation({
             keyframe,
-            time,
-            animation, // todo next value should be taken from next keyframe, not from valueRange
+            timingMode: animation.timingMode,
             progress,
-            keyframeCurrentTime,
-            timeExceeded,
           })
 
           const { component, entity, path } = animation.property
@@ -393,15 +278,13 @@ export const createAnimationSystem =
           component &&
             set(state.component, `${component}.${entity}.${path}`, value)
 
-          return setComponent<
-            | AnimationNumber
-            | AnimationVector2D
-            | AnimationVector3D
-            | AnimationString,
-            InternalInitialState
-          >({
+          return setComponent({
             state,
-            data: newAnimation,
+            data: {
+              ...animation,
+              currentTime,
+              isFinished: timeExceeded,
+            },
           })
         }
       },

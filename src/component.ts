@@ -37,6 +37,8 @@ const getSystemByName = <State extends AnyState = AnyState>(
   system: State['system'],
 ) => system.find((x) => x.name === name)
 
+// todo data should be function which returns current component 
+// setComponent({state, data: (component) => component })
 export const setComponent = <Data, State extends AnyState = AnyState>({
   state,
   data,
