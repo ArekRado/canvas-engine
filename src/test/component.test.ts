@@ -37,6 +37,7 @@ describe('component', () => {
     state = createSystem({
       state,
       name: 'test',
+      componentName: 'test',
       create,
       remove,
       tick,
@@ -104,6 +105,7 @@ describe('component', () => {
     state = createSystem({
       state,
       name: 'test',
+      componentName: 'test',
       create,
     })
 

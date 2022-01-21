@@ -234,6 +234,7 @@ export type SystemMethodParams<
 
 export type System<Component, State extends AnyStateForSystem = AnyStateForSystem> = {
   name: string
+  componentName: string
   priority: number
   /**
    * Called on each component create if state.component[name] and system name are the same

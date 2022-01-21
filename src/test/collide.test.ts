@@ -9,7 +9,7 @@ import {
 import { getComponent, setComponent } from '../component'
 import { CollideBox } from '../type'
 import { componentName } from '../component'
-import { Transform } from '..'
+import { InternalInitialState, Transform } from '..'
 import { getState } from '../util/state'
 
 describe('collide', () => {
@@ -25,21 +25,21 @@ describe('collide', () => {
     state = setEntity({ entity: entity2, state })
     state = setEntity({ entity: entity3, state })
 
-    state = setComponent<Transform>({
+    state = setComponent<Transform, InternalInitialState>({
       state,
       data: defaultTransform({
         fromParentPosition: vector(0, 0),
         entity: entity1,
       }),
     })
-    state = setComponent<Transform>({
+    state = setComponent<Transform, InternalInitialState>({
       state,
       data: defaultTransform({
         fromParentPosition: vector(1, 19),
         entity: entity2,
       }),
     })
-    state = setComponent<Transform>({
+    state = setComponent<Transform, InternalInitialState>({
       state,
       data: defaultTransform({
         fromParentPosition: vector(3.5, 3.5),
@@ -47,7 +47,7 @@ describe('collide', () => {
       }),
     })
 
-    state = setComponent<CollideBox>({
+    state = setComponent<CollideBox, InternalInitialState>({
       state,
       data: defaultCollideBox({
         entity: entity1,
@@ -55,7 +55,7 @@ describe('collide', () => {
         position: vector(1, 1),
       }),
     })
-    state = setComponent<CollideBox>({
+    state = setComponent<CollideBox, InternalInitialState>({
       state,
       data: defaultCollideBox({
         entity: entity2,
@@ -63,7 +63,7 @@ describe('collide', () => {
         position: vector(0, 0),
       }),
     })
-    state = setComponent<CollideBox>({
+    state = setComponent<CollideBox, InternalInitialState>({
       state,
       data: defaultCollideBox({
         entity: entity3,

@@ -52,6 +52,7 @@ export const cameraSystem = (state: InternalInitialState) =>
   createSystem<Camera, InternalInitialState>({
     state,
     name: componentName.camera,
+    componentName: componentName.camera,
     create: ({ state, component }) => {
       state = setCamera({ state, data: component })
 

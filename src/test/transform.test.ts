@@ -3,7 +3,13 @@ import { vector } from '@arekrado/vector-2d'
 import { getInitialState, getState } from '../util/state'
 import { setEntity, createEntity, getEntity } from '../entity'
 import { runOneFrame } from '../util/runOneFrame'
-import { componentName, getComponent, setComponent, Transform } from '..'
+import {
+  componentName,
+  getComponent,
+  InternalInitialState,
+  setComponent,
+  Transform,
+} from '..'
 import { transform } from '../util/defaultComponents'
 
 describe('transform', () => {
@@ -159,35 +165,35 @@ describe('transform', () => {
     state = setEntity({ entity: entity7, state })
     state = setEntity({ entity: entity8, state })
 
-    state = setComponent<Transform>({
+    state = setComponent<Transform, InternalInitialState>({
       state,
       data: transform({ entity: entity1, position: vector(1, 1) }),
     })
-    state = setComponent<Transform>({
+    state = setComponent<Transform, InternalInitialState>({
       state,
       data: transform({ entity: entity2, parentId: entity1 }),
     })
-    state = setComponent<Transform>({
+    state = setComponent<Transform, InternalInitialState>({
       state,
       data: transform({ entity: entity3, parentId: entity2 }),
     })
-    state = setComponent<Transform>({
+    state = setComponent<Transform, InternalInitialState>({
       state,
       data: transform({ entity: entity4, parentId: entity3 }),
     })
-    state = setComponent<Transform>({
+    state = setComponent<Transform, InternalInitialState>({
       state,
       data: transform({ entity: entity5, parentId: entity4 }),
     })
-    state = setComponent<Transform>({
+    state = setComponent<Transform, InternalInitialState>({
       state,
       data: transform({ entity: entity6, parentId: entity5 }),
     })
-    state = setComponent<Transform>({
+    state = setComponent<Transform, InternalInitialState>({
       state,
       data: transform({ entity: entity7, parentId: entity6 }),
     })
-    state = setComponent<Transform>({
+    state = setComponent<Transform, InternalInitialState>({
       state,
       data: transform({ entity: entity8, parentId: entity7 }),
     })

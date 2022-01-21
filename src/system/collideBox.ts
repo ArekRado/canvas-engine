@@ -60,6 +60,7 @@ export const collideBoxSystem = (state: InternalInitialState) =>
   createSystem<CollideBox, InternalInitialState>({
     state,
     name: componentName.collideBox,
+    componentName: componentName.collideBox,
     tick: ({ state, component: collideBox }) => {
       const collisions = findCollisionsWith({
         state,

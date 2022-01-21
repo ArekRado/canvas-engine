@@ -1,6 +1,12 @@
 import { add } from '@arekrado/vector-2d'
 import { getComponent, setComponent } from '../component'
-import { CollideBox, CollideCircle, InternalInitialState, Mouse, MouseInteraction } from '../type'
+import {
+  CollideBox,
+  CollideCircle,
+  InternalInitialState,
+  Mouse,
+  MouseInteraction,
+} from '../type'
 import { createSystem } from './createSystem'
 import { componentName } from '../component'
 import {
@@ -50,6 +56,7 @@ export const mouseInteractionSystem = (state: InternalInitialState) =>
   createSystem<MouseInteraction, InternalInitialState>({
     state,
     name: componentName.mouseInteraction,
+    componentName: componentName.mouseInteraction,
     create: ({ state }) => state,
     remove: ({ state }) => state,
     tick: ({ state, component }) => {

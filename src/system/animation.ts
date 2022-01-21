@@ -230,6 +230,7 @@ export const createAnimationSystem =
     createSystem<AnimationType, InternalInitialState>({
       state,
       name,
+      componentName: name,
       create: ({ state }) => state,
       remove: ({ state }) => state,
       tick: ({ state, component: animation }) => {

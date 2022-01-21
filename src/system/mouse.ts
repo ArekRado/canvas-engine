@@ -103,6 +103,7 @@ export const mouseSystem = ({
 
   return createSystem({
     name: componentName.mouse,
+    componentName: componentName.mouse,
     state,
     priority: systemPriority.mouse,
     tick: ({ state }) => {

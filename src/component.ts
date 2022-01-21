@@ -1,4 +1,4 @@
-import { AnyState, Entity, Guid } from './type'
+import { AnyState, Entity, Guid, System } from './type'
 import { Component, Dictionary } from './type'
 
 export enum componentName {
@@ -32,12 +32,10 @@ export const getComponent = <Data, State extends AnyState = AnyState>({
 }): Component<Data> | undefined =>
   state.component[name]?.[entity] as Component<Data> | undefined
 
-const getSystemByName = <State extends AnyState = AnyState>(
-  name: string,
-  system: State['system'],
-) => system.find((x) => x.name === name)
+const getSystemByName = (name: string, system: Array<System<unknown>>) =>
+  system.find((x) => x.componentName === name)
 
-// todo data should be function which returns current component 
+// todo data should be function which returns current component
 // setComponent({state, data: (component) => component })
 export const setComponent = <Data, State extends AnyState = AnyState>({
   state,

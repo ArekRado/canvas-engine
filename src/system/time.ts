@@ -32,6 +32,7 @@ export const timeSystem = (state: InternalInitialState) => {
 
   return createSystem<Time, InternalInitialState>({
     name: componentName.time,
+    componentName: componentName.time,
     priority: systemPriority.time,
     state,
     tick: ({ state, component }) => {

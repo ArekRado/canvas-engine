@@ -160,6 +160,7 @@ describe('mouseInteraction', () => {
       },
     })
     state = runOneFrame({ state })
+    state = runOneFrame({ state })
 
     const mouseInteraction3 = getComponent<MouseInteraction>({
       name: componentName.mouseInteraction,

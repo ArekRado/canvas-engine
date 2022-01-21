@@ -63,6 +63,7 @@ export const keyboardSystem = ({
 
   return createSystem({
     name: componentName.keyboard,
+    componentName: componentName.keyboard,
     state,
     priority: systemPriority.keyboard,
     tick: ({ state }) => {
