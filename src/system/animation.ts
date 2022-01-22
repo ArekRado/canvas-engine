@@ -10,7 +10,7 @@ import { TimingFunction, getValue } from '../util/bezierFunction'
 import { Keyframe } from '../type'
 import { add, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
-import { createSystem } from '../system/createSystem'
+import { createSystem, systemPriority } from '../system/createSystem'
 import { setComponent } from '../component'
 import { componentName } from '../component'
 import { getTime } from '../system/time'
@@ -231,6 +231,7 @@ export const createAnimationSystem =
       state,
       name,
       componentName: name,
+      priority: systemPriority.animation,
       create: ({ state }) => state,
       remove: ({ state }) => state,
       tick: ({ state, component: animation }) => {

@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
-import { getState } from '../util/state'
+import { getInitialState, getSystems } from '../util/state'
 import { setEntity, createEntity } from '../entity'
 import { runOneFrame } from '../util/runOneFrame'
 import {
@@ -18,17 +18,68 @@ import {
 } from '../type'
 import { componentName } from '../component'
 import { isMouseOver } from '../system/mouseInteraction'
-import { getMouse, setMouse } from '../system/mouse'
+import { getMouse } from '../system/mouse'
 import { Transform } from '..'
 
 describe('mouseInteraction', () => {
+  let mousemoveCallback: Function
+  let mouseenterCallback: Function
+  let mouseleaveCallback: Function
+  let mouseupCallback: Function
+  let mousedownCallback: Function
+  let wheelCallback: Function
+
+  const getInitialStateWithMouse = () =>
+    getSystems({
+      state: getInitialState(),
+      containerId: 'containerId',
+      document: {
+        getElementById: (() => ({
+          getBoundingClientRect: (() => ({
+            left: 0,
+            top: 0,
+          })) as Element['getBoundingClientRect'],
+          addEventListener: ((
+            type: keyof HTMLElementEventMap,
+            callback: Function,
+          ) => {
+            switch (type) {
+              case 'mousemove':
+                mousemoveCallback = callback
+                break
+              case 'mouseenter':
+                mouseenterCallback = callback
+                break
+              case 'mouseleave':
+                mouseleaveCallback = callback
+                break
+              case 'mouseup':
+                mouseupCallback = callback
+                break
+              case 'mousedown':
+                mousedownCallback = callback
+                break
+            }
+          }) as Document['addEventListener'],
+        })) as any as Document['getElementById'],
+        addEventListener: (() => {}) as Document['addEventListener'],
+      } as Document,
+    })
+
+  beforeEach(() => {
+    mousemoveCallback = () => {}
+    mouseenterCallback = () => {}
+    mouseleaveCallback = () => {}
+    mouseupCallback = () => {}
+    mousedownCallback = () => {}
+  })
+
   it('isMouseOver', () => {
+    let state = getInitialStateWithMouse()
+
     const entity = createEntity({ name: '' })
     const mouse = getMouse({
-      state: getState({
-        containerId: 'containerId',
-        document: window.document,
-      }),
+      state,
     })
 
     if (!mouse) return
@@ -72,14 +123,13 @@ describe('mouseInteraction', () => {
   })
 
   it('should set proper mouse interaction values', () => {
+    let state = getInitialStateWithMouse()
+
     const entity = createEntity({ name: 'entity' })
 
-    let state = setEntity({
+    state = setEntity({
       entity,
-      state: getState({
-        document: window.document,
-        containerId: 'containerId',
-      }),
+      state,
     })
 
     state = setEntity({ entity, state })
@@ -115,12 +165,7 @@ describe('mouseInteraction', () => {
     })
 
     // Mouse is not over element
-    state = setMouse({
-      state,
-      data: {
-        position: vector(0, 0),
-      },
-    })
+    mousemoveCallback({ pageX: 0, pageY: 0 })
     state = runOneFrame({ state })
 
     const mouseInteraction1 = getComponent<MouseInteraction>({
@@ -134,12 +179,7 @@ describe('mouseInteraction', () => {
     expect(mouseInteraction1?.isMouseLeave).toBeFalsy()
 
     // Mouse is over collideBox
-    state = setMouse({
-      state,
-      data: {
-        position: vector(100, 100),
-      },
-    })
+    mousemoveCallback({ pageX: 100, pageY: 100 })
     state = runOneFrame({ state })
 
     const mouseInteraction2 = getComponent<MouseInteraction>({
@@ -153,13 +193,7 @@ describe('mouseInteraction', () => {
     expect(mouseInteraction2?.isMouseLeave).toBeFalsy()
 
     // Mouse is over collideCircle
-    state = setMouse({
-      state,
-      data: {
-        position: vector(200, 200),
-      },
-    })
-    state = runOneFrame({ state })
+    mousemoveCallback({ pageX: 200, pageY: 200 })
     state = runOneFrame({ state })
 
     const mouseInteraction3 = getComponent<MouseInteraction>({
@@ -173,12 +207,7 @@ describe('mouseInteraction', () => {
     expect(mouseInteraction3?.isMouseLeave).toBeFalsy()
 
     // Mouse is not over element again
-    state = setMouse({
-      state,
-      data: {
-        position: vector(300, 300),
-      },
-    })
+    mousemoveCallback({ pageX: 300, pageY: 300 })
     state = runOneFrame({ state })
 
     const mouseInteraction4 = getComponent<MouseInteraction>({

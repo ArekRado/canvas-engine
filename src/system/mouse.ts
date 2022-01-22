@@ -13,7 +13,7 @@ const mouseGetSet = createGetSetForUniqComponent<Mouse, InternalInitialState>({
 })
 
 export const getMouse = mouseGetSet.getComponent
-export const setMouse = mouseGetSet.setComponent
+const setMouse = mouseGetSet.setComponent
 
 let buttons = 0
 let position = vectorZero()

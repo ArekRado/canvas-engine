@@ -82,6 +82,6 @@ describe('runOneFrame', () => {
 
     runOneFrame({ state })
 
-    expect(callQueue.toString()).toBe('tick4,tick2,tick1,tick3,tick5')
+    expect(callQueue.toString()).toBe('tick5,tick3,tick1,tick2,tick4')
   })
 })

@@ -7,7 +7,7 @@ export const runOneFrame = <State extends AnyState = AnyState>({
 }): State => {
   return [...state.system, ...state.globalSystem]
     .concat()
-    .sort((a, b) => (a.priority > b.priority ? -1 : 1))
+    .sort((a, b) => (a.priority > b.priority ? 1 : -1))
     .reduce(
       (acc, system) =>
         system.tick ? (system.tick({ state: acc }) as State) : acc,

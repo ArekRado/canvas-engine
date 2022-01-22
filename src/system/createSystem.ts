@@ -7,14 +7,16 @@ import {
 } from '../type'
 
 export enum systemPriority {
-  last = 3,
+  last = 4,
   zero = 0,
 
-  time = 3,
-  mouse = 2,
-  keyboard = 2,
+  // IO uses mutated state so it should be called first
+  mouse = -1, 
+  keyboard = -1,
+  
+  animation = 3,
+  time = 2,
   transform = 1,
-  // sprite = -1,
   // draw = -2,
 }
 
@@ -38,7 +40,7 @@ export const createSystem = <
   const system = {
     name: params.name,
     componentName: params.componentName,
-    priority: params.priority || systemPriority.zero,
+    priority: params.priority || systemPriority.last,
     create: params.create,
     tick: ({ state }: { state: State }) => {
       const component = state.component[params.componentName] as Dictionary<
