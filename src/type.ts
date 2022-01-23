@@ -51,65 +51,80 @@ export type CollideCircle = Component<{
   collisions: CollideType[]
 }>
 
-export type AnimationProperty = {
-  path: string
-  component: string // it should be keyof State['component']
-  entity: Guid
-  index?: number
+export namespace Animation {
+  // export type ValueRangeNumber = {
+  //   type: 'number'
+  //   value: Vector2D
+  // }
+
+  // export type ValueRangeVector2D = {
+  //   type: 'vector2D'
+  //   value: [Vector2D, Vector2D]
+  // }
+
+  // export type ValueRangeVector3D = {
+  //   type: 'vector3D'
+  //   value: [Vector3D, Vector3D]
+  // }
+
+  // export type ValueRangeString = {
+  //   type: 'string'
+  //   value: string
+  // }
+
+  export enum TimingMode {
+    smooth = 'smooth',
+    step = 'step',
+  }
+
+  export enum WrapMode {
+    /**
+     * When time reaches the end of the animation clip, the clip will automatically stop playing and time will be reset to beginning of the clip.
+     */
+    once = 'once',
+    /**
+     * When time reaches the end of the animation clip, time will continue at the beginning.
+     */
+    loop = 'loop',
+    /**
+     * When time reaches the end of the animation clip, time will ping pong back between beginning and end.
+     */
+    pingPong = 'pingPong',
+    /**
+     * Plays back the animation. When it reaches the end, it will keep playing the last frame and never stop playing.
+     */
+    clampForever = 'clampForever',
+  }
+
+  export type Keyframe = {
+    duration: number
+    timingFunction: TimingFunction
+    valueRange: Vector2D | [Vector2D, Vector2D] | [Vector3D, Vector3D] | string
+  }
+
+  export type Property = {
+    /**
+     * entity.component[index].path
+     */
+    path: string
+    component: string // it should be keyof State['component']
+    entity: Guid
+    index?: number
+    keyframes: Keyframe[]
+  }
+
+  export type AnimationComponent = Component<{
+    currentTime: number
+    isPlaying: boolean
+    /**
+     * is true when wrapMode === 'once' and currentTime exceded
+     */
+    isFinished: boolean
+    wrapMode: WrapMode
+    timingMode: TimingMode
+    properties: Array<Property>
+  }>
 }
-
-export type AnimationValueRangeNumber = {
-  type: 'number'
-  value: Vector2D
-}
-
-export type AnimationValueRangeVector2D = {
-  type: 'vector2D'
-  value: [Vector2D, Vector2D]
-}
-
-export type AnimationValueRangeVector3D = {
-  type: 'vector3D'
-  value: [Vector3D, Vector3D]
-}
-
-export type AnimationValueRangeString = {
-  type: 'string'
-  value: string
-}
-
-export type TimingMode = 'smooth' | 'step'
-
-export type WrapMode =
-  //When time reaches the end of the animation clip, the clip will automatically stop playing and time will be reset to beginning of the clip.
-  | 'once'
-  // When time reaches the end of the animation clip, time will continue at the beginning.
-  | 'loop'
-  // When time reaches the end of the animation clip, time will ping pong back between beginning and end.
-  | 'pingPong'
-  // Plays back the animation. When it reaches the end, it will keep playing the last frame and never stop playing.
-  | 'clampForever'
-
-export type Keyframe<AnimationValueRange> = {
-  duration: number
-  timingFunction: TimingFunction
-  valueRange: AnimationValueRange
-}
-
-export type AnimationComponent<AnimationValueRange> = Component<{
-  keyframes: Keyframe<AnimationValueRange>[]
-  isPlaying: boolean
-  isFinished: boolean
-  currentTime: number
-  property: AnimationProperty
-  wrapMode: WrapMode
-  timingMode: TimingMode
-}>
-
-export type AnimationNumber = AnimationComponent<[number, number]>
-export type AnimationString = AnimationComponent<string>
-export type AnimationVector2D = AnimationComponent<[Vector2D, Vector2D]>
-export type AnimationVector3D = AnimationComponent<[Vector3D, Vector3D]>
 
 export type MouseInteraction = Component<{
   // doubleClickSpeed: number
@@ -232,7 +247,10 @@ export type SystemMethodParams<
   component: Component<ComponentData>
 }
 
-export type System<Component, State extends AnyStateForSystem = AnyStateForSystem> = {
+export type System<
+  Component,
+  State extends AnyStateForSystem = AnyStateForSystem,
+> = {
   name: string
   componentName: string
   priority: number
@@ -274,11 +292,7 @@ export type GlobalSystem<State extends AnyStateForSystem> = {
 ////////////////////////////////////
 
 export type StateDefaultComponents = {
-  animationNumber: Dictionary<AnimationNumber>
-  animationString: Dictionary<AnimationString>
-  animationVector2D: Dictionary<AnimationVector2D>
-  animationVector3D: Dictionary<AnimationVector3D>
-
+  animation: Dictionary<Animation.AnimationComponent>
   collideBox: Dictionary<CollideBox>
   collideCircle: Dictionary<CollideCircle>
   mouseInteraction: Dictionary<MouseInteraction>
@@ -290,10 +304,11 @@ export type StateDefaultComponents = {
 }
 
 export type StateDefaultSystems =
-  | System<AnimationNumber, AnyStateForSystem>
-  | System<AnimationString, AnyStateForSystem>
-  | System<AnimationVector2D, AnyStateForSystem>
-  | System<AnimationVector3D, AnyStateForSystem>
+  | System<Animation.AnimationComponent, AnyStateForSystem>
+  // | System<AnimationNumber, AnyStateForSystem>
+  // | System<AnimationString, AnyStateForSystem>
+  // | System<AnimationVector2D, AnyStateForSystem>
+  // | System<AnimationVector3D, AnyStateForSystem>
   | System<CollideBox, AnyStateForSystem>
   | System<CollideCircle, AnyStateForSystem>
   | System<MouseInteraction, AnyStateForSystem>

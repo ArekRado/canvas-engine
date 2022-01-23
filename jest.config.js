@@ -3,5 +3,4 @@ module.exports = {
   transform: {
     '\\.[jt]sx?$': 'babel-jest',
   },
-  // transformIgnorePatterns: ['node_modules/(?!@@babylonjs/core/Maths/math.vector.js)'],
 }

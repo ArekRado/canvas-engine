@@ -6,16 +6,9 @@ export enum componentName {
   transform = 'transform',
   mouse = 'mouse',
   keyboard = 'keyboard',
-  sprite = 'sprite',
-
-  animationNumber = 'animationNumber',
-  animationString = 'animationString',
-  animationVector2D = 'animationVector2D',
-  animationVector3D = 'animationVector3D',
-
+  animation = 'animation',
   collideBox = 'collideBox',
   collideCircle = 'collideCircle',
-  blueprint = 'blueprint',
   mouseInteraction = 'mouseInteraction',
   camera = 'camera',
 }

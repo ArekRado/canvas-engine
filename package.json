@@ -1,5 +1,5 @@
 {
-  "version": "0.0.83",
+  "version": "0.0.84",
   "name": "@arekrado/canvas-engine",
   "umd:main": "dist/canvas-engine.umd.production.js",
   "main": "dist/index.js",
@@ -35,10 +35,11 @@
     "lint": "tsdx lint"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=16",
+    "npm": ">=8.3.0"
   },
   "dependencies": {
-    "@arekrado/vector-2d": "0.0.2",
+    "@arekrado/vector-2d": "0.0.5",
     "@babylonjs/core": "5.0.0-alpha.65",
     "just-safe-set": "^4.0.1",
     "uuid": "^8.3.2"
@@ -47,11 +48,11 @@
     "@babel/core": "^7.16.5",
     "@babel/preset-env": "^7.16.5",
     "@babel/preset-typescript": "^7.16.5",
-    "@types/jest": "^27.0.3",
+    "@types/jest": "^27.4.0",
     "@types/just-safe-set": "^2.2.1",
     "@types/uuid": "^8.3.3",
-    "babel-jest": "^27.4.5",
-    "jest": "^27.4.5",
+    "babel-jest": "^27.4.6",
+    "jest": "^27.4.7",
     "jsdom": "^19.0.0",
     "prettier": "^2.5.1",
     "typescript": "^4.5.4"

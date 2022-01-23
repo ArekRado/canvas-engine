@@ -2,97 +2,20 @@ import { vectorZero } from '@arekrado/vector-2d'
 import { componentName } from '../component'
 import { Camera, GetDefaultComponent, Mouse, MouseInteraction } from '../type'
 import { CollideBox, CollideCircle } from '../type'
-import { createEntity } from '../entity'
-import {
-  AnimationNumber,
-  AnimationString,
-  AnimationVector2D,
-  AnimationVector3D,
-  Keyboard,
-  Transform,
-} from '..'
+import { Animation, Keyboard, Transform } from '..'
 
-export const animationNumber: GetDefaultComponent<AnimationNumber> = ({
+export const animation: GetDefaultComponent<Animation.AnimationComponent> = ({
   entity,
   ...data
 }) => ({
   entity,
-  name: componentName.animationNumber,
-  keyframes: [],
+  name: componentName.animation,
   isPlaying: false,
   isFinished: false,
   currentTime: 0,
-  property: {
-    component: 'collideBox',
-    path: '-',
-    entity: createEntity({ name: '-' }),
-    index: -1,
-  },
-  wrapMode: 'once',
-  timingMode: 'smooth',
-  ...data,
-})
-
-export const animationString: GetDefaultComponent<AnimationString> = ({
-  entity,
-  ...data
-}) => ({
-  entity,
-  name: componentName.animationString,
-  keyframes: [],
-  isPlaying: false,
-  isFinished: false,
-  currentTime: 0,
-  property: {
-    component: 'collideBox',
-    path: '-',
-    entity: createEntity({ name: '-' }),
-    index: -1,
-  },
-  wrapMode: 'once',
-  timingMode: 'smooth',
-  ...data,
-})
-
-export const animationVector2D: GetDefaultComponent<AnimationVector2D> = ({
-  entity,
-  ...data
-}) => ({
-  entity,
-  name: componentName.animationVector2D,
-  keyframes: [],
-  isPlaying: false,
-  isFinished: false,
-  currentTime: 0,
-  property: {
-    component: 'collideBox',
-    path: '-',
-    entity: createEntity({ name: '-' }),
-    index: -1,
-  },
-  wrapMode: 'once',
-  timingMode: 'smooth',
-  ...data,
-})
-
-export const animationVector3D: GetDefaultComponent<AnimationVector3D> = ({
-  entity,
-  ...data
-}) => ({
-  entity,
-  name: componentName.animationVector3D,
-  keyframes: [],
-  isPlaying: false,
-  isFinished: false,
-  currentTime: 0,
-  property: {
-    component: 'collideBox',
-    path: '-',
-    entity: createEntity({ name: '-' }),
-    index: -1,
-  },
-  wrapMode: 'once',
-  timingMode: 'smooth',
+  properties: [],
+  wrapMode: Animation.WrapMode.once,
+  timingMode: Animation.TimingMode.smooth,
   ...data,
 })
 

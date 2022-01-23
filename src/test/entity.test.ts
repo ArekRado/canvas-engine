@@ -5,10 +5,10 @@ import { setEntity, removeEntity, createEntity } from '../entity'
 import {
   collideCircle as defaultCollideCircle,
   collideBox as defaultCollideBox,
-  animationNumber,
+  animation,
 } from '../util/defaultComponents'
 import { setComponent } from '../component'
-import { CollideBox, CollideCircle, AnimationNumber } from '../type'
+import { CollideBox, CollideCircle, Animation } from '../type'
 import { InternalInitialState } from '..'
 
 describe('entity', () => {
@@ -16,9 +16,9 @@ describe('entity', () => {
     const entity = createEntity({ name: 'test' })
     let state = setEntity({ state: getState({}), entity })
 
-    state = setComponent<AnimationNumber, InternalInitialState>({
+    state = setComponent<Animation.AnimationComponent, InternalInitialState>({
       state,
-      data: animationNumber({ entity }),
+      data: animation({ entity }),
     })
     state = setComponent<CollideBox, InternalInitialState>({
       state,
@@ -30,7 +30,7 @@ describe('entity', () => {
     })
 
     expect(state.entity[entity]).toEqual(entity)
-    expect(state.component.animationNumber[entity]).toBeDefined()
+    expect(state.component.animation[entity]).toBeDefined()
     expect(state.component.collideBox[entity]).toBeDefined()
     expect(state.component.collideCircle[entity]).toBeDefined()
 
@@ -40,9 +40,7 @@ describe('entity', () => {
     })
 
     expect(stateWithoutEntity.entity[entity]).not.toBeDefined()
-    expect(
-      stateWithoutEntity.component.animationNumber[entity],
-    ).not.toBeDefined()
+    expect(stateWithoutEntity.component.animation[entity]).not.toBeDefined()
     expect(stateWithoutEntity.component.collideBox[entity]).not.toBeDefined()
     expect(stateWithoutEntity.component.collideCircle[entity]).not.toBeDefined()
   })

@@ -1,9 +1,3 @@
-import {
-  animationNumberSystem,
-  animationStringSystem,
-  animationVector2DSystem,
-  animationVector3DSystem,
-} from '../system/animation'
 import { collideBoxSystem } from '../system/collideBox'
 import { transformSystem } from '../system/transform'
 import { componentName } from '../component'
@@ -15,19 +9,15 @@ import { Scene } from '@babylonjs/core/scene'
 import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera'
 import { cameraSystem } from '../system/camera'
 import { AnyState, InternalInitialState } from '..'
+import { animationSystem } from '../system/animation'
 
 export const getInitialState = (): InternalInitialState => ({
   entity: {},
   component: {
-    [componentName.animationNumber]: {},
-    [componentName.animationString]: {},
-    [componentName.animationVector2D]: {},
-    [componentName.animationVector3D]: {},
-
+    [componentName.animation]: {},
     [componentName.collideBox]: {},
     [componentName.collideCircle]: {},
     [componentName.mouseInteraction]: {},
-
     [componentName.time]: {},
     [componentName.camera]: {},
     [componentName.transform]: {},
@@ -85,10 +75,7 @@ export const getSystems = ({
   internatlState = cameraSystem(internatlState)
   internatlState = transformSystem(internatlState)
   internatlState = collideBoxSystem(internatlState)
-  internatlState = animationNumberSystem(internatlState)
-  internatlState = animationStringSystem(internatlState)
-  internatlState = animationVector2DSystem(internatlState)
-  internatlState = animationVector3DSystem(internatlState)
+  internatlState = animationSystem(internatlState)
   internatlState = mouseInteractionSystem(internatlState)
 
   if (containerId) {

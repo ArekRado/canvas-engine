@@ -1,33 +1,23 @@
 import 'regenerator-runtime/runtime'
 import { vector, Vector2D } from '@arekrado/vector-2d'
 import {
+  animation,
   transform as defaultTransform,
-  animationNumber,
-  animationString,
-  animationVector2D,
-  animationVector3D,
 } from '../util/defaultComponents'
 import {
   getActiveKeyframe,
   updateNumberAnimation,
   updateVector2DAnimation,
   updateVector3DAnimation,
-  updateStringAnimation,
+  // updateStringAnimation,
 } from '../system/animation'
 import { createEntity, setEntity } from '../entity'
 import { InternalInitialState, Vector3D } from '../type'
 import { runOneFrame } from '../util/runOneFrame'
 import { getComponent, setComponent } from '../component'
 import { componentName } from '../component'
-import { getTime, setTime } from '../system/time'
-import {
-  AnimationNumber,
-  AnimationString,
-  AnimationVector2D,
-  AnimationVector3D,
-  Component,
-  Transform,
-} from '..'
+import { setTime } from '../system/time'
+import { Animation, Component, Transform } from '..'
 import { getState } from '../util/state'
 
 type AnyComponent<Value> = Component<{ value: Value }>
@@ -67,30 +57,9 @@ describe('animation', () => {
       entity,
     })
 
-  const getAnimationNumber = (state: InternalInitialState) =>
-    getComponent<AnimationNumber>({
-      name: componentName.animationNumber,
-      state,
-      entity,
-    })
-
-  const getAnimationString = (state: InternalInitialState) =>
-    getComponent<AnimationString>({
-      name: componentName.animationString,
-      state,
-      entity,
-    })
-
-  const getAnimationVector2D = (state: InternalInitialState) =>
-    getComponent<AnimationVector2D>({
-      name: componentName.animationVector2D,
-      state,
-      entity,
-    })
-
-  const getAnimationVector3D = (state: InternalInitialState) =>
-    getComponent<AnimationVector3D>({
-      name: componentName.animationVector3D,
+  const getAnimation = (state: InternalInitialState) =>
+    getComponent<Animation.AnimationComponent>({
+      name: componentName.animation,
       state,
       entity,
     })
@@ -112,103 +81,85 @@ describe('animation', () => {
 
   describe('getActiveKeyframe', () => {
     it('should return proper time and index when time is zero', () => {
-      const animation = animationNumber({
-        entity,
-        isPlaying: true,
+      const { keyframeCurrentTime, keyframeIndex } = getActiveKeyframe({
+        wrapMode: Animation.WrapMode.once,
         currentTime: 0,
-        property: {
+        animationProperty: {
           component: 'animation',
           path: 'FieldNumber',
           entity,
+          keyframes: [
+            {
+              duration: 10,
+              timingFunction: 'Linear',
+              valueRange: vector(0, 1),
+            },
+          ],
         },
-        keyframes: [
-          {
-            duration: 10,
-            timingFunction: 'Linear',
-            valueRange: vector(0, 1),
-          },
-        ],
-        isFinished: false,
-        wrapMode: 'once',
+        secondLoop: false,
       })
-
-      const { keyframeCurrentTime, keyframeIndex } = getActiveKeyframe(
-        animation,
-        false,
-      )
 
       expect(keyframeCurrentTime).toBe(0)
       expect(keyframeIndex).toBe(0)
     })
 
     it('should return proper time and index when time is non zero', () => {
-      const animation = animationNumber({
-        entity,
-        isPlaying: true,
+      const { keyframeCurrentTime, keyframeIndex } = getActiveKeyframe({
+        wrapMode: Animation.WrapMode.once,
         currentTime: 5,
-        property: {
+        animationProperty: {
           component: 'animation',
           path: 'FieldNumber',
           entity,
+          keyframes: [
+            {
+              duration: 10,
+              timingFunction: 'Linear',
+              valueRange: vector(0, 1),
+            },
+          ],
         },
-        keyframes: [
-          {
-            duration: 10,
-            timingFunction: 'Linear',
-            valueRange: vector(0, 1),
-          },
-        ],
-        isFinished: false,
-        wrapMode: 'once',
+        secondLoop: false,
       })
-
-      const { keyframeCurrentTime, keyframeIndex } = getActiveKeyframe(
-        animation,
-        false,
-      )
 
       expect(keyframeCurrentTime).toBe(5)
       expect(keyframeIndex).toBe(0)
     })
 
     it('should return proper data when animation has multiple keyframes and currentTime exceeded all keyframes', () => {
-      const animation = animationNumber({
-        entity,
-        isPlaying: true,
-        currentTime: 2000,
-        property: {
-          component: 'animation',
-          path: 'FieldNumber',
-          entity,
-        },
-        keyframes: [
-          {
-            duration: 10,
-            timingFunction: 'Linear',
-            valueRange: vector(0, 1),
-          },
-          {
-            duration: 1,
-            timingFunction: 'Linear',
-            valueRange: vector(0, 1),
-          },
-          {
-            duration: 2,
-            timingFunction: 'Linear',
-            valueRange: vector(0, 1),
-          },
-          {
-            duration: 100,
-            timingFunction: 'Linear',
-            valueRange: vector(0, 1),
-          },
-        ],
-        isFinished: false,
-        wrapMode: 'once',
-      })
-
       const { keyframeCurrentTime, keyframeIndex, timeExceeded } =
-        getActiveKeyframe(animation, false)
+        getActiveKeyframe({
+          secondLoop: false,
+          currentTime: 2000,
+          wrapMode: Animation.WrapMode.once,
+          animationProperty: {
+            component: 'animation',
+            path: 'FieldNumber',
+            entity,
+            keyframes: [
+              {
+                duration: 10,
+                timingFunction: 'Linear',
+                valueRange: vector(0, 1),
+              },
+              {
+                duration: 1,
+                timingFunction: 'Linear',
+                valueRange: vector(0, 1),
+              },
+              {
+                duration: 2,
+                timingFunction: 'Linear',
+                valueRange: vector(0, 1),
+              },
+              {
+                duration: 100,
+                timingFunction: 'Linear',
+                valueRange: vector(0, 1),
+              },
+            ],
+          },
+        })
 
       expect(keyframeCurrentTime).toBe(1887.0)
       expect(timeExceeded).toBe(true)
@@ -216,32 +167,30 @@ describe('animation', () => {
     })
 
     it('should return proper data when animation has multiple keyframes - animation in the middle ', () => {
-      const animation = animationNumber({
-        entity,
-        isPlaying: true,
-        keyframes: [
-          {
-            duration: 2,
-            timingFunction: 'Linear',
-            valueRange: vector(0, 1),
+      expect(
+        getActiveKeyframe({
+          currentTime: 3,
+          wrapMode: Animation.WrapMode.once,
+          animationProperty: {
+            path: 'value',
+            component: numberComponentName,
+            entity,
+            keyframes: [
+              {
+                duration: 2,
+                timingFunction: 'Linear',
+                valueRange: vector(0, 1),
+              },
+              {
+                duration: 2,
+                timingFunction: 'Linear',
+                valueRange: vector(0, 1),
+              },
+            ],
           },
-          {
-            duration: 2,
-            timingFunction: 'Linear',
-            valueRange: vector(0, 1),
-          },
-        ],
-        currentTime: 3,
-        wrapMode: 'once',
-        isFinished: false,
-        property: {
-          path: 'value',
-          component: numberComponentName,
-          entity,
-        },
-      })
-
-      expect(getActiveKeyframe(animation, false)).toEqual({
+          secondLoop: false,
+        }),
+      ).toEqual({
         keyframeCurrentTime: 1,
         keyframeIndex: 1,
         timeExceeded: false,
@@ -249,28 +198,24 @@ describe('animation', () => {
     })
 
     it('should return proper data when animation has one keyframe and currentTime exceeded animation', () => {
-      const animation = animationNumber({
-        entity,
-        isPlaying: true,
-        currentTime: 2000,
-        property: {
-          component: 'animation',
-          path: 'FieldNumber',
-          entity,
-        },
-        keyframes: [
-          {
-            duration: 10,
-            timingFunction: 'Linear',
-            valueRange: vector(0, 1),
-          },
-        ],
-        isFinished: false,
-        wrapMode: 'once',
-      })
-
       const { keyframeCurrentTime, keyframeIndex, timeExceeded } =
-        getActiveKeyframe(animation, false)
+        getActiveKeyframe({
+          currentTime: 2000,
+          wrapMode: Animation.WrapMode.once,
+          secondLoop: false,
+          animationProperty: {
+            component: 'animation',
+            path: 'FieldNumber',
+            entity,
+            keyframes: [
+              {
+                duration: 10,
+                timingFunction: 'Linear',
+                valueRange: vector(0, 1),
+              },
+            ],
+          },
+        })
 
       expect(keyframeCurrentTime).toBe(1990)
       expect(timeExceeded).toBe(true)
@@ -278,43 +223,39 @@ describe('animation', () => {
     })
 
     it('should return proper data when animation has multiple keyframes and is looped', () => {
-      const animation = animationNumber({
-        entity,
-        isPlaying: true,
-        currentTime: 2000,
-        property: {
-          component: 'animation',
-          path: 'FieldNumber',
-          entity,
-        },
-        keyframes: [
-          {
-            duration: 10,
-            timingFunction: 'Linear',
-            valueRange: vector(0, 1),
-          },
-          {
-            duration: 1,
-            timingFunction: 'Linear',
-            valueRange: vector(0, 1),
-          },
-          {
-            duration: 2,
-            timingFunction: 'Linear',
-            valueRange: vector(0, 1),
-          },
-          {
-            duration: 100,
-            timingFunction: 'Linear',
-            valueRange: vector(0, 1),
-          },
-        ],
-        isFinished: false,
-        wrapMode: 'loop',
-      })
-
       const { keyframeCurrentTime, keyframeIndex, timeExceeded } =
-        getActiveKeyframe(animation, false)
+        getActiveKeyframe({
+          currentTime: 2000,
+          wrapMode: Animation.WrapMode.loop,
+          secondLoop: false,
+          animationProperty: {
+            component: 'animation',
+            path: 'FieldNumber',
+            entity,
+            keyframes: [
+              {
+                duration: 10,
+                timingFunction: 'Linear',
+                valueRange: vector(0, 1),
+              },
+              {
+                duration: 1,
+                timingFunction: 'Linear',
+                valueRange: vector(0, 1),
+              },
+              {
+                duration: 2,
+                timingFunction: 'Linear',
+                valueRange: vector(0, 1),
+              },
+              {
+                duration: 100,
+                timingFunction: 'Linear',
+                valueRange: vector(0, 1),
+              },
+            ],
+          },
+        })
 
       expect(keyframeCurrentTime).toBe(66.0)
       expect(timeExceeded).toBe(true)
@@ -322,53 +263,49 @@ describe('animation', () => {
     })
 
     it('should return proper data when animation has negative value range', () => {
-      const animation1 = animationNumber({
-        entity,
-        isPlaying: true,
-        currentTime: 5,
-        property: {
-          component: 'animation',
-          path: 'FieldNumber',
-          entity,
-        },
-        keyframes: [
-          {
-            duration: 10,
-            timingFunction: 'Linear',
-            valueRange: vector(-1, -2),
+      expect(
+        getActiveKeyframe({
+          currentTime: 5,
+          wrapMode: Animation.WrapMode.once,
+          animationProperty: {
+            component: 'animation',
+            path: 'FieldNumber',
+            entity,
+            keyframes: [
+              {
+                duration: 10,
+                timingFunction: 'Linear',
+                valueRange: vector(-1, -2),
+              },
+            ],
           },
-        ],
-        isFinished: false,
-        wrapMode: 'once',
-      })
-
-      expect(getActiveKeyframe(animation1, false)).toEqual({
+          secondLoop: false,
+        }),
+      ).toEqual({
         keyframeCurrentTime: 5,
         keyframeIndex: 0,
         timeExceeded: false,
       })
 
-      const animation2 = animationNumber({
-        entity,
-        isPlaying: true,
-        currentTime: 2000,
-        property: {
-          component: 'animation',
-          path: 'FieldNumber',
-          entity,
-        },
-        keyframes: [
-          {
-            duration: 10,
-            timingFunction: 'Linear',
-            valueRange: vector(-1, -2),
+      expect(
+        getActiveKeyframe({
+          currentTime: 2000,
+          wrapMode: Animation.WrapMode.once,
+          animationProperty: {
+            component: 'animation',
+            path: 'FieldNumber',
+            entity,
+            keyframes: [
+              {
+                duration: 10,
+                timingFunction: 'Linear',
+                valueRange: vector(-1, -2),
+              },
+            ],
           },
-        ],
-        isFinished: false,
-        wrapMode: 'once',
-      })
-
-      expect(getActiveKeyframe(animation2, false)).toEqual({
+          secondLoop: false,
+        }),
+      ).toEqual({
         keyframeCurrentTime: 1990,
         keyframeIndex: -1,
         timeExceeded: true,
@@ -479,6 +416,7 @@ describe('animation', () => {
   })
 
   describe('number', () => {
+    it.todo('should works with index')
     it('Linear animation should change value in proper way', () => {
       let state = setEntity({ state: getState({}), entity })
       state = setComponent<NumberComponent, InternalInitialState>({
@@ -489,33 +427,35 @@ describe('animation', () => {
           value: 0,
         },
       })
-      state = setComponent<AnimationNumber, InternalInitialState>({
+      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animationNumber({
+        data: animation({
           entity,
           isPlaying: true,
-          keyframes: [
+          currentTime: 0,
+          wrapMode: Animation.WrapMode.once,
+          isFinished: false,
+          properties: [
             {
-              duration: 10,
-              timingFunction: 'Linear',
-              valueRange: vector(0, 1),
+              path: 'value',
+              component: numberComponentName,
+              entity,
+              keyframes: [
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+              ],
             },
           ],
-          currentTime: 0,
-          wrapMode: 'once',
-          isFinished: false,
-          property: {
-            path: 'value',
-            component: numberComponentName,
-            entity,
-          },
         }),
       })
 
       state = tick(0, state)
       expect(getNumberComponent(state)?.value).toBe(0)
-      expect(getAnimationNumber(state)?.isFinished).toBeFalsy()
-      expect(getAnimationNumber(state)?.isPlaying).toBeTruthy()
+      expect(getAnimation(state)?.isFinished).toBeFalsy()
+      expect(getAnimation(state)?.isPlaying).toBeTruthy()
 
       state = tick(1, state)
       expect(getNumberComponent(state)?.value).toBe(0)
@@ -541,8 +481,8 @@ describe('animation', () => {
       state = tick(1020, state)
       expect(getNumberComponent(state)?.value).toBe(1)
 
-      expect(getAnimationNumber(state)?.isFinished).toBeTruthy()
-      expect(getAnimationNumber(state)?.isPlaying).toBeFalsy()
+      expect(getAnimation(state)?.isFinished).toBeTruthy()
+      expect(getAnimation(state)?.isPlaying).toBeFalsy()
     })
 
     it('Should works with negative values', () => {
@@ -555,26 +495,28 @@ describe('animation', () => {
           value: 5,
         },
       })
-      state = setComponent<AnimationNumber, InternalInitialState>({
+      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animationNumber({
+        data: animation({
           entity,
           isPlaying: true,
-          keyframes: [
+          currentTime: 0,
+          wrapMode: Animation.WrapMode.once,
+          isFinished: false,
+          properties: [
             {
-              duration: 10,
-              timingFunction: 'Linear',
-              valueRange: vector(-1, -2),
+              path: 'value',
+              component: numberComponentName,
+              entity,
+              keyframes: [
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: vector(-1, -2),
+                },
+              ],
             },
           ],
-          currentTime: 0,
-          wrapMode: 'once',
-          isFinished: false,
-          property: {
-            path: 'value',
-            component: numberComponentName,
-            entity,
-          },
         }),
       })
 
@@ -625,41 +567,43 @@ describe('animation', () => {
           value: 0,
         },
       })
-      state = setComponent<AnimationNumber, InternalInitialState>({
+      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animationNumber({
+        data: animation({
           entity,
           isPlaying: true,
-          keyframes: [
+          currentTime: 0,
+          wrapMode: Animation.WrapMode.once,
+          isFinished: false,
+          properties: [
             {
-              duration: 10,
-              timingFunction: 'Linear',
-              valueRange: vector(0, 1),
-            },
-            {
-              duration: 1,
-              timingFunction: 'Linear',
-              valueRange: vector(0, 1),
-            },
-            {
-              duration: 2,
-              timingFunction: 'Linear',
-              valueRange: vector(0, 1),
-            },
-            {
-              duration: 100,
-              timingFunction: 'Linear',
-              valueRange: vector(0, 1),
+              path: 'value',
+              component: numberComponentName,
+              entity,
+              keyframes: [
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+                {
+                  duration: 1,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+                {
+                  duration: 2,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+                {
+                  duration: 100,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+              ],
             },
           ],
-          currentTime: 0,
-          wrapMode: 'once',
-          isFinished: false,
-          property: {
-            path: 'value',
-            component: numberComponentName,
-            entity,
-          },
         }),
       })
 
@@ -686,9 +630,9 @@ describe('animation', () => {
       // // actually Im not sure xD
       // state = tick(300, state)
 
-      // expect(getAnimationNumber(state)?.isPlaying).toBe(false)
-      // expect(getAnimationNumber(state)?.isFinished).toBe(true)
-      // expect(getAnimationNumber(state)?.currentTime).toBe(0)
+      // expect(getAnimation(state)?.isPlaying).toBe(false)
+      // expect(getAnimation(state)?.isFinished).toBe(true)
+      // expect(getAnimation(state)?.currentTime).toBe(0)
     })
 
     it('Should works with looped animations', () => {
@@ -701,41 +645,43 @@ describe('animation', () => {
           value: 0,
         },
       })
-      state = setComponent<AnimationNumber, InternalInitialState>({
+      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animationNumber({
+        data: animation({
           entity,
           isPlaying: true,
-          keyframes: [
+          currentTime: 0,
+          wrapMode: Animation.WrapMode.loop,
+          isFinished: false,
+          properties: [
             {
-              duration: 10,
-              timingFunction: 'Linear',
-              valueRange: vector(0, 1),
-            },
-            {
-              duration: 1,
-              timingFunction: 'Linear',
-              valueRange: vector(0, 1),
-            },
-            {
-              duration: 2,
-              timingFunction: 'Linear',
-              valueRange: vector(0, 1),
-            },
-            {
-              duration: 100,
-              timingFunction: 'Linear',
-              valueRange: vector(0, 1),
+              path: 'value',
+              component: numberComponentName,
+              entity,
+              keyframes: [
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+                {
+                  duration: 1,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+                {
+                  duration: 2,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+                {
+                  duration: 100,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+              ],
             },
           ],
-          currentTime: 0,
-          wrapMode: 'loop',
-          isFinished: false,
-          property: {
-            path: 'value',
-            component: numberComponentName,
-            entity,
-          },
         }),
       })
 
@@ -744,14 +690,133 @@ describe('animation', () => {
 
       state = tick(2000, state)
       expect(getNumberComponent(state)?.value).toBe(0.66)
-      expect(getAnimationNumber(state)?.isFinished).toBe(true)
-      expect(getAnimationNumber(state)?.isPlaying).toBe(true)
-      expect(getAnimationNumber(state)?.currentTime).toBe(66)
+      expect(getAnimation(state)?.isFinished).toBe(false)
+      expect(getAnimation(state)?.isPlaying).toBe(true)
+      expect(getAnimation(state)?.currentTime).toBe(2000)
 
       state = tick(2010, state)
-      expect(getAnimationNumber(state)?.isFinished).toBe(false)
-      expect(getAnimationNumber(state)?.isPlaying).toBe(true)
-      expect(getAnimationNumber(state)?.currentTime).toBe(76)
+      expect(getAnimation(state)?.isFinished).toBe(false)
+      expect(getAnimation(state)?.isPlaying).toBe(true)
+      expect(getAnimation(state)?.currentTime).toBe(2010)
+    })
+
+    it('Should works with multiple properties', () => {
+      let state = setEntity({ state: getState({}), entity })
+      state = setComponent<NumberComponent, InternalInitialState>({
+        state,
+        data: {
+          entity,
+          name: numberComponentName,
+          value: 0,
+        },
+      })
+      state = setComponent<Vector2DComponent, InternalInitialState>({
+        state,
+        data: {
+          entity,
+          name: vector2DComponentName,
+          value: [0, 0],
+        },
+      })
+
+      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+        state,
+        data: animation({
+          entity,
+          isPlaying: true,
+          currentTime: 0,
+          wrapMode: Animation.WrapMode.once,
+          isFinished: false,
+          properties: [
+            {
+              path: 'value',
+              component: numberComponentName,
+              entity,
+              keyframes: [
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+                {
+                  duration: 1,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+                {
+                  duration: 2,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+                {
+                  duration: 100,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+              ],
+            },
+            {
+              path: 'value',
+              component: vector2DComponentName,
+              entity,
+              keyframes: [
+                {
+                  duration: 13,
+                  timingFunction: 'Linear',
+                  valueRange: [vector(0, 0), vector(0, 13)],
+                },
+                {
+                  duration: 100,
+                  timingFunction: 'Linear',
+                  valueRange: [vector(1, 1), vector(4, 4)],
+                },
+              ],
+            },
+          ],
+        }),
+      })
+
+      state = tick(0, state)
+      expect(getNumberComponent(state)?.value).toBe(0)
+      expect(getVector2DComponent(state)?.value.toString()).toBe(
+        [0, 0].toString(),
+      )
+
+      state = tick(5, state)
+      expect(getNumberComponent(state)?.value).toBe(0)
+      expect(getVector2DComponent(state)?.value.toString()).toBe(
+        [0, 0].toString(),
+      )
+
+      state = tick(10.5, state)
+      expect(getNumberComponent(state)?.value).toBe(0.5)
+      expect(getVector2DComponent(state)?.value.toString()).toBe(
+        [0, 5].toString(),
+      )
+
+      state = tick(12, state)
+      expect(getNumberComponent(state)?.value).toBe(0.5)
+      expect(getVector2DComponent(state)?.value.toString()).toBe(
+        [0.0, 10.5].toString(),
+      )
+
+      state = tick(100, state)
+      expect(getNumberComponent(state)?.value).toBe(0.5)
+      expect(getVector2DComponent(state)?.value.toString()).toBe(
+        [0, 12].toString(),
+      )
+
+      state = tick(300, state)
+      expect(getNumberComponent(state)?.value).toBe(0.87)
+      expect(getVector2DComponent(state)?.value.toString()).toBe(
+        [3.61, 3.61].toString(),
+      )
+      state = tick(300, state)
+
+
+      expect(getAnimation(state)?.isPlaying).toBe(false)
+      expect(getAnimation(state)?.isFinished).toBe(true)
+      expect(getAnimation(state)?.currentTime).toBe(0)
     })
   })
 
@@ -761,32 +826,34 @@ describe('animation', () => {
       state,
       data: defaultTransform({ entity }),
     })
-    state = setComponent<AnimationNumber, InternalInitialState>({
+    state = setComponent<Animation.AnimationComponent, InternalInitialState>({
       state,
-      data: animationNumber({
+      data: animation({
         entity,
         isPlaying: true,
-        keyframes: [
+        currentTime: 0,
+        wrapMode: Animation.WrapMode.once,
+        timingMode: Animation.TimingMode.step,
+        isFinished: false,
+        properties: [
           {
-            duration: 10,
-            timingFunction: 'Linear',
-            valueRange: vector(1, 2),
-          },
-          {
-            duration: 10,
-            timingFunction: 'Linear',
-            valueRange: vector(3, 4),
+            path: 'value',
+            component: numberComponentName,
+            entity,
+            keyframes: [
+              {
+                duration: 10,
+                timingFunction: 'Linear',
+                valueRange: vector(1, 2),
+              },
+              {
+                duration: 10,
+                timingFunction: 'Linear',
+                valueRange: vector(3, 4),
+              },
+            ],
           },
         ],
-        currentTime: 0,
-        wrapMode: 'once',
-        isFinished: false,
-        property: {
-          path: 'value',
-          component: numberComponentName,
-          entity,
-        },
-        timingMode: 'step',
       }),
     })
 
@@ -826,32 +893,33 @@ describe('animation', () => {
         data: { name: stringComponentName, entity, value: '' },
       })
 
-      state = setComponent<AnimationString, InternalInitialState>({
+      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animationString({
+        data: animation({
           entity,
           isPlaying: true,
-          keyframes: [
+          currentTime: 0,
+          wrapMode: Animation.WrapMode.once,
+          isFinished: false,
+          properties: [
             {
-              duration: 10,
-              timingFunction: 'Linear',
-              valueRange: parentId1,
-            },
-            {
-              duration: 10,
-              timingFunction: 'Linear',
-              valueRange: parentId2,
+              path: 'value',
+              component: stringComponentName,
+              entity,
+              keyframes: [
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: parentId1,
+                },
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: parentId2,
+                },
+              ],
             },
           ],
-          currentTime: 0,
-          wrapMode: 'once',
-          isFinished: false,
-          property: {
-            path: 'value',
-            component: stringComponentName,
-            entity,
-          },
-          timingMode: 'smooth', // string animation should always works as step
         }),
       })
 
@@ -888,32 +956,35 @@ describe('animation', () => {
         state,
         data: { name: vector2DComponentName, entity, value: vector(-1, -1) },
       })
-      state = setComponent<AnimationVector2D, InternalInitialState>({
+      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animationVector2D({
+        data: animation({
           entity,
           isPlaying: true,
-          keyframes: [
+
+          currentTime: 0,
+          wrapMode: Animation.WrapMode.once,
+          isFinished: false,
+
+          properties: [
             {
-              duration: 10,
-              timingFunction: 'Linear',
-              valueRange: [vector(0, 10), vector(20, 2)],
-            },
-            {
-              duration: 10,
-              timingFunction: 'Linear',
-              valueRange: [vector(11, 70), vector(3, 21)],
+              path: 'value',
+              component: vector2DComponentName,
+              entity,
+              keyframes: [
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: [vector(0, 10), vector(20, 2)],
+                },
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: [vector(11, 70), vector(3, 21)],
+                },
+              ],
             },
           ],
-          currentTime: 0,
-          wrapMode: 'once',
-          isFinished: false,
-          property: {
-            path: 'value',
-            component: vector2DComponentName,
-            entity,
-          },
-          timingMode: 'smooth', // string animation should always works as step
         }),
       })
 
@@ -968,54 +1039,55 @@ describe('animation', () => {
         data: { name: vector3DComponentName, entity, value: [-1, -1, -1] },
       })
 
-      state = setComponent<AnimationVector3D, InternalInitialState>({
+      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animationVector3D({
+        data: animation({
           entity,
           isPlaying: true,
           isFinished: false,
-          property: {
-            path: 'value',
-            component: vector3DComponentName,
-            entity,
-          },
-          keyframes: [
+          currentTime: 0,
+          wrapMode: Animation.WrapMode.once,
+          properties: [
             {
-              duration: 300,
-              timingFunction: 'Linear',
-              valueRange: [
-                [0, 0, 0],
-                [0, 0, 1],
-              ],
-            },
-            {
-              duration: 600,
-              timingFunction: 'Linear',
-              valueRange: [
-                [0, 0, 1],
-                [0, 0, -1],
-              ],
-            },
-            {
-              duration: 300,
-              timingFunction: 'Linear',
-              valueRange: [
-                [0, 0, -1],
-                [0, 0, 0],
-              ],
-            },
-            {
-              duration: 0,
-              timingFunction: 'Linear',
-              valueRange: [
-                [0, 0, 0],
-                [0, 0, 0],
+              path: 'value',
+              component: vector3DComponentName,
+              entity,
+              keyframes: [
+                {
+                  duration: 300,
+                  timingFunction: 'Linear',
+                  valueRange: [
+                    [0, 0, 0],
+                    [0, 0, 1],
+                  ],
+                },
+                {
+                  duration: 600,
+                  timingFunction: 'Linear',
+                  valueRange: [
+                    [0, 0, 1],
+                    [0, 0, -1],
+                  ],
+                },
+                {
+                  duration: 300,
+                  timingFunction: 'Linear',
+                  valueRange: [
+                    [0, 0, -1],
+                    [0, 0, 0],
+                  ],
+                },
+                {
+                  duration: 0,
+                  timingFunction: 'Linear',
+                  valueRange: [
+                    [0, 0, 0],
+                    [0, 0, 0],
+                  ],
+                },
               ],
             },
           ],
-          currentTime: 0,
-          wrapMode: 'once',
-          timingMode: 'smooth',
         }),
       })
 
