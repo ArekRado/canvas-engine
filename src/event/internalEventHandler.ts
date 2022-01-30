@@ -12,10 +12,13 @@ export const internalEventHandler = <AllEvents2>({
   event: AllEvents2 & AllEvents
 }): InternalInitialState => {
   switch (event.type) {
-    // // Camera
+    // Camera
     case CameraEvent.Type.resize:
       state = handleResize({ state, event })
       break
+
+    // todo add util event handlers 
+    // eg handleRemoveComponent, handleSetComponent
   }
   return state
 }

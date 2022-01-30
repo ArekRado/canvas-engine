@@ -1,7 +1,12 @@
 import { Vector2D } from '@arekrado/vector-2d'
 import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera'
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
 import { Scene } from '@babylonjs/core/scene'
 import { TimingFunction } from './util/bezierFunction'
+import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder'
+import { Texture } from '@babylonjs/core/Materials/Textures/texture'
+import { Color3 } from '@babylonjs/core/Maths/math.color'
+import { Vector3 } from '@babylonjs/core'
 
 ////////////////////////////////////
 //
@@ -141,6 +146,39 @@ export type MouseInteraction = Component<{
   isMouseLeave: boolean
 }>
 
+export enum MeshType {
+  plane = 'plane',
+}
+
+export type Mesh = Component<{
+  type: MeshType
+  uniqueId: number
+  width: number
+  height: number
+  updatable: boolean
+  sideOrientation: number
+
+  materialEntity: Entity[]
+  // sourcePlane: Plane
+  // frontUVs: Vector4
+  // backUVs: Vector4
+}>
+
+export type Material = Component<{
+  uniqueId: number
+  diffuseColor?: Color
+  specularColor?: Color
+  emissiveColor?: Color
+  ambientColor?: Color
+  alpha?: number
+  backFaceCulling?: boolean
+  wireframe?: boolean
+  useAlphaFromDiffuseTexture?: boolean
+
+  diffuseTexture?: string
+  bumpTexture?: string
+}>
+
 export type AnimatedProperty = {
   path: string
   type: 'number' | 'vector2D' | 'string'
@@ -263,6 +301,13 @@ export type System<
    */
   tick: ((params: { state: State }) => State) | undefined
   remove: ((params: SystemMethodParams<Component, State>) => State) | undefined
+  update:
+    | ((
+        params: SystemMethodParams<Component, State> & {
+          previousComponent: Component
+        },
+      ) => State)
+    | undefined
 }
 
 export type CreateGlobalSystemParams<State extends AnyStateForSystem> = {
@@ -301,14 +346,12 @@ export type StateDefaultComponents = {
   transform: Dictionary<Transform>
   mouse: Dictionary<Mouse>
   keyboard: Dictionary<Keyboard>
+  material: Dictionary<Material>
+  mesh: Dictionary<Mesh>
 }
 
 export type StateDefaultSystems =
   | System<Animation.AnimationComponent, AnyStateForSystem>
-  // | System<AnimationNumber, AnyStateForSystem>
-  // | System<AnimationString, AnyStateForSystem>
-  // | System<AnimationVector2D, AnyStateForSystem>
-  // | System<AnimationVector3D, AnyStateForSystem>
   | System<CollideBox, AnyStateForSystem>
   | System<CollideCircle, AnyStateForSystem>
   | System<MouseInteraction, AnyStateForSystem>
@@ -318,6 +361,8 @@ export type StateDefaultSystems =
   | System<Event, AnyStateForSystem>
   | System<Mouse, AnyStateForSystem>
   | System<Keyboard, AnyStateForSystem>
+  | System<Material, AnyStateForSystem>
+  | System<Mesh, AnyStateForSystem>
 
 /**
  * Describes empty state without internal components and systems
@@ -332,7 +377,11 @@ export type EmptyState<Component, System> = {
   babylonjs: {
     sceneRef?: Scene
     cameraRef?: UniversalCamera
-    Vector3?: any // babylonjs is a joke xD
+    Vector3?: typeof Vector3
+    StandardMaterial?: typeof StandardMaterial
+    MeshBuilder?: typeof MeshBuilder
+    Texture?: typeof Texture
+    Color3?: typeof Color3
   }
 }
 

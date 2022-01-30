@@ -11,6 +11,8 @@ export enum componentName {
   collideCircle = 'collideCircle',
   mouseInteraction = 'mouseInteraction',
   camera = 'camera',
+  mesh = 'mesh',
+  material = 'material',
 }
 
 export const getComponent = <Data, State extends AnyState = AnyState>({
@@ -50,14 +52,29 @@ export const setComponent = <Data, State extends AnyState = AnyState>({
 
   const system = getSystemByName(data.name, state.system)
 
-  if (system !== undefined && system.create !== undefined) {
+  if (system !== undefined) {
     if (
-      state.component[data.name] === undefined ||
-      state.component[data.name][data.entity] === undefined
+      system.create !== undefined &&
+      (state.component[data.name] === undefined ||
+        state.component[data.name][data.entity] === undefined)
     ) {
       return system.create({
         state: newState,
         component: data,
+      }) as State
+    } else if (system.update !== undefined) {
+      // "else if" - do not run update just after create
+
+      const previousComponent = getComponent({
+        state,
+        name: data.name,
+        entity: data.entity,
+      })
+
+      return system.update({
+        state: newState,
+        component: data,
+        previousComponent,
       }) as State
     }
   }

@@ -5,11 +5,11 @@ import { timeSystem } from '../system/time'
 import { mouseInteractionSystem } from '../system/mouseInteraction'
 import { mouseSystem } from '../system/mouse'
 import { keyboardSystem } from '../system/keyboard'
-import { Scene } from '@babylonjs/core/scene'
-import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera'
 import { cameraSystem } from '../system/camera'
 import { AnyState, InternalInitialState } from '..'
 import { animationSystem } from '../system/animation'
+import { meshSystem } from '../system/mesh'
+import { materialSystem } from '../system/material'
 
 export const getInitialState = (): InternalInitialState => ({
   entity: {},
@@ -23,12 +23,16 @@ export const getInitialState = (): InternalInitialState => ({
     [componentName.transform]: {},
     [componentName.mouse]: {},
     [componentName.keyboard]: {},
+    [componentName.mesh]: {},
+    [componentName.material]: {},
   },
   globalSystem: [],
   system: [],
   babylonjs: {
     sceneRef: undefined,
     cameraRef: undefined,
+    StandardMaterial: undefined,
+    MeshBuilder: undefined,
   },
 })
 
@@ -39,13 +43,21 @@ export const getSystems = ({
   scene,
   camera,
   Vector3,
+  StandardMaterial,
+  MeshBuilder,
+  Texture,
+  Color3,
 }: {
   state: AnyState
   document?: Document
   containerId?: string
-  scene?: Scene
-  camera?: UniversalCamera
-  Vector3?: any // babylonjs Vector3
+  scene?: AnyState['babylonjs']['sceneRef']
+  camera?: AnyState['babylonjs']['cameraRef']
+  Vector3?: AnyState['babylonjs']['Vector3']
+  StandardMaterial?: AnyState['babylonjs']['StandardMaterial']
+  MeshBuilder?: AnyState['babylonjs']['MeshBuilder']
+  Texture?: AnyState['babylonjs']['Texture']
+  Color3?: AnyState['babylonjs']['Color3']
 }): InternalInitialState => {
   if (process.env.NODE_ENV !== 'test') {
     if (!camera) {
@@ -68,6 +80,10 @@ export const getSystems = ({
   state.babylonjs.cameraRef = camera
   state.babylonjs.sceneRef = scene
   state.babylonjs.Vector3 = Vector3
+  state.babylonjs.StandardMaterial = StandardMaterial
+  state.babylonjs.MeshBuilder = MeshBuilder
+  state.babylonjs.Texture = Texture
+  state.babylonjs.Color3 = Color3
 
   let internatlState = state as InternalInitialState
 
@@ -77,6 +93,8 @@ export const getSystems = ({
   internatlState = collideBoxSystem(internatlState)
   internatlState = animationSystem(internatlState)
   internatlState = mouseInteractionSystem(internatlState)
+  internatlState = materialSystem(internatlState)
+  internatlState = meshSystem(internatlState)
 
   if (containerId) {
     internatlState = mouseSystem({
@@ -101,13 +119,21 @@ export const getState = <State extends AnyState = AnyState>({
   scene,
   camera,
   Vector3,
+  StandardMaterial,
+  MeshBuilder,
+  Texture,
+  Color3,
 }: {
   state?: State
   document?: Document
   containerId?: string
-  scene?: Scene
-  camera?: UniversalCamera
-  Vector3?: any
+  scene?: AnyState['babylonjs']['sceneRef']
+  camera?: AnyState['babylonjs']['cameraRef']
+  Vector3?: AnyState['babylonjs']['Vector3']
+  StandardMaterial?: AnyState['babylonjs']['StandardMaterial']
+  MeshBuilder?: AnyState['babylonjs']['MeshBuilder']
+  Texture?: AnyState['babylonjs']['Texture']
+  Color3?: AnyState['babylonjs']['Color3']
 }): InternalInitialState =>
   getSystems({
     state: state || getInitialState(),
@@ -116,4 +142,8 @@ export const getState = <State extends AnyState = AnyState>({
     scene,
     camera,
     Vector3,
+    StandardMaterial,
+    MeshBuilder,
+    Texture,
+    Color3,
   })

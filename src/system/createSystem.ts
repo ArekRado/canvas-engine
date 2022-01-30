@@ -11,9 +11,9 @@ export enum systemPriority {
   zero = 0,
 
   // IO uses mutated state so it should be called first
-  mouse = -1, 
+  mouse = -1,
   keyboard = -1,
-  
+
   animation = 3,
   time = 2,
   transform = 1,
@@ -35,6 +35,11 @@ export const createSystem = <
   create?: (params: SystemMethodParams<ComponentData, State>) => State
   tick?: (params: SystemMethodParams<ComponentData, State>) => State
   remove?: (params: SystemMethodParams<ComponentData, State>) => State
+  update?: (
+    params: SystemMethodParams<ComponentData, State> & {
+      previousComponent: ComponentData
+    },
+  ) => State
   priority?: number
 }): State => {
   const system = {
@@ -42,10 +47,11 @@ export const createSystem = <
     componentName: params.componentName,
     priority: params.priority || systemPriority.last,
     create: params.create,
+    update: params.update,
     tick: ({ state }: { state: State }) => {
-      const component = state.component[params.componentName] as Dictionary<
-        Component<ComponentData>
-      > | undefined
+      const component = state.component[params.componentName] as
+        | Dictionary<Component<ComponentData>>
+        | undefined
 
       if (component) {
         return Object.values(component).reduce(

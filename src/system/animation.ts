@@ -279,6 +279,8 @@ export const animationSystem = (state: InternalInitialState) =>
 
         component &&
           set(state.component, `${component}.${entity}.${path}`, value)
+
+        // todo it should also trigger component update method
       })
 
       if (animationTimeExceeded) {
@@ -295,10 +297,6 @@ export const animationSystem = (state: InternalInitialState) =>
 
       const time = getTime({ state })
       if (!time) return state
-
-      // const currentTime = timeExceeded
-      //   ? keyframeCurrentTime + time.delta
-      //   : animation.currentTime + time.delta
 
       const currentTime = animation.currentTime + time.delta
 
