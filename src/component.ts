@@ -21,7 +21,6 @@ export const getComponent = <Data, State extends AnyState = AnyState>({
   state,
 }: {
   name: string
-
   entity: Guid
   state: State
 }): Component<Data> | undefined =>
@@ -30,8 +29,6 @@ export const getComponent = <Data, State extends AnyState = AnyState>({
 const getSystemByName = (name: string, system: Array<System<unknown>>) =>
   system.find((x) => x.componentName === name)
 
-// todo data should be function which returns current component
-// setComponent({state, data: (component) => component })
 export const setComponent = <Data, State extends AnyState = AnyState>({
   state,
   data,
@@ -80,6 +77,34 @@ export const setComponent = <Data, State extends AnyState = AnyState>({
   }
 
   return newState
+}
+
+export const updateComponent = <Data, State extends AnyState = AnyState>({
+  name,
+  entity,
+  state,
+  update,
+}: {
+  name: string
+  entity: Guid
+  state: State
+  update: (component: Component<Data>) => Partial<Component<Data>>
+}): State => {
+  const component = getComponent<Data, State>({
+    state,
+    entity,
+    name,
+  })
+
+  return component !== undefined
+    ? setComponent({
+        state,
+        data: {
+          ...component,
+          ...update(component),
+        },
+      })
+    : state
 }
 
 export const removeComponent = <State extends AnyState = AnyState>({

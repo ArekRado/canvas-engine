@@ -17,7 +17,7 @@ import { runOneFrame } from '../util/runOneFrame'
 import { getComponent, setComponent } from '../component'
 import { componentName } from '../component'
 import { setTime } from '../system/time'
-import { Animation, Component, Transform } from '..'
+import { Animation, Component, createSystem, Transform } from '..'
 import { getState } from '../util/state'
 
 type AnyComponent<Value> = Component<{ value: Value }>
@@ -417,6 +417,63 @@ describe('animation', () => {
 
   describe('number', () => {
     it.todo('should works with index')
+
+    it('should trigger system update method', () => {
+      const update = jest.fn<
+        InternalInitialState,
+        [{ state: InternalInitialState }]
+      >(({ state }) => state)
+
+      let state = setEntity({ state: getState({}), entity })
+      state = createSystem({
+        state,
+        name: numberComponentName,
+        componentName: numberComponentName,
+        update,
+      })
+
+      expect(update).toHaveBeenCalledTimes(0)
+
+      state = setComponent<NumberComponent, InternalInitialState>({
+        state,
+        data: {
+          entity,
+          name: numberComponentName,
+          value: 0,
+        },
+      })
+
+      expect(update).toHaveBeenCalledTimes(1)
+
+      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+        state,
+        data: animation({
+          entity,
+          isPlaying: true,
+          currentTime: 0,
+          wrapMode: Animation.WrapMode.once,
+          isFinished: false,
+          properties: [
+            {
+              path: 'value',
+              component: numberComponentName,
+              entity,
+              keyframes: [
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+              ],
+            },
+          ],
+        }),
+      })
+
+      state = tick(0, state)
+      expect(update).toHaveBeenCalledTimes(2)
+    })
+
     it('Linear animation should change value in proper way', () => {
       let state = setEntity({ state: getState({}), entity })
       state = setComponent<NumberComponent, InternalInitialState>({
@@ -812,7 +869,6 @@ describe('animation', () => {
         [3.61, 3.61].toString(),
       )
       state = tick(300, state)
-
 
       expect(getAnimation(state)?.isPlaying).toBe(false)
       expect(getAnimation(state)?.isFinished).toBe(true)

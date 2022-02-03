@@ -3,7 +3,7 @@ import { TimingFunction, getValue } from '../util/bezierFunction'
 import { add, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
 import { createSystem, systemPriority } from '../system/createSystem'
-import { setComponent } from '../component'
+import { setComponent, updateComponent } from '../component'
 import { componentName } from '../component'
 import { getTime } from '../system/time'
 
@@ -280,7 +280,12 @@ export const animationSystem = (state: InternalInitialState) =>
         component &&
           set(state.component, `${component}.${entity}.${path}`, value)
 
-        // todo it should also trigger component update method
+        state = updateComponent({
+          state,
+          entity,
+          name: component,
+          update: () => ({}),
+        })
       })
 
       if (animationTimeExceeded) {
