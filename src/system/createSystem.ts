@@ -4,6 +4,7 @@ import {
   SystemMethodParams,
   AnyStateForSystem,
   GlobalSystem,
+  EmitEvent,
 } from '../type'
 
 export enum systemPriority {
@@ -41,6 +42,7 @@ export const createSystem = <
     },
   ) => State
   priority?: number
+  emitEvent?: EmitEvent
 }): State => {
   const system = {
     name: params.name,

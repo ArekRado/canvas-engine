@@ -1,12 +1,12 @@
 import 'regenerator-runtime/runtime'
-import { runOneFrame } from '..'
+import { ECSEvent, runOneFrame } from '..'
 import { CameraEvent } from '../system/camera'
 import { createEventSystem } from '../event/createEventSystem'
 import { getState } from '../util/state'
 
 describe('createEventSystem', () => {
   it('should emit and receive events', () => {
-    const event = {
+    const event: ECSEvent<string, string> = {
       type: 'example',
       payload: 'payload',
     }

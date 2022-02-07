@@ -1,4 +1,4 @@
-import { Animation, InternalInitialState, Vector3D } from '../type'
+import { Animation, EmitEvent, InternalInitialState, Vector3D } from '../type'
 import { TimingFunction, getValue } from '../util/bezierFunction'
 import { add, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
@@ -60,10 +60,6 @@ export const getActiveKeyframe = ({
   wrapMode: Animation.WrapMode
   currentTime: number
   animationProperty: Animation.Property
-  // | AnimationNumber
-  // | AnimationString
-  // | AnimationVector2D
-  // | AnimationVector3D,
   secondLoop: boolean
 }): ActiveKeyframe => {
   const size = animationProperty.keyframes.length
@@ -228,7 +224,13 @@ export const updateAnimation = (params: UpdateAnimationParams) => {
   return 0 // :<
 }
 
-export const animationSystem = (state: InternalInitialState) =>
+export const animationSystem = ({
+  state,
+  emitEvent,
+}: {
+  state: InternalInitialState
+  emitEvent?: EmitEvent
+}) =>
   createSystem<Animation.AnimationComponent, InternalInitialState>({
     state,
     name: componentName.animation,
@@ -256,6 +258,25 @@ export const animationSystem = (state: InternalInitialState) =>
           timeExceeded === true &&
           animation.wrapMode === Animation.WrapMode.once
         ) {
+          const endFrameEvent =
+            property.keyframes[property.keyframes.length - 1]?.endFrameEvent
+
+          if (endFrameEvent && emitEvent) {
+            emitEvent(endFrameEvent)
+          } else if (
+            process.env.NODE_ENV === 'development' &&
+            endFrameEvent &&
+            !emitEvent
+          ) {
+            console.warn(
+              'Animation system could not emit end frame event because emitEvent is not defined. You should pass emitEvent in a getState or remove event. Some features may not work correctly',
+              {
+                endFrameEvent,
+                emitEvent,
+              },
+            )
+          }
+
           animationTimeExceeded = true
           return
         }

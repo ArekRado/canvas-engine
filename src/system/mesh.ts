@@ -33,10 +33,7 @@ export const meshSystem = (state: InternalInitialState) =>
 
         mesh.material = material
       } else {
-        if (
-          process.env.NODE_ENV === 'development' ||
-          process.env.NODE_ENV === 'dev'
-        ) {
+        if (process.env.NODE_ENV === 'development') {
           console.warn(
             `Mesh has been created without material component. Mesh entity: ${component.entity}`,
           )

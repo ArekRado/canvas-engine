@@ -3,12 +3,9 @@ import { createGlobalSystem } from '../system/createSystem'
 import { AnyState } from '../type'
 import { internalEventHandler } from './internalEventHandler'
 
-export type ECSEvent<Type, Payload> = {
-  type: Type
-  payload: Payload
-}
-
 type AcitveBuffer = 'first' | 'second'
+
+export const internalEventNamePrefix = '@canvas-engine'
 
 export type EventHandler<AllEvents, State extends AnyState = AnyState> = ({
   state,

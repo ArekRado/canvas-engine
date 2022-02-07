@@ -12,12 +12,18 @@ import {
   // updateStringAnimation,
 } from '../system/animation'
 import { createEntity, setEntity } from '../entity'
-import { InternalInitialState, Vector3D } from '../type'
+import { ECSEvent, InternalInitialState, Vector3D } from '../type'
 import { runOneFrame } from '../util/runOneFrame'
 import { getComponent, setComponent } from '../component'
 import { componentName } from '../component'
 import { setTime } from '../system/time'
-import { Animation, Component, createSystem, Transform } from '..'
+import {
+  Animation,
+  Component,
+  createEventSystem,
+  createSystem,
+  Transform,
+} from '..'
 import { getState } from '../util/state'
 
 type AnyComponent<Value> = Component<{ value: Value }>
@@ -474,6 +480,103 @@ describe('animation', () => {
       expect(update).toHaveBeenCalledTimes(2)
     })
 
+    it('should emit even on every keyframe change', () => {
+      const event = (type: string): ECSEvent<string, string> => ({
+        type,
+        payload: 'payload',
+      })
+      const eventHandler = jest.fn(({ state }) => state)
+      const { emitEvent, eventSystem } = createEventSystem({ eventHandler })
+
+      let state = setEntity({ state: getState({ emitEvent }), entity })
+
+      state = eventSystem(state)
+
+      state = setComponent<NumberComponent, InternalInitialState>({
+        state,
+        data: {
+          entity,
+          name: numberComponentName,
+          value: 0,
+        },
+      })
+
+      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+        state,
+        data: animation({
+          entity,
+          isPlaying: true,
+          currentTime: 0,
+          wrapMode: Animation.WrapMode.once,
+          isFinished: false,
+          properties: [
+            {
+              path: 'value',
+              component: numberComponentName,
+              entity,
+              keyframes: [
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                  endFrameEvent: event('1'),
+                },
+                {
+                  duration: 1,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                  endFrameEvent: event('2'),
+                },
+                {
+                  duration: 100,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                  endFrameEvent: event('3'),
+                },
+              ],
+            },
+            {
+              path: 'value',
+              component: numberComponentName,
+              entity,
+              keyframes: [
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                  endFrameEvent: event('4'),
+                },
+              ],
+            },
+          ],
+        }),
+      })
+
+      state = tick(0, state)
+
+      // start - no events
+      expect(eventHandler).toHaveBeenCalledTimes(0)
+      // TODO - call events on each keyframe end instead of end of each property
+      // middle of first keyframe - no events
+      // state = tick(5, state)
+      // expect(eventHandler).toHaveBeenCalledTimes(1);
+      // // middle of third keyframe - 2 events
+      // state = tick(61, state)
+      // expect(eventHandler).toHaveBeenCalledTimes(1);
+      // // middle of first keyframe in a second property - 3 events
+      // state = tick(102, state)
+      // expect(eventHandler).toHaveBeenCalledTimes(1);
+      // time exceded - 4 events
+      // state = tick(501, state)
+
+      // triggers two properties
+      // todo why it needs 3 ticks!!!
+      state = tick(500, state)
+      state = tick(501, state)
+      state = tick(502, state)
+      expect(eventHandler).toHaveBeenCalledTimes(2)
+    })
+
     it('Linear animation should change value in proper way', () => {
       let state = setEntity({ state: getState({}), entity })
       state = setComponent<NumberComponent, InternalInitialState>({
@@ -874,68 +977,68 @@ describe('animation', () => {
       expect(getAnimation(state)?.isFinished).toBe(true)
       expect(getAnimation(state)?.currentTime).toBe(0)
     })
-  })
 
-  it('timingMode step - should change value only once per keyframe', () => {
-    let state = setEntity({ state: getState({}), entity })
-    state = setComponent<Transform, InternalInitialState>({
-      state,
-      data: defaultTransform({ entity }),
+    it('timingMode step - should change value only once per keyframe', () => {
+      let state = setEntity({ state: getState({}), entity })
+      state = setComponent<Transform, InternalInitialState>({
+        state,
+        data: defaultTransform({ entity }),
+      })
+      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+        state,
+        data: animation({
+          entity,
+          isPlaying: true,
+          currentTime: 0,
+          wrapMode: Animation.WrapMode.once,
+          timingMode: Animation.TimingMode.step,
+          isFinished: false,
+          properties: [
+            {
+              path: 'value',
+              component: numberComponentName,
+              entity,
+              keyframes: [
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: vector(1, 2),
+                },
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: vector(3, 4),
+                },
+              ],
+            },
+          ],
+        }),
+      })
+
+      state = tick(0, state)
+      expect(getNumberComponent(state)?.value).toBe(1)
+
+      state = tick(5, state)
+      expect(getNumberComponent(state)?.value).toBe(1)
+
+      state = tick(7, state)
+      expect(getNumberComponent(state)?.value).toBe(1)
+
+      state = tick(8, state)
+      expect(getNumberComponent(state)?.value).toBe(1)
+
+      state = tick(10.5, state)
+      expect(getNumberComponent(state)?.value).toBe(1)
+
+      state = tick(12, state)
+      expect(getNumberComponent(state)?.value).toBe(3)
+
+      state = tick(100, state)
+      expect(getNumberComponent(state)?.value).toBe(3)
+
+      state = tick(300, state)
+      expect(getNumberComponent(state)?.value).toBe(3)
     })
-    state = setComponent<Animation.AnimationComponent, InternalInitialState>({
-      state,
-      data: animation({
-        entity,
-        isPlaying: true,
-        currentTime: 0,
-        wrapMode: Animation.WrapMode.once,
-        timingMode: Animation.TimingMode.step,
-        isFinished: false,
-        properties: [
-          {
-            path: 'value',
-            component: numberComponentName,
-            entity,
-            keyframes: [
-              {
-                duration: 10,
-                timingFunction: 'Linear',
-                valueRange: vector(1, 2),
-              },
-              {
-                duration: 10,
-                timingFunction: 'Linear',
-                valueRange: vector(3, 4),
-              },
-            ],
-          },
-        ],
-      }),
-    })
-
-    state = tick(0, state)
-    expect(getNumberComponent(state)?.value).toBe(1)
-
-    state = tick(5, state)
-    expect(getNumberComponent(state)?.value).toBe(1)
-
-    state = tick(7, state)
-    expect(getNumberComponent(state)?.value).toBe(1)
-
-    state = tick(8, state)
-    expect(getNumberComponent(state)?.value).toBe(1)
-
-    state = tick(10.5, state)
-    expect(getNumberComponent(state)?.value).toBe(1)
-
-    state = tick(12, state)
-    expect(getNumberComponent(state)?.value).toBe(3)
-
-    state = tick(100, state)
-    expect(getNumberComponent(state)?.value).toBe(3)
-
-    state = tick(300, state)
-    expect(getNumberComponent(state)?.value).toBe(3)
   })
 
   describe('string', () => {

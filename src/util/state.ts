@@ -6,7 +6,7 @@ import { mouseInteractionSystem } from '../system/mouseInteraction'
 import { mouseSystem } from '../system/mouse'
 import { keyboardSystem } from '../system/keyboard'
 import { cameraSystem } from '../system/camera'
-import { AnyState, InternalInitialState } from '..'
+import { AnyState, EmitEvent, InternalInitialState } from '..'
 import { animationSystem } from '../system/animation'
 import { meshSystem } from '../system/mesh'
 import { materialSystem } from '../system/material'
@@ -47,6 +47,7 @@ export const getSystems = ({
   MeshBuilder,
   Texture,
   Color3,
+  emitEvent,
 }: {
   state: AnyState
   document?: Document
@@ -58,21 +59,29 @@ export const getSystems = ({
   MeshBuilder?: AnyState['babylonjs']['MeshBuilder']
   Texture?: AnyState['babylonjs']['Texture']
   Color3?: AnyState['babylonjs']['Color3']
+  emitEvent?: EmitEvent
 }): InternalInitialState => {
-  if (process.env.NODE_ENV !== 'test') {
-    if (!camera) {
+  if (process.env.NODE_ENV === 'development') {
+    if (
+      !scene ||
+      !camera ||
+      !Vector3 ||
+      !StandardMaterial ||
+      !MeshBuilder ||
+      !Texture ||
+      !Color3
+    ) {
       console.warn(
         'Babylonjs camera is not defined. Some features may not work properly.',
-      )
-    }
-    if (!scene) {
-      console.warn(
-        'Babylonjs scene is not defined. Some features may not work properly.',
-      )
-    }
-    if (!Vector3) {
-      console.warn(
-        'Babylonjs Vector3 is not defined. Some features may not work properly.',
+        {
+          scene: !!scene,
+          camera: !!camera,
+          Vector3: !!Vector3,
+          StandardMaterial: !!StandardMaterial,
+          MeshBuilder: !!MeshBuilder,
+          Texture: !!Texture,
+          Color3: !!Color3,
+        },
       )
     }
   }
@@ -91,7 +100,7 @@ export const getSystems = ({
   internatlState = cameraSystem(internatlState)
   internatlState = transformSystem(internatlState)
   internatlState = collideBoxSystem(internatlState)
-  internatlState = animationSystem(internatlState)
+  internatlState = animationSystem({ state: internatlState, emitEvent })
   internatlState = mouseInteractionSystem(internatlState)
   internatlState = materialSystem(internatlState)
   internatlState = meshSystem(internatlState)
@@ -123,6 +132,7 @@ export const getState = <State extends AnyState = AnyState>({
   MeshBuilder,
   Texture,
   Color3,
+  emitEvent,
 }: {
   state?: State
   document?: Document
@@ -134,6 +144,7 @@ export const getState = <State extends AnyState = AnyState>({
   MeshBuilder?: AnyState['babylonjs']['MeshBuilder']
   Texture?: AnyState['babylonjs']['Texture']
   Color3?: AnyState['babylonjs']['Color3']
+  emitEvent?: EmitEvent
 }): InternalInitialState =>
   getSystems({
     state: state || getInitialState(),
@@ -146,4 +157,5 @@ export const getState = <State extends AnyState = AnyState>({
     MeshBuilder,
     Texture,
     Color3,
+    emitEvent,
   })

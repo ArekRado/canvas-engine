@@ -105,6 +105,7 @@ export namespace Animation {
     duration: number
     timingFunction: TimingFunction
     valueRange: Vector2D | [Vector2D, Vector2D] | [Vector3D, Vector3D] | string
+    endFrameEvent?: ECSEvent<any, any>
   }
 
   export type Property = {
@@ -240,7 +241,14 @@ export type Camera = Component<{
   right: number
 }>
 
-export type Event = Component<{}>
+export type ECSEvent<Type, Payload> = {
+  type: Type
+  payload: Payload
+}
+
+export type EmitEvent = <AllEvents = ECSEvent<any, any>>(event: AllEvents) => void
+
+// export type Event = Component<{}>
 
 export type EventHandler<Event, State extends AnyState = AnyState> = (params: {
   event: Event

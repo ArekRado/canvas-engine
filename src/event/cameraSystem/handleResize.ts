@@ -37,7 +37,7 @@ export const adjustBabylonCameraToComponentCamera = ({
     cameraRef.position.x = component.position[1]
     cameraRef.position.y = component.position[0]
     cameraRef.position.z = -10
-    if (process.env.NODE_ENV !== 'test' && Vector3) {
+    if (process.env.NODE_ENV === 'development' && Vector3) {
       cameraRef.setTarget(
         new Vector3(component.position[1], component.position[0], 0),
       )

@@ -1,8 +1,7 @@
 import { createSystem } from './createSystem'
 import { componentName, createGetSetForUniqComponent } from '../component'
-import { Camera, InternalInitialState } from '../type'
+import { Camera, ECSEvent, InternalInitialState } from '../type'
 import { adjustBabylonCameraToComponentCamera } from '../event/cameraSystem/handleResize'
-import { ECSEvent } from '../event/createEventSystem'
 import { getAspectRatio } from '../util/getAspectRatio'
 
 export const cameraEntity = 'cameraEntity'
