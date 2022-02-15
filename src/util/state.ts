@@ -6,10 +6,11 @@ import { mouseInteractionSystem } from '../system/mouseInteraction'
 import { mouseSystem } from '../system/mouse'
 import { keyboardSystem } from '../system/keyboard'
 import { cameraSystem } from '../system/camera'
-import { AnyState, EmitEvent, InternalInitialState } from '..'
+import { AnyState, InternalInitialState } from '..'
 import { animationSystem } from '../system/animation'
 import { meshSystem } from '../system/mesh'
 import { materialSystem } from '../system/material'
+import { eventSystem } from '../system/event'
 
 export const getInitialState = (): InternalInitialState => ({
   entity: {},
@@ -47,7 +48,6 @@ export const getSystems = ({
   MeshBuilder,
   Texture,
   Color3,
-  emitEvent,
 }: {
   state: AnyState
   document?: Document
@@ -59,7 +59,6 @@ export const getSystems = ({
   MeshBuilder?: AnyState['babylonjs']['MeshBuilder']
   Texture?: AnyState['babylonjs']['Texture']
   Color3?: AnyState['babylonjs']['Color3']
-  emitEvent?: EmitEvent
 }): InternalInitialState => {
   if (process.env.NODE_ENV === 'development') {
     if (
@@ -96,11 +95,12 @@ export const getSystems = ({
 
   let internatlState = state as InternalInitialState
 
+  internatlState = eventSystem(internatlState)
   internatlState = timeSystem(internatlState)
   internatlState = cameraSystem(internatlState)
   internatlState = transformSystem(internatlState)
   internatlState = collideBoxSystem(internatlState)
-  internatlState = animationSystem({ state: internatlState, emitEvent })
+  internatlState = animationSystem(internatlState)
   internatlState = mouseInteractionSystem(internatlState)
   internatlState = materialSystem(internatlState)
   internatlState = meshSystem(internatlState)
@@ -132,7 +132,6 @@ export const getState = <State extends AnyState = AnyState>({
   MeshBuilder,
   Texture,
   Color3,
-  emitEvent,
 }: {
   state?: State
   document?: Document
@@ -144,7 +143,6 @@ export const getState = <State extends AnyState = AnyState>({
   MeshBuilder?: AnyState['babylonjs']['MeshBuilder']
   Texture?: AnyState['babylonjs']['Texture']
   Color3?: AnyState['babylonjs']['Color3']
-  emitEvent?: EmitEvent
 }): InternalInitialState =>
   getSystems({
     state: state || getInitialState(),
@@ -157,5 +155,4 @@ export const getState = <State extends AnyState = AnyState>({
     MeshBuilder,
     Texture,
     Color3,
-    emitEvent,
   })

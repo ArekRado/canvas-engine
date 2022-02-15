@@ -25,6 +25,7 @@ import {
   Transform,
 } from '..'
 import { getState } from '../util/state'
+import { addEventHandler } from '../system/event'
 
 type AnyComponent<Value> = Component<{ value: Value }>
 
@@ -486,11 +487,10 @@ describe('animation', () => {
         payload: 'payload',
       })
       const eventHandler = jest.fn(({ state }) => state)
-      const { emitEvent, eventSystem } = createEventSystem({ eventHandler })
 
-      let state = setEntity({ state: getState({ emitEvent }), entity })
+      addEventHandler(eventHandler)
 
-      state = eventSystem(state)
+      let state = setEntity({ state: getState({}), entity })
 
       state = setComponent<NumberComponent, InternalInitialState>({
         state,

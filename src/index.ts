@@ -23,7 +23,12 @@ export {
   createGlobalSystem,
   systemPriority,
 } from './system/createSystem'
-export { createEventSystem } from './event/createEventSystem'
+export { 
+  emitEvent,
+  addEventHandler,
+  removeEventHandler,
+  EventHandler,
+} from './system/event'
 export {
   setComponent,
   removeComponent,

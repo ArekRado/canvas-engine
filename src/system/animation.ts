@@ -1,4 +1,4 @@
-import { Animation, EmitEvent, InternalInitialState, Vector3D } from '../type'
+import { Animation, InternalInitialState, Vector3D } from '../type'
 import { TimingFunction, getValue } from '../util/bezierFunction'
 import { add, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
@@ -6,6 +6,7 @@ import { createSystem, systemPriority } from '../system/createSystem'
 import { setComponent, updateComponent } from '../component'
 import { componentName } from '../component'
 import { getTime } from '../system/time'
+import { emitEvent } from './event'
 
 type UpdateAnimationParams = {
   keyframe: Animation.Keyframe
@@ -224,13 +225,7 @@ export const updateAnimation = (params: UpdateAnimationParams) => {
   return 0 // :<
 }
 
-export const animationSystem = ({
-  state,
-  emitEvent,
-}: {
-  state: InternalInitialState
-  emitEvent?: EmitEvent
-}) =>
+export const animationSystem = (state: InternalInitialState) =>
   createSystem<Animation.AnimationComponent, InternalInitialState>({
     state,
     name: componentName.animation,
@@ -261,22 +256,9 @@ export const animationSystem = ({
           const endFrameEvent =
             property.keyframes[property.keyframes.length - 1]?.endFrameEvent
 
-          if (endFrameEvent && emitEvent) {
+          if (endFrameEvent) {
             emitEvent(endFrameEvent)
-          } else if (
-            process.env.NODE_ENV === 'development' &&
-            endFrameEvent &&
-            !emitEvent
-          ) {
-            console.warn(
-              'Animation system could not emit end frame event because emitEvent is not defined. You should pass emitEvent in a getState or remove event. Some features may not work correctly',
-              {
-                endFrameEvent,
-                emitEvent,
-              },
-            )
           }
-
           animationTimeExceeded = true
           return
         }

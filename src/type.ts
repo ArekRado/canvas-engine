@@ -246,7 +246,7 @@ export type ECSEvent<Type, Payload> = {
   payload: Payload
 }
 
-export type EmitEvent = <AllEvents = ECSEvent<any, any>>(event: AllEvents) => void
+export type EmitEvent = (event: any) => void
 
 // export type Event = Component<{}>
 
