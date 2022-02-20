@@ -1,6 +1,5 @@
-import { AnyState } from '../..'
-import { Camera, EventHandler, InternalInitialState } from '../../type'
-import { CameraEvent, getCamera, setCamera } from '../../system/camera'
+import { AnyState, Camera, EventHandler, InternalInitialState } from '../../type'
+import { CameraEvent, getCamera, setCamera } from '../camera'
 
 export const getCameraSize = (distance: number, aspectRatio: number) => {
   if (aspectRatio > 1) {

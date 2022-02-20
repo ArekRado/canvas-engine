@@ -1,10 +1,10 @@
 import {
-  Dictionary,
-  Component,
-  SystemMethodParams,
   AnyStateForSystem,
-  GlobalSystem,
+  Component,
+  Dictionary,
   EmitEvent,
+  GlobalSystem,
+  SystemMethodParams,
 } from '../type'
 
 export enum systemPriority {

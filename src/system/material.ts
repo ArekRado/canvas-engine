@@ -1,6 +1,6 @@
 import { InternalInitialState, Material } from '../type'
 import { createSystem } from './createSystem'
-import { componentName } from '../component'
+import { componentName } from '../component/componentName'
 
 const isEqual = (
   a: undefined | number | boolean | string | Array<unknown>,

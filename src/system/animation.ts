@@ -3,8 +3,10 @@ import { TimingFunction, getValue } from '../util/bezierFunction'
 import { add, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
 import { createSystem, systemPriority } from '../system/createSystem'
-import { setComponent, updateComponent } from '../component'
-import { componentName } from '../component'
+import { setComponent } from '../component/setComponent'
+import { updateComponent } from '../component/updateComponent'
+import { componentName } from '../component/componentName'
+
 import { getTime } from '../system/time'
 import { emitEvent } from './event'
 

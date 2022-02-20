@@ -1,24 +1,25 @@
-import 'regenerator-runtime/runtime'
 import { getState } from '../util/state'
 
-import { setEntity, removeEntity, createEntity } from '../entity'
+import { setEntity } from '../entity/setEntity'
+import { removeEntity } from '../entity/removeEntity'
+import { generateEntity } from '../entity/generateEntity'
 import {
-  collideCircle as defaultCollideCircle,
-  collideBox as defaultCollideBox,
-  animation,
+  defaultCollideCircle,
+  defaultCollideBox,
+  defaultAnimation,
 } from '../util/defaultComponents'
-import { setComponent } from '../component'
+import { setComponent } from '../component/setComponent'
 import { CollideBox, CollideCircle, Animation } from '../type'
-import { InternalInitialState } from '..'
+import { InternalInitialState } from '../index'
 
 describe('entity', () => {
   it('remove - should remove components by entity', () => {
-    const entity = createEntity({ name: 'test' })
+    const entity = generateEntity({ name: 'test' })
     let state = setEntity({ state: getState({}), entity })
 
     state = setComponent<Animation.AnimationComponent, InternalInitialState>({
       state,
-      data: animation({ entity }),
+      data: defaultAnimation({ entity }),
     })
     state = setComponent<CollideBox, InternalInitialState>({
       state,
@@ -47,7 +48,7 @@ describe('entity', () => {
 
   // TODO - why do we want to update entity?
   // it('set - should set and update entity', () => {
-  //   const entity = createEntity('test', { rotation: 1 })
+  //   const entity = generateEntity('test', { rotation: 1 })
   //   const v1 = setEntity({ state: getState({}), entity })
 
   //   expect(v1.entity[entity]).toEqual(entity)

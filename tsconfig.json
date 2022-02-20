@@ -1,13 +1,19 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": "./",
     "module": "CommonJS",
     "target": "esnext",
-    "lib": ["es6", "dom", "es2015", "es2017.object", "ES2019"],
+    "lib": [
+      "es6",
+      "dom",
+      "es2015",
+      "es2017.object",
+      "ES2019"
+    ],
     "sourceMap": true,
     "jsx": "react",
     "moduleResolution": "node",
-    "rootDir": "src",
+    // "rootDir": "src",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -15,19 +21,22 @@
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": false,
-    // "baseUrl": "src",
-    "declaration": true,
+    "baseUrl": ".",
+    // "declaration": true,
     "importHelpers": true,
-    "alwaysStrict": true,    
+    "alwaysStrict": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedParameters": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*"
+  ],
   "exclude": [
     "node_modules",
+    "dist"
   ],
-  "filesGlob": ["typings/index.d.ts", "src/**/*"]
+  // "filesGlob": ["typings/index.d.ts", "src/**/*"]
 }

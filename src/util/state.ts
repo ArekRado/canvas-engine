@@ -1,16 +1,16 @@
 import { collideBoxSystem } from '../system/collideBox'
 import { transformSystem } from '../system/transform'
-import { componentName } from '../component'
+import { componentName } from '../component/componentName'
 import { timeSystem } from '../system/time'
 import { mouseInteractionSystem } from '../system/mouseInteraction'
 import { mouseSystem } from '../system/mouse'
 import { keyboardSystem } from '../system/keyboard'
 import { cameraSystem } from '../system/camera'
-import { AnyState, InternalInitialState } from '..'
 import { animationSystem } from '../system/animation'
 import { meshSystem } from '../system/mesh'
 import { materialSystem } from '../system/material'
 import { eventSystem } from '../system/event'
+import { AnyState, InternalInitialState } from '../type'
 
 export const getInitialState = (): InternalInitialState => ({
   entity: {},

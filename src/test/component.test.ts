@@ -1,21 +1,21 @@
-import 'regenerator-runtime/runtime'
 import { getState } from '../util/state'
-import { setEntity, createEntity } from '../entity'
+import { generateEntity } from '../entity/generateEntity'
+import { setEntity } from '../entity/setEntity'
 import { runOneFrame } from '../util/runOneFrame'
-import {
-  recreateAllComponents,
-  removeComponent,
-  setComponent,
-  updateComponent,
-} from '../component'
+import { setComponent } from '../component/setComponent'
+import { removeComponent } from '../component/removeComponent'
+import { updateComponent } from '../component/updateComponent'
+import { getComponent } from '../component/getComponent'
+import { recreateAllComponents } from '../component/recreateAllComponents'
+
 import { createSystem } from '../system/createSystem'
 import { Component, Dictionary } from '../type'
-import { getComponent, InternalInitialState } from '..'
+import { InternalInitialState } from '../index'
 
 describe('component', () => {
   it('should call system create, update and remove methods', () => {
-    const entity1 = createEntity({ name: 'e1' })
-    const entity2 = createEntity({ name: 'e2' })
+    const entity1 = generateEntity({ name: 'e1' })
+    const entity2 = generateEntity({ name: 'e2' })
 
     const create = jest.fn<
       InternalInitialState,
@@ -99,7 +99,7 @@ describe('component', () => {
   })
 
   it('recreateAllComponents - should call create system method for all components', () => {
-    const entity1 = createEntity({ name: 'e1' })
+    const entity1 = generateEntity({ name: 'e1' })
 
     const create = jest.fn<
       InternalInitialState,
@@ -134,7 +134,7 @@ describe('component', () => {
   })
 
   it('updateComponent should set component and trigger update method', () => {
-    const entity = createEntity({ name: 'e1' })
+    const entity = generateEntity({ name: 'e1' })
 
     const update = jest.fn<
       InternalInitialState,

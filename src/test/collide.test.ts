@@ -1,22 +1,21 @@
-import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
-import { setEntity, createEntity } from '../entity'
+import { setEntity } from '../entity/setEntity'
+import { generateEntity } from '../entity/generateEntity'
 import { runOneFrame } from '../util/runOneFrame'
-import {
-  collideBox as defaultCollideBox,
-  transform as defaultTransform,
-} from '../util/defaultComponents'
-import { getComponent, setComponent } from '../component'
+import { defaultCollideBox, defaultTransform } from '../util/defaultComponents'
+import { setComponent } from '../component/setComponent'
+import { getComponent } from '../component/getComponent'
+import { componentName } from '../component/componentName'
+
 import { CollideBox } from '../type'
-import { componentName } from '../component'
-import { InternalInitialState, Transform } from '..'
+import { InternalInitialState, Transform } from '../index'
 import { getState } from '../util/state'
 
 describe('collide', () => {
   it('detect collisions box-box', () => {
-    const entity1 = createEntity({ name: 'e1' })
-    const entity2 = createEntity({ name: 'e2' })
-    const entity3 = createEntity({ name: 'e3' })
+    const entity1 = generateEntity({ name: 'e1' })
+    const entity2 = generateEntity({ name: 'e2' })
+    const entity3 = generateEntity({ name: 'e3' })
 
     let state = setEntity({
       entity: entity1,

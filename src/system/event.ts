@@ -1,5 +1,5 @@
 import { createGlobalSystem } from './createSystem'
-import { AnyState, ECSEvent, InternalInitialState } from '../type'
+import { AnyState, InternalInitialState } from '../type'
 import { internalEventHandler } from '../util/internalEventHandler'
 
 type AcitveBuffer = 'first' | 'second'
@@ -46,7 +46,7 @@ const unlockFirstBuffer = () => {
   eventBuffer = [...secondEventBuffer]
 }
 
-export const emitEvent = (event: ECSEvent<any, any>) => {
+export const emitEvent = <Event>(event: Event) => {
   if (activeBuffer === 'first') {
     eventBuffer.push(event)
   } else {

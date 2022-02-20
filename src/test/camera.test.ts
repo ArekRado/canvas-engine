@@ -1,5 +1,4 @@
-import 'regenerator-runtime/runtime'
-import { getInitialState, getState, getSystems } from '../util/state'
+import { getState } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
 import { getCamera, setCamera } from '../system/camera'
 

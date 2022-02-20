@@ -1,51 +1,42 @@
 export * from './type'
-export { runOneFrame } from './util/runOneFrame'
-export {
-  TimingFunction,
-  CommonBezierFunction,
-  linear,
-  easeInQuad,
-  easeOutQuad,
-  easeInOutQuad,
-  easeInCubic,
-  easeOutCubic,
-  easeInOutCubic,
-  easeInQuart,
-  easeOutQuart,
-  easeInOutQuart,
-  easeInQuint,
-  easeOutQuint,
-  easeInOutQuint,
-  getValue,
-} from './util/bezierFunction'
+
+export { generateEntity } from './entity/generateEntity'
+export { getEntity } from './entity/getEntity'
+export { removeEntity } from './entity/removeEntity'
+export { setEntity } from './entity/setEntity'
+
+export { componentName } from './component/componentName'
+export { createComponent } from './component/createComponent'
+export { getComponent } from './component/getComponent'
+export { getComponentsByName } from './component/getComponentsByName'
+export { recreateAllComponents } from './component/recreateAllComponents'
+export { removeComponent } from './component/removeComponent'
+export { removeComponentsByName } from './component/removeComponentsByName'
+export { setComponent } from './component/setComponent'
+export { updateComponent } from './component/updateComponent'
+
 export {
   createSystem,
   createGlobalSystem,
   systemPriority,
 } from './system/createSystem'
-export { 
+export {
   emitEvent,
   addEventHandler,
   removeEventHandler,
   EventHandler,
 } from './system/event'
-export {
-  setComponent,
-  removeComponent,
-  getComponent,
-  componentName,
-  removeComponentsByName,
-  recreateAllComponents,
-  createGetSetForUniqComponent,
-  getComponentsByName,
-} from './component'
 
-export * as defaultData from './util/defaultComponents'
+export { runOneFrame } from './util/runOneFrame'
+export { createGetSetForUniqComponent } from './util/createGetSetForUniqComponent'
+export {
+  defaultAnimation,
+  defaultCollideBox,
+  defaultCollideCircle,
+  defaultMouseInteraction,
+  defaultCamera,
+  defaultTransform,
+  defaultMouse,
+  defaultKeyboard,
+} from './util/defaultComponents'
 export { getState } from './util/state'
-
-export {
-  getEntity,
-  createEntity as generateEntity,
-  setEntity,
-  removeEntity,
-} from './entity'

@@ -1,10 +1,10 @@
-import 'regenerator-runtime/runtime'
-import { ECSEvent, runOneFrame } from '..'
 import { CameraEvent } from '../system/camera'
 import { addEventHandler, emitEvent, removeEventHandler } from '../system/event'
+import { ECSEvent } from '../type'
+import { runOneFrame } from '../util/runOneFrame'
 import { getState } from '../util/state'
 
-describe('createEventSystem', () => {
+describe('event', () => {
   it('should emit, receive events and add, remove event handlers', () => {
     const event: ECSEvent<string, string> = {
       type: 'example',
@@ -31,7 +31,7 @@ describe('createEventSystem', () => {
     ])
     expect(eventHandler.mock.calls[0][0].event).toEqual(event)
 
-    removeEventHandler(eventHandler);
+    removeEventHandler(eventHandler)
 
     emitEvent(event)
     state = runOneFrame({ state })
@@ -66,5 +66,30 @@ describe('createEventSystem', () => {
       'event',
     ])
     expect(internalEventHandler.mock.calls[0][0].event).toEqual(event)
+  })
+
+  it('should remove events after one frame', () => {
+    const event: CameraEvent.ResizeEvent = {
+      type: CameraEvent.Type.resize,
+      payload: {},
+    }
+    const eventHandler = jest.fn(({ state }) => state)
+
+    addEventHandler(eventHandler)
+
+    expect(eventHandler).not.toHaveBeenCalled()
+
+    let state = getState({})
+
+    emitEvent(event)
+    emitEvent(event)
+
+    state = runOneFrame({ state })
+
+    expect(eventHandler).toHaveBeenCalledTimes(2)
+
+    state = runOneFrame({ state })
+
+    expect(eventHandler).toHaveBeenCalledTimes(2)
   })
 })

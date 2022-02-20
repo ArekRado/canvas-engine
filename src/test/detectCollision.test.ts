@@ -1,4 +1,3 @@
-import 'regenerator-runtime/runtime'
 import { vector, Vector2D } from '@arekrado/vector-2d'
 import { detectAABBcollision } from '../util/detectCollision'
 

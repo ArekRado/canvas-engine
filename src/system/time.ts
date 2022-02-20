@@ -1,11 +1,8 @@
-import { createSystem } from '..'
-import {
-  componentName,
-  createGetSetForUniqComponent,
-  setComponent,
-} from '../component'
-import { systemPriority } from '../system/createSystem'
+import { setComponent } from '../component/setComponent'
+import { componentName } from '../component/componentName'
+import { createSystem, systemPriority } from '../system/createSystem'
 import { InternalInitialState, Time } from '../type'
+import { createGetSetForUniqComponent } from '../util/createGetSetForUniqComponent'
 
 const timeEntity = 'timeEntity'
 

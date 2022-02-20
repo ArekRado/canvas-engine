@@ -1,7 +1,6 @@
-import 'regenerator-runtime/runtime'
 import { getInitialState, getSystems } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
-import { getKeyboard, keyboardSystem } from '../system/keyboard'
+import { getKeyboard } from '../system/keyboard'
 
 describe('keyboard', () => {
   let keyupCallback: Function

@@ -1,6 +1,6 @@
-import { InternalInitialState } from '..'
 import { CameraEvent } from '../system/camera'
-import { handleResize } from '../event/cameraSystem/handleResize'
+import { handleResize } from '../system/cameraSystem/handleResize'
+import { InternalInitialState } from '../type'
 
 export type AllEvents = CameraEvent.All
 

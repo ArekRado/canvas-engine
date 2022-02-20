@@ -1,10 +1,15 @@
 import { vectorZero } from '@arekrado/vector-2d'
-import { componentName } from '../component'
+import { componentName } from '../component/componentName'
 import { Camera, GetDefaultComponent, Mouse, MouseInteraction } from '../type'
-import { CollideBox, CollideCircle } from '../type'
-import { Animation, Keyboard, Transform } from '..'
+import {
+  Animation,
+  Keyboard,
+  Transform,
+  CollideBox,
+  CollideCircle,
+} from '../type'
 
-export const animation: GetDefaultComponent<Animation.AnimationComponent> = ({
+export const defaultAnimation: GetDefaultComponent<Animation.AnimationComponent> = ({
   entity,
   ...data
 }) => ({
@@ -19,7 +24,7 @@ export const animation: GetDefaultComponent<Animation.AnimationComponent> = ({
   ...data,
 })
 
-export const collideBox: GetDefaultComponent<CollideBox> = ({
+export const defaultCollideBox: GetDefaultComponent<CollideBox> = ({
   entity,
   ...data
 }) => ({
@@ -31,7 +36,7 @@ export const collideBox: GetDefaultComponent<CollideBox> = ({
   ...data,
 })
 
-export const collideCircle: GetDefaultComponent<CollideCircle> = ({
+export const defaultCollideCircle: GetDefaultComponent<CollideCircle> = ({
   entity,
   ...data
 }) => ({
@@ -43,7 +48,7 @@ export const collideCircle: GetDefaultComponent<CollideCircle> = ({
   ...data,
 })
 
-export const mouseInteraction: GetDefaultComponent<MouseInteraction> = ({
+export const defaultMouseInteraction: GetDefaultComponent<MouseInteraction> = ({
   entity,
   ...data
 }) => ({
@@ -59,7 +64,7 @@ export const mouseInteraction: GetDefaultComponent<MouseInteraction> = ({
   ...data,
 })
 
-export const camera: GetDefaultComponent<Camera> = ({ entity, ...data }) => ({
+export const defaultCamera: GetDefaultComponent<Camera> = ({ entity, ...data }) => ({
   entity,
   name: componentName.camera,
   position: vectorZero(),
@@ -71,7 +76,7 @@ export const camera: GetDefaultComponent<Camera> = ({ entity, ...data }) => ({
   ...data,
 })
 
-export const transform: GetDefaultComponent<Transform> = ({
+export const defaultTransform: GetDefaultComponent<Transform> = ({
   entity,
   ...data
 }) => ({
@@ -86,7 +91,7 @@ export const transform: GetDefaultComponent<Transform> = ({
   ...data,
 })
 
-export const mouse: GetDefaultComponent<Mouse> = ({ entity, ...data }) => ({
+export const defaultMouse: GetDefaultComponent<Mouse> = ({ entity, ...data }) => ({
   entity,
   name: componentName.mouse,
   buttons: 0,
@@ -107,7 +112,7 @@ export const mouse: GetDefaultComponent<Mouse> = ({ entity, ...data }) => ({
   ...data,
 })
 
-export const keyboard: GetDefaultComponent<Keyboard> = ({
+export const defaultKeyboard: GetDefaultComponent<Keyboard> = ({
   entity,
   ...data
 }) => ({

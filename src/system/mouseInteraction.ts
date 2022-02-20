@@ -1,20 +1,21 @@
 import { add } from '@arekrado/vector-2d'
-import { getComponent, setComponent } from '../component'
+import { setComponent } from '../component/setComponent'
+import { getComponent } from '../component/getComponent'
+import { componentName } from '../component/componentName'
 import {
   CollideBox,
   CollideCircle,
   InternalInitialState,
   Mouse,
   MouseInteraction,
+  Transform,
 } from '../type'
 import { createSystem } from './createSystem'
-import { componentName } from '../component'
 import {
   detectPointBoxCollision,
   detectPointCircleCollision,
 } from '../util/detectCollision'
 import { getMouse } from './mouse'
-import { Transform } from '..'
 import { parseV3ToV2 } from '../util/parseV3ToV2'
 
 type IsMouseOver = (params: {

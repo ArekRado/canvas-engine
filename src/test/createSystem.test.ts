@@ -1,7 +1,7 @@
-import 'regenerator-runtime/runtime'
 import { getState } from '../util/state'
 import { createGlobalSystem } from '../system/createSystem'
-import { InternalInitialState, runOneFrame } from '..'
+import { InternalInitialState } from '../type'
+import { runOneFrame } from '../util/runOneFrame'
 
 describe('createGlobalSystem', () => {
   it('should not call create method when system is creating', () => {

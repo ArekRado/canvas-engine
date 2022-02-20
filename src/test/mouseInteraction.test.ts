@@ -1,25 +1,26 @@
-import 'regenerator-runtime/runtime'
 import { vector } from '@arekrado/vector-2d'
 import { getInitialState, getSystems } from '../util/state'
-import { setEntity, createEntity } from '../entity'
+import { setEntity } from '../entity/setEntity'
+import { generateEntity } from '../entity/generateEntity'
 import { runOneFrame } from '../util/runOneFrame'
 import {
-  collideBox as defaultCollideBox,
-  collideCircle as defaultCollideCircle,
-  mouseInteraction as defaultMouseInteraction,
-  transform,
+  defaultCollideBox,
+  defaultCollideCircle,
+  defaultMouseInteraction,
+  defaultTransform,
 } from '../util/defaultComponents'
-import { getComponent, setComponent } from '../component'
 import {
   CollideBox,
   CollideCircle,
   InternalInitialState,
   MouseInteraction,
 } from '../type'
-import { componentName } from '../component'
+import { setComponent } from '../component/setComponent'
+import { getComponent } from '../component/getComponent'
+import { componentName } from '../component/componentName'
 import { isMouseOver } from '../system/mouseInteraction'
 import { getMouse } from '../system/mouse'
-import { Transform } from '..'
+import { Transform } from '../index'
 
 describe('mouseInteraction', () => {
   let mousemoveCallback: Function
@@ -77,7 +78,7 @@ describe('mouseInteraction', () => {
   it('isMouseOver', () => {
     let state = getInitialStateWithMouse()
 
-    const entity = createEntity({ name: '' })
+    const entity = generateEntity({ name: '' })
     const mouse = getMouse({
       state,
     })
@@ -92,7 +93,7 @@ describe('mouseInteraction', () => {
           position: vector(-10, -10),
         },
         collideBox: defaultCollideBox({ entity }),
-        transform: transform({ entity }),
+        transform: defaultTransform({ entity }),
       }),
     ).toBeFalsy()
 
@@ -104,7 +105,7 @@ describe('mouseInteraction', () => {
           position: vector(5, 5),
         },
         collideBox: defaultCollideBox({ entity, size: vector(10, 10) }),
-        transform: transform({ entity }),
+        transform: defaultTransform({ entity }),
       }),
     ).toBeTruthy()
 
@@ -117,7 +118,7 @@ describe('mouseInteraction', () => {
           position: vector(5, 5),
         },
         collideCircle: defaultCollideCircle({ entity, radius: 10 }),
-        transform: transform({ entity }),
+        transform: defaultTransform({ entity }),
       }),
     ).toBeTruthy()
   })
@@ -125,7 +126,7 @@ describe('mouseInteraction', () => {
   it('should set proper mouse interaction values', () => {
     let state = getInitialStateWithMouse()
 
-    const entity = createEntity({ name: 'entity' })
+    const entity = generateEntity({ name: 'entity' })
 
     state = setEntity({
       entity,
@@ -141,7 +142,7 @@ describe('mouseInteraction', () => {
 
     state = setComponent<Transform, InternalInitialState>({
       state,
-      data: transform({
+      data: defaultTransform({
         entity,
       }),
     })

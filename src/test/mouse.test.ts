@@ -1,4 +1,3 @@
-import 'regenerator-runtime/runtime'
 import { getInitialState, getSystems } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
 import { getMouse } from '../system/mouse'

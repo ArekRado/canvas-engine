@@ -1,11 +1,7 @@
-import 'regenerator-runtime/runtime'
-import {
-  createGlobalSystem,
-  createSystem,
-  InternalInitialState,
-  runOneFrame,
-  setComponent,
-} from '..'
+import { setComponent } from '../component/setComponent'
+import { createGlobalSystem, createSystem } from '../system/createSystem'
+import { InternalInitialState } from '../type'
+import { runOneFrame } from '../util/runOneFrame'
 import { getInitialState } from '../util/state'
 
 describe('runOneFrame', () => {

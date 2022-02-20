@@ -1,8 +1,7 @@
-import 'regenerator-runtime/runtime'
 import { vector, Vector2D } from '@arekrado/vector-2d'
 import {
-  animation,
-  transform as defaultTransform,
+  defaultAnimation,
+  defaultTransform,
 } from '../util/defaultComponents'
 import {
   getActiveKeyframe,
@@ -11,21 +10,25 @@ import {
   updateVector3DAnimation,
   // updateStringAnimation,
 } from '../system/animation'
-import { createEntity, setEntity } from '../entity'
-import { ECSEvent, InternalInitialState, Vector3D } from '../type'
-import { runOneFrame } from '../util/runOneFrame'
-import { getComponent, setComponent } from '../component'
-import { componentName } from '../component'
-import { setTime } from '../system/time'
+import { generateEntity } from '../entity/generateEntity'
+import { setEntity } from '../entity/setEntity'
 import {
   Animation,
   Component,
-  createEventSystem,
-  createSystem,
   Transform,
-} from '..'
+  ECSEvent,
+  InternalInitialState,
+  Vector3D,
+} from '../type'
+import { runOneFrame } from '../util/runOneFrame'
+import { setComponent } from '../component/setComponent'
+import { getComponent } from '../component/getComponent'
+import { componentName } from '../component/componentName'
+
+import { setTime } from '../system/time'
 import { getState } from '../util/state'
 import { addEventHandler } from '../system/event'
+import { createSystem } from '../system/createSystem'
 
 type AnyComponent<Value> = Component<{ value: Value }>
 
@@ -42,7 +45,7 @@ type Vector3DComponent = AnyComponent<Vector3D>
 const vector3DComponentName = 'vector3DComponentName'
 
 describe('animation', () => {
-  const entity = createEntity({ name: 'entity' })
+  const entity = generateEntity({ name: 'entity' })
 
   const getNumberComponent = (state: InternalInitialState) =>
     getComponent<NumberComponent>({ name: numberComponentName, state, entity })
@@ -454,7 +457,7 @@ describe('animation', () => {
 
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animation({
+        data: defaultAnimation({
           entity,
           isPlaying: true,
           currentTime: 0,
@@ -503,7 +506,7 @@ describe('animation', () => {
 
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animation({
+        data: defaultAnimation({
           entity,
           isPlaying: true,
           currentTime: 0,
@@ -589,7 +592,7 @@ describe('animation', () => {
       })
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animation({
+        data: defaultAnimation({
           entity,
           isPlaying: true,
           currentTime: 0,
@@ -657,7 +660,7 @@ describe('animation', () => {
       })
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animation({
+        data: defaultAnimation({
           entity,
           isPlaying: true,
           currentTime: 0,
@@ -729,7 +732,7 @@ describe('animation', () => {
       })
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animation({
+        data: defaultAnimation({
           entity,
           isPlaying: true,
           currentTime: 0,
@@ -807,7 +810,7 @@ describe('animation', () => {
       })
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animation({
+        data: defaultAnimation({
           entity,
           isPlaying: true,
           currentTime: 0,
@@ -881,7 +884,7 @@ describe('animation', () => {
 
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animation({
+        data: defaultAnimation({
           entity,
           isPlaying: true,
           currentTime: 0,
@@ -986,7 +989,7 @@ describe('animation', () => {
       })
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animation({
+        data: defaultAnimation({
           entity,
           isPlaying: true,
           currentTime: 0,
@@ -1054,7 +1057,7 @@ describe('animation', () => {
 
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animation({
+        data: defaultAnimation({
           entity,
           isPlaying: true,
           currentTime: 0,
@@ -1117,7 +1120,7 @@ describe('animation', () => {
       })
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animation({
+        data: defaultAnimation({
           entity,
           isPlaying: true,
 
@@ -1200,7 +1203,7 @@ describe('animation', () => {
 
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
-        data: animation({
+        data: defaultAnimation({
           entity,
           isPlaying: true,
           isFinished: false,

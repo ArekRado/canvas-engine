@@ -1,11 +1,15 @@
 import { add } from '@arekrado/vector-2d'
-import { setComponent } from '../component'
-import { InternalInitialState } from '../type'
-import { CollideBox, CollideType } from '../type'
+import {
+  InternalInitialState,
+  Transform,
+  CollideBox,
+  CollideType,
+} from '../type'
 import { createSystem } from './createSystem'
-import { componentName } from '../component'
+import { setComponent } from '../component/setComponent'
+import { getComponent } from '../component/getComponent'
+import { componentName } from '../component/componentName'
 import { detectAABBcollision } from '../util/detectCollision'
-import { getComponent, Transform } from '..'
 
 type FindCollisionsWith = (pramams: {
   state: InternalInitialState

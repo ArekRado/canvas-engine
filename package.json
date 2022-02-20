@@ -1,5 +1,5 @@
 {
-  "version": "0.0.92",
+  "version": "0.0.96",
   "name": "@arekrado/canvas-engine",
   "umd:main": "dist/canvas-engine.umd.production.js",
   "main": "dist/index.js",
@@ -7,9 +7,6 @@
   "module": "dist/canvas-engine.esm.js",
   "npmName": "@arekrado/canvas-engine",
   "sideEffects": false,
-  "files": [
-    "dist"
-  ],
   "keywords": [
     "canvas",
     "engine"
@@ -23,15 +20,13 @@
     "url": "git+https://github.com/ArekRado/canvas-engine.git"
   },
   "author": "Arek Rado",
-  "license": "MIT",
+  "license": "GNU",
   "private": false,
   "description": "",
   "scripts": {
     "test": "jest ./src/test --config=jest.config.js --env=jsdom --watch=false --coverage",
     "test:watch": "jest ./src/test --config=jest.config.js --env=jsdom --watch --coverage=false",
-    "build:pure": "./node_modules/typescript/bin/tsc --project tsconfig.build.json",
-    "build": "rm -rf dist & npm run build:pure",
-    "publish:local": "yalc publish",
+    "publish:dry": "npm publish --dry-run",
     "lint": "tsdx lint"
   },
   "engines": {

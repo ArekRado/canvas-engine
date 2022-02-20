@@ -1,5 +1,4 @@
-import 'regenerator-runtime/runtime'
-import { getInitialState, getState } from '../util/state'
+import { getState } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
 import { getTime, setTime } from '../system/time'
 

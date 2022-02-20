@@ -15,7 +15,6 @@ src/assets
 # bucklescript
 /lib
 /types
-.merlin
 
 # misc
 .DS_Store
@@ -27,14 +26,11 @@ src/assets
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.bsb.lock
-
-# Generated bucklescript js
-*.bs.js
 
 # Cache and runtime files
 .cache/
-dist/
 
 .yalc
 yalc.lock
+
+/dist
