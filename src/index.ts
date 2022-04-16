@@ -3,7 +3,7 @@ export * from './type'
 export { generateEntity } from './entity/generateEntity'
 export { getEntity } from './entity/getEntity'
 export { removeEntity } from './entity/removeEntity'
-export { setEntity } from './entity/setEntity'
+export { createEntity } from './entity/createEntity'
 
 export { componentName } from './component/componentName'
 export { createComponent } from './component/createComponent'
@@ -25,7 +25,7 @@ export {
   addEventHandler,
   removeEventHandler,
   EventHandler,
-} from './system/event'
+} from './event'
 
 export { runOneFrame } from './util/runOneFrame'
 export { createGetSetForUniqComponent } from './util/createGetSetForUniqComponent'
@@ -40,3 +40,11 @@ export {
   defaultKeyboard,
 } from './util/defaultComponents'
 export { getState } from './util/state'
+
+// TODO
+// - create and update entity, remove setEntity
+// - remove name and enitty from component - path already contains that information.
+// - add debug name to entity
+// - flag "autoRemoveAtTheEnd" - removes finished animation
+// - getComponentsByName - delete this, it removes single components so it can keep entity without components which is bad idea. Users may think about it as a removeEntitiesByComponentName which is not true
+// - do not use v4 to generate entity

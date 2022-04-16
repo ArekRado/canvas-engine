@@ -1,5 +1,5 @@
 import { vector } from '@arekrado/vector-2d'
-import { setEntity } from '../entity/setEntity'
+import { createEntity } from '../entity/createEntity'
 import { generateEntity } from '../entity/generateEntity'
 import { runOneFrame } from '../util/runOneFrame'
 import { defaultCollideBox, defaultTransform } from '../util/defaultComponents'
@@ -17,12 +17,12 @@ describe('collide', () => {
     const entity2 = generateEntity({ name: 'e2' })
     const entity3 = generateEntity({ name: 'e3' })
 
-    let state = setEntity({
+    let state = createEntity({
       entity: entity1,
       state: getState({}),
     })
-    state = setEntity({ entity: entity2, state })
-    state = setEntity({ entity: entity3, state })
+    state = createEntity({ entity: entity2, state })
+    state = createEntity({ entity: entity3, state })
 
     state = setComponent<Transform, InternalInitialState>({
       state,

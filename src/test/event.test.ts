@@ -1,6 +1,11 @@
-import { CameraEvent } from '../system/camera'
-import { addEventHandler, emitEvent, removeEventHandler } from '../system/event'
-import { ECSEvent } from '../type'
+import { createEntity } from '../entity/createEntity'
+import { createComponent } from '../component/createComponent'
+import { getComponent } from '../component/getComponent'
+import { updateComponent } from '../component/updateComponent'
+import { generateEntity } from '../entity/generateEntity'
+import { CameraEvent } from '../system/camera/camera'
+import { addEventHandler, emitEvent, removeEventHandler } from '../event'
+import { Component, ECSEvent, InternalInitialState } from '../type'
 import { runOneFrame } from '../util/runOneFrame'
 import { getState } from '../util/state'
 
@@ -68,28 +73,46 @@ describe('event', () => {
     expect(internalEventHandler.mock.calls[0][0].event).toEqual(event)
   })
 
-  it('should remove events after one frame', () => {
+  it.only('should handle deeply nested events', () => {
+    type Test = Component<{ count: number }>
+    const name = 'test'
     const event: CameraEvent.ResizeEvent = {
       type: CameraEvent.Type.resize,
       payload: {},
     }
-    const eventHandler = jest.fn(({ state }) => state)
+    const entity = generateEntity({ name: '' })
+
+    let state = createEntity({ state: getState({}), entity })
+
+    state = createComponent<Test, InternalInitialState>({
+      state,
+      data: {
+        name,
+        entity,
+        count: 0,
+      },
+    })
+
+    const eventHandler = jest.fn(({ state }) => {
+      emitEvent(event)
+
+      return updateComponent<Test, InternalInitialState>({
+        state,
+        entity,
+        name,
+        update: ({ count }) => ({ count: count + 1 }),
+      })
+    })
 
     addEventHandler(eventHandler)
 
     expect(eventHandler).not.toHaveBeenCalled()
 
-    let state = getState({})
-
-    emitEvent(event)
     emitEvent(event)
 
-    state = runOneFrame({ state })
-
-    expect(eventHandler).toHaveBeenCalledTimes(2)
-
-    state = runOneFrame({ state })
-
-    expect(eventHandler).toHaveBeenCalledTimes(2)
+    Array.from({ length: 6 }).forEach((_, i) => {
+      state = runOneFrame({ state })
+      expect(getComponent<Test>({ state, name, entity })?.count).toEqual(i + 1)
+    })
   })
 })

@@ -1,14 +1,15 @@
-import { Animation, InternalInitialState, Vector3D } from '../type'
-import { TimingFunction, getValue } from '../util/bezierFunction'
+import { Animation, InternalInitialState, Vector3D } from '../../type'
+import { TimingFunction, getValue } from '../../util/bezierFunction'
 import { add, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
-import { createSystem, systemPriority } from '../system/createSystem'
-import { setComponent } from '../component/setComponent'
-import { updateComponent } from '../component/updateComponent'
-import { componentName } from '../component/componentName'
+import { createSystem, systemPriority } from '../createSystem'
+import { setComponent } from '../../component/setComponent'
+import { updateComponent } from '../../component/updateComponent'
+import { componentName } from '../../component/componentName'
+import { removeComponent } from '../../component/removeComponent'
 
-import { getTime } from '../system/time'
-import { emitEvent } from './event'
+import { getTime } from '../time/time'
+import { emitEvent } from '../../event'
 
 type UpdateAnimationParams = {
   keyframe: Animation.Keyframe
@@ -294,15 +295,23 @@ export const animationSystem = (state: InternalInitialState) =>
       })
 
       if (animationTimeExceeded) {
-        return setComponent({
-          state,
-          data: {
-            ...animation,
-            currentTime: 0,
-            isPlaying: false,
-            isFinished: true,
-          },
-        })
+        if (animation.deleteWhenFinished) {
+          return removeComponent({
+            state,
+            entity: animation.entity,
+            name: componentName.animation,
+          })
+        } else {
+          return setComponent({
+            state,
+            data: {
+              ...animation,
+              currentTime: 0,
+              isPlaying: false,
+              isFinished: true,
+            },
+          })
+        }
       }
 
       const time = getTime({ state })

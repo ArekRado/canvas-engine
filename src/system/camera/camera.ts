@@ -1,11 +1,11 @@
-import { createSystem } from './createSystem'
-import { createComponent } from '../component/createComponent'
-import { componentName } from '../component/componentName'
-import { Camera, ECSEvent, InternalInitialState } from '../type'
-import { adjustBabylonCameraToComponentCamera } from './cameraSystem/handleResize'
-import { getAspectRatio } from '../util/getAspectRatio'
-import { createGetSetForUniqComponent } from '../util/createGetSetForUniqComponent'
-import { setEntity } from '../entity/setEntity'
+import { createSystem } from '../createSystem'
+import { createComponent } from '../../component/createComponent'
+import { componentName } from '../../component/componentName'
+import { Camera, ECSEvent, InternalInitialState } from '../../type'
+import { adjustBabylonCameraToComponentCamera } from './handler/handleResize'
+import { getAspectRatio } from '../../util/getAspectRatio'
+import { createGetSetForUniqComponent } from '../../util/createGetSetForUniqComponent'
+import { createEntity } from '../../entity/createEntity'
 
 export const cameraEntity = 'cameraEntity'
 export namespace CameraEvent {
@@ -62,7 +62,7 @@ export const cameraSystem = (state: InternalInitialState) => {
     },
   })
 
-  state = setEntity({
+  state = createEntity({
     entity: cameraEntity,
     state,
   })

@@ -1,6 +1,6 @@
 import { vector } from '@arekrado/vector-2d'
 import { getState } from '../util/state'
-import { setEntity } from '../entity/setEntity'
+import { createEntity } from '../entity/createEntity'
 import { generateEntity } from '../entity/generateEntity'
 import { runOneFrame } from '../util/runOneFrame'
 import { defaultTransform } from '../util/defaultComponents'
@@ -31,8 +31,8 @@ describe('transform', () => {
       }),
     })
 
-    state = setEntity({ entity: entity1, state })
-    state = setEntity({ entity: entity2, state })
+    state = createEntity({ entity: entity1, state })
+    state = createEntity({ entity: entity2, state })
 
     state = runOneFrame({ state })
 
@@ -95,10 +95,10 @@ describe('transform', () => {
       }),
     })
 
-    state = setEntity({ entity: entity1, state })
-    state = setEntity({ entity: entity2, state })
-    state = setEntity({ entity: entity3, state })
-    state = setEntity({ entity: entity4, state })
+    state = createEntity({ entity: entity1, state })
+    state = createEntity({ entity: entity2, state })
+    state = createEntity({ entity: entity3, state })
+    state = createEntity({ entity: entity4, state })
 
     state = runOneFrame({ state })
 
@@ -150,17 +150,17 @@ describe('transform', () => {
     const entity7 = generateEntity({ name: 'e7' })
     const entity8 = generateEntity({ name: 'e8' })
 
-    let state = setEntity({
+    let state = createEntity({
       entity: entity1,
       state: getState({}),
     })
-    state = setEntity({ entity: entity2, state })
-    state = setEntity({ entity: entity3, state })
-    state = setEntity({ entity: entity4, state })
-    state = setEntity({ entity: entity5, state })
-    state = setEntity({ entity: entity6, state })
-    state = setEntity({ entity: entity7, state })
-    state = setEntity({ entity: entity8, state })
+    state = createEntity({ entity: entity2, state })
+    state = createEntity({ entity: entity3, state })
+    state = createEntity({ entity: entity4, state })
+    state = createEntity({ entity: entity5, state })
+    state = createEntity({ entity: entity6, state })
+    state = createEntity({ entity: entity7, state })
+    state = createEntity({ entity: entity8, state })
 
     state = setComponent<Transform, InternalInitialState>({
       state,

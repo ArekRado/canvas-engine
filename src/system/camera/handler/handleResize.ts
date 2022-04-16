@@ -1,4 +1,4 @@
-import { AnyState, Camera, EventHandler, InternalInitialState } from '../../type'
+import { AnyState, Camera, EventHandler, InternalInitialState } from '../../../type'
 import { CameraEvent, getCamera, setCamera } from '../camera'
 
 export const getCameraSize = (distance: number, aspectRatio: number) => {

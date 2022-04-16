@@ -1,17 +1,14 @@
 import { vector, Vector2D } from '@arekrado/vector-2d'
-import {
-  defaultAnimation,
-  defaultTransform,
-} from '../util/defaultComponents'
+import { defaultAnimation, defaultTransform } from '../util/defaultComponents'
 import {
   getActiveKeyframe,
   updateNumberAnimation,
   updateVector2DAnimation,
   updateVector3DAnimation,
   // updateStringAnimation,
-} from '../system/animation'
+} from '../system/animation/animation'
 import { generateEntity } from '../entity/generateEntity'
-import { setEntity } from '../entity/setEntity'
+import { createEntity } from '../entity/createEntity'
 import {
   Animation,
   Component,
@@ -25,9 +22,9 @@ import { setComponent } from '../component/setComponent'
 import { getComponent } from '../component/getComponent'
 import { componentName } from '../component/componentName'
 
-import { setTime } from '../system/time'
+import { setTime } from '../system/time/time'
 import { getState } from '../util/state'
-import { addEventHandler } from '../system/event'
+import { addEventHandler } from '../event'
 import { createSystem } from '../system/createSystem'
 
 type AnyComponent<Value> = Component<{ value: Value }>
@@ -434,7 +431,7 @@ describe('animation', () => {
         [{ state: InternalInitialState }]
       >(({ state }) => state)
 
-      let state = setEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState({}), entity })
       state = createSystem({
         state,
         name: numberComponentName,
@@ -484,6 +481,59 @@ describe('animation', () => {
       expect(update).toHaveBeenCalledTimes(2)
     })
 
+    it('should remove animation component when it ended and proper flag is set', () => {
+      let state = createEntity({ state: getState({}), entity })
+      state = setComponent<NumberComponent, InternalInitialState>({
+        state,
+        data: {
+          entity,
+          name: numberComponentName,
+          value: 0,
+        },
+      })
+      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+        state,
+        data: defaultAnimation({
+          entity,
+          isPlaying: true,
+          deleteWhenFinished: true,
+          currentTime: 0,
+          wrapMode: Animation.WrapMode.once,
+          isFinished: false,
+          properties: [
+            {
+              path: 'value',
+              component: numberComponentName,
+              entity,
+              keyframes: [
+                {
+                  duration: 10,
+                  timingFunction: 'Linear',
+                  valueRange: vector(0, 1),
+                },
+              ],
+            },
+          ],
+        }),
+      })
+
+      state = tick(0, state)
+      expect(getAnimation(state)).toBeDefined()
+
+      state = tick(1, state)
+      expect(getAnimation(state)).toBeDefined()
+
+      state = tick(10, state)
+      expect(getAnimation(state)).toBeDefined()
+
+      state = tick(11, state)
+      state = tick(11, state) // TODO why double tick is required?
+      expect(getAnimation(state)).not.toBeDefined()
+
+      state = tick(100, state)
+      expect(getAnimation(state)).not.toBeDefined()
+    })
+
     it('should emit even on every keyframe change', () => {
       const event = (type: string): ECSEvent<string, string> => ({
         type,
@@ -493,7 +543,7 @@ describe('animation', () => {
 
       addEventHandler(eventHandler)
 
-      let state = setEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState({}), entity })
 
       state = setComponent<NumberComponent, InternalInitialState>({
         state,
@@ -581,7 +631,7 @@ describe('animation', () => {
     })
 
     it('Linear animation should change value in proper way', () => {
-      let state = setEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState({}), entity })
       state = setComponent<NumberComponent, InternalInitialState>({
         state,
         data: {
@@ -649,7 +699,7 @@ describe('animation', () => {
     })
 
     it('Should works with negative values', () => {
-      let state = setEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState({}), entity })
       state = setComponent<NumberComponent, InternalInitialState>({
         state,
         data: {
@@ -721,7 +771,7 @@ describe('animation', () => {
     })
 
     it('Should works with multiple frames', () => {
-      let state = setEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState({}), entity })
       state = setComponent<NumberComponent, InternalInitialState>({
         state,
         data: {
@@ -799,7 +849,7 @@ describe('animation', () => {
     })
 
     it('Should works with looped animations', () => {
-      let state = setEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState({}), entity })
       state = setComponent<NumberComponent, InternalInitialState>({
         state,
         data: {
@@ -864,7 +914,7 @@ describe('animation', () => {
     })
 
     it('Should works with multiple properties', () => {
-      let state = setEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState({}), entity })
       state = setComponent<NumberComponent, InternalInitialState>({
         state,
         data: {
@@ -982,7 +1032,7 @@ describe('animation', () => {
     })
 
     it('timingMode step - should change value only once per keyframe', () => {
-      let state = setEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState({}), entity })
       state = setComponent<Transform, InternalInitialState>({
         state,
         data: defaultTransform({ entity }),
@@ -1049,7 +1099,7 @@ describe('animation', () => {
       const parentId1 = 'walk1.png'
       const parentId2 = 'walk2.png'
 
-      let state = setEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState({}), entity })
       state = setComponent<StringComponent, InternalInitialState>({
         state,
         data: { name: stringComponentName, entity, value: '' },
@@ -1113,7 +1163,7 @@ describe('animation', () => {
 
   describe('vector2d', () => {
     it('Linear animation should change value in a proper way', () => {
-      let state = setEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState({}), entity })
       state = setComponent<Vector2DComponent, InternalInitialState>({
         state,
         data: { name: vector2DComponentName, entity, value: vector(-1, -1) },
@@ -1194,7 +1244,7 @@ describe('animation', () => {
 
   describe('vector3d', () => {
     it('Linear animation should change value in a proper way', () => {
-      let state = setEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState({}), entity })
 
       state = setComponent<Vector3DComponent, InternalInitialState>({
         state,

@@ -1,6 +1,6 @@
 import { getInitialState, getSystems } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
-import { getMouse } from '../system/mouse'
+import { getMouse } from '../system/mouse/mouse'
 import { vector, vectorZero } from '@arekrado/vector-2d'
 
 describe('mouse', () => {

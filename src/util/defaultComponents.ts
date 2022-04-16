@@ -17,6 +17,7 @@ export const defaultAnimation: GetDefaultComponent<Animation.AnimationComponent>
   name: componentName.animation,
   isPlaying: false,
   isFinished: false,
+  deleteWhenFinished: false,
   currentTime: 0,
   properties: [],
   wrapMode: Animation.WrapMode.once,

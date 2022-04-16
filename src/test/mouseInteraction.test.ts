@@ -1,6 +1,6 @@
 import { vector } from '@arekrado/vector-2d'
 import { getInitialState, getSystems } from '../util/state'
-import { setEntity } from '../entity/setEntity'
+import { createEntity } from '../entity/createEntity'
 import { generateEntity } from '../entity/generateEntity'
 import { runOneFrame } from '../util/runOneFrame'
 import {
@@ -18,8 +18,8 @@ import {
 import { setComponent } from '../component/setComponent'
 import { getComponent } from '../component/getComponent'
 import { componentName } from '../component/componentName'
-import { isMouseOver } from '../system/mouseInteraction'
-import { getMouse } from '../system/mouse'
+import { isMouseOver } from '../system/mouseInteraction/mouseInteraction'
+import { getMouse } from '../system/mouse/mouse'
 import { Transform } from '../index'
 
 describe('mouseInteraction', () => {
@@ -128,12 +128,12 @@ describe('mouseInteraction', () => {
 
     const entity = generateEntity({ name: 'entity' })
 
-    state = setEntity({
+    state = createEntity({
       entity,
       state,
     })
 
-    state = setEntity({ entity, state })
+    state = createEntity({ entity, state })
 
     state = setComponent<MouseInteraction, InternalInitialState>({
       state,

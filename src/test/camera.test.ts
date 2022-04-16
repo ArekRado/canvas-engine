@@ -1,6 +1,6 @@
 import { getState } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
-import { getCamera, setCamera } from '../system/camera'
+import { getCamera, setCamera } from '../system/camera/camera'
 
 describe('camera', () => {
   it('should pass through camera render lifecycle without any errors', () => {

@@ -1,6 +1,6 @@
-import { createGlobalSystem } from './createSystem'
-import { AnyState, InternalInitialState } from '../type'
-import { internalEventHandler } from '../util/internalEventHandler'
+import { createGlobalSystem } from './system/createSystem'
+import { AnyState, InternalInitialState } from './type'
+import { internalEventHandler } from './util/internalEventHandler'
 
 type AcitveBuffer = 'first' | 'second'
 
@@ -17,6 +17,12 @@ export type EventHandler<AllEvents, State extends AnyState = AnyState> = ({
 let eventHandlers: EventHandler<any, any>[] = [internalEventHandler]
 
 export const addEventHandler = (eventHandler: EventHandler<any, any>): void => {
+  if (process.env.NODE_ENV === 'test') {
+    if (eventHandlers.find((handler) => handler === eventHandler)) {
+      console.warn('This event handler has been already added', eventHandler)
+    }
+  }
+
   eventHandlers.push(eventHandler)
 }
 
@@ -28,7 +34,7 @@ let activeBuffer: AcitveBuffer = 'first'
 
 let eventBuffer: any[] = []
 /**
- * events emited inside events are located in secondEventBuffer
+ * events emited inside event handlers are moved to secondEventBuffer
  */
 let secondEventBuffer: any[] = []
 

@@ -1,6 +1,6 @@
 import { getState } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
-import { getTime, setTime } from '../system/time'
+import { getTime, setTime } from '../system/time/time'
 
 describe('time', () => {
   it('should change time - start from 0 case', () => {

@@ -1,7 +1,7 @@
-import { InternalInitialState, Material, Mesh, Transform } from '../type'
-import { createSystem } from './createSystem'
-import { getComponent } from '../component/getComponent'
-import { componentName } from '../component/componentName'
+import { InternalInitialState, Material, Mesh, Transform } from '../../type'
+import { createSystem } from '../createSystem'
+import { getComponent } from '../../component/getComponent'
+import { componentName } from '../../component/componentName'
 
 export const meshSystem = (state: InternalInitialState) =>
   createSystem<Mesh, InternalInitialState>({

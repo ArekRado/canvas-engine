@@ -1,10 +1,10 @@
 import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
-import { InternalInitialState, Transform, Vector3D } from '../type'
-import { createGlobalSystem, systemPriority } from '../system/createSystem'
-import { setComponent } from '../component/setComponent'
-import { getComponent } from '../component/getComponent'
-import { componentName } from '../component/componentName'
-import { parseV3ToV2 } from '../util/parseV3ToV2'
+import { InternalInitialState, Transform, Vector3D } from '../../type'
+import { createGlobalSystem, systemPriority } from '../createSystem'
+import { setComponent } from '../../component/setComponent'
+import { getComponent } from '../../component/getComponent'
+import { componentName } from '../../component/componentName'
+import { parseV3ToV2 } from '../../util/parseV3ToV2'
 import { Scene } from '@babylonjs/core/scene'
 
 const syncTransformWithBabylon = ({

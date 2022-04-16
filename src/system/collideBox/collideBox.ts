@@ -4,12 +4,12 @@ import {
   Transform,
   CollideBox,
   CollideType,
-} from '../type'
-import { createSystem } from './createSystem'
-import { setComponent } from '../component/setComponent'
-import { getComponent } from '../component/getComponent'
-import { componentName } from '../component/componentName'
-import { detectAABBcollision } from '../util/detectCollision'
+} from '../../type'
+import { createSystem } from '../createSystem'
+import { setComponent } from '../../component/setComponent'
+import { getComponent } from '../../component/getComponent'
+import { componentName } from '../../component/componentName'
+import { detectAABBcollision } from '../../util/detectCollision'
 
 type FindCollisionsWith = (pramams: {
   state: InternalInitialState

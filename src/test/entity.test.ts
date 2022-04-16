@@ -1,6 +1,6 @@
 import { getState } from '../util/state'
 
-import { setEntity } from '../entity/setEntity'
+import { createEntity } from '../entity/createEntity'
 import { removeEntity } from '../entity/removeEntity'
 import { generateEntity } from '../entity/generateEntity'
 import {
@@ -15,7 +15,7 @@ import { InternalInitialState } from '../index'
 describe('entity', () => {
   it('remove - should remove components by entity', () => {
     const entity = generateEntity({ name: 'test' })
-    let state = setEntity({ state: getState({}), entity })
+    let state = createEntity({ state: getState({}), entity })
 
     state = setComponent<Animation.AnimationComponent, InternalInitialState>({
       state,

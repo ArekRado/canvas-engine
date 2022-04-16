@@ -1,9 +1,9 @@
-import { componentName } from '../component/componentName'
-import { setComponent } from '../component/setComponent'
-import { Keyboard, InternalInitialState } from '../type'
-import { createGetSetForUniqComponent } from '../util/createGetSetForUniqComponent'
-import { defaultKeyboard } from '../util/defaultComponents'
-import { createSystem, systemPriority } from './createSystem'
+import { componentName } from '../../component/componentName'
+import { setComponent } from '../../component/setComponent'
+import { Keyboard, InternalInitialState } from '../../type'
+import { createGetSetForUniqComponent } from '../../util/createGetSetForUniqComponent'
+import { defaultKeyboard } from '../../util/defaultComponents'
+import { createSystem, systemPriority } from '../createSystem'
 
 const keyboardEntity = 'keyboardEntity'
 

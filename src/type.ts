@@ -121,6 +121,7 @@ export namespace Animation {
 
   export type AnimationComponent = Component<{
     currentTime: number
+    deleteWhenFinished: boolean
     isPlaying: boolean
     /**
      * is true when wrapMode === 'once' and currentTime exceded

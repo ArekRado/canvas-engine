@@ -1,6 +1,6 @@
 import { getState } from '../util/state'
 import { generateEntity } from '../entity/generateEntity'
-import { setEntity } from '../entity/setEntity'
+import { createEntity } from '../entity/createEntity'
 import { runOneFrame } from '../util/runOneFrame'
 import { setComponent } from '../component/setComponent'
 import { removeComponent } from '../component/removeComponent'
@@ -34,7 +34,7 @@ describe('component', () => {
       [{ state: InternalInitialState }]
     >(({ state }) => state)
 
-    let state = setEntity({
+    let state = createEntity({
       entity: entity1,
       state: getState({}),
     })
@@ -106,7 +106,7 @@ describe('component', () => {
       [{ state: InternalInitialState }]
     >(({ state }) => state)
 
-    let state = setEntity({
+    let state = createEntity({
       entity: entity1,
       state: getState({}),
     })
@@ -144,7 +144,7 @@ describe('component', () => {
     type SomeComponent = Component<{ value: 1 }>
     const name = 'test'
 
-    let state = setEntity({
+    let state = createEntity({
       entity,
       state: getState({}),
     })

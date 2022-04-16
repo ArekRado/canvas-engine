@@ -1,6 +1,6 @@
 import { getInitialState, getSystems } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
-import { getKeyboard } from '../system/keyboard'
+import { getKeyboard } from '../system/keyboard/keyboard'
 
 describe('keyboard', () => {
   let keyupCallback: Function

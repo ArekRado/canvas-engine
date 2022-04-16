@@ -3,6 +3,8 @@ import { setComponent } from '../component/setComponent'
 import { AnyState, Component, Entity } from '../type'
 
 /**
+ * @deprecated updateComponent is good enough to replace this function
+ * 
  * Creates get and set component functions for unique entity. Useful when you have always one component eg game settings or camera
  */
 export const createGetSetForUniqComponent = <
