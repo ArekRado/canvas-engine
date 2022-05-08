@@ -29,7 +29,7 @@ export const createComponent = <Data, State extends AnyState = AnyState>({
     process.env.NODE_ENV === 'test'
   ) {
     console.warn(
-      `Cann't find entity for component ${data.name}. Use setEntity before.`,
+      `Cann't find entity for component ${data.name}. Use createEntity before.`,
     )
   }
 

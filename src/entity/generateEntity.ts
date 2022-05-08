@@ -1,5 +1,9 @@
-import { v4 } from 'uuid'
 import { Entity } from '../type'
 
-export const generateEntity = ({ name }: { name: string }): Entity =>
-  name ? `${name}###${v4()}` : v4()
+let counter = 0
+
+export const generateEntity = (): Entity => {
+  const number = (counter++).toString()
+
+  return number
+}

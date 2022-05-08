@@ -90,11 +90,11 @@ import gunImg from './assets/gun.png'
 
 export const GunBlueprint = ({ state }): State => {
   // create new entity
-  const gunEntity = createEntity({ name: 'gun' })
+  const gunEntity = generateEntity({ name: 'gun' })
 
   // add new entity to state
   // btw can't wait for a pipeline operator
-  state = setEntity({ state, entity })
+  state = createEntity({ state, entity })
 
   state = setComponent<Transform>({
     name: componentName.transform,
