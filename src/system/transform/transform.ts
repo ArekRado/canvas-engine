@@ -1,5 +1,5 @@
 import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
-import { InternalInitialState, Transform, Vector3D } from '../../type'
+import { Guid, InternalInitialState, Transform, Vector3D } from '../../type'
 import { createGlobalSystem, systemPriority } from '../createSystem'
 import { setComponent } from '../../component/setComponent'
 import { getComponent } from '../../component/getComponent'
@@ -8,15 +8,15 @@ import { parseV3ToV2 } from '../../util/parseV3ToV2'
 import { Scene } from '@babylonjs/core/scene'
 
 const syncTransformWithBabylon = ({
+  entity,
   transform,
   scene,
 }: {
+  entity: Guid
   transform: Transform
   scene: Scene
 }) => {
-  const transformNode = scene.getTransformNodeByUniqueId(
-    parseFloat(transform.entity),
-  )
+  const transformNode = scene.getTransformNodeByUniqueId(parseFloat(entity))
   if (transformNode) {
     transformNode.position.x = transform.position[0]
     transformNode.position.y = transform.position[1]
@@ -61,8 +61,8 @@ export const transformSystem = (state: InternalInitialState) =>
     name: componentName.transform,
     priority: systemPriority.transform,
     tick: ({ state }) => {
-      return Object.values(state.component.transform).reduce(
-        (state, transform) => {
+      return Object.entries(state.component.transform).reduce(
+        (state, [entity, transform]) => {
           if (transform.parentId) {
             const parentTransform = getComponent<Transform>({
               state,
@@ -80,6 +80,8 @@ export const transformSystem = (state: InternalInitialState) =>
 
               return setComponent<Transform, InternalInitialState>({
                 state,
+                entity,
+                name: componentName.transform,
                 data: {
                   ...transform,
                   position: newPosition,
@@ -92,6 +94,7 @@ export const transformSystem = (state: InternalInitialState) =>
             syncTransformWithBabylon({
               scene: state.babylonjs.sceneRef,
               transform: transform,
+              entity,
             })
           }
 

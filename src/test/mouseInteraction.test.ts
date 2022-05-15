@@ -13,13 +13,13 @@ import {
   CollideBox,
   CollideCircle,
   InternalInitialState,
+  Mouse,
   MouseInteraction,
 } from '../type'
 import { setComponent } from '../component/setComponent'
 import { getComponent } from '../component/getComponent'
 import { componentName } from '../component/componentName'
 import { isMouseOver } from '../system/mouseInteraction/mouseInteraction'
-import { getMouse } from '../system/mouse/mouse'
 import { Transform } from '../index'
 
 describe('mouseInteraction', () => {
@@ -78,9 +78,11 @@ describe('mouseInteraction', () => {
   it('isMouseOver', () => {
     let state = getInitialStateWithMouse()
 
-    const entity = generateEntity({ name: '' })
-    const mouse = getMouse({
+    const entity = generateEntity()
+    const mouse = getComponent<Mouse>({
+      entity,
       state,
+      name: componentName.mouse,
     })
 
     if (!mouse) return
@@ -92,8 +94,8 @@ describe('mouseInteraction', () => {
           ...mouse,
           position: vector(-10, -10),
         },
-        collideBox: defaultCollideBox({ entity }),
-        transform: defaultTransform({ entity }),
+        collideBox: defaultCollideBox(),
+        transform: defaultTransform(),
       }),
     ).toBeFalsy()
 
@@ -104,8 +106,8 @@ describe('mouseInteraction', () => {
           ...mouse,
           position: vector(5, 5),
         },
-        collideBox: defaultCollideBox({ entity, size: vector(10, 10) }),
-        transform: defaultTransform({ entity }),
+        collideBox: defaultCollideBox({ size: vector(10, 10) }),
+        transform: defaultTransform(),
       }),
     ).toBeTruthy()
 
@@ -117,8 +119,8 @@ describe('mouseInteraction', () => {
           buttons: 1,
           position: vector(5, 5),
         },
-        collideCircle: defaultCollideCircle({ entity, radius: 10 }),
-        transform: defaultTransform({ entity }),
+        collideCircle: defaultCollideCircle({ radius: 10 }),
+        transform: defaultTransform(),
       }),
     ).toBeTruthy()
   })
@@ -126,7 +128,7 @@ describe('mouseInteraction', () => {
   it('should set proper mouse interaction values', () => {
     let state = getInitialStateWithMouse()
 
-    const entity = generateEntity({ name: 'entity' })
+    const entity = generateEntity()
 
     state = createEntity({
       entity,
@@ -137,20 +139,23 @@ describe('mouseInteraction', () => {
 
     state = setComponent<MouseInteraction, InternalInitialState>({
       state,
-      data: defaultMouseInteraction({ entity }),
+      entity,
+      name: componentName.mouseInteraction,
+      data: defaultMouseInteraction(),
     })
 
     state = setComponent<Transform, InternalInitialState>({
       state,
-      data: defaultTransform({
-        entity,
-      }),
+      entity,
+      name: componentName.transform,
+      data: defaultTransform({}),
     })
 
     state = setComponent<CollideBox, InternalInitialState>({
       state,
+      entity,
+      name: componentName.collideBox,
       data: defaultCollideBox({
-        entity,
         position: vector(200, 200),
         size: vector(10, 10),
       }),
@@ -158,8 +163,9 @@ describe('mouseInteraction', () => {
 
     state = setComponent<CollideCircle, InternalInitialState>({
       state,
+      entity,
+      name: componentName.collideCircle,
       data: defaultCollideCircle({
-        entity,
         position: vector(100, 100),
         radius: 10,
       }),

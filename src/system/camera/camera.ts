@@ -1,13 +1,13 @@
 import { createSystem } from '../createSystem'
 import { createComponent } from '../../component/createComponent'
+import { updateComponent } from '../../component/updateComponent'
 import { componentName } from '../../component/componentName'
-import { Camera, ECSEvent, InternalInitialState } from '../../type'
+import { Camera, ECSEvent, Entity, InternalInitialState } from '../../type'
 import { adjustBabylonCameraToComponentCamera } from './handler/handleResize'
 import { getAspectRatio } from '../../util/getAspectRatio'
-import { createGetSetForUniqComponent } from '../../util/createGetSetForUniqComponent'
 import { createEntity } from '../../entity/createEntity'
 
-export const cameraEntity = 'cameraEntity'
+export const cameraEntity = 'camera'
 export namespace CameraEvent {
   export enum Type {
     resize = 'CameraEvent-resize',
@@ -18,20 +18,16 @@ export namespace CameraEvent {
   export type ResizeEvent = ECSEvent<Type.resize, {}>
 }
 
-const cameraGetSet = createGetSetForUniqComponent<Camera, InternalInitialState>(
-  {
-    entity: cameraEntity,
-    name: componentName.camera,
-  },
-)
-
-export const getCamera = cameraGetSet.getComponent
-export const setCamera = ({
+const update = ({
   state,
-  data,
+  component,
+  entity,
+  name,
 }: {
   state: InternalInitialState
-  data: Partial<Camera>
+  component: Partial<Camera>
+  entity: Entity
+  name: string
 }): typeof state => {
   if (
     state.babylonjs.sceneRef &&
@@ -39,12 +35,17 @@ export const setCamera = ({
     state.babylonjs.cameraRef
   ) {
     const size = adjustBabylonCameraToComponentCamera({
-      component: data,
+      component,
       aspectRatio: getAspectRatio(state.babylonjs.sceneRef),
       cameraRef: state.babylonjs.cameraRef,
       Vector3: state.babylonjs.Vector3,
     })
-    state = cameraGetSet.setComponent({ state, data: { ...data, ...size } })
+    state = updateComponent<Camera, InternalInitialState>({
+      state,
+      entity,
+      name,
+      update: () => ({ ...component, ...size }),
+    })
   }
 
   return state
@@ -55,8 +56,13 @@ export const cameraSystem = (state: InternalInitialState) => {
     state,
     name: componentName.camera,
     componentName: componentName.camera,
-    create: ({ state, component }) => {
-      state = setCamera({ state, data: component })
+    update: ({ state, component, entity, name }) => {
+      state = update({ state, component, entity, name })
+
+      return state
+    },
+    create: ({ state, component, entity, name }) => {
+      state = update({ state, component, entity, name })
 
       return state
     },
@@ -69,9 +75,9 @@ export const cameraSystem = (state: InternalInitialState) => {
 
   return createComponent<Camera, InternalInitialState>({
     state,
+    entity: cameraEntity,
+    name: componentName.camera,
     data: {
-      entity: cameraEntity,
-      name: componentName.camera,
       position: [0, 0],
       distance: 1,
       bottom: 1,

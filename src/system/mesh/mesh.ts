@@ -8,7 +8,7 @@ export const meshSystem = (state: InternalInitialState) =>
     state,
     name: componentName.mesh,
     componentName: componentName.mesh,
-    create: ({ state, component }) => {
+    create: ({ state, component, entity }) => {
       const { MeshBuilder, sceneRef } = state.babylonjs
       if (!(MeshBuilder && sceneRef)) return state
 
@@ -35,7 +35,7 @@ export const meshSystem = (state: InternalInitialState) =>
       } else {
         if (process.env.NODE_ENV === 'development') {
           console.warn(
-            `Mesh has been created without material component. Mesh entity: ${component.entity}`,
+            `Mesh has been created without material component. Mesh entity: ${entity}`,
           )
         }
       }
@@ -43,7 +43,7 @@ export const meshSystem = (state: InternalInitialState) =>
       const transform = getComponent<Transform>({
         state,
         name: componentName.transform,
-        entity: component.entity,
+        entity,
       })
 
       if (transform) {
@@ -71,14 +71,14 @@ export const meshSystem = (state: InternalInitialState) =>
 
       return state
     },
-    tick: ({ state, component }) => {
+    tick: ({ state, component, entity }) => {
       const mesh = state.babylonjs.sceneRef?.getMeshByUniqueId(
         component.uniqueId,
       )
       const transform = getComponent<Transform>({
         state,
         name: componentName.transform,
-        entity: component.entity,
+        entity,
       })
 
       if (mesh && transform) {

@@ -1,4 +1,4 @@
-import { AnyState, Component, Dictionary } from '../type'
+import { AnyState, Dictionary } from '../type'
 
 export const getComponentsByName = <Data, State extends AnyState = AnyState>({
   name,
@@ -7,5 +7,5 @@ export const getComponentsByName = <Data, State extends AnyState = AnyState>({
   name: string
   state: State
 }) => {
-  return state.component[name] as Dictionary<Component<Data>> | undefined
+  return state.component[name] as Dictionary<Data> | undefined
 }

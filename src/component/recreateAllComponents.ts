@@ -9,19 +9,21 @@ export const recreateAllComponents = <State extends AnyState = AnyState>({
 }: {
   state: State
 }): State => {
-  state = Object.entries(state.component).reduce((acc, [key, value]) => {
-    const system = getSystemByName(key, acc.system)
+  state = Object.entries(state.component).reduce((acc, [name, value]) => {
+    const system = getSystemByName(name, acc.system)
 
     if (!system) {
       return acc
     }
 
-    return Object.values(value).reduce((acc2, component) => {
+    return Object.entries(value).reduce((acc2, [entity, component]) => {
       if (system === undefined || system.create === undefined) {
         return acc2
       } else {
         const newState = system.create({
           state: acc2,
+          entity,
+          name,
           component,
         })
         return newState as State

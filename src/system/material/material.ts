@@ -1,4 +1,4 @@
-import { InternalInitialState, Material } from '../../type'
+import { Entity, InternalInitialState, Material } from '../../type'
 import { createSystem } from '../createSystem'
 import { componentName } from '../../component/componentName'
 
@@ -9,10 +9,12 @@ const isEqual = (
 
 // todo have fun with testing this xD
 const setupMaterialData = ({
+  entity,
   component,
   previousComponent,
   state,
 }: {
+  entity: Entity
   component: Material
   previousComponent: Material | undefined
   state: InternalInitialState
@@ -23,7 +25,7 @@ const setupMaterialData = ({
   let material = sceneRef.getMaterialByUniqueID(component.uniqueId)
 
   if (!material) {
-    material = new StandardMaterial(component.entity, sceneRef)
+    material = new StandardMaterial(entity, sceneRef)
     material.uniqueId = component.uniqueId
   }
 
@@ -137,8 +139,9 @@ export const materialSystem = (state: InternalInitialState) =>
     state,
     name: componentName.material,
     componentName: componentName.material,
-    create: ({ state, component }) => {
+    create: ({ state, component, entity }) => {
       state = setupMaterialData({
+        entity,
         component,
         previousComponent: undefined,
         state,
@@ -146,8 +149,9 @@ export const materialSystem = (state: InternalInitialState) =>
 
       return state
     },
-    update: ({ state, component, previousComponent }) => {
+    update: ({ state, component, previousComponent, entity }) => {
       state = setupMaterialData({
+        entity,
         component,
         previousComponent,
         state,

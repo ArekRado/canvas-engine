@@ -34,28 +34,22 @@ export type Color = [number, number, number, number]
 //
 ////////////////////////////////////
 
-export type Component<Data> = {
-  entity: Guid
-  name: string
-} & Data
-
 export type CollideType = {
   type: 'box' | 'circle'
   entity: Guid
 }
 
-export type CollideBox = Component<{
+export type CollideBox = {
   size: Vector2D
   position: Vector2D
   collisions: CollideType[]
-}>
+}
 
-export type CollideCircle = Component<{
+export type CollideCircle = {
   radius: number
   position: Vector2D
   collisions: CollideType[]
-}>
-
+}
 export namespace Animation {
   // export type ValueRangeNumber = {
   //   type: 'number'
@@ -119,7 +113,7 @@ export namespace Animation {
     keyframes: Keyframe[]
   }
 
-  export type AnimationComponent = Component<{
+  export type AnimationComponent = {
     currentTime: number
     deleteWhenFinished: boolean
     isPlaying: boolean
@@ -130,10 +124,10 @@ export namespace Animation {
     wrapMode: WrapMode
     timingMode: TimingMode
     properties: Array<Property>
-  }>
+  }
 }
 
-export type MouseInteraction = Component<{
+export type MouseInteraction = {
   // doubleClickSpeed: number
 
   // When the user clicks on an element
@@ -146,13 +140,13 @@ export type MouseInteraction = Component<{
   isMouseEnter: boolean
   // When the pointer is moved out of an element
   isMouseLeave: boolean
-}>
+}
 
 export enum MeshType {
   plane = 'plane',
 }
 
-export type Mesh = Component<{
+export type Mesh = {
   type: MeshType
   uniqueId: number
   width: number
@@ -164,9 +158,9 @@ export type Mesh = Component<{
   // sourcePlane: Plane
   // frontUVs: Vector4
   // backUVs: Vector4
-}>
+}
 
-export type Material = Component<{
+export type Material = {
   uniqueId: number
   diffuseColor?: Color
   specularColor?: Color
@@ -179,7 +173,7 @@ export type Material = Component<{
 
   diffuseTexture?: string
   bumpTexture?: string
-}>
+}
 
 export type AnimatedProperty = {
   path: string
@@ -188,7 +182,7 @@ export type AnimatedProperty = {
 
 export type Entity = Guid
 
-export type Time = Component<{
+export type Time = {
   previousTimeNow: number
   timeNow: number
   delta: number
@@ -199,7 +193,7 @@ export type Time = Component<{
         delta?: number
       }
     | undefined
-}>
+}
 
 export type Mouse = {
   buttons: number
@@ -232,7 +226,7 @@ export type Keyboard = {
   keys: { [key: string]: KeyData | undefined }
 }
 
-export type Camera = Component<{
+export type Camera = {
   position: Vector2D
   distance: number
   // ortho
@@ -240,7 +234,7 @@ export type Camera = Component<{
   top: number
   left: number
   right: number
-}>
+}
 
 export type ECSEvent<Type, Payload> = {
   type: Type
@@ -249,7 +243,7 @@ export type ECSEvent<Type, Payload> = {
 
 export type EmitEvent = (event: any) => void
 
-// export type Event = Component<{}>
+// export type Event = {}>
 
 export type EventHandler<Event, State extends AnyState = AnyState> = (params: {
   event: Event
@@ -258,7 +252,7 @@ export type EventHandler<Event, State extends AnyState = AnyState> = (params: {
 
 export type Vector3D = [number, number, number]
 
-export type Transform = Component<{
+export type Transform = {
   rotation: Vector2D | Vector3D
   fromParentRotation: Vector2D | Vector3D
   scale: Vector2D | Vector3D
@@ -266,7 +260,7 @@ export type Transform = Component<{
   position: Vector2D | Vector3D
   fromParentPosition: Vector2D | Vector3D
   parentId?: Guid
-}>
+}
 
 ////////////////////////////////////
 //
@@ -280,18 +274,16 @@ export type Transform = Component<{
 
 export type AnyStateForSystem = EmptyState<AnyComponent, any>
 
-export type GetDefaultComponent<X> = (
-  params: Omit<Partial<Component<X>>, 'name'> & {
-    entity: Guid
-  },
-) => Component<X>
+export type GetDefaultComponent<X> = (params?: Partial<X>) => X
 
 export type SystemMethodParams<
   ComponentData,
   State extends AnyStateForSystem,
 > = {
   state: State
-  component: Component<ComponentData>
+  entity: Entity
+  name: string
+  component: ComponentData
 }
 
 export type System<
@@ -402,8 +394,8 @@ export type InitialState<Component, System> = EmptyState<
   StateDefaultSystems & System
 >
 
-export type AnyComponent = Dictionary<Dictionary<Component<unknown | any>>>
-export type AnySystem = System<Component<any>, AnyStateForSystem>
+export type AnyComponent = Dictionary<Dictionary<unknown | any>>
+export type AnySystem = System<any, AnyStateForSystem>
 export type AnyGlobalSystem = GlobalSystem<AnyStateForSystem>
 export type AnyState = EmptyState<AnyComponent, AnySystem>
 

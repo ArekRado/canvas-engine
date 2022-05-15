@@ -2,19 +2,11 @@ import { vector, vectorZero } from '@arekrado/vector-2d'
 import { InternalInitialState, Mouse } from '../../type'
 import { defaultMouse } from '../../util/defaultComponents'
 import { createSystem, systemPriority } from '../createSystem'
-import { createGetSetForUniqComponent } from '../../util/createGetSetForUniqComponent'
 import { componentName } from '../../component/componentName'
 import { setComponent } from '../../component/setComponent'
+import { updateComponent } from '../../component/updateComponent'
 
-const mouseEntity = 'mouseEntity'
-
-const mouseGetSet = createGetSetForUniqComponent<Mouse, InternalInitialState>({
-  entity: mouseEntity,
-  name: componentName.mouse,
-})
-
-export const getMouse = mouseGetSet.getComponent
-const setMouse = mouseGetSet.setComponent
+export const mouseEntity = 'mouse'
 
 let buttons = 0
 let position = vectorZero()
@@ -97,9 +89,9 @@ export const mouseSystem = ({
 
   state = setComponent<Mouse, InternalInitialState>({
     state,
-    data: defaultMouse({
-      entity: mouseEntity,
-    }),
+    entity: mouseEntity,
+    name: componentName.mouse,
+    data: defaultMouse(),
   })
 
   return createSystem({
@@ -107,7 +99,7 @@ export const mouseSystem = ({
     componentName: componentName.mouse,
     state,
     priority: systemPriority.mouse,
-    tick: ({ state }) => {
+    tick: ({ state, entity, name }) => {
       const mouseBeforeReset: Mouse = {
         buttons,
         position,
@@ -129,9 +121,11 @@ export const mouseSystem = ({
         deltaZ: 0,
       }
 
-      state = setMouse({
+      state = updateComponent<Mouse, InternalInitialState>({
         state,
-        data: mouseBeforeReset,
+        name,
+        entity,
+        update: () => mouseBeforeReset,
       })
 
       return state

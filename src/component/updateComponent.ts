@@ -1,4 +1,4 @@
-import { AnyState, Component, Guid } from '../type'
+import { AnyState, Guid } from '../type'
 import { getComponent } from './getComponent'
 import { setComponent } from './setComponent'
 
@@ -11,7 +11,7 @@ export const updateComponent = <Data, State extends AnyState = AnyState>({
   name: string
   entity: Guid
   state: State
-  update: (component: Component<Data>) => Partial<Component<Data>>
+  update: (component: Data) => Partial<Data>
 }): State => {
   const component = getComponent<Data, State>({
     state,
@@ -22,6 +22,8 @@ export const updateComponent = <Data, State extends AnyState = AnyState>({
   return component !== undefined
     ? setComponent({
         state,
+        entity,
+        name,
         data: {
           ...component,
           ...update(component),

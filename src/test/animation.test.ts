@@ -11,7 +11,6 @@ import { generateEntity } from '../entity/generateEntity'
 import { createEntity } from '../entity/createEntity'
 import {
   Animation,
-  Component,
   Transform,
   ECSEvent,
   InternalInitialState,
@@ -22,12 +21,13 @@ import { setComponent } from '../component/setComponent'
 import { getComponent } from '../component/getComponent'
 import { componentName } from '../component/componentName'
 
-import { setTime } from '../system/time/time'
 import { getState } from '../util/state'
 import { addEventHandler } from '../event'
 import { createSystem } from '../system/createSystem'
+import { updateComponent } from '../component/updateComponent'
+import { timeEntity } from '../system/time/time'
 
-type AnyComponent<Value> = Component<{ value: Value }>
+type AnyComponent<Value> = { value: Value }
 
 type NumberComponent = AnyComponent<Number>
 const numberComponentName = 'NumberComponentName'
@@ -42,7 +42,7 @@ type Vector3DComponent = AnyComponent<Vector3D>
 const vector3DComponentName = 'vector3DComponentName'
 
 describe('animation', () => {
-  const entity = generateEntity({ name: 'entity' })
+  const entity = generateEntity()
 
   const getNumberComponent = (state: InternalInitialState) =>
     getComponent<NumberComponent>({ name: numberComponentName, state, entity })
@@ -72,15 +72,17 @@ describe('animation', () => {
     })
 
   const tick = (timeNow: number, state: InternalInitialState) => {
-    state = setTime({
+    state = updateComponent({
       state,
-      data: {
+      entity: timeEntity,
+      name: componentName.time,
+      update: () => ({
         dataOverwrite: {
           previousTimeNow: timeNow === 0 ? 0 : undefined,
           // delta: 0,
           timeNow,
         },
-      },
+      }),
     })
 
     return runOneFrame({ state })
@@ -443,9 +445,9 @@ describe('animation', () => {
 
       state = setComponent<NumberComponent, InternalInitialState>({
         state,
+        entity,
+        name: numberComponentName,
         data: {
-          entity,
-          name: numberComponentName,
           value: 0,
         },
       })
@@ -454,8 +456,9 @@ describe('animation', () => {
 
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
+        entity,
+        name: componentName.animation,
         data: defaultAnimation({
-          entity,
           isPlaying: true,
           currentTime: 0,
           wrapMode: Animation.WrapMode.once,
@@ -485,16 +488,17 @@ describe('animation', () => {
       let state = createEntity({ state: getState({}), entity })
       state = setComponent<NumberComponent, InternalInitialState>({
         state,
+        entity,
+        name: numberComponentName,
         data: {
-          entity,
-          name: numberComponentName,
           value: 0,
         },
       })
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
+        entity,
+        name: componentName.animation,
         data: defaultAnimation({
-          entity,
           isPlaying: true,
           deleteWhenFinished: true,
           currentTime: 0,
@@ -547,17 +551,18 @@ describe('animation', () => {
 
       state = setComponent<NumberComponent, InternalInitialState>({
         state,
+        entity,
+        name: numberComponentName,
         data: {
-          entity,
-          name: numberComponentName,
           value: 0,
         },
       })
 
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
+        entity,
+        name: componentName.animation,
         data: defaultAnimation({
-          entity,
           isPlaying: true,
           currentTime: 0,
           wrapMode: Animation.WrapMode.once,
@@ -634,16 +639,17 @@ describe('animation', () => {
       let state = createEntity({ state: getState({}), entity })
       state = setComponent<NumberComponent, InternalInitialState>({
         state,
+        entity,
+        name: numberComponentName,
         data: {
-          entity,
-          name: numberComponentName,
           value: 0,
         },
       })
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
+        entity,
+        name: componentName.animation,
         data: defaultAnimation({
-          entity,
           isPlaying: true,
           currentTime: 0,
           wrapMode: Animation.WrapMode.once,
@@ -702,16 +708,17 @@ describe('animation', () => {
       let state = createEntity({ state: getState({}), entity })
       state = setComponent<NumberComponent, InternalInitialState>({
         state,
+        entity,
+        name: numberComponentName,
         data: {
-          entity,
-          name: numberComponentName,
           value: 5,
         },
       })
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
+        entity,
+        name: componentName.animation,
         data: defaultAnimation({
-          entity,
           isPlaying: true,
           currentTime: 0,
           wrapMode: Animation.WrapMode.once,
@@ -774,16 +781,17 @@ describe('animation', () => {
       let state = createEntity({ state: getState({}), entity })
       state = setComponent<NumberComponent, InternalInitialState>({
         state,
+        entity,
+        name: numberComponentName,
         data: {
-          entity,
-          name: numberComponentName,
           value: 0,
         },
       })
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
+        entity,
+        name: componentName.animation,
         data: defaultAnimation({
-          entity,
           isPlaying: true,
           currentTime: 0,
           wrapMode: Animation.WrapMode.once,
@@ -852,16 +860,17 @@ describe('animation', () => {
       let state = createEntity({ state: getState({}), entity })
       state = setComponent<NumberComponent, InternalInitialState>({
         state,
+        entity,
+        name: numberComponentName,
         data: {
-          entity,
-          name: numberComponentName,
           value: 0,
         },
       })
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
+        entity,
+        name: componentName.animation,
         data: defaultAnimation({
-          entity,
           isPlaying: true,
           currentTime: 0,
           wrapMode: Animation.WrapMode.loop,
@@ -917,25 +926,26 @@ describe('animation', () => {
       let state = createEntity({ state: getState({}), entity })
       state = setComponent<NumberComponent, InternalInitialState>({
         state,
+        entity,
+        name: numberComponentName,
         data: {
-          entity,
-          name: numberComponentName,
           value: 0,
         },
       })
       state = setComponent<Vector2DComponent, InternalInitialState>({
         state,
+        entity,
+        name: vector2DComponentName,
         data: {
-          entity,
-          name: vector2DComponentName,
           value: [0, 0],
         },
       })
 
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
+        entity,
+        name: componentName.animation,
         data: defaultAnimation({
-          entity,
           isPlaying: true,
           currentTime: 0,
           wrapMode: Animation.WrapMode.once,
@@ -1035,12 +1045,15 @@ describe('animation', () => {
       let state = createEntity({ state: getState({}), entity })
       state = setComponent<Transform, InternalInitialState>({
         state,
-        data: defaultTransform({ entity }),
+        entity,
+        name: componentName.transform,
+        data: defaultTransform(),
       })
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
+        entity,
+        name: componentName.animation,
         data: defaultAnimation({
-          entity,
           isPlaying: true,
           currentTime: 0,
           wrapMode: Animation.WrapMode.once,
@@ -1102,13 +1115,16 @@ describe('animation', () => {
       let state = createEntity({ state: getState({}), entity })
       state = setComponent<StringComponent, InternalInitialState>({
         state,
-        data: { name: stringComponentName, entity, value: '' },
+        name: stringComponentName,
+        entity,
+        data: { value: '' },
       })
 
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
+        entity,
+        name: componentName.animation,
         data: defaultAnimation({
-          entity,
           isPlaying: true,
           currentTime: 0,
           wrapMode: Animation.WrapMode.once,
@@ -1166,12 +1182,15 @@ describe('animation', () => {
       let state = createEntity({ state: getState({}), entity })
       state = setComponent<Vector2DComponent, InternalInitialState>({
         state,
-        data: { name: vector2DComponentName, entity, value: vector(-1, -1) },
+        name: vector2DComponentName,
+        entity,
+        data: { value: vector(-1, -1) },
       })
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
+        entity,
+        name: componentName.animation,
         data: defaultAnimation({
-          entity,
           isPlaying: true,
 
           currentTime: 0,
@@ -1248,13 +1267,16 @@ describe('animation', () => {
 
       state = setComponent<Vector3DComponent, InternalInitialState>({
         state,
-        data: { name: vector3DComponentName, entity, value: [-1, -1, -1] },
+        name: vector3DComponentName,
+        entity,
+        data: { value: [-1, -1, -1] },
       })
 
       state = setComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
+        entity,
+        name: componentName.animation,
         data: defaultAnimation({
-          entity,
           isPlaying: true,
           isFinished: false,
           currentTime: 0,

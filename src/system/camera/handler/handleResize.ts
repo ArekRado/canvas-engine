@@ -1,5 +1,12 @@
-import { AnyState, Camera, EventHandler, InternalInitialState } from '../../../type'
-import { CameraEvent, getCamera, setCamera } from '../camera'
+import { componentName } from '../../../component/componentName'
+import { updateComponent } from '../../../component/updateComponent'
+import {
+  AnyState,
+  Camera,
+  EventHandler,
+  InternalInitialState,
+} from '../../../type'
+import { cameraEntity, CameraEvent } from '../camera'
 
 export const getCameraSize = (distance: number, aspectRatio: number) => {
   if (aspectRatio > 1) {
@@ -57,11 +64,11 @@ export const handleResize: EventHandler<
   CameraEvent.ResizeEvent,
   InternalInitialState
 > = ({ state }) => {
-  const camera = getCamera({ state })
-
-  state = setCamera({
+  state = updateComponent<Camera, InternalInitialState>({
     state,
-    data: camera || {},
+    name: componentName.camera,
+    entity: cameraEntity,
+    update: () => ({}),
   })
 
   return state

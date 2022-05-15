@@ -9,12 +9,9 @@ import {
   CollideCircle,
 } from '../type'
 
-export const defaultAnimation: GetDefaultComponent<Animation.AnimationComponent> = ({
-  entity,
-  ...data
-}) => ({
-  entity,
-  name: componentName.animation,
+export const defaultAnimation: GetDefaultComponent<
+  Animation.AnimationComponent
+> = (data = {}) => ({
   isPlaying: false,
   isFinished: false,
   deleteWhenFinished: false,
@@ -25,36 +22,27 @@ export const defaultAnimation: GetDefaultComponent<Animation.AnimationComponent>
   ...data,
 })
 
-export const defaultCollideBox: GetDefaultComponent<CollideBox> = ({
-  entity,
-  ...data
-}) => ({
-  entity,
-  name: componentName.collideBox,
+export const defaultCollideBox: GetDefaultComponent<CollideBox> = (
+  data = {},
+) => ({
   size: vectorZero(),
   position: vectorZero(),
   collisions: [],
   ...data,
 })
 
-export const defaultCollideCircle: GetDefaultComponent<CollideCircle> = ({
-  entity,
-  ...data
-}) => ({
-  entity,
-  name: componentName.collideCircle,
+export const defaultCollideCircle: GetDefaultComponent<CollideCircle> = (
+  data,
+) => ({
   radius: 1,
   position: vectorZero(),
   collisions: [],
   ...data,
 })
 
-export const defaultMouseInteraction: GetDefaultComponent<MouseInteraction> = ({
-  entity,
-  ...data
-}) => ({
-  entity,
-  name: componentName.mouseInteraction,
+export const defaultMouseInteraction: GetDefaultComponent<MouseInteraction> = (
+  data,
+) => ({
   clickSpeed: 200,
   doubleClickSpeed: 200,
   isClicked: false,
@@ -65,9 +53,7 @@ export const defaultMouseInteraction: GetDefaultComponent<MouseInteraction> = ({
   ...data,
 })
 
-export const defaultCamera: GetDefaultComponent<Camera> = ({ entity, ...data }) => ({
-  entity,
-  name: componentName.camera,
+export const defaultCamera: GetDefaultComponent<Camera> = (data = {}) => ({
   position: vectorZero(),
   distance: 1,
   bottom: 0,
@@ -77,12 +63,9 @@ export const defaultCamera: GetDefaultComponent<Camera> = ({ entity, ...data }) 
   ...data,
 })
 
-export const defaultTransform: GetDefaultComponent<Transform> = ({
-  entity,
-  ...data
-}) => ({
-  entity,
-  name: componentName.transform,
+export const defaultTransform: GetDefaultComponent<Transform> = (
+  data = {},
+) => ({
   rotation: vectorZero(),
   fromParentRotation: vectorZero(),
   scale: [1, 1],
@@ -92,9 +75,7 @@ export const defaultTransform: GetDefaultComponent<Transform> = ({
   ...data,
 })
 
-export const defaultMouse: GetDefaultComponent<Mouse> = ({ entity, ...data }) => ({
-  entity,
-  name: componentName.mouse,
+export const defaultMouse: GetDefaultComponent<Mouse> = (data = {}) => ({
   buttons: 0,
   position: [0, 0],
   isButtonUp: false,
@@ -113,12 +94,7 @@ export const defaultMouse: GetDefaultComponent<Mouse> = ({ entity, ...data }) =>
   ...data,
 })
 
-export const defaultKeyboard: GetDefaultComponent<Keyboard> = ({
-  entity,
-  ...data
-}) => ({
-  entity,
-  name: componentName.keyboard,
+export const defaultKeyboard: GetDefaultComponent<Keyboard> = (data = {}) => ({
   keys: {},
   ...data,
 })

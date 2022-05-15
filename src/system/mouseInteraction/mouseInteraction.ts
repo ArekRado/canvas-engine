@@ -15,8 +15,8 @@ import {
   detectPointBoxCollision,
   detectPointCircleCollision,
 } from '../../util/detectCollision'
-import { getMouse } from '../mouse/mouse'
 import { parseV3ToV2 } from '../../util/parseV3ToV2'
+import { mouseEntity } from '../mouse/mouse'
 
 type IsMouseOver = (params: {
   mouse: Mouse
@@ -60,10 +60,9 @@ export const mouseInteractionSystem = (state: InternalInitialState) =>
     componentName: componentName.mouseInteraction,
     create: ({ state }) => state,
     remove: ({ state }) => state,
-    tick: ({ state, component }) => {
+    tick: ({ state, component, entity }) => {
       // todo rewrite it to set/getMouseInteraction
       // set mouse interaction on mouse move events
-      const entity = component.entity
 
       const collideBox = getComponent<CollideBox>({
         name: componentName.collideBox,
@@ -81,7 +80,11 @@ export const mouseInteractionSystem = (state: InternalInitialState) =>
         entity,
       })
 
-      const mouse = getMouse({ state })
+      const mouse = getComponent<Mouse>({
+        state,
+        name: componentName.mouse,
+        entity: mouseEntity,
+      })
 
       if ((collideBox || collideCircle) && mouse && transform) {
         const isMouseOverFlag = isMouseOver({
@@ -97,9 +100,9 @@ export const mouseInteractionSystem = (state: InternalInitialState) =>
 
         return setComponent<MouseInteraction, InternalInitialState>({
           state,
+          entity,
+          name: componentName.mouseInteraction,
           data: {
-            entity,
-            name: componentName.mouseInteraction,
             isClicked,
             isDoubleClicked: false, // TODO
             isMouseOver: isMouseOverFlag,

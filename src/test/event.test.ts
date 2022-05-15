@@ -5,7 +5,7 @@ import { updateComponent } from '../component/updateComponent'
 import { generateEntity } from '../entity/generateEntity'
 import { CameraEvent } from '../system/camera/camera'
 import { addEventHandler, emitEvent, removeEventHandler } from '../event'
-import { Component, ECSEvent, InternalInitialState } from '../type'
+import { ECSEvent, InternalInitialState } from '../type'
 import { runOneFrame } from '../util/runOneFrame'
 import { getState } from '../util/state'
 
@@ -73,22 +73,22 @@ describe('event', () => {
     expect(internalEventHandler.mock.calls[0][0].event).toEqual(event)
   })
 
-  it.only('should handle deeply nested events', () => {
-    type Test = Component<{ count: number }>
+  it('should handle deeply nested events', () => {
+    type Test = { count: number }
     const name = 'test'
     const event: CameraEvent.ResizeEvent = {
       type: CameraEvent.Type.resize,
       payload: {},
     }
-    const entity = generateEntity({ name: '' })
+    const entity = generateEntity()
 
     let state = createEntity({ state: getState({}), entity })
 
     state = createComponent<Test, InternalInitialState>({
       state,
+      name,
+      entity,
       data: {
-        name,
-        entity,
         count: 0,
       },
     })

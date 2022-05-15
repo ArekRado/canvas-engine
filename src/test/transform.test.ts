@@ -11,21 +11,23 @@ import { setComponent } from '../component/setComponent'
 
 describe('transform', () => {
   it('should set proper position using fromParentPosition and parent.position - simple example', () => {
-    const entity1 = generateEntity({ name: 'e1' })
-    const entity2 = generateEntity({ name: 'e2' })
+    const entity1 = generateEntity()
+    const entity2 = generateEntity()
 
     let state = setComponent<Transform>({
       state: getState({}),
+      entity: entity1,
+      name: componentName.transform,
       data: defaultTransform({
-        entity: entity1,
         position: vector(1, 1),
       }),
     })
 
     state = setComponent<Transform>({
       state,
+      entity: entity2,
+      name: componentName.transform,
       data: defaultTransform({
-        entity: entity2,
         fromParentPosition: vector(2, 2),
         parentId: entity1,
       }),
@@ -56,23 +58,25 @@ describe('transform', () => {
   })
 
   it('should set proper position using fromParentPosition and parent.position', () => {
-    const entity1 = generateEntity({ name: 'e1' })
-    const entity2 = generateEntity({ name: 'e2' })
-    const entity3 = generateEntity({ name: 'e3' })
-    const entity4 = generateEntity({ name: 'e4' })
+    const entity1 = generateEntity()
+    const entity2 = generateEntity()
+    const entity3 = generateEntity()
+    const entity4 = generateEntity()
 
     let state = setComponent<Transform>({
       state: getState({}),
+      entity: entity1,
+      name: componentName.transform,
       data: defaultTransform({
-        entity: entity1,
         position: vector(1, 1),
       }),
     })
 
     state = setComponent<Transform>({
       state,
+      entity: entity2,
+      name: componentName.transform,
       data: defaultTransform({
-        entity: entity2,
         fromParentPosition: vector(1, 1),
         parentId: entity1,
       }),
@@ -80,16 +84,18 @@ describe('transform', () => {
 
     state = setComponent<Transform>({
       state,
+      entity: entity3,
+      name: componentName.transform,
       data: defaultTransform({
-        entity: entity3,
         fromParentPosition: vector(-10, -10),
         parentId: entity2,
       }),
     })
     state = setComponent<Transform>({
       state,
+      entity: entity4,
+      name: componentName.transform,
       data: defaultTransform({
-        entity: entity4,
         fromParentPosition: vector(10, 10),
         parentId: entity2,
       }),
@@ -141,14 +147,14 @@ describe('transform', () => {
   })
 
   it('Nested entities should has equal position after one frame', () => {
-    const entity1 = generateEntity({ name: 'e1' })
-    const entity2 = generateEntity({ name: 'e2' })
-    const entity3 = generateEntity({ name: 'e3' })
-    const entity4 = generateEntity({ name: 'e4' })
-    const entity5 = generateEntity({ name: 'e5' })
-    const entity6 = generateEntity({ name: 'e6' })
-    const entity7 = generateEntity({ name: 'e7' })
-    const entity8 = generateEntity({ name: 'e8' })
+    const entity1 = generateEntity()
+    const entity2 = generateEntity()
+    const entity3 = generateEntity()
+    const entity4 = generateEntity()
+    const entity5 = generateEntity()
+    const entity6 = generateEntity()
+    const entity7 = generateEntity()
+    const entity8 = generateEntity()
 
     let state = createEntity({
       entity: entity1,
@@ -164,35 +170,51 @@ describe('transform', () => {
 
     state = setComponent<Transform, InternalInitialState>({
       state,
-      data: defaultTransform({ entity: entity1, position: vector(1, 1) }),
+      name: componentName.transform,
+      entity: entity1,
+      data: defaultTransform({ position: vector(1, 1) }),
     })
     state = setComponent<Transform, InternalInitialState>({
       state,
-      data: defaultTransform({ entity: entity2, parentId: entity1 }),
+      name: componentName.transform,
+      entity: entity2,
+      data: defaultTransform({ parentId: entity1 }),
     })
     state = setComponent<Transform, InternalInitialState>({
       state,
-      data: defaultTransform({ entity: entity3, parentId: entity2 }),
+      name: componentName.transform,
+      entity: entity3,
+      data: defaultTransform({ parentId: entity2 }),
     })
     state = setComponent<Transform, InternalInitialState>({
       state,
-      data: defaultTransform({ entity: entity4, parentId: entity3 }),
+      name: componentName.transform,
+      entity: entity4,
+      data: defaultTransform({ parentId: entity3 }),
     })
     state = setComponent<Transform, InternalInitialState>({
       state,
-      data: defaultTransform({ entity: entity5, parentId: entity4 }),
+      name: componentName.transform,
+      entity: entity5,
+      data: defaultTransform({ parentId: entity4 }),
     })
     state = setComponent<Transform, InternalInitialState>({
       state,
-      data: defaultTransform({ entity: entity6, parentId: entity5 }),
+      name: componentName.transform,
+      entity: entity6,
+      data: defaultTransform({ parentId: entity5 }),
     })
     state = setComponent<Transform, InternalInitialState>({
       state,
-      data: defaultTransform({ entity: entity7, parentId: entity6 }),
+      name: componentName.transform,
+      entity: entity7,
+      data: defaultTransform({ parentId: entity6 }),
     })
     state = setComponent<Transform, InternalInitialState>({
       state,
-      data: defaultTransform({ entity: entity8, parentId: entity7 }),
+      name: componentName.transform,
+      entity: entity8,
+      data: defaultTransform({ parentId: entity7 }),
     })
 
     state = runOneFrame({ state })

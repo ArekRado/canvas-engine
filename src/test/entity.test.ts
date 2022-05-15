@@ -11,23 +11,30 @@ import {
 import { setComponent } from '../component/setComponent'
 import { CollideBox, CollideCircle, Animation } from '../type'
 import { InternalInitialState } from '../index'
+import { componentName } from '../component/componentName'
 
 describe('entity', () => {
   it('remove - should remove components by entity', () => {
-    const entity = generateEntity({ name: 'test' })
+    const entity = generateEntity()
     let state = createEntity({ state: getState({}), entity })
 
     state = setComponent<Animation.AnimationComponent, InternalInitialState>({
       state,
-      data: defaultAnimation({ entity }),
+      entity,
+      name: componentName.animation,
+      data: defaultAnimation({}),
     })
     state = setComponent<CollideBox, InternalInitialState>({
       state,
-      data: defaultCollideBox({ entity }),
+      entity,
+      name: componentName.collideBox,
+      data: defaultCollideBox({}),
     })
     state = setComponent<CollideCircle, InternalInitialState>({
       state,
-      data: defaultCollideCircle({ entity }),
+      entity,
+      name: componentName.collideCircle,
+      data: defaultCollideCircle({}),
     })
 
     expect(state.entity[entity]).toEqual(entity)

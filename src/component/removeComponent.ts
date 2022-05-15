@@ -25,7 +25,7 @@ export const removeComponent = <State extends AnyState = AnyState>({
   const system = getSystemByName(name, newState.system)
 
   if (system && component && system.remove) {
-    return system.remove({ state: newState, component }) as State
+    return system.remove({ state: newState, component, entity, name }) as State
   }
 
   return newState

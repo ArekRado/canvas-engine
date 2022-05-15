@@ -32,11 +32,15 @@ describe('runOneFrame', () => {
     let state = getInitialState()
     state = setComponent({
       state,
-      data: { entity: 'entity system4', name: 'system4' },
+      entity: 'entity system4',
+      name: 'system4',
+      data: {},
     })
     state = setComponent({
       state,
-      data: { entity: 'entity system5', name: 'system5' },
+      entity: 'entity system5',
+      name: 'system5',
+      data: {},
     })
 
     state = createGlobalSystem<InternalInitialState>({

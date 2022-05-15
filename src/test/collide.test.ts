@@ -13,9 +13,9 @@ import { getState } from '../util/state'
 
 describe('collide', () => {
   it('detect collisions box-box', () => {
-    const entity1 = generateEntity({ name: 'e1' })
-    const entity2 = generateEntity({ name: 'e2' })
-    const entity3 = generateEntity({ name: 'e3' })
+    const entity1 = generateEntity()
+    const entity2 = generateEntity()
+    const entity3 = generateEntity()
 
     let state = createEntity({
       entity: entity1,
@@ -26,46 +26,53 @@ describe('collide', () => {
 
     state = setComponent<Transform, InternalInitialState>({
       state,
+      name: componentName.transform,
+      entity: entity1,
       data: defaultTransform({
         fromParentPosition: vector(0, 0),
-        entity: entity1,
       }),
     })
     state = setComponent<Transform, InternalInitialState>({
       state,
+      name: componentName.transform,
+      entity: entity2,
       data: defaultTransform({
         fromParentPosition: vector(1, 19),
-        entity: entity2,
       }),
     })
     state = setComponent<Transform, InternalInitialState>({
       state,
+      name: componentName.transform,
+      entity: entity3,
+
       data: defaultTransform({
         fromParentPosition: vector(3.5, 3.5),
-        entity: entity3,
       }),
     })
 
     state = setComponent<CollideBox, InternalInitialState>({
       state,
+      entity: entity1,
+      name: componentName.collideBox,
       data: defaultCollideBox({
-        entity: entity1,
         size: vector(1.5, 1.5),
         position: vector(1, 1),
       }),
     })
     state = setComponent<CollideBox, InternalInitialState>({
       state,
+      entity: entity2,
+      name: componentName.collideBox,
       data: defaultCollideBox({
-        entity: entity2,
         size: vector(1, 1),
         position: vector(0, 0),
       }),
     })
     state = setComponent<CollideBox, InternalInitialState>({
       state,
+      entity: entity3,
+      name: componentName.collideBox,
       data: defaultCollideBox({
-        entity: entity3,
         size: vector(1, 1),
         position: vector(-1, -1),
       }),

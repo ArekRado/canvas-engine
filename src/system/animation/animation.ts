@@ -1,4 +1,4 @@
-import { Animation, InternalInitialState, Vector3D } from '../../type'
+import { Animation, InternalInitialState, Time, Vector3D } from '../../type'
 import { TimingFunction, getValue } from '../../util/bezierFunction'
 import { add, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
@@ -8,8 +8,9 @@ import { updateComponent } from '../../component/updateComponent'
 import { componentName } from '../../component/componentName'
 import { removeComponent } from '../../component/removeComponent'
 
-import { getTime } from '../time/time'
 import { emitEvent } from '../../event'
+import { getComponent } from '../..//component/getComponent'
+import { timeEntity } from '../time/time'
 
 type UpdateAnimationParams = {
   keyframe: Animation.Keyframe
@@ -236,7 +237,7 @@ export const animationSystem = (state: InternalInitialState) =>
     priority: systemPriority.animation,
     create: ({ state }) => state,
     remove: ({ state }) => state,
-    tick: ({ state, component: animation }) => {
+    tick: ({ state, component: animation, name, entity }) => {
       if (animation.isPlaying === false) {
         return state
       }
@@ -298,12 +299,14 @@ export const animationSystem = (state: InternalInitialState) =>
         if (animation.deleteWhenFinished) {
           return removeComponent({
             state,
-            entity: animation.entity,
+            entity,
             name: componentName.animation,
           })
         } else {
           return setComponent({
             state,
+            name: componentName.animation,
+            entity,
             data: {
               ...animation,
               currentTime: 0,
@@ -314,19 +317,24 @@ export const animationSystem = (state: InternalInitialState) =>
         }
       }
 
-      const time = getTime({ state })
+      const time = getComponent<Time>({
+        state,
+        name: componentName.time,
+        entity: timeEntity,
+      })
       if (!time) return state
 
       const currentTime = animation.currentTime + time.delta
 
       return setComponent({
         state,
+        name,
+        entity,
         data: {
           ...animation,
           currentTime,
           isFinished: animationTimeExceeded,
         },
       })
-      // }
     },
   })

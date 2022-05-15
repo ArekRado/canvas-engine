@@ -2,24 +2,16 @@ import { setComponent } from '../../component/setComponent'
 import { componentName } from '../../component/componentName'
 import { createSystem, systemPriority } from '../createSystem'
 import { InternalInitialState, Time } from '../../type'
-import { createGetSetForUniqComponent } from '../../util/createGetSetForUniqComponent'
+import { updateComponent } from '../../component/updateComponent'
 
-const timeEntity = 'timeEntity'
-
-const timeGetSet = createGetSetForUniqComponent<Time, InternalInitialState>({
-  entity: timeEntity,
-  name: componentName.time,
-})
-
-export const getTime = timeGetSet.getComponent
-export const setTime = timeGetSet.setComponent
+export const timeEntity = 'timeEntity'
 
 export const timeSystem = (state: InternalInitialState) => {
   state = setComponent<Time, InternalInitialState>({
     state,
+    entity: timeEntity,
+    name: componentName.time,
     data: {
-      entity: timeEntity,
-      name: componentName.time,
       delta: 0,
       timeNow: performance.now(),
       previousTimeNow: performance.now(),
@@ -32,20 +24,20 @@ export const timeSystem = (state: InternalInitialState) => {
     componentName: componentName.time,
     priority: systemPriority.time,
     state,
-    tick: ({ state, component }) => {
+    tick: ({ state, component, name, entity }) => {
       const timeNow = component.dataOverwrite?.timeNow ?? performance.now()
       const previousTimeNow =
         component.dataOverwrite?.previousTimeNow ?? component.timeNow
       const delta = component.dataOverwrite?.delta ?? timeNow - previousTimeNow
-      state = setTime({
+      state = updateComponent<Time, InternalInitialState>({
         state,
-        data: {
-          entity: component.entity,
-          name: component.name,
+        name,
+        entity,
+        update: () => ({
           delta,
           timeNow,
           previousTimeNow,
-        },
+        }),
       })
 
       return state

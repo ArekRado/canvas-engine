@@ -1,8 +1,8 @@
 import {
   AnyStateForSystem,
-  Component,
   Dictionary,
   EmitEvent,
+  Entity,
   GlobalSystem,
   SystemMethodParams,
 } from '../type'
@@ -52,13 +52,20 @@ export const createSystem = <
     update: params.update,
     tick: ({ state }: { state: State }) => {
       const component = state.component[params.componentName] as
-        | Dictionary<Component<ComponentData>>
+        | Dictionary<ComponentData>
         | undefined
 
       if (component) {
-        return Object.values(component).reduce(
-          (acc, component: Component<ComponentData>) => {
-            return tick ? tick({ state: acc, component }) : acc
+        return Object.entries(component).reduce(
+          (acc, [entity, component]: [Entity, ComponentData]) => {
+            return tick
+              ? tick({
+                  state: acc,
+                  component,
+                  name: params.componentName,
+                  entity,
+                })
+              : acc
           },
           state,
         )

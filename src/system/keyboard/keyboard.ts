@@ -1,19 +1,11 @@
+import { updateComponent } from '../../component/updateComponent'
 import { componentName } from '../../component/componentName'
 import { setComponent } from '../../component/setComponent'
 import { Keyboard, InternalInitialState } from '../../type'
-import { createGetSetForUniqComponent } from '../../util/createGetSetForUniqComponent'
 import { defaultKeyboard } from '../../util/defaultComponents'
 import { createSystem, systemPriority } from '../createSystem'
 
-const keyboardEntity = 'keyboardEntity'
-
-const keyboardGetSet = createGetSetForUniqComponent<Keyboard, InternalInitialState>({
-  entity: keyboardEntity,
-  name: componentName.keyboard,
-})
-
-export const getKeyboard = keyboardGetSet.getComponent
-export const setKeyboard = keyboardGetSet.setComponent
+export const keyboardEntity = 'keyboard'
 
 let keyboard: Keyboard = {
   keys: {},
@@ -29,7 +21,7 @@ export const keyboardSystem = ({
   containerId: string
 }) => {
   const container = document.getElementById(containerId)
-  
+
   if (container) {
     document.addEventListener(
       'keydown',
@@ -57,9 +49,9 @@ export const keyboardSystem = ({
 
   state = setComponent<Keyboard, InternalInitialState>({
     state,
-    data: defaultKeyboard({
-      entity: keyboardEntity,
-    }),
+    entity: keyboardEntity,
+    name: componentName.keyboard,
+    data: defaultKeyboard(),
   })
 
   return createSystem({
@@ -67,7 +59,7 @@ export const keyboardSystem = ({
     componentName: componentName.keyboard,
     state,
     priority: systemPriority.keyboard,
-    tick: ({ state }) => {
+    tick: ({ state, name, entity }) => {
       const keyboardBeforeReset = {
         keys: keyboard.keys,
       }
@@ -84,9 +76,11 @@ export const keyboardSystem = ({
         }, {}),
       }
 
-      state = setKeyboard({
+      state = updateComponent<Keyboard, InternalInitialState>({
         state,
-        data: keyboardBeforeReset,
+        name,
+        entity,
+        update: () => keyboardBeforeReset,
       })
 
       return state

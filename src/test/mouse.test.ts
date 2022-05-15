@@ -1,7 +1,10 @@
 import { getInitialState, getSystems } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
-import { getMouse } from '../system/mouse/mouse'
 import { vector, vectorZero } from '@arekrado/vector-2d'
+import { getComponent } from '../component/getComponent'
+import { Mouse } from '../type'
+import { mouseEntity } from '../system/mouse/mouse'
+import { componentName } from '../component/componentName'
 
 describe('mouse', () => {
   let mousemoveCallback: Function
@@ -16,7 +19,7 @@ describe('mouse', () => {
       state: getInitialState(),
       containerId: 'containerId',
       document: {
-        getElementById: ((() => ({
+        getElementById: (() => ({
           getBoundingClientRect: (() => ({
             left: 0,
             top: 0,
@@ -46,7 +49,7 @@ describe('mouse', () => {
                 break
             }
           }) as Document['addEventListener'],
-        })) as any) as Document['getElementById'],
+        })) as any as Document['getElementById'],
         addEventListener: (() => {}) as Document['addEventListener'],
       } as Document,
     })
@@ -63,35 +66,69 @@ describe('mouse', () => {
   it('should set buttons on mousedown event', () => {
     let state = getInitialStateWithMouse()
 
-    expect(getMouse({ state })?.buttons).toBe(0)
+    expect(
+      getComponent<Mouse>({
+        state,
+        entity: mouseEntity,
+        name: componentName.mouse,
+      })?.buttons,
+    ).toBe(0)
 
     mousedownCallback({ buttons: 1 })
 
     state = runOneFrame({ state })
 
-    expect(getMouse({ state })?.buttons).toBe(1)
+    expect(
+      getComponent<Mouse>({
+        state,
+        entity: mouseEntity,
+        name: componentName.mouse,
+      })?.buttons,
+    ).toBe(1)
 
     state = runOneFrame({ state })
 
     // Next tick should reset buttons
-    expect(getMouse({ state })?.buttons).toBe(0)
+    expect(
+      getComponent<Mouse>({
+        state,
+        entity: mouseEntity,
+        name: componentName.mouse,
+      })?.buttons,
+    ).toBe(0)
   })
 
   it('should set mouse position on mousemove event', () => {
     let state = getInitialStateWithMouse()
 
-    expect(getMouse({ state })?.position).toEqual(vectorZero())
+    expect(
+      getComponent<Mouse>({
+        state,
+        entity: mouseEntity,
+        name: componentName.mouse,
+      })?.position,
+    ).toEqual(vectorZero())
 
     mousemoveCallback({ pageX: 1, pageY: 1 })
 
     state = runOneFrame({ state })
 
-    expect(getMouse({ state })?.position).toEqual(vector(1, 1))
+    expect(
+      getComponent<Mouse>({
+        state,
+        entity: mouseEntity,
+        name: componentName.mouse,
+      })?.position,
+    ).toEqual(vector(1, 1))
   })
 
   it('wheel', () => {
     let state = getInitialStateWithMouse()
-    const initialMouse = getMouse({ state })
+    const initialMouse = getComponent<Mouse>({
+      state,
+      entity: mouseEntity,
+      name: componentName.mouse,
+    })
 
     wheelCallback({
       deltaMode: 1,
@@ -102,7 +139,13 @@ describe('mouse', () => {
 
     state = runOneFrame({ state })
 
-    expect(getMouse({ state })?.wheel).toEqual({
+    expect(
+      getComponent<Mouse>({
+        state,
+        entity: mouseEntity,
+        name: componentName.mouse,
+      })?.wheel,
+    ).toEqual({
       deltaMode: 1,
       deltaX: 2,
       deltaY: 3,
@@ -112,6 +155,12 @@ describe('mouse', () => {
     state = runOneFrame({ state })
 
     // Next tick should reset wheel
-    expect(getMouse({ state })?.wheel).toEqual(initialMouse?.wheel)
+    expect(
+      getComponent<Mouse>({
+        state,
+        entity: mouseEntity,
+        name: componentName.mouse,
+      })?.wheel,
+    ).toEqual(initialMouse?.wheel)
   })
 })

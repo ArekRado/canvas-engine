@@ -1,6 +1,31 @@
 import { getState } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
-import { getTime, setTime } from '../system/time/time'
+import { updateComponent } from '../component/updateComponent'
+import { InternalInitialState, Time } from '../type'
+import { timeEntity } from '../system/time/time'
+import { componentName } from '../component/componentName'
+import { getComponent } from '../component/getComponent'
+
+const setTime = ({
+  state,
+  data,
+}: {
+  state: InternalInitialState
+  data: Partial<Time>
+}) =>
+  updateComponent({
+    state,
+    entity: timeEntity,
+    name: componentName.time,
+    update: () => data,
+  })
+
+const getTime = ({ state }: { state: InternalInitialState }) =>
+  getComponent<Time>({
+    state,
+    entity: timeEntity,
+    name: componentName.time,
+  })
 
 describe('time', () => {
   it('should change time - start from 0 case', () => {
