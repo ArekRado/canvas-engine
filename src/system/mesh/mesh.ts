@@ -20,7 +20,7 @@ export const meshSystem = (state: InternalInitialState) =>
       })
       mesh.uniqueId = component.uniqueId
 
-      const materialComponent = getComponent<Material, any>({
+      const materialComponent = getComponent<Material, InternalInitialState>({
         state,
         name: componentName.material,
         entity: component.materialEntity[0],

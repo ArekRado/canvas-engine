@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/ban-types */
 import { getInitialState, getSystems } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
 import { getComponent } from '../component/getComponent'
@@ -20,7 +22,7 @@ describe('keyboard', () => {
             top: 0,
           })) as Element['getBoundingClientRect'],
           addEventListener: (() => {}) as Document['addEventListener'],
-        })) as any as Document['getElementById'],
+        })) as unknown as Document['getElementById'],
         addEventListener: ((
           type: keyof HTMLElementEventMap,
           callback: Function,

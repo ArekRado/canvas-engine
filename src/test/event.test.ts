@@ -47,7 +47,7 @@ describe('event', () => {
   it('should handle internal events emmited from external functions', () => {
     const event: CameraEvent.ResizeEvent = {
       type: CameraEvent.Type.resize,
-      payload: {},
+      payload: null,
     }
     const eventHandler = jest.fn(({ state }) => state)
     const internalEventHandler = jest.fn(({ state }) => state)
@@ -78,7 +78,7 @@ describe('event', () => {
     const name = 'test'
     const event: CameraEvent.ResizeEvent = {
       type: CameraEvent.Type.resize,
-      payload: {},
+      payload: null,
     }
     const entity = generateEntity()
 

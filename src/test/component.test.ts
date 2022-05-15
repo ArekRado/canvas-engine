@@ -49,13 +49,13 @@ describe('component', () => {
       update,
     })
 
-    state = setComponent<Dictionary<{}>, InternalInitialState>({
+    state = setComponent<Dictionary<null>, InternalInitialState>({
       state,
       entity: entity1,
       name: 'test',
       data: {},
     })
-    state = setComponent<Dictionary<{}>, InternalInitialState>({
+    state = setComponent<Dictionary<null>, InternalInitialState>({
       state,
       entity: entity2,
       name: 'test',
@@ -71,22 +71,22 @@ describe('component', () => {
     expect(tick).toHaveBeenCalledTimes(2)
 
     // create new component after remove
-    state = setComponent<Partial<{}>, InternalInitialState>({
+    state = setComponent<null, InternalInitialState>({
       state,
       entity: entity1,
       name: 'test',
-      data: {},
+      data: null,
     })
 
     expect(update).toHaveBeenCalledTimes(0)
     expect(create).toHaveBeenCalledTimes(3)
 
     // updating existing component
-    state = setComponent<Partial<{}>, InternalInitialState>({
+    state = setComponent<null, InternalInitialState>({
       state,
       entity: entity1,
       name: 'test',
-      data: {},
+      data: null,
     })
 
     // Update should not trigger create
@@ -114,7 +114,7 @@ describe('component', () => {
       create,
     })
 
-    state = setComponent<Dictionary<{}>, InternalInitialState>({
+    state = setComponent<Dictionary<null>, InternalInitialState>({
       state,
       entity: entity1,
       name: 'test',

@@ -35,6 +35,8 @@ export const setComponent = <Data, State extends AnyState = AnyState>({
       return system.create({
         state: newState,
         component: data,
+        entity,
+        name,
       }) as State
     } else if (system.update !== undefined) {
       // "else if" - do not run update just after create
@@ -49,6 +51,8 @@ export const setComponent = <Data, State extends AnyState = AnyState>({
         state: newState,
         component: data,
         previousComponent,
+        entity,
+        name,
       }) as State
     }
   }

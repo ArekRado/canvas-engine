@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createGlobalSystem } from './system/createSystem'
 import { AnyState, InternalInitialState } from './type'
 import { internalEventHandler } from './util/internalEventHandler'
@@ -16,7 +17,7 @@ export type EventHandler<AllEvents, State extends AnyState = AnyState> = ({
 
 let eventHandlers: EventHandler<any, any>[] = [internalEventHandler]
 
-export const addEventHandler = (eventHandler: EventHandler<any, any>): void => {
+export const addEventHandler = (eventHandler: EventHandler<unknown, any>): void => {
   if (process.env.NODE_ENV === 'test') {
     if (eventHandlers.find((handler) => handler === eventHandler)) {
       console.warn('This event handler has been already added', eventHandler)
@@ -26,17 +27,17 @@ export const addEventHandler = (eventHandler: EventHandler<any, any>): void => {
   eventHandlers.push(eventHandler)
 }
 
-export const removeEventHandler = (eventHandler: EventHandler<any, any>) => {
+export const removeEventHandler = (eventHandler: EventHandler<unknown, any>) => {
   eventHandlers = eventHandlers.filter((e) => e !== eventHandler)
 }
 
 let activeBuffer: AcitveBuffer = 'first'
 
-let eventBuffer: any[] = []
+let eventBuffer: unknown[] = []
 /**
  * events emited inside event handlers are moved to secondEventBuffer
  */
-let secondEventBuffer: any[] = []
+let secondEventBuffer: unknown[] = []
 
 const resetEventBuffer = () => {
   eventBuffer = []
@@ -68,7 +69,7 @@ export const eventSystem = (state: InternalInitialState) =>
       lockFirstBuffer()
 
       state = eventBuffer.reduce(
-        (acc, event) =>
+        (acc: InternalInitialState, event) =>
           eventHandlers.reduce(
             (acc2, eventHandler) =>
               eventHandler({

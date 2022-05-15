@@ -29,10 +29,10 @@ import { timeEntity } from '../system/time/time'
 
 type AnyComponent<Value> = { value: Value }
 
-type NumberComponent = AnyComponent<Number>
+type NumberComponent = AnyComponent<number>
 const numberComponentName = 'NumberComponentName'
 
-type StringComponent = AnyComponent<String>
+type StringComponent = AnyComponent<string>
 const stringComponentName = 'stringComponentName'
 
 type Vector2DComponent = AnyComponent<Vector2D>

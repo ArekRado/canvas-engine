@@ -99,7 +99,8 @@ export namespace Animation {
     duration: number
     timingFunction: TimingFunction
     valueRange: Vector2D | [Vector2D, Vector2D] | [Vector3D, Vector3D] | string
-    endFrameEvent?: ECSEvent<any, any>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    endFrameEvent?: ECSEvent<unknown, any>
   }
 
   export type Property = {
@@ -241,7 +242,7 @@ export type ECSEvent<Type, Payload> = {
   payload: Payload
 }
 
-export type EmitEvent = (event: any) => void
+export type EmitEvent = (event: unknown) => void
 
 // export type Event = {}>
 

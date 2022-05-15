@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Entity, InternalInitialState, Material } from '../../type'
 import { createSystem } from '../createSystem'
 import { componentName } from '../../component/componentName'
@@ -33,7 +34,7 @@ const setupMaterialData = ({
     isEqual(previousComponent?.diffuseColor, component.diffuseColor) &&
     component.diffuseColor
   ) {
-    ;(material as any).diffuseColor = new Color3(
+    (material as any).diffuseColor = new Color3(
       component.diffuseColor[0],
       component.diffuseColor[1],
       component.diffuseColor[2],
@@ -44,7 +45,7 @@ const setupMaterialData = ({
     isEqual(previousComponent?.specularColor, component.specularColor) &&
     component.specularColor
   ) {
-    ;(material as any).specularColor = new Color3(
+    (material as any).specularColor = new Color3(
       component.specularColor[0],
       component.specularColor[1],
       component.specularColor[2],
@@ -55,7 +56,7 @@ const setupMaterialData = ({
     isEqual(previousComponent?.emissiveColor, component.emissiveColor) &&
     component.emissiveColor
   ) {
-    ;(material as any).emissiveColor = new Color3(
+    (material as any).emissiveColor = new Color3(
       component.emissiveColor[0],
       component.emissiveColor[1],
       component.emissiveColor[2],
@@ -66,7 +67,7 @@ const setupMaterialData = ({
     isEqual(previousComponent?.ambientColor, component.ambientColor) &&
     component.ambientColor
   ) {
-    ;(material as any).ambientColor = new Color3(
+    (material as any).ambientColor = new Color3(
       component.ambientColor[0],
       component.ambientColor[1],
       component.ambientColor[2],
@@ -98,7 +99,7 @@ const setupMaterialData = ({
     ) &&
     component.useAlphaFromDiffuseTexture
   ) {
-    ;(material as any).useAlphaFromDiffuseTexture =
+    (material as any).useAlphaFromDiffuseTexture =
       component.useAlphaFromDiffuseTexture
   }
 

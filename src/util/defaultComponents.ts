@@ -1,5 +1,4 @@
 import { vectorZero } from '@arekrado/vector-2d'
-import { componentName } from '../component/componentName'
 import { Camera, GetDefaultComponent, Mouse, MouseInteraction } from '../type'
 import {
   Animation,

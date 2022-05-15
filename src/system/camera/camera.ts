@@ -15,7 +15,7 @@ export namespace CameraEvent {
 
   export type All = ResizeEvent
 
-  export type ResizeEvent = ECSEvent<Type.resize, {}>
+  export type ResizeEvent = ECSEvent<Type.resize, null>
 }
 
 const update = ({

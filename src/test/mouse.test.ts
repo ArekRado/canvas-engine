@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { getInitialState, getSystems } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
 import { vector, vectorZero } from '@arekrado/vector-2d'
@@ -49,7 +52,7 @@ describe('mouse', () => {
                 break
             }
           }) as Document['addEventListener'],
-        })) as any as Document['getElementById'],
+        })) as unknown as Document['getElementById'],
         addEventListener: (() => {}) as Document['addEventListener'],
       } as Document,
     })

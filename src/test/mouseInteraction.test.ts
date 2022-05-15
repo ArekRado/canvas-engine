@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/ban-types */
 import { vector } from '@arekrado/vector-2d'
 import { getInitialState, getSystems } from '../util/state'
 import { createEntity } from '../entity/createEntity'
@@ -28,7 +31,7 @@ describe('mouseInteraction', () => {
   let mouseleaveCallback: Function
   let mouseupCallback: Function
   let mousedownCallback: Function
-  let wheelCallback: Function
+  // let wheelCallback: Function
 
   const getInitialStateWithMouse = () =>
     getSystems({
@@ -62,7 +65,7 @@ describe('mouseInteraction', () => {
                 break
             }
           }) as Document['addEventListener'],
-        })) as any as Document['getElementById'],
+        })) as unknown as Document['getElementById'],
         addEventListener: (() => {}) as Document['addEventListener'],
       } as Document,
     })
@@ -76,7 +79,7 @@ describe('mouseInteraction', () => {
   })
 
   it('isMouseOver', () => {
-    let state = getInitialStateWithMouse()
+    const state = getInitialStateWithMouse()
 
     const entity = generateEntity()
     const mouse = getComponent<Mouse>({

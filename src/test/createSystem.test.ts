@@ -30,7 +30,7 @@ describe('createGlobalSystem', () => {
       [{ state: InternalInitialState }]
     >(({ state }) => state)
 
-    let state = createGlobalSystem({
+    const state = createGlobalSystem({
       state: getState({}),
       name: 'test',
       tick,
@@ -41,9 +41,11 @@ describe('createGlobalSystem', () => {
     expect(tick).toHaveBeenCalled()
   })
 
-  it('should call update method should not be called when system is created', () => {})
+  it.todo(
+    'should call update method should not be called when system is created',
+  )
 
-  it('should call update method when setState is called', () => {})
-  
+  it.todo('should call update method when setState is called')
+
   it.todo('test priority')
 })

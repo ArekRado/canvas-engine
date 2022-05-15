@@ -27,7 +27,8 @@
     "test": "jest ./src/test --config=jest.config.js --env=jsdom --watch=false --coverage",
     "test:watch": "jest ./src/test --config=jest.config.js --env=jsdom --watch --coverage=false",
     "publish:dry": "npm publish --dry-run",
-    "lint": "tsdx lint"
+    "lint": "eslint ./src --ext .ts,.tsx",
+    "lint:fix": "eslint ./src --ext .ts --fix"
   },
   "engines": {
     "node": ">=16",
@@ -45,10 +46,13 @@
     "@types/jest": "^27.4.1",
     "@types/just-safe-set": "^2.2.1",
     "babel-jest": "^28.0.1",
+    "eslint": "^8.15.0",
     "jest": "^28.0.1",
     "jest-environment-jsdom": "^28.0.1",
     "jsdom": "^19.0.0",
     "prettier": "^2.6.2",
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.3",
+    "@typescript-eslint/eslint-plugin": "^5.22.0",
+    "@typescript-eslint/parser": "^5.22.0"
   }
 }
