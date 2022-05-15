@@ -1,4 +1,4 @@
-import { collideBoxSystem } from '../system/collideBox/collideBox'
+import { colliderSystem } from '../system/collider/collider'
 import { transformSystem } from '../system/transform/transform'
 import { componentName } from '../component/componentName'
 import { timeSystem } from '../system/time/time'
@@ -16,8 +16,7 @@ export const getInitialState = (): InternalInitialState => ({
   entity: {},
   component: {
     [componentName.animation]: {},
-    [componentName.collideBox]: {},
-    [componentName.collideCircle]: {},
+    [componentName.collider]: {},
     [componentName.mouseInteraction]: {},
     [componentName.time]: {},
     [componentName.camera]: {},
@@ -99,7 +98,7 @@ export const getSystems = ({
   internatlState = timeSystem(internatlState)
   internatlState = cameraSystem(internatlState)
   internatlState = transformSystem(internatlState)
-  internatlState = collideBoxSystem(internatlState)
+  internatlState = colliderSystem(internatlState)
   internatlState = animationSystem(internatlState)
   internatlState = mouseInteractionSystem(internatlState)
   internatlState = materialSystem(internatlState)

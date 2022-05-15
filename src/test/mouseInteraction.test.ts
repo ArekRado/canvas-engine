@@ -7,14 +7,12 @@ import { createEntity } from '../entity/createEntity'
 import { generateEntity } from '../entity/generateEntity'
 import { runOneFrame } from '../util/runOneFrame'
 import {
-  defaultCollideBox,
-  defaultCollideCircle,
+  defaultCollider,
   defaultMouseInteraction,
   defaultTransform,
 } from '../util/defaultComponents'
 import {
-  CollideBox,
-  CollideCircle,
+  Collider,
   InternalInitialState,
   Mouse,
   MouseInteraction,
@@ -97,7 +95,7 @@ describe('mouseInteraction', () => {
           ...mouse,
           position: vector(-10, -10),
         },
-        collideBox: defaultCollideBox(),
+        collider: defaultCollider(),
         transform: defaultTransform(),
       }),
     ).toBeFalsy()
@@ -109,7 +107,15 @@ describe('mouseInteraction', () => {
           ...mouse,
           position: vector(5, 5),
         },
-        collideBox: defaultCollideBox({ size: vector(10, 10) }),
+        collider: defaultCollider({
+          data: [
+            {
+              position: [0, 0],
+              type: 'rectangle',
+              size: vector(10, 10),
+            },
+          ],
+        }),
         transform: defaultTransform(),
       }),
     ).toBeTruthy()
@@ -122,7 +128,15 @@ describe('mouseInteraction', () => {
           buttons: 1,
           position: vector(5, 5),
         },
-        collideCircle: defaultCollideCircle({ radius: 10 }),
+        collider: defaultCollider({
+          data: [
+            {
+              position: [0, 0],
+              type: 'circle',
+              radius: 10,
+            },
+          ],
+        }),
         transform: defaultTransform(),
       }),
     ).toBeTruthy()
@@ -154,23 +168,23 @@ describe('mouseInteraction', () => {
       data: defaultTransform({}),
     })
 
-    state = setComponent<CollideBox, InternalInitialState>({
+    state = setComponent<Collider, InternalInitialState>({
       state,
       entity,
-      name: componentName.collideBox,
-      data: defaultCollideBox({
-        position: vector(200, 200),
-        size: vector(10, 10),
-      }),
-    })
-
-    state = setComponent<CollideCircle, InternalInitialState>({
-      state,
-      entity,
-      name: componentName.collideCircle,
-      data: defaultCollideCircle({
-        position: vector(100, 100),
-        radius: 10,
+      name: componentName.collider,
+      data: defaultCollider({
+        data: [
+          {
+            position: vector(200, 200),
+            type: 'circle',
+            radius: 10,
+          },
+          {
+            position: vector(100, 100),
+            type: 'rectangle',
+            size: vector(10, 10),
+          },
+        ],
       }),
     })
 

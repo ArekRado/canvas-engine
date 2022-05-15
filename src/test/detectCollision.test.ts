@@ -1,5 +1,5 @@
 import { vector, Vector2D } from '@arekrado/vector-2d'
-import { detectAABBcollision } from '../util/detectCollision'
+import { detectRectangleRectangleCollision } from '../system/collider/detectCollision'
 
 describe('detectCollision', () => {
   describe('detectAABBcollision', () => {
@@ -17,7 +17,7 @@ describe('detectCollision', () => {
 
       edgeV1.forEach((v1) => {
         expect(
-          detectAABBcollision({
+          detectRectangleRectangleCollision({
             v1,
             size1: vector(1, 1),
             v2: vector(0, 0),
@@ -41,7 +41,7 @@ describe('detectCollision', () => {
 
       outsideV1.forEach((v1) => {
         expect(
-          detectAABBcollision({
+          detectRectangleRectangleCollision({
             v1,
             size1: vector(1, 1),
             v2: vector(0, 0),
@@ -66,7 +66,7 @@ describe('detectCollision', () => {
 
       outsideV1.forEach((v1) => {
         expect(
-          detectAABBcollision({
+          detectRectangleRectangleCollision({
             v1,
             size1: vector(1, 1),
             v2: vector(0, 0),

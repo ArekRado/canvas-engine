@@ -3,8 +3,7 @@ import { setComponent } from '../../component/setComponent'
 import { getComponent } from '../../component/getComponent'
 import { componentName } from '../../component/componentName'
 import {
-  CollideBox,
-  CollideCircle,
+  Collider,
   InternalInitialState,
   Mouse,
   MouseInteraction,
@@ -14,41 +13,38 @@ import { createSystem } from '../createSystem'
 import {
   detectPointBoxCollision,
   detectPointCircleCollision,
-} from '../../util/detectCollision'
+} from '../collider/detectCollision'
 import { parseV3ToV2 } from '../../util/parseV3ToV2'
 import { mouseEntity } from '../mouse/mouse'
 
 type IsMouseOver = (params: {
   mouse: Mouse
-  collideBox?: CollideBox
-  collideCircle?: CollideCircle
+  collider?: Collider
   transform: Transform
 }) => boolean
-export const isMouseOver: IsMouseOver = ({
-  mouse,
-  collideBox,
-  collideCircle,
-  transform,
-}) => {
+export const isMouseOver: IsMouseOver = ({ mouse, collider, transform }) => {
   let hasCollision = false
-  if (collideBox) {
-    hasCollision = detectPointBoxCollision({
-      point: mouse.position,
-      box: {
-        position: add(parseV3ToV2(transform.position), collideBox.position),
-        size: collideBox.size,
-      },
-    })
-  }
-  if (!hasCollision && collideCircle) {
-    hasCollision = detectPointCircleCollision({
-      point: mouse.position,
-      circle: {
-        position: add(parseV3ToV2(transform.position), collideCircle.position),
-        radius: collideCircle.radius,
-      },
-    })
-  }
+  collider?.data.forEach((colliderData) => {
+    if (!hasCollision && colliderData.type === 'rectangle') {
+      hasCollision = detectPointBoxCollision({
+        point: mouse.position,
+        box: {
+          position: add(parseV3ToV2(transform.position), colliderData.position),
+          size: colliderData.size,
+        },
+      })
+    }
+
+    if (!hasCollision && colliderData.type === 'circle') {
+      hasCollision = detectPointCircleCollision({
+        point: mouse.position,
+        circle: {
+          position: add(parseV3ToV2(transform.position), colliderData.position),
+          radius: colliderData.radius,
+        },
+      })
+    }
+  })
 
   return hasCollision
 }
@@ -64,13 +60,8 @@ export const mouseInteractionSystem = (state: InternalInitialState) =>
       // todo rewrite it to set/getMouseInteraction
       // set mouse interaction on mouse move events
 
-      const collideBox = getComponent<CollideBox>({
-        name: componentName.collideBox,
-        state,
-        entity,
-      })
-      const collideCircle = getComponent<CollideCircle>({
-        name: componentName.collideCircle,
+      const collider = getComponent<Collider>({
+        name: componentName.collider,
         state,
         entity,
       })
@@ -86,12 +77,11 @@ export const mouseInteractionSystem = (state: InternalInitialState) =>
         entity: mouseEntity,
       })
 
-      if ((collideBox || collideCircle) && mouse && transform) {
+      if (collider && mouse && transform) {
         const isMouseOverFlag = isMouseOver({
           transform,
           mouse,
-          collideBox,
-          collideCircle,
+          collider,
         })
 
         const isMouseEnter = !component.isMouseOver && isMouseOverFlag

@@ -29,7 +29,7 @@ export {
 export { runOneFrame } from './util/runOneFrame'
 export {
   defaultAnimation,
-  defaultCollideBox,
+  defaultCollider as defaultCollideBox,
   defaultCollideCircle,
   defaultMouseInteraction,
   defaultCamera,

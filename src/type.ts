@@ -34,43 +34,27 @@ export type Color = [number, number, number, number]
 //
 ////////////////////////////////////
 
-export type CollideType = {
-  type: 'box' | 'circle'
-  entity: Guid
+export type Collider = {
+  collisions: Array<{ entity: Entity; index: number }>
+  data: Array<
+    | {
+        type: 'point'
+        position: Vector2D
+      }
+    | {
+        type: 'rectangle'
+        size: Vector2D
+        position: Vector2D
+      }
+    | {
+        type: 'circle'
+        radius: number
+        position: Vector2D
+      }
+  >
 }
 
-export type CollideBox = {
-  size: Vector2D
-  position: Vector2D
-  collisions: CollideType[]
-}
-
-export type CollideCircle = {
-  radius: number
-  position: Vector2D
-  collisions: CollideType[]
-}
 export namespace Animation {
-  // export type ValueRangeNumber = {
-  //   type: 'number'
-  //   value: Vector2D
-  // }
-
-  // export type ValueRangeVector2D = {
-  //   type: 'vector2D'
-  //   value: [Vector2D, Vector2D]
-  // }
-
-  // export type ValueRangeVector3D = {
-  //   type: 'vector3D'
-  //   value: [Vector3D, Vector3D]
-  // }
-
-  // export type ValueRangeString = {
-  //   type: 'string'
-  //   value: string
-  // }
-
   export enum TimingMode {
     smooth = 'smooth',
     step = 'step',
@@ -340,8 +324,7 @@ export type GlobalSystem<State extends AnyStateForSystem> = {
 
 export type StateDefaultComponents = {
   animation: Dictionary<Animation.AnimationComponent>
-  collideBox: Dictionary<CollideBox>
-  collideCircle: Dictionary<CollideCircle>
+  collider: Dictionary<Collider>
   mouseInteraction: Dictionary<MouseInteraction>
   time: Dictionary<Time>
   camera: Dictionary<Camera>
@@ -354,8 +337,7 @@ export type StateDefaultComponents = {
 
 export type StateDefaultSystems =
   | System<Animation.AnimationComponent, AnyStateForSystem>
-  | System<CollideBox, AnyStateForSystem>
-  | System<CollideCircle, AnyStateForSystem>
+  | System<Collider, AnyStateForSystem>
   | System<MouseInteraction, AnyStateForSystem>
   | System<Time, AnyStateForSystem>
   | System<Camera, AnyStateForSystem>

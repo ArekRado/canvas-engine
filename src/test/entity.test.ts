@@ -3,13 +3,9 @@ import { getState } from '../util/state'
 import { createEntity } from '../entity/createEntity'
 import { removeEntity } from '../entity/removeEntity'
 import { generateEntity } from '../entity/generateEntity'
-import {
-  defaultCollideCircle,
-  defaultCollideBox,
-  defaultAnimation,
-} from '../util/defaultComponents'
+import { defaultCollider, defaultAnimation } from '../util/defaultComponents'
 import { setComponent } from '../component/setComponent'
-import { CollideBox, CollideCircle, Animation } from '../type'
+import { Animation, Collider } from '../type'
 import { InternalInitialState } from '../index'
 import { componentName } from '../component/componentName'
 
@@ -24,23 +20,16 @@ describe('entity', () => {
       name: componentName.animation,
       data: defaultAnimation({}),
     })
-    state = setComponent<CollideBox, InternalInitialState>({
+    state = setComponent<Collider, InternalInitialState>({
       state,
       entity,
-      name: componentName.collideBox,
-      data: defaultCollideBox({}),
-    })
-    state = setComponent<CollideCircle, InternalInitialState>({
-      state,
-      entity,
-      name: componentName.collideCircle,
-      data: defaultCollideCircle({}),
+      name: componentName.collider,
+      data: defaultCollider({}),
     })
 
     expect(state.entity[entity]).toEqual(entity)
     expect(state.component.animation[entity]).toBeDefined()
-    expect(state.component.collideBox[entity]).toBeDefined()
-    expect(state.component.collideCircle[entity]).toBeDefined()
+    expect(state.component.collider[entity]).toBeDefined()
 
     const stateWithoutEntity = removeEntity<InternalInitialState>({
       state,
@@ -49,8 +38,7 @@ describe('entity', () => {
 
     expect(stateWithoutEntity.entity[entity]).not.toBeDefined()
     expect(stateWithoutEntity.component.animation[entity]).not.toBeDefined()
-    expect(stateWithoutEntity.component.collideBox[entity]).not.toBeDefined()
-    expect(stateWithoutEntity.component.collideCircle[entity]).not.toBeDefined()
+    expect(stateWithoutEntity.component.collider[entity]).not.toBeDefined()
   })
 
   // TODO - why do we want to update entity?

@@ -1,12 +1,6 @@
 import { vectorZero } from '@arekrado/vector-2d'
 import { Camera, GetDefaultComponent, Mouse, MouseInteraction } from '../type'
-import {
-  Animation,
-  Keyboard,
-  Transform,
-  CollideBox,
-  CollideCircle,
-} from '../type'
+import { Animation, Keyboard, Transform, Collider } from '../type'
 
 export const defaultAnimation: GetDefaultComponent<
   Animation.AnimationComponent
@@ -21,21 +15,10 @@ export const defaultAnimation: GetDefaultComponent<
   ...data,
 })
 
-export const defaultCollideBox: GetDefaultComponent<CollideBox> = (
-  data = {},
-) => ({
-  size: vectorZero(),
+export const defaultCollider: GetDefaultComponent<Collider> = (data = {}) => ({
   position: vectorZero(),
   collisions: [],
-  ...data,
-})
-
-export const defaultCollideCircle: GetDefaultComponent<CollideCircle> = (
-  data,
-) => ({
-  radius: 1,
-  position: vectorZero(),
-  collisions: [],
+  data: [],
   ...data,
 })
 
