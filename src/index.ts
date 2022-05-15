@@ -27,7 +27,6 @@ export {
 } from './event'
 
 export { runOneFrame } from './util/runOneFrame'
-export { createGetSetForUniqComponent } from './util/createGetSetForUniqComponent'
 export {
   defaultAnimation,
   defaultCollideBox,
@@ -39,6 +38,3 @@ export {
   defaultKeyboard,
 } from './util/defaultComponents'
 export { getState } from './util/state'
-
-// TODO
-// - remove name and enitty from component - path already contains that information.
