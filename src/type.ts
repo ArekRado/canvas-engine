@@ -44,12 +44,23 @@ export type Collider = {
     | {
         type: 'rectangle'
         size: Vector2D
+        /**
+         * Left bottom corner
+         */
         position: Vector2D
       }
     | {
         type: 'circle'
         radius: number
+        /**
+         * Left bottom corner
+         */
         position: Vector2D
+      }
+    | {
+        type: 'line'
+        position: Vector2D
+        position2: Vector2D
       }
   >
 }

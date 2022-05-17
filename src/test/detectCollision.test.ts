@@ -1,8 +1,11 @@
 import { vector, Vector2D } from '@arekrado/vector-2d'
-import { detectRectangleRectangleCollision } from '../system/collider/detectCollision'
+import {
+  detectPointLineCollision,
+  detectRectangleRectangleCollision,
+} from '../system/collider/detectCollision'
 
 describe('detectCollision', () => {
-  describe('detectAABBcollision', () => {
+  describe('detectRectangleRectangleCollision', () => {
     it('should detect edge collisions', () => {
       const edgeV1: Vector2D[] = [
         [-1, 1],
@@ -18,10 +21,14 @@ describe('detectCollision', () => {
       edgeV1.forEach((v1) => {
         expect(
           detectRectangleRectangleCollision({
-            v1,
-            size1: vector(1, 1),
-            v2: vector(0, 0),
-            size2: vector(1, 1),
+            rectangle1: {
+              position: v1,
+              size: vector(1, 1),
+            },
+            rectangle2: {
+              position: vector(0, 0),
+              size: vector(1, 1),
+            },
           }),
         ).toBeTruthy()
       })
@@ -42,10 +49,14 @@ describe('detectCollision', () => {
       outsideV1.forEach((v1) => {
         expect(
           detectRectangleRectangleCollision({
-            v1,
-            size1: vector(1, 1),
-            v2: vector(0, 0),
-            size2: vector(1, 1),
+            rectangle1: {
+              position: v1,
+              size: vector(1, 1),
+            },
+            rectangle2: {
+              position: vector(0, 0),
+              size: vector(1, 1),
+            },
           }),
         ).toBeFalsy()
       })
@@ -67,13 +78,69 @@ describe('detectCollision', () => {
       outsideV1.forEach((v1) => {
         expect(
           detectRectangleRectangleCollision({
-            v1,
-            size1: vector(1, 1),
-            v2: vector(0, 0),
-            size2: vector(1, 1),
+            rectangle1: {
+              position: v1,
+              size: vector(1, 1),
+            },
+            rectangle2: {
+              position: vector(0, 0),
+              size: vector(1, 1),
+            },
           }),
         ).toBeTruthy()
       })
     })
+  })
+
+  it('detectPointLineCollision', () => {
+    expect(
+      detectPointLineCollision({
+        point: [0, 0],
+        line: {
+          position: [0, 0],
+          position2: [0, 0],
+        },
+      }),
+    ).toBeTruthy()
+
+    expect(
+      detectPointLineCollision({
+        point: [0, 0],
+        line: {
+          position: [0, 0],
+          position2: [1, 1],
+        },
+      }),
+    ).toBeTruthy()
+
+    expect(
+      detectPointLineCollision({
+        point: [1, 1],
+        line: {
+          position: [0, 0],
+          position2: [2, 2],
+        },
+      }),
+    ).toBeTruthy()
+
+    expect(
+      detectPointLineCollision({
+        point: [1, 2],
+        line: {
+          position: [0, 0],
+          position2: [2, 2],
+        },
+      }),
+    ).toBeFalsy()
+
+    expect(
+      detectPointLineCollision({
+        point: [1, 1],
+        line: {
+          position: [0, 0],
+          position2: [1, 0.999],
+        },
+      }),
+    ).toBeFalsy()
   })
 })

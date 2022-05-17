@@ -11,7 +11,7 @@ import {
 } from '../../type'
 import { createSystem } from '../createSystem'
 import {
-  detectPointBoxCollision,
+  detectPointRectangleCollision,
   detectPointCircleCollision,
 } from '../collider/detectCollision'
 import { parseV3ToV2 } from '../../util/parseV3ToV2'
@@ -26,9 +26,9 @@ export const isMouseOver: IsMouseOver = ({ mouse, collider, transform }) => {
   let hasCollision = false
   collider?.data.forEach((colliderData) => {
     if (!hasCollision && colliderData.type === 'rectangle') {
-      hasCollision = detectPointBoxCollision({
+      hasCollision = detectPointRectangleCollision({
         point: mouse.position,
-        box: {
+        rectangle: {
           position: add(parseV3ToV2(transform.position), colliderData.position),
           size: colliderData.size,
         },
