@@ -6,6 +6,7 @@ import { componentName } from '../../component/componentName'
 import {
   detectCircleCircleCollision,
   detectCircleLineCollision,
+  detectLineLineCollision,
   detectPointLineCollision,
   detectPointPointCollision,
   detectRectangleCircleCollision,
@@ -143,7 +144,7 @@ const findCollisionsWith: FindCollisionsWith = ({
                 radius: colliderData.radius,
               },
               line: {
-                position: position,
+                position: position2,
                 position2: add(
                   [transform2.position[0], transform2.position[1]],
                   collider2Data.position2,
@@ -156,7 +157,7 @@ const findCollisionsWith: FindCollisionsWith = ({
             isColliding = detectPointLineCollision({
               point: position2,
               line: {
-                position: position,
+                position,
                 position2: add(
                   [transform.position[0], transform.position[1]],
                   colliderData.position2,
@@ -166,14 +167,31 @@ const findCollisionsWith: FindCollisionsWith = ({
           } else if (collider2Data.type === 'circle') {
             isColliding = detectCircleLineCollision({
               circle: {
-                position,
+                position: collider2Data.position,
                 radius: collider2Data.radius,
               },
               line: {
-                position: position,
+                position: position2,
                 position2: add(
                   [transform.position[0], transform.position[1]],
                   colliderData.position2,
+                ),
+              },
+            })
+          } else if (collider2Data.type === 'line') {
+            isColliding = detectLineLineCollision({
+              line1: {
+                position,
+                position2: add(
+                  [transform.position[0], transform.position[1]],
+                  colliderData.position2,
+                ),
+              },
+              line2: {
+                position: position2,
+                position2: add(
+                  [transform2.position[0], transform2.position[1]],
+                  collider2Data.position2,
                 ),
               },
             })

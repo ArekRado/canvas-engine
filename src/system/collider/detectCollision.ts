@@ -5,7 +5,7 @@ import { equals, magnitude, sub, Vector2D } from '@arekrado/vector-2d'
  * point     | detectPointPointCollision     | x                                 | x                           |
  * rectangle | detectPointrectangleCollision | detectRectangleRectangleCollision | x                           |
  * circle    | detectPointCircleCollision    | detectRectangleCircleCollision    | detectCircleCircleCollision |
- * line      | detectPointLineCollision      |                                   | detectCircleLineCollision   | 
+ * line      | detectPointLineCollision      |                                   | detectCircleLineCollision   | detectLineLineCollision
  */
 
 export const detectPointPointCollision = ({
@@ -129,7 +129,7 @@ export const detectRectangleCircleCollision = ({
 
 /**
  *
- * @url http://jeffreythompson.org/collision-detection/line-point.php#not-a-line
+ * @see http://jeffreythompson.org/collision-detection/line-point.php#not-a-line
  */
 export const detectPointLineCollision = ({
   line,
@@ -150,7 +150,7 @@ export const detectPointLineCollision = ({
 
 /**
  *
- * @url http://jeffreythompson.org/collision-detection/line-circle.php
+ * @see http://jeffreythompson.org/collision-detection/line-circle.php
  */
 export const detectCircleLineCollision = ({
   circle,
@@ -195,4 +195,42 @@ export const detectCircleLineCollision = ({
   const isColliding = distance <= circle.radius
 
   return isColliding
+}
+
+/**
+ *
+ * @see http://jeffreythompson.org/collision-detection/line-line.php
+ */
+export const detectLineLineCollision = ({
+  line1,
+  line2,
+}: {
+  line1: { position: Vector2D; position2: Vector2D }
+  line2: { position: Vector2D; position2: Vector2D }
+}) => {
+  const x1 = line1.position[0]
+  const y1 = line1.position2[1]
+  const x2 = line1.position2[0]
+  const y2 = line1.position2[1]
+
+  const x3 = line2.position[0]
+  const y3 = line2.position[1]
+  const x4 = line2.position2[0]
+  const y4 = line2.position2[1]
+
+  const uA =
+    ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) /
+    ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
+
+  const uB =
+    ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) /
+    ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
+
+  const isColliding = uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1
+
+  return isColliding
+
+  // collision point
+  // float intersectionX = x1 + (uA * (x2-x1));
+  // float intersectionY = y1 + (uA * (y2-y1));
 }
