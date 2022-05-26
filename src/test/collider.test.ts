@@ -535,7 +535,7 @@ describe('collider', () => {
       entity: entity3,
       name: componentName.collider,
       data: defaultCollider({
-        data: [{ type: 'line', position: [-2, -2], position2: [2, 2] }],
+        data: [{ type: 'line', position: [2, -2], position2: [-2, 2] }],
       }),
     })
     state = setComponent<Collider, InternalInitialState>({
@@ -583,27 +583,19 @@ describe('collider', () => {
       entity: entity5,
     })?.collisions
 
-    expect(collisions1?.length).toEqual(3)
+    expect(collisions1?.length).toEqual(2)
     expect(collisions1?.[0]?.entity).toEqual(entity2)
     expect(collisions1?.[1]?.entity).toEqual(entity3)
-    expect(collisions1?.[2]?.entity).toEqual(entity4)
-    expect(collisions1?.[3]?.entity).not.toBeDefined()
 
-    expect(collisions2?.length).toEqual(2)
+    expect(collisions2?.length).toEqual(1)
     expect(collisions2?.[0]?.entity).toEqual(entity1)
-    expect(collisions2?.[1]?.entity).toEqual(entity3)
-    expect(collisions2?.[2]?.entity).not.toBeDefined()
 
     expect(collisions3?.length).toEqual(1)
-    expect(collisions3?.[0]?.entity).toEqual(entity4)
-    expect(collisions3?.[1]?.entity).not.toBeDefined()
+    expect(collisions3?.[0]?.entity).toEqual(entity1)
 
-    expect(collisions4?.length).toEqual(1)
-    expect(collisions4?.[0]?.entity).toEqual(entity3)
-    expect(collisions4?.[1]?.entity).not.toBeDefined()
+    expect(collisions4?.length).toEqual(0)
 
     expect(collisions5?.length).toEqual(0)
-    expect(collisions5?.[0]?.entity).not.toBeDefined()
   })
 
   it('detect collisions circle-line', () => {

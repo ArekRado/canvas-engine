@@ -179,6 +179,7 @@ const findCollisionsWith: FindCollisionsWith = ({
               },
             })
           } else if (collider2Data.type === 'line') {
+      
             isColliding = detectLineLineCollision({
               line1: {
                 position,

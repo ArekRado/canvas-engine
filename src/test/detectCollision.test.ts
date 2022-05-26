@@ -186,7 +186,14 @@ describe('detectCollision', () => {
         line1: { position: [-1, -1], position2: [1, 1] },
         line2: { position: [-1, -1], position2: [1, 1] },
       }),
-    ).toBeTruthy()
+    ).toBeFalsy()
+
+    expect(
+      detectLineLineCollision({
+        line1: { position: [-1, -1], position2: [1, 1] },
+        line2: { position: [1, 1], position2: [2, 2] },
+      }),
+    ).toBeFalsy()
 
     expect(
       detectLineLineCollision({
@@ -200,12 +207,19 @@ describe('detectCollision', () => {
         line1: { position: [-1, -1], position2: [1, 1] },
         line2: { position: [-2, -2], position2: [2, 2] },
       }),
-    ).toBeTruthy()
+    ).toBeFalsy()
 
     expect(
       detectLineLineCollision({
         line1: { position: [-1, -1], position2: [1, 1] },
         line2: { position: [1, 1], position2: [2, 2] },
+      }),
+    ).toBeFalsy()
+
+    expect(
+      detectLineLineCollision({
+        line1: { position: [-1, -1], position2: [1, 1] },
+        line2: { position: [0.9999, 0.9999], position2: [2, 1] },
       }),
     ).toBeTruthy()
 
@@ -215,5 +229,19 @@ describe('detectCollision', () => {
         line2: { position: [100, 100], position2: [100, 100] },
       }),
     ).toBeFalsy()
+
+    expect(
+      detectLineLineCollision({
+        line1: { position: [2, -2], position2: [-2, 2] },
+        line2: { position: [-2, -2], position2: [1, 1] },
+      }),
+    ).toBeTruthy()
+
+    expect(
+      detectLineLineCollision({
+        line1: { position: [-2, -2], position2: [1, 1] },
+        line2: { position: [2, -2], position2: [-2, 2] },
+      }),
+    ).toBeTruthy()
   })
 })

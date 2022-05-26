@@ -209,7 +209,7 @@ export const detectLineLineCollision = ({
   line2: { position: Vector2D; position2: Vector2D }
 }) => {
   const x1 = line1.position[0]
-  const y1 = line1.position2[1]
+  const y1 = line1.position[1]
   const x2 = line1.position2[0]
   const y2 = line1.position2[1]
 
@@ -226,9 +226,13 @@ export const detectLineLineCollision = ({
     ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) /
     ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
 
-  const isColliding = uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1
+  const intersectionX = x1 + uA * (x2 - x1)
+  const intersectionY = y1 + uA * (y2 - y1)
 
-  return isColliding
+  if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
+    return true
+  }
+  return false
 
   // collision point
   // float intersectionX = x1 + (uA * (x2-x1));
