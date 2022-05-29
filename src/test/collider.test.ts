@@ -1,4 +1,4 @@
-import { vector } from '@arekrado/vector-2d'
+import { vector, Vector2D } from '@arekrado/vector-2d'
 import { createEntity } from '../entity/createEntity'
 import { generateEntity } from '../entity/generateEntity'
 import { runOneFrame } from '../util/runOneFrame'
@@ -29,7 +29,7 @@ describe('collider', () => {
       name: componentName.transform,
       entity: entity1,
       data: defaultTransform({
-        fromParentPosition: vector(0, 0),
+        position: vector(0, 0),
       }),
     })
     state = setComponent<Transform, InternalInitialState>({
@@ -37,16 +37,15 @@ describe('collider', () => {
       name: componentName.transform,
       entity: entity2,
       data: defaultTransform({
-        fromParentPosition: vector(1, 19),
+        position: vector(1, 1),
       }),
     })
     state = setComponent<Transform, InternalInitialState>({
       state,
       name: componentName.transform,
       entity: entity3,
-
       data: defaultTransform({
-        fromParentPosition: vector(3.5, 3.5),
+        position: vector(3.5, 3.5),
       }),
     })
 
@@ -100,19 +99,21 @@ describe('collider', () => {
       entity: entity3,
     })?.collisions
 
+    expect(collisions1?.length).toEqual(2)
     expect(collisions1?.[0]?.entity).toEqual(entity2)
-    expect(collisions1?.[1]?.entity).not.toBeDefined()
+    expect(collisions1?.[1]?.entity).toEqual(entity3)
 
+    expect(collisions2?.length).toEqual(1)
     expect(collisions2?.[0]?.entity).toEqual(entity1)
-    expect(collisions2?.[1]?.entity).toEqual(entity3)
 
-    expect(collisions3?.[0]?.entity).toEqual(entity2)
-    expect(collisions3?.[1]?.entity).not.toBeDefined()
+    expect(collisions3?.length).toEqual(1)
+    expect(collisions3?.[0]?.entity).toEqual(entity1)
   })
 
   it('detect collisions point-point', () => {
     const entity1 = generateEntity()
     const entity2 = generateEntity()
+    const entity3 = generateEntity()
 
     let state = createEntity({
       entity: entity1,
@@ -136,6 +137,14 @@ describe('collider', () => {
         position: vector(10, 7),
       }),
     })
+    state = setComponent<Transform, InternalInitialState>({
+      state,
+      name: componentName.transform,
+      entity: entity3,
+      data: defaultTransform({
+        position: vector(0, 0),
+      }),
+    })
 
     state = setComponent<Collider, InternalInitialState>({
       state,
@@ -153,6 +162,14 @@ describe('collider', () => {
         data: [{ type: 'point', position: vector(-9, -6) }],
       }),
     })
+    state = setComponent<Collider, InternalInitialState>({
+      state,
+      entity: entity3,
+      name: componentName.collider,
+      data: defaultCollider({
+        data: [{ type: 'point', position: vector(99, 99) }],
+      }),
+    })
 
     state = runOneFrame({ state })
 
@@ -166,18 +183,26 @@ describe('collider', () => {
       state,
       entity: entity2,
     })?.collisions
+    const collisions3 = getComponent<Collider>({
+      name: componentName.collider,
+      state,
+      entity: entity3,
+    })?.collisions
 
     expect(collisions1?.length).toBe(1)
-    expect(collisions2?.length).toBe(1)
+    expect(collisions1?.length).toBe(1)
 
     expect(collisions1?.[0]?.entity).toEqual(entity2)
     expect(collisions2?.[0]?.entity).toEqual(entity1)
+
+    expect(collisions3?.length).toBe(0)
   })
 
   it('detect collisions circle-circle', () => {
     const entity1 = generateEntity()
     const entity2 = generateEntity()
     const entity3 = generateEntity()
+    const entity4 = generateEntity()
 
     let state = createEntity({
       entity: entity1,
@@ -185,13 +210,14 @@ describe('collider', () => {
     })
     state = createEntity({ entity: entity2, state })
     state = createEntity({ entity: entity3, state })
+    state = createEntity({ entity: entity4, state })
 
     state = setComponent<Transform, InternalInitialState>({
       state,
       name: componentName.transform,
       entity: entity1,
       data: defaultTransform({
-        fromParentPosition: vector(0, 0),
+        position: vector(0, 0),
       }),
     })
     state = setComponent<Transform, InternalInitialState>({
@@ -199,16 +225,23 @@ describe('collider', () => {
       name: componentName.transform,
       entity: entity2,
       data: defaultTransform({
-        fromParentPosition: vector(1, 19),
+        position: vector(1, 1),
       }),
     })
     state = setComponent<Transform, InternalInitialState>({
       state,
       name: componentName.transform,
       entity: entity3,
-
       data: defaultTransform({
-        fromParentPosition: vector(3.5, 3.5),
+        position: vector(3.5, 3.5),
+      }),
+    })
+    state = setComponent<Transform, InternalInitialState>({
+      state,
+      name: componentName.transform,
+      entity: entity4,
+      data: defaultTransform({
+        position: vector(99, 99),
       }),
     })
 
@@ -232,7 +265,14 @@ describe('collider', () => {
       state,
       entity: entity3,
       name: componentName.collider,
-
+      data: defaultCollider({
+        data: [{ type: 'circle', radius: 1, position: vector(-1, -1) }],
+      }),
+    })
+    state = setComponent<Collider, InternalInitialState>({
+      state,
+      entity: entity4,
+      name: componentName.collider,
       data: defaultCollider({
         data: [{ type: 'circle', radius: 1, position: vector(-1, -1) }],
       }),
@@ -255,29 +295,36 @@ describe('collider', () => {
       state,
       entity: entity3,
     })?.collisions
+    const collisions4 = getComponent<Collider>({
+      name: componentName.collider,
+      state,
+      entity: entity4,
+    })?.collisions
 
-    expect(collisions1?.length).toEqual(1)
+    expect(collisions1?.length).toEqual(2)
     expect(collisions1?.[0]?.entity).toEqual(entity2)
-    expect(collisions1?.[1]?.entity).not.toBeDefined()
+    expect(collisions1?.[1]?.entity).toEqual(entity3)
 
-    expect(collisions2?.length).toEqual(2)
+    expect(collisions2?.length).toEqual(1)
     expect(collisions2?.[0]?.entity).toEqual(entity1)
-    expect(collisions2?.[1]?.entity).toEqual(entity3)
 
     expect(collisions3?.length).toEqual(1)
-    expect(collisions3?.[0]?.entity).toEqual(entity2)
-    expect(collisions3?.[1]?.entity).not.toBeDefined()
+    expect(collisions3?.[0]?.entity).toEqual(entity1)
+
+    expect(collisions4?.length).toEqual(0)
   })
 
   it('detect collisions circle-rectangle', () => {
     const entity1 = generateEntity()
     const entity2 = generateEntity()
     const entity3 = generateEntity()
+    const entity4 = generateEntity()
     let state = getState({})
 
     state = createEntity({ entity: entity1, state })
     state = createEntity({ entity: entity2, state })
     state = createEntity({ entity: entity3, state })
+    state = createEntity({ entity: entity4, state })
 
     state = setComponent<Transform, InternalInitialState>({
       state,
@@ -302,6 +349,15 @@ describe('collider', () => {
 
       data: defaultTransform({
         position: vector(0, 0),
+      }),
+    })
+    state = setComponent<Transform, InternalInitialState>({
+      state,
+      name: componentName.transform,
+      entity: entity4,
+
+      data: defaultTransform({
+        position: vector(99, 99),
       }),
     })
 
@@ -332,6 +388,15 @@ describe('collider', () => {
         data: [{ type: 'circle', radius: 7.2, position: vector(-5, -5) }],
       }),
     })
+    state = setComponent<Collider, InternalInitialState>({
+      state,
+      entity: entity4,
+      name: componentName.collider,
+
+      data: defaultCollider({
+        data: [{ type: 'circle', radius: 7.2, position: vector(-5, -5) }],
+      }),
+    })
 
     state = runOneFrame({ state })
 
@@ -350,6 +415,11 @@ describe('collider', () => {
       state,
       entity: entity3,
     })?.collisions
+    const collisions4 = getComponent<Collider>({
+      name: componentName.collider,
+      state,
+      entity: entity4,
+    })?.collisions
 
     expect(collisions1?.length).toEqual(1)
     expect(collisions1?.[0]?.entity).toEqual(entity3)
@@ -361,16 +431,20 @@ describe('collider', () => {
     expect(collisions3?.length).toEqual(1)
     expect(collisions3?.[0]?.entity).toEqual(entity1)
     expect(collisions3?.[1]?.entity).not.toBeDefined()
+
+    expect(collisions4?.length).toEqual(0)
   })
 
   it('detect collisions point-line', () => {
     const entity1 = generateEntity()
     const entity2 = generateEntity()
     const entity3 = generateEntity()
+    const entity4 = generateEntity()
 
     let state = createEntity({ entity: entity1, state: getState({}) })
     state = createEntity({ entity: entity2, state })
     state = createEntity({ entity: entity3, state })
+    state = createEntity({ entity: entity4, state })
 
     state = setComponent<Transform, InternalInitialState>({
       state,
@@ -394,6 +468,14 @@ describe('collider', () => {
       entity: entity3,
       data: defaultTransform({
         position: vector(0, 0),
+      }),
+    })
+    state = setComponent<Transform, InternalInitialState>({
+      state,
+      name: componentName.transform,
+      entity: entity4,
+      data: defaultTransform({
+        position: vector(99, 99),
       }),
     })
 
@@ -423,6 +505,16 @@ describe('collider', () => {
         ],
       }),
     })
+    state = setComponent<Collider, InternalInitialState>({
+      state,
+      entity: entity4,
+      name: componentName.collider,
+      data: defaultCollider({
+        data: [
+          { type: 'line', position: vector(1, 1), position2: vector(3, 3) },
+        ],
+      }),
+    })
 
     state = runOneFrame({ state })
 
@@ -441,6 +533,11 @@ describe('collider', () => {
       state,
       entity: entity3,
     })?.collisions
+    const collisions4 = getComponent<Collider>({
+      name: componentName.collider,
+      state,
+      entity: entity4,
+    })?.collisions
 
     expect(collisions1?.length).toEqual(1)
     expect(collisions1?.[0]?.entity).toEqual(entity3)
@@ -452,9 +549,11 @@ describe('collider', () => {
     expect(collisions3?.length).toEqual(1)
     expect(collisions3?.[0]?.entity).toEqual(entity1)
     expect(collisions3?.[1]?.entity).not.toBeDefined()
+
+    expect(collisions4?.length).toEqual(0)
   })
 
-  it.only('detect collisions line-line', () => {
+  it('detect collisions line-line', () => {
     // line
     const entity1 = generateEntity()
     // crosses line1
@@ -510,7 +609,7 @@ describe('collider', () => {
       name: componentName.transform,
       entity: entity5,
       data: defaultTransform({
-        position: vector(0, 0),
+        position: vector(99, 99),
       }),
     })
 
@@ -551,7 +650,7 @@ describe('collider', () => {
       entity: entity5,
       name: componentName.collider,
       data: defaultCollider({
-        data: [{ type: 'line', position: [100, 100], position2: [100, 100] }],
+        data: [{ type: 'line', position: [-1, 1], position2: [1, -1] }],
       }),
     })
 
@@ -702,7 +801,7 @@ describe('collider', () => {
       name: componentName.collider,
       data: defaultCollider({
         data: [
-          { type: 'line', position: vector(9, 9), position2: vector(10, 10) },
+          { type: 'line', position: vector(99, 9), position2: vector(10, 10) },
         ],
       }),
     })
@@ -754,5 +853,138 @@ describe('collider', () => {
 
     expect(collisions5?.length).toEqual(0)
     expect(collisions5?.[0]?.entity).not.toBeDefined()
+  })
+
+  it('detect collisions rectangle-line', () => {
+    // rectangle
+    const entity1 = generateEntity()
+    // left side collision
+    const entity2 = generateEntity()
+    // right side collision
+    const entity3 = generateEntity()
+    // top side collision
+    const entity4 = generateEntity()
+    // bottom side collision
+    const entity5 = generateEntity()
+    // left-top to right-bottom
+    const entity6 = generateEntity()
+    // line inside rectangle
+    const entity7 = generateEntity()
+    // line doesn't touch rectangle
+    const entity8 = generateEntity()
+
+    let state = getState({})
+    state = createEntity({ entity: entity1, state })
+    state = createEntity({ entity: entity2, state })
+    state = createEntity({ entity: entity3, state })
+    state = createEntity({ entity: entity4, state })
+    state = createEntity({ entity: entity5, state })
+    state = createEntity({ entity: entity6, state })
+    state = createEntity({ entity: entity7, state })
+    state = createEntity({ entity: entity8, state })
+    ;[entity1, entity2, entity3, entity4, entity5, entity6, entity7].forEach(
+      (entity) => {
+        state = setComponent<Transform, InternalInitialState>({
+          state,
+          name: componentName.transform,
+          entity,
+          data: defaultTransform({
+            position: [0, 0],
+          }),
+        })
+      },
+    )
+
+    state = setComponent<Transform, InternalInitialState>({
+      state,
+      name: componentName.transform,
+      entity: entity8,
+      data: defaultTransform({
+        position: [99, 99],
+      }),
+    })
+
+    state = setComponent<Collider, InternalInitialState>({
+      state,
+      entity: entity1,
+      name: componentName.collider,
+      data: defaultCollider({
+        data: [{ type: 'rectangle', position: [0, 0], size: [1, 1] }],
+      }),
+    })
+    type A = [string, { position: Vector2D; position2: Vector2D }]
+    const data: A[] = [
+      [entity2, { position: [-1.5, 0.5], position2: [0.5, 0.5] }],
+      [entity3, { position: [1.5, 0.5], position2: [0.5, 0.5] }],
+      [entity4, { position: [0.5, 1.5], position2: [0.5, 0.5] }],
+      [entity5, { position: [0.5, -1.5], position2: [0.5, 0.5] }],
+      [entity6, { position: [-1, 2], position2: [2, -1] }],
+      [entity7, { position: [0.5, 0.5], position2: [0.5, 0.5] }],
+      [entity8, { position: [1.5, 0.5], position2: [0.5, 0.5] }],
+    ]
+
+    data.forEach(([entity, { position, position2 }]) => {
+      state = setComponent<Collider, InternalInitialState>({
+        state,
+        entity,
+        name: componentName.collider,
+        data: defaultCollider({
+          data: [
+            {
+              type: 'line',
+              position,
+              position2,
+            },
+          ],
+        }),
+      })
+    })
+
+    state = runOneFrame({ state })
+    ;[
+      {
+        entity: entity1,
+        collisions: [entity2, entity3, entity4, entity5, entity6],
+      },
+      {
+        entity: entity2,
+        collisions: [entity1, entity4, entity5, entity6],
+      },
+      {
+        entity: entity3,
+        collisions: [entity1, entity4, entity5, entity6],
+      },
+      {
+        entity: entity4,
+        collisions: [entity1, entity2, entity3, entity6],
+      },
+      {
+        entity: entity5,
+        collisions: [entity1, entity2, entity3, entity6],
+      },
+      {
+        entity: entity6,
+        collisions: [entity1, entity2, entity3, entity4, entity5],
+      },
+      {
+        entity: entity7,
+        collisions: [],
+      },
+      {
+        entity: entity8,
+        collisions: [],
+      },
+    ].forEach((data, i) => {
+      const collisions = getComponent<Collider>({
+        name: componentName.collider,
+        state,
+        entity: data.entity,
+      })?.collisions
+
+      expect([i, collisions?.map(({ entity }) => entity)]).toEqual([
+        i,
+        data.collisions,
+      ])
+    })
   })
 })

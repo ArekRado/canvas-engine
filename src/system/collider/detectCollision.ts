@@ -2,10 +2,10 @@ import { equals, magnitude, sub, Vector2D } from '@arekrado/vector-2d'
 
 /**
  * XXXXXXXXX | point                         | rectangle                         | circle                      | line
- * point     | detectPointPointCollision     | x                                 | x                           |
- * rectangle | detectPointrectangleCollision | detectRectangleRectangleCollision | x                           |
- * circle    | detectPointCircleCollision    | detectRectangleCircleCollision    | detectCircleCircleCollision |
- * line      | detectPointLineCollision      |                                   | detectCircleLineCollision   | detectLineLineCollision
+ * point     | detectPointPointCollision     | x                                 | x                           | x
+ * rectangle | detectPointrectangleCollision | detectRectangleRectangleCollision | x                           | x
+ * circle    | detectPointCircleCollision    | detectRectangleCircleCollision    | detectCircleCircleCollision | x
+ * line      | detectPointLineCollision      | detectRectangleLineCollision      | detectCircleLineCollision   | detectLineLineCollision
  */
 
 export const detectPointPointCollision = ({
@@ -226,9 +226,6 @@ export const detectLineLineCollision = ({
     ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) /
     ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
 
-  const intersectionX = x1 + uA * (x2 - x1)
-  const intersectionY = y1 + uA * (y2 - y1)
-
   if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
     return true
   }
@@ -237,4 +234,78 @@ export const detectLineLineCollision = ({
   // collision point
   // float intersectionX = x1 + (uA * (x2-x1));
   // float intersectionY = y1 + (uA * (y2-y1));
+}
+
+/**
+ *
+ * @see http://jeffreythompson.org/collision-detection/line-rect.php
+ */
+export const detectRectangleLineCollision = ({
+  line,
+  rectangle,
+}: {
+  line: { position: Vector2D; position2: Vector2D }
+  rectangle: {
+    position: Vector2D
+    size: Vector2D
+  }
+}) => {
+  // (rx, ry, rx, ry + rh)
+  const left = detectLineLineCollision({
+    line1: line,
+    line2: {
+      position: rectangle.position,
+      position2: [
+        rectangle.position[0],
+        rectangle.position[1] + rectangle.size[0],
+      ],
+    },
+  })
+
+  if (left) return true
+  // (rx + rw, ry, rx + rw, ry + rh)
+  const right = detectLineLineCollision({
+    line1: line,
+    line2: {
+      position: rectangle.position,
+      position2: [
+        rectangle.position[0] + rectangle.size[0],
+        rectangle.position[1] + rectangle.size[1],
+      ],
+    },
+  })
+
+  if (right) return true
+  // (rx, ry, rx + rw, ry)
+  const top = detectLineLineCollision({
+    line1: line,
+    line2: {
+      position: rectangle.position,
+      position2: [
+        rectangle.position[0] + rectangle.size[0],
+        rectangle.position[1],
+      ],
+    },
+  })
+
+  if (top) return true
+
+  // (rx, ry + rh, rx + rw, ry + rh)
+  const bottom = detectLineLineCollision({
+    line1: line,
+    line2: {
+      position: [
+        rectangle.position[0],
+        rectangle.position[1] + rectangle.size[1],
+      ],
+      position2: [
+        rectangle.position[0] + rectangle.size[0],
+        rectangle.position[1] + rectangle.size[1],
+      ],
+    },
+  })
+
+  if (bottom) return true
+
+  return false
 }

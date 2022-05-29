@@ -10,6 +10,7 @@ import {
   detectPointLineCollision,
   detectPointPointCollision,
   detectRectangleCircleCollision,
+  detectRectangleLineCollision,
   detectRectangleRectangleCollision,
 } from './detectCollision'
 import { updateComponent } from '../../component/updateComponent'
@@ -95,6 +96,20 @@ const findCollisionsWith: FindCollisionsWith = ({
                 radius: collider2Data.radius,
               },
             })
+          } else if (collider2Data.type === 'line') {
+            isColliding = detectRectangleLineCollision({
+              rectangle: {
+                position,
+                size: colliderData.size,
+              },
+              line: {
+                position: position2,
+                position2: add(
+                  [transform2.position[0], transform2.position[1]],
+                  collider2Data.position2,
+                ),
+              },
+            })
           }
         } else if (colliderData.type === 'point') {
           if (collider2Data.type === 'point') {
@@ -167,11 +182,11 @@ const findCollisionsWith: FindCollisionsWith = ({
           } else if (collider2Data.type === 'circle') {
             isColliding = detectCircleLineCollision({
               circle: {
-                position: collider2Data.position,
+                position: position2,
                 radius: collider2Data.radius,
               },
               line: {
-                position: position2,
+                position: position,
                 position2: add(
                   [transform.position[0], transform.position[1]],
                   colliderData.position2,
@@ -179,7 +194,6 @@ const findCollisionsWith: FindCollisionsWith = ({
               },
             })
           } else if (collider2Data.type === 'line') {
-      
             isColliding = detectLineLineCollision({
               line1: {
                 position,
@@ -194,6 +208,20 @@ const findCollisionsWith: FindCollisionsWith = ({
                   [transform2.position[0], transform2.position[1]],
                   collider2Data.position2,
                 ),
+              },
+            })
+          } else if (collider2Data.type === 'rectangle') {
+            isColliding = detectRectangleLineCollision({
+              line: {
+                position,
+                position2: add(
+                  [transform.position[0], transform.position[1]],
+                  colliderData.position2,
+                ),
+              },
+              rectangle: {
+                position: position2,
+                size: collider2Data.size,
               },
             })
           }

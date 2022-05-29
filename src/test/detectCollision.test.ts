@@ -3,6 +3,7 @@ import {
   detectCircleLineCollision,
   detectLineLineCollision,
   detectPointLineCollision,
+  detectRectangleLineCollision,
   detectRectangleRectangleCollision,
 } from '../system/collider/detectCollision'
 
@@ -243,5 +244,63 @@ describe('detectCollision', () => {
         line2: { position: [2, -2], position2: [-2, 2] },
       }),
     ).toBeTruthy()
+  })
+
+  it('detectRectangleLineCollision', () => {
+    // left side collision
+    expect(
+      detectRectangleLineCollision({
+        rectangle: { position: [0, 0], size: [1, 1] },
+        line: { position: [-1.5, 0.5], position2: [0.5, 0.5] },
+      }),
+    ).toBeTruthy()
+
+    // right side collision
+    expect(
+      detectRectangleLineCollision({
+        rectangle: { position: [0, 0], size: [1, 1] },
+        line: { position: [1.5, 0.5], position2: [0.5, 0.5] },
+      }),
+    ).toBeTruthy()
+
+    // top side collision
+    expect(
+      detectRectangleLineCollision({
+        rectangle: { position: [0, 0], size: [1, 1] },
+        line: { position: [0.5, 1.5], position2: [0.5, 0.5] },
+      }),
+    ).toBeTruthy()
+
+    // bottom side collision
+    expect(
+      detectRectangleLineCollision({
+        rectangle: { position: [0, 0], size: [1, 1] },
+        line: { position: [0.5, -1.5], position2: [0.5, 0.5] },
+      }),
+    ).toBeTruthy()
+
+    // left-top to right-bottom
+    expect(
+      detectRectangleLineCollision({
+        rectangle: { position: [0, 0], size: [1, 1] },
+        line: { position: [-1, 2], position2: [2, -1] },
+      }),
+    ).toBeTruthy()
+
+    // line inside rectangle
+    expect(
+      detectRectangleLineCollision({
+        rectangle: { position: [0, 0], size: [1, 1] },
+        line: { position: [0.5, 0.5], position2: [0.5, 0.5] },
+      }),
+    ).toBeFalsy()
+
+    // line doesn't touch rectangle
+    expect(
+      detectRectangleLineCollision({
+        rectangle: { position: [0, 0], size: [1, 1] },
+        line: { position: [-1, -1], position2: [-2, -2] },
+      }),
+    ).toBeFalsy()
   })
 })
