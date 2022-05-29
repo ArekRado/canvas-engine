@@ -1,5 +1,11 @@
 import { vectorZero } from '@arekrado/vector-2d'
-import { Camera, GetDefaultComponent, Mouse, MouseInteraction } from '../type'
+import {
+  Camera,
+  GetDefaultComponent,
+  Mouse,
+  MouseInteraction,
+  RigidBody,
+} from '../type'
 import { Animation, Keyboard, Transform, Collider } from '../type'
 
 export const defaultAnimation: GetDefaultComponent<
@@ -20,6 +26,15 @@ export const defaultCollider: GetDefaultComponent<Collider> = (data = {}) => ({
   collisions: [],
   data: [],
   layers: [],
+  ...data,
+})
+export const defaultRigidBody: GetDefaultComponent<RigidBody> = (
+  data = {},
+) => ({
+  mass: 0,
+  friction: 0,
+  velocity: vectorZero(),
+  force: vectorZero(),
   ...data,
 })
 

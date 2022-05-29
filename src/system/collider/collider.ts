@@ -1,6 +1,6 @@
 import { add } from '@arekrado/vector-2d'
 import { InternalInitialState, Transform, Collider, Guid } from '../../type'
-import { createSystem } from '../createSystem'
+import { createSystem, systemPriority } from '../createSystem'
 import { getComponent } from '../../component/getComponent'
 import { componentName } from '../../component/componentName'
 import {
@@ -253,6 +253,7 @@ export const colliderSystem = (state: InternalInitialState) =>
     state,
     name: componentName.collider,
     componentName: componentName.collider,
+    priority: systemPriority.collider,
     tick: ({ state, component, entity }) => {
       const collisions = findCollisionsWith({
         entity,

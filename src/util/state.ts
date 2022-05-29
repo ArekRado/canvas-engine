@@ -11,6 +11,7 @@ import { meshSystem } from '../system/mesh/mesh'
 import { materialSystem } from '../system/material/material'
 import { eventSystem } from '../event'
 import { AnyState, InternalInitialState } from '../type'
+import { rigidBodySystem } from '../system/rigidBody/rigidBody'
 
 export const getInitialState = (): InternalInitialState => ({
   entity: {},
@@ -25,6 +26,7 @@ export const getInitialState = (): InternalInitialState => ({
     [componentName.keyboard]: {},
     [componentName.mesh]: {},
     [componentName.material]: {},
+    [componentName.rigidBody]: {},
   },
   globalSystem: [],
   system: [],
@@ -103,6 +105,7 @@ export const getSystems = ({
   internatlState = mouseInteractionSystem(internatlState)
   internatlState = materialSystem(internatlState)
   internatlState = meshSystem(internatlState)
+  internatlState = rigidBodySystem(internatlState)
 
   if (containerId) {
     internatlState = mouseSystem({

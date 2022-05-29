@@ -5,6 +5,7 @@ export enum componentName {
   keyboard = 'keyboard',
   animation = 'animation',
   collider = 'collider',
+  rigidBody = 'rigidBody',
   mouseInteraction = 'mouseInteraction',
   camera = 'camera',
   mesh = 'mesh',

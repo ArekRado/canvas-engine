@@ -16,7 +16,6 @@ import {
   InternalInitialState,
   Vector3D,
 } from '../type'
-import { runOneFrame } from '../util/runOneFrame'
 import { setComponent } from '../component/setComponent'
 import { getComponent } from '../component/getComponent'
 import { componentName } from '../component/componentName'
@@ -24,8 +23,7 @@ import { componentName } from '../component/componentName'
 import { getState } from '../util/state'
 import { addEventHandler } from '../event'
 import { createSystem } from '../system/createSystem'
-import { updateComponent } from '../component/updateComponent'
-import { timeEntity } from '../system/time/time'
+import { tick } from './utils'
 
 type AnyComponent<Value> = { value: Value }
 
@@ -70,23 +68,6 @@ describe('animation', () => {
       state,
       entity,
     })
-
-  const tick = (timeNow: number, state: InternalInitialState) => {
-    state = updateComponent({
-      state,
-      entity: timeEntity,
-      name: componentName.time,
-      update: () => ({
-        dataOverwrite: {
-          previousTimeNow: timeNow === 0 ? 0 : undefined,
-          // delta: 0,
-          timeNow,
-        },
-      }),
-    })
-
-    return runOneFrame({ state })
-  }
 
   describe('getActiveKeyframe', () => {
     it('should return proper time and index when time is zero', () => {

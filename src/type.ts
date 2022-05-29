@@ -63,7 +63,20 @@ export type Collider = {
         position: Vector2D
         position2: Vector2D
       }
+    // TODO
+    // | {
+    //     type: 'polygon'
+    //   }
   >
+}
+
+export type RigidBody = {
+  mass: number
+  friction: number
+  velocity: Vector2D
+  force: Vector2D
+  // gravityDirection: Vector2D,  // TODO
+  // isKinematic: boolean, // TODO
 }
 
 export namespace Animation {
@@ -345,6 +358,7 @@ export type StateDefaultComponents = {
   keyboard: Dictionary<Keyboard>
   material: Dictionary<Material>
   mesh: Dictionary<Mesh>
+  rigidBody: Dictionary<RigidBody>
 }
 
 export type StateDefaultSystems =
@@ -359,6 +373,7 @@ export type StateDefaultSystems =
   | System<Keyboard, AnyStateForSystem>
   | System<Material, AnyStateForSystem>
   | System<Mesh, AnyStateForSystem>
+  | System<RigidBody, AnyStateForSystem>
 
 /**
  * Describes empty state without internal components and systems
