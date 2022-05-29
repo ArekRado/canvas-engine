@@ -15,6 +15,11 @@ import {
 } from './detectCollision'
 import { updateComponent } from '../../component/updateComponent'
 
+const hasSameLayer = (
+  layers1: Collider['layers'],
+  layers2: Collider['layers'],
+) => layers1.some((l1) => layers2.find((l2) => l2 === l1))
+
 type FindCollisionsWith = (pramams: {
   entity: Guid
   state: InternalInitialState
@@ -40,6 +45,10 @@ const findCollisionsWith: FindCollisionsWith = ({
     allColliders.forEach(([collider2Entity, collider2]) => {
       // Do not test collision with the same colliders
       if (entity === collider2Entity) {
+        return
+      }
+
+      if (hasSameLayer(component.layers, collider2.layers) === false) {
         return
       }
 

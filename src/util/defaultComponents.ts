@@ -19,6 +19,7 @@ export const defaultCollider: GetDefaultComponent<Collider> = (data = {}) => ({
   position: vectorZero(),
   collisions: [],
   data: [],
+  layers: [],
   ...data,
 })
 

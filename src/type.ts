@@ -35,6 +35,7 @@ export type Color = [number, number, number, number]
 ////////////////////////////////////
 
 export type Collider = {
+  layers: string[]
   collisions: Array<{ entity: Entity; index: number }>
   data: Array<
     | {
