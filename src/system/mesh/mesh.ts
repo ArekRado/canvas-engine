@@ -1,6 +1,5 @@
-import { InternalInitialState, Material, Mesh, Transform } from '../../type'
+import { InternalInitialState, Mesh } from '../../type'
 import { createSystem } from '../createSystem'
-import { getComponent } from '../../component/getComponent'
 import { componentName } from '../../component/componentName'
 import { getMaterial } from '../material/materialCrud'
 import { getTransform } from '../transform/transformCrud'
