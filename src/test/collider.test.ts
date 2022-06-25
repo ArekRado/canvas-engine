@@ -3,13 +3,9 @@ import { createEntity } from '../entity/createEntity'
 import { generateEntity } from '../entity/generateEntity'
 import { runOneFrame } from '../util/runOneFrame'
 import { defaultCollider, defaultTransform } from '../util/defaultComponents'
-import { setComponent } from '../component/setComponent'
-import { getComponent } from '../component/getComponent'
-import { componentName } from '../component/componentName'
-
-import { Collider } from '../type'
-import { InternalInitialState, Transform } from '../index'
 import { getState } from '../util/state'
+import { createTransform } from '../system/transform/transformCrud'
+import { createCollider, getCollider } from '../system/collider/colliderCrud'
 
 describe('collider', () => {
   describe('detect collisions', () => {
@@ -26,35 +22,31 @@ describe('collider', () => {
       state = createEntity({ entity: entity2, state })
       state = createEntity({ entity: entity3, state })
 
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity1,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity2,
         data: defaultTransform({
           position: vector(1, 1),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity3,
         data: defaultTransform({
           position: vector(3.5, 3.5),
         }),
       })
 
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity1,
-        name: componentName.collider,
         data: defaultCollider({
           layers,
           data: [
@@ -66,10 +58,9 @@ describe('collider', () => {
           ],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity2,
-        name: componentName.collider,
         data: defaultCollider({
           layers,
           data: [
@@ -77,10 +68,9 @@ describe('collider', () => {
           ],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity3,
-        name: componentName.collider,
 
         data: defaultCollider({
           layers,
@@ -92,18 +82,15 @@ describe('collider', () => {
 
       state = runOneFrame({ state })
 
-      const collisions1 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions1 = getCollider({
         state,
         entity: entity1,
       })?._collisions
-      const collisions2 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions2 = getCollider({
         state,
         entity: entity2,
       })?._collisions
-      const collisions3 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions3 = getCollider({
         state,
         entity: entity3,
       })?._collisions
@@ -130,53 +117,50 @@ describe('collider', () => {
       })
       state = createEntity({ entity: entity2, state })
 
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity1,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity2,
         data: defaultTransform({
           position: vector(10, 7),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity3,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
 
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity1,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'point', position: vector(1, 1) }],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity2,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'point', position: vector(-9, -6) }],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity3,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'point', position: vector(99, 99) }],
@@ -185,18 +169,15 @@ describe('collider', () => {
 
       state = runOneFrame({ state })
 
-      const collisions1 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions1 = getCollider({
         state,
         entity: entity1,
       })?._collisions
-      const collisions2 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions2 = getCollider({
         state,
         entity: entity2,
       })?._collisions
-      const collisions3 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions3 = getCollider({
         state,
         entity: entity3,
       })?._collisions
@@ -224,70 +205,66 @@ describe('collider', () => {
       state = createEntity({ entity: entity3, state })
       state = createEntity({ entity: entity4, state })
 
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity1,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity2,
         data: defaultTransform({
           position: vector(1, 1),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity3,
         data: defaultTransform({
           position: vector(3.5, 3.5),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity4,
         data: defaultTransform({
           position: vector(99, 99),
         }),
       })
 
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity1,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'circle', radius: 1.5, position: vector(1, 1) }],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity2,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'circle', radius: 1, position: vector(0, 0) }],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity3,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'circle', radius: 1, position: vector(-1, -1) }],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity4,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'circle', radius: 1, position: vector(-1, -1) }],
@@ -296,23 +273,19 @@ describe('collider', () => {
 
       state = runOneFrame({ state })
 
-      const collisions1 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions1 = getCollider({
         state,
         entity: entity1,
       })?._collisions
-      const collisions2 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions2 = getCollider({
         state,
         entity: entity2,
       })?._collisions
-      const collisions3 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions3 = getCollider({
         state,
         entity: entity3,
       })?._collisions
-      const collisions4 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions4 = getCollider({
         state,
         entity: entity4,
       })?._collisions
@@ -342,34 +315,30 @@ describe('collider', () => {
       state = createEntity({ entity: entity3, state })
       state = createEntity({ entity: entity4, state })
 
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity1,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity2,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity3,
 
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity4,
 
         data: defaultTransform({
@@ -377,10 +346,10 @@ describe('collider', () => {
         }),
       })
 
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity1,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [
@@ -388,29 +357,27 @@ describe('collider', () => {
           ],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity2,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'circle', radius: 5, position: vector(5, 5) }],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity3,
-        name: componentName.collider,
 
         data: defaultCollider({
           layers,
           data: [{ type: 'circle', radius: 7.2, position: vector(-5, -5) }],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity4,
-        name: componentName.collider,
 
         data: defaultCollider({
           layers,
@@ -420,23 +387,19 @@ describe('collider', () => {
 
       state = runOneFrame({ state })
 
-      const collisions1 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions1 = getCollider({
         state,
         entity: entity1,
       })?._collisions
-      const collisions2 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions2 = getCollider({
         state,
         entity: entity2,
       })?._collisions
-      const collisions3 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions3 = getCollider({
         state,
         entity: entity3,
       })?._collisions
-      const collisions4 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions4 = getCollider({
         state,
         entity: entity4,
       })?._collisions
@@ -466,61 +429,57 @@ describe('collider', () => {
       state = createEntity({ entity: entity3, state })
       state = createEntity({ entity: entity4, state })
 
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity1,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity2,
         data: defaultTransform({
           position: vector(10, 7),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity3,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity4,
         data: defaultTransform({
           position: vector(99, 99),
         }),
       })
 
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity1,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'point', position: vector(2, 2) }],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity2,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'point', position: vector(-3, -6) }],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity3,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [
@@ -528,10 +487,10 @@ describe('collider', () => {
           ],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity4,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [
@@ -542,23 +501,19 @@ describe('collider', () => {
 
       state = runOneFrame({ state })
 
-      const collisions1 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions1 = getCollider({
         state,
         entity: entity1,
       })?._collisions
-      const collisions2 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions2 = getCollider({
         state,
         entity: entity2,
       })?._collisions
-      const collisions3 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions3 = getCollider({
         state,
         entity: entity3,
       })?._collisions
-      const collisions4 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions4 = getCollider({
         state,
         entity: entity4,
       })?._collisions
@@ -596,87 +551,82 @@ describe('collider', () => {
       state = createEntity({ entity: entity4, state })
       state = createEntity({ entity: entity5, state })
 
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity1,
         data: defaultTransform({
           position: vector(-10, -10),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity2,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity3,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity4,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity5,
         data: defaultTransform({
           position: vector(99, 99),
         }),
       })
 
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity1,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'line', position: [-9, -9], position2: [11, 11] }],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity2,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'line', position: [-1, 1], position2: [1, -1] }],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity3,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'line', position: [2, -2], position2: [-2, 2] }],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity4,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'line', position: [1, 1], position2: [2, 2] }],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity5,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'line', position: [-1, 1], position2: [1, -1] }],
@@ -685,28 +635,23 @@ describe('collider', () => {
 
       state = runOneFrame({ state })
 
-      const collisions1 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions1 = getCollider({
         state,
         entity: entity1,
       })?._collisions
-      const collisions2 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions2 = getCollider({
         state,
         entity: entity2,
       })?._collisions
-      const collisions3 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions3 = getCollider({
         state,
         entity: entity3,
       })?._collisions
-      const collisions4 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions4 = getCollider({
         state,
         entity: entity4,
       })?._collisions
-      const collisions5 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions5 = getCollider({
         state,
         entity: entity5,
       })?._collisions
@@ -745,60 +690,55 @@ describe('collider', () => {
       state = createEntity({ entity: entity4, state })
       state = createEntity({ entity: entity5, state })
 
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity1,
         data: defaultTransform({
           position: vector(-1, -1),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity2,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity3,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity4,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity5,
         data: defaultTransform({
           position: vector(0, 0),
         }),
       })
 
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity1,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'circle', position: vector(1, 1), radius: 1 }],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity2,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [
@@ -810,10 +750,10 @@ describe('collider', () => {
           ],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity3,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [
@@ -825,10 +765,10 @@ describe('collider', () => {
           ],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity4,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [
@@ -836,10 +776,10 @@ describe('collider', () => {
           ],
         }),
       })
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity5,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [
@@ -854,28 +794,23 @@ describe('collider', () => {
 
       state = runOneFrame({ state })
 
-      const collisions1 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions1 = getCollider({
         state,
         entity: entity1,
       })?._collisions
-      const collisions2 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions2 = getCollider({
         state,
         entity: entity2,
       })?._collisions
-      const collisions3 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions3 = getCollider({
         state,
         entity: entity3,
       })?._collisions
-      const collisions4 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions4 = getCollider({
         state,
         entity: entity4,
       })?._collisions
-      const collisions5 = getComponent<Collider>({
-        name: componentName.collider,
+      const collisions5 = getCollider({
         state,
         entity: entity5,
       })?._collisions
@@ -930,9 +865,8 @@ describe('collider', () => {
       state = createEntity({ entity: entity8, state })
       ;[entity1, entity2, entity3, entity4, entity5, entity6, entity7].forEach(
         (entity) => {
-          state = setComponent<Transform, InternalInitialState>({
+          state = createTransform({
             state,
-            name: componentName.transform,
             entity,
             data: defaultTransform({
               position: [0, 0],
@@ -941,19 +875,18 @@ describe('collider', () => {
         },
       )
 
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity: entity8,
         data: defaultTransform({
           position: [99, 99],
         }),
       })
 
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity: entity1,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'rectangle', position: [0, 0], size: [1, 1] }],
@@ -971,10 +904,10 @@ describe('collider', () => {
       ]
 
       data.forEach(([entity, { position, position2 }]) => {
-        state = setComponent<Collider, InternalInitialState>({
+        state = createCollider({
           state,
           entity,
-          name: componentName.collider,
+
           data: defaultCollider({
             layers,
             data: [
@@ -1023,8 +956,7 @@ describe('collider', () => {
           collisions: [],
         },
       ].forEach((data, i) => {
-        const collisions = getComponent<Collider>({
-          name: componentName.collider,
+        const collisions = getCollider({
           state,
           entity: data.entity,
         })?._collisions
@@ -1061,17 +993,16 @@ describe('collider', () => {
     ].forEach(({ entity, layers }) => {
       state = createEntity({ entity, state })
 
-      state = setComponent<Transform, InternalInitialState>({
+      state = createTransform({
         state,
-        name: componentName.transform,
         entity,
         data: defaultTransform({ position: [0, 0] }),
       })
 
-      state = setComponent<Collider, InternalInitialState>({
+      state = createCollider({
         state,
         entity,
-        name: componentName.collider,
+
         data: defaultCollider({
           layers,
           data: [{ type: 'point', position: [0, 0] }],
@@ -1095,8 +1026,7 @@ describe('collider', () => {
     ].forEach(({ entity, collisions }) => {
       expect([
         entity,
-        getComponent<Collider>({
-          name: componentName.collider,
+        getCollider({
           state,
           entity,
         })?._collisions.map((collision) => collision.entity),

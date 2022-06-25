@@ -16,7 +16,6 @@ import {
   InternalInitialState,
   Vector3D,
 } from '../type'
-import { setComponent } from '../component/setComponent'
 import { getComponent } from '../component/getComponent'
 import { componentName } from '../component/componentName'
 
@@ -24,6 +23,8 @@ import { getState } from '../util/state'
 import { addEventHandler } from '../event'
 import { createSystem } from '../system/createSystem'
 import { tick } from './utils'
+import { createAnimation } from '../system/animation/animationCrud'
+import { createComponent } from '../component/createComponent'
 
 type AnyComponent<Value> = { value: Value }
 
@@ -424,7 +425,7 @@ describe('animation', () => {
 
       expect(update).toHaveBeenCalledTimes(0)
 
-      state = setComponent<NumberComponent, InternalInitialState>({
+      state = createComponent<NumberComponent, InternalInitialState>({
         state,
         entity,
         name: numberComponentName,
@@ -433,12 +434,11 @@ describe('animation', () => {
         },
       })
 
-      expect(update).toHaveBeenCalledTimes(1)
+      expect(update).toHaveBeenCalledTimes(0)
 
-      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createAnimation({
         state,
         entity,
-        name: componentName.animation,
         data: defaultAnimation({
           isPlaying: true,
           currentTime: 0,
@@ -462,12 +462,12 @@ describe('animation', () => {
       })
 
       state = tick(0, state)
-      expect(update).toHaveBeenCalledTimes(2)
+      expect(update).toHaveBeenCalledTimes(1)
     })
 
     it('should remove animation component when it ended and proper flag is set', () => {
       let state = createEntity({ state: getState({}), entity })
-      state = setComponent<NumberComponent, InternalInitialState>({
+      state = createComponent<NumberComponent, InternalInitialState>({
         state,
         entity,
         name: numberComponentName,
@@ -475,7 +475,7 @@ describe('animation', () => {
           value: 0,
         },
       })
-      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
         entity,
         name: componentName.animation,
@@ -530,7 +530,7 @@ describe('animation', () => {
 
       let state = createEntity({ state: getState({}), entity })
 
-      state = setComponent<NumberComponent, InternalInitialState>({
+      state = createComponent<NumberComponent, InternalInitialState>({
         state,
         entity,
         name: numberComponentName,
@@ -539,7 +539,7 @@ describe('animation', () => {
         },
       })
 
-      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
         entity,
         name: componentName.animation,
@@ -618,7 +618,7 @@ describe('animation', () => {
 
     it('Linear animation should change value in proper way', () => {
       let state = createEntity({ state: getState({}), entity })
-      state = setComponent<NumberComponent, InternalInitialState>({
+      state = createComponent<NumberComponent, InternalInitialState>({
         state,
         entity,
         name: numberComponentName,
@@ -626,7 +626,7 @@ describe('animation', () => {
           value: 0,
         },
       })
-      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
         entity,
         name: componentName.animation,
@@ -687,7 +687,7 @@ describe('animation', () => {
 
     it('Should works with negative values', () => {
       let state = createEntity({ state: getState({}), entity })
-      state = setComponent<NumberComponent, InternalInitialState>({
+      state = createComponent<NumberComponent, InternalInitialState>({
         state,
         entity,
         name: numberComponentName,
@@ -695,7 +695,7 @@ describe('animation', () => {
           value: 5,
         },
       })
-      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
         entity,
         name: componentName.animation,
@@ -760,7 +760,7 @@ describe('animation', () => {
 
     it('Should works with multiple frames', () => {
       let state = createEntity({ state: getState({}), entity })
-      state = setComponent<NumberComponent, InternalInitialState>({
+      state = createComponent<NumberComponent, InternalInitialState>({
         state,
         entity,
         name: numberComponentName,
@@ -768,7 +768,7 @@ describe('animation', () => {
           value: 0,
         },
       })
-      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
         entity,
         name: componentName.animation,
@@ -839,7 +839,7 @@ describe('animation', () => {
 
     it('Should works with looped animations', () => {
       let state = createEntity({ state: getState({}), entity })
-      state = setComponent<NumberComponent, InternalInitialState>({
+      state = createComponent<NumberComponent, InternalInitialState>({
         state,
         entity,
         name: numberComponentName,
@@ -847,7 +847,7 @@ describe('animation', () => {
           value: 0,
         },
       })
-      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
         entity,
         name: componentName.animation,
@@ -905,7 +905,7 @@ describe('animation', () => {
 
     it('Should works with multiple properties', () => {
       let state = createEntity({ state: getState({}), entity })
-      state = setComponent<NumberComponent, InternalInitialState>({
+      state = createComponent<NumberComponent, InternalInitialState>({
         state,
         entity,
         name: numberComponentName,
@@ -913,7 +913,7 @@ describe('animation', () => {
           value: 0,
         },
       })
-      state = setComponent<Vector2DComponent, InternalInitialState>({
+      state = createComponent<Vector2DComponent, InternalInitialState>({
         state,
         entity,
         name: vector2DComponentName,
@@ -922,7 +922,7 @@ describe('animation', () => {
         },
       })
 
-      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
         entity,
         name: componentName.animation,
@@ -1024,13 +1024,13 @@ describe('animation', () => {
 
     it('timingMode step - should change value only once per keyframe', () => {
       let state = createEntity({ state: getState({}), entity })
-      state = setComponent<Transform, InternalInitialState>({
+      state = createComponent<Transform, InternalInitialState>({
         state,
         entity,
         name: componentName.transform,
         data: defaultTransform(),
       })
-      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
         entity,
         name: componentName.animation,
@@ -1094,14 +1094,14 @@ describe('animation', () => {
       const parentId2 = 'walk2.png'
 
       let state = createEntity({ state: getState({}), entity })
-      state = setComponent<StringComponent, InternalInitialState>({
+      state = createComponent<StringComponent, InternalInitialState>({
         state,
         name: stringComponentName,
         entity,
         data: { value: '' },
       })
 
-      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
         entity,
         name: componentName.animation,
@@ -1161,13 +1161,13 @@ describe('animation', () => {
   describe('vector2d', () => {
     it('Linear animation should change value in a proper way', () => {
       let state = createEntity({ state: getState({}), entity })
-      state = setComponent<Vector2DComponent, InternalInitialState>({
+      state = createComponent<Vector2DComponent, InternalInitialState>({
         state,
         name: vector2DComponentName,
         entity,
         data: { value: vector(-1, -1) },
       })
-      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
         entity,
         name: componentName.animation,
@@ -1246,14 +1246,14 @@ describe('animation', () => {
     it('Linear animation should change value in a proper way', () => {
       let state = createEntity({ state: getState({}), entity })
 
-      state = setComponent<Vector3DComponent, InternalInitialState>({
+      state = createComponent<Vector3DComponent, InternalInitialState>({
         state,
         name: vector3DComponentName,
         entity,
         data: { value: [-1, -1, -1] },
       })
 
-      state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
         state,
         entity,
         name: componentName.animation,

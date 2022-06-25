@@ -2,7 +2,7 @@ import { getState } from '../util/state'
 import { generateEntity } from '../entity/generateEntity'
 import { createEntity } from '../entity/createEntity'
 import { runOneFrame } from '../util/runOneFrame'
-import { setComponent } from '../component/setComponent'
+import { createComponent } from '../component/createComponent'
 import { removeComponent } from '../component/removeComponent'
 import { updateComponent } from '../component/updateComponent'
 import { getComponent } from '../component/getComponent'
@@ -49,13 +49,13 @@ describe('component', () => {
       update,
     })
 
-    state = setComponent<Dictionary<null>, InternalInitialState>({
+    state = createComponent<Dictionary<null>, InternalInitialState>({
       state,
       entity: entity1,
       name: 'test',
       data: {},
     })
-    state = setComponent<Dictionary<null>, InternalInitialState>({
+    state = createComponent<Dictionary<null>, InternalInitialState>({
       state,
       entity: entity2,
       name: 'test',
@@ -71,7 +71,7 @@ describe('component', () => {
     expect(tick).toHaveBeenCalledTimes(2)
 
     // create new component after remove
-    state = setComponent<null, InternalInitialState>({
+    state = createComponent<null, InternalInitialState>({
       state,
       entity: entity1,
       name: 'test',
@@ -82,11 +82,11 @@ describe('component', () => {
     expect(create).toHaveBeenCalledTimes(3)
 
     // updating existing component
-    state = setComponent<null, InternalInitialState>({
+    state = updateComponent<null, InternalInitialState>({
       state,
       entity: entity1,
       name: 'test',
-      data: null,
+      update: () => null,
     })
 
     // Update should not trigger create
@@ -114,7 +114,7 @@ describe('component', () => {
       create,
     })
 
-    state = setComponent<Dictionary<null>, InternalInitialState>({
+    state = createComponent<Dictionary<null>, InternalInitialState>({
       state,
       entity: entity1,
       name: 'test',
@@ -152,7 +152,7 @@ describe('component', () => {
       create: ({ state }) => state,
     })
 
-    state = setComponent<SomeComponent, InternalInitialState>({
+    state = createComponent<SomeComponent, InternalInitialState>({
       state,
       entity,
       name,

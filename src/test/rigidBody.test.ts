@@ -1,20 +1,17 @@
-import { vector, Vector2D, vectorZero } from '@arekrado/vector-2d'
+import { vector, Vector2D } from '@arekrado/vector-2d'
 import { getState } from '../util/state'
 import { createEntity } from '../entity/createEntity'
 import { generateEntity } from '../entity/generateEntity'
-import { runOneFrame } from '../util/runOneFrame'
 import {
   defaultCollider,
   defaultRigidBody,
   defaultTransform,
 } from '../util/defaultComponents'
-import { getComponent } from '../component/getComponent'
-import { InternalInitialState, RigidBody, Transform } from '../type'
-import { componentName } from '../component/componentName'
-import { setComponent } from '../component/setComponent'
-import { Collider } from '..'
 import { tick } from './utils'
 import { getElasticCollisionForces } from '../system/rigidBody/rigidBody'
+import { createTransform, getTransform } from '../system/transform/transformCrud'
+import { createCollider } from '../system/collider/colliderCrud'
+import { createRigidBody, getRigidBody } from '../system/rigidBody/rigidBodyCrud'
 
 const toFixedVector2D = (v: Vector2D, fractionDigits: number) =>
   vector(
@@ -76,29 +73,26 @@ describe('rigidBody', () => {
 
     state = createEntity({ entity: entity1, state })
 
-    state = setComponent<Transform, InternalInitialState>({
+    state = createTransform({
       state,
       entity: entity1,
-      name: componentName.transform,
       data: defaultTransform({
         position: [0, 0],
       }),
     })
 
-    state = setComponent<Collider, InternalInitialState>({
+    state = createCollider({
       state,
       entity: entity1,
-      name: componentName.collider,
       data: defaultCollider({
         layers: ['a'],
         data: [{ type: 'circle', position: [0, 0], radius: 0.1 }],
       }),
     })
 
-    state = setComponent<RigidBody, InternalInitialState>({
+    state = createRigidBody({
       state,
       entity: entity1,
-      name: componentName.rigidBody,
       data: defaultRigidBody({
         force: [0.1, 0],
         mass: 1,
@@ -108,10 +102,9 @@ describe('rigidBody', () => {
     state = tick(0, state)
     state = tick(10, state)
 
-    const transform = getComponent<Transform>({
+    const transform = getTransform({
       state,
       entity: entity1,
-      name: componentName.transform,
     })
 
     expect(transform?.position).toEqual([1, 0])
@@ -124,29 +117,26 @@ describe('rigidBody', () => {
 
     state = createEntity({ entity: entity1, state })
 
-    state = setComponent<Transform, InternalInitialState>({
+    state = createTransform({
       state,
       entity: entity1,
-      name: componentName.transform,
       data: defaultTransform({
         position: [0, 0],
       }),
     })
 
-    state = setComponent<Collider, InternalInitialState>({
+    state = createCollider({
       state,
       entity: entity1,
-      name: componentName.collider,
       data: defaultCollider({
         layers: ['a'],
         data: [{ type: 'circle', position: [0, 0], radius: 0.1 }],
       }),
     })
 
-    state = setComponent<RigidBody, InternalInitialState>({
+    state = createRigidBody({
       state,
       entity: entity1,
-      name: componentName.rigidBody,
       data: defaultRigidBody({
         force: [10, 0],
         mass: 1,
@@ -158,30 +148,27 @@ describe('rigidBody', () => {
     state = tick(10, state)
 
     expect(
-      getComponent<Transform>({
+      getTransform({
         state,
         entity: entity1,
-        name: componentName.transform,
       })?.position,
     ).toEqual([100, 0])
 
     state = tick(20, state)
 
     expect(
-      getComponent<Transform>({
+      getTransform({
         state,
         entity: entity1,
-        name: componentName.transform,
       })?.position,
     ).toEqual([188, 0])
 
     state = tick(40, state)
 
     expect(
-      getComponent<Transform>({
+      getTransform({
         state,
         entity: entity1,
-        name: componentName.transform,
       })?.position,
     ).toEqual([340, 0])
   })
@@ -198,55 +185,49 @@ describe('rigidBody', () => {
     state = createEntity({ entity: entity1, state })
     state = createEntity({ entity: entity2, state })
 
-    state = setComponent<Transform, InternalInitialState>({
+    state = createTransform({
       state,
       entity: entity1,
-      name: componentName.transform,
       data: defaultTransform({
         position: [0, 0],
       }),
     })
-    state = setComponent<Transform, InternalInitialState>({
+    state = createTransform({
       state,
       entity: entity2,
-      name: componentName.transform,
       data: defaultTransform({
         position: [1, 0],
       }),
     })
 
-    state = setComponent<Collider, InternalInitialState>({
+    state = createCollider({
       state,
       entity: entity1,
-      name: componentName.collider,
       data: defaultCollider({
         layers: ['a'],
         data: [{ type: 'circle', position: [0, 0], radius: 0.1 }],
       }),
     })
-    state = setComponent<Collider, InternalInitialState>({
+    state = createCollider({
       state,
       entity: entity2,
-      name: componentName.collider,
       data: defaultCollider({
         layers: ['a'],
         data: [{ type: 'circle', position: [0, 0], radius: 0.1 }],
       }),
     })
 
-    state = setComponent<RigidBody, InternalInitialState>({
+    state = createRigidBody({
       state,
       entity: entity1,
-      name: componentName.rigidBody,
       data: defaultRigidBody({
         force: r1Force,
         mass: 1,
       }),
     })
-    state = setComponent<RigidBody, InternalInitialState>({
+    state = createRigidBody({
       state,
       entity: entity2,
-      name: componentName.rigidBody,
       data: defaultRigidBody({
         force: r2Force,
         mass: 0,
@@ -258,18 +239,16 @@ describe('rigidBody', () => {
     })
 
     expect(
-      getComponent<RigidBody>({
+      getRigidBody({
         state,
         entity: entity1,
-        name: componentName.rigidBody,
       })?.force,
     ).toEqual(r2Force)
 
     expect(
-      getComponent<RigidBody>({
+      getRigidBody({
         state,
         entity: entity2,
-        name: componentName.rigidBody,
       })?.force,
     ).toEqual(r1Force)
   })
@@ -286,55 +265,49 @@ describe('rigidBody', () => {
     state = createEntity({ entity: entity1, state })
     state = createEntity({ entity: entity2, state })
 
-    state = setComponent<Transform, InternalInitialState>({
+    state = createTransform({
       state,
       entity: entity1,
-      name: componentName.transform,
       data: defaultTransform({
         position: [0, 0],
       }),
     })
-    state = setComponent<Transform, InternalInitialState>({
+    state = createTransform({
       state,
       entity: entity2,
-      name: componentName.transform,
       data: defaultTransform({
         position: [3, 0],
       }),
     })
 
-    state = setComponent<Collider, InternalInitialState>({
+    state = createCollider({
       state,
       entity: entity1,
-      name: componentName.collider,
       data: defaultCollider({
         layers: ['a'],
         data: [{ type: 'circle', position: [0, 0], radius: 1 }],
       }),
     })
-    state = setComponent<Collider, InternalInitialState>({
+    state = createCollider({
       state,
       entity: entity2,
-      name: componentName.collider,
       data: defaultCollider({
         layers: ['a'],
         data: [{ type: 'circle', position: [0, 0], radius: 1 }],
       }),
     })
 
-    state = setComponent<RigidBody, InternalInitialState>({
+    state = createRigidBody({
       state,
       entity: entity1,
-      name: componentName.rigidBody,
       data: defaultRigidBody({
         force: r1Force,
         mass: 1,
       }),
     })
-    state = setComponent<RigidBody, InternalInitialState>({
+    state = createRigidBody({
       state,
       entity: entity2,
-      name: componentName.rigidBody,
       data: defaultRigidBody({
         force: r2Force,
         mass: 1,
@@ -345,15 +318,13 @@ describe('rigidBody', () => {
       state = tick(i, state)
     })
 
-    const force1 = getComponent<RigidBody>({
+    const force1 = getRigidBody({
       state,
       entity: entity1,
-      name: componentName.rigidBody,
     })?.force as Vector2D
-    const force2 = getComponent<RigidBody>({
+    const force2 = getRigidBody({
       state,
       entity: entity2,
-      name: componentName.rigidBody,
     })?.force as Vector2D
 
     expect(toFixedVector2D(force1, 2)).toEqual(r2Force)

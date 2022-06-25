@@ -1,4 +1,4 @@
-import { setComponent } from '../component/setComponent'
+import { createComponent } from '../component/createComponent'
 import { createGlobalSystem, createSystem } from '../system/createSystem'
 import { InternalInitialState } from '../type'
 import { runOneFrame } from '../util/runOneFrame'
@@ -30,13 +30,13 @@ describe('runOneFrame', () => {
     })
 
     let state = getInitialState()
-    state = setComponent({
+    state = createComponent({
       state,
       entity: 'entity system4',
       name: 'system4',
       data: {},
     })
-    state = setComponent({
+    state = createComponent({
       state,
       entity: 'entity system5',
       name: 'system5',

@@ -4,7 +4,7 @@ import { createEntity } from '../entity/createEntity'
 import { removeEntity } from '../entity/removeEntity'
 import { generateEntity } from '../entity/generateEntity'
 import { defaultCollider, defaultAnimation } from '../util/defaultComponents'
-import { setComponent } from '../component/setComponent'
+import { createComponent } from '../component/createComponent'
 import { Animation, Collider } from '../type'
 import { InternalInitialState } from '../index'
 import { componentName } from '../component/componentName'
@@ -14,13 +14,13 @@ describe('entity', () => {
     const entity = generateEntity()
     let state = createEntity({ state: getState({}), entity })
 
-    state = setComponent<Animation.AnimationComponent, InternalInitialState>({
+    state = createComponent<Animation.AnimationComponent, InternalInitialState>({
       state,
       entity,
       name: componentName.animation,
       data: defaultAnimation({}),
     })
-    state = setComponent<Collider, InternalInitialState>({
+    state = createComponent<Collider, InternalInitialState>({
       state,
       entity,
       name: componentName.collider,

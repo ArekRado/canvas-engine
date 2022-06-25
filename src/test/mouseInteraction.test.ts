@@ -17,11 +17,12 @@ import {
   Mouse,
   MouseInteraction,
 } from '../type'
-import { setComponent } from '../component/setComponent'
+import { createComponent } from '../component/createComponent'
 import { getComponent } from '../component/getComponent'
 import { componentName } from '../component/componentName'
 import { isMouseOver } from '../system/mouseInteraction/mouseInteraction'
 import { Transform } from '../index'
+import { getMouse } from '../system/mouse/mouseCrud'
 
 describe('mouseInteraction', () => {
   let mousemoveCallback: Function
@@ -80,10 +81,9 @@ describe('mouseInteraction', () => {
     const state = getInitialStateWithMouse()
 
     const entity = generateEntity()
-    const mouse = getComponent<Mouse>({
+    const mouse = getMouse({
       entity,
       state,
-      name: componentName.mouse,
     })
 
     if (!mouse) return
@@ -154,21 +154,21 @@ describe('mouseInteraction', () => {
 
     state = createEntity({ entity, state })
 
-    state = setComponent<MouseInteraction, InternalInitialState>({
+    state = createComponent<MouseInteraction, InternalInitialState>({
       state,
       entity,
       name: componentName.mouseInteraction,
       data: defaultMouseInteraction(),
     })
 
-    state = setComponent<Transform, InternalInitialState>({
+    state = createComponent<Transform, InternalInitialState>({
       state,
       entity,
       name: componentName.transform,
       data: defaultTransform({}),
     })
 
-    state = setComponent<Collider, InternalInitialState>({
+    state = createComponent<Collider, InternalInitialState>({
       state,
       entity,
       name: componentName.collider,
