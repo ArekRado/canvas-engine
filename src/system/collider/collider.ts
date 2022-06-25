@@ -13,7 +13,8 @@ import {
   detectRectangleLineCollision,
   detectRectangleRectangleCollision,
 } from './detectCollision'
-import { updateComponent } from '../../component/updateComponent'
+import { updateCollider } from './colliderCrud'
+import { getTransform } from '../transform/transformCrud'
 
 const hasSameLayer = (
   layers1: Collider['layers'],
@@ -30,10 +31,9 @@ const findCollisionsWith: FindCollisionsWith = ({
   component,
   entity,
 }) => {
-  const transform = getComponent<Transform>({
+  const transform = getTransform({
     state,
     entity,
-    name: componentName.transform,
   })
   if (!transform) return []
 
@@ -261,10 +261,9 @@ export const colliderSystem = (state: InternalInitialState) =>
         component,
       })
 
-      return updateComponent<Collider, InternalInitialState>({
+      return updateCollider({
         state,
         entity,
-        name: componentName.collider,
         update: () => ({
           _collisions: collisions,
         }),

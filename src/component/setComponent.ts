@@ -2,6 +2,9 @@ import { AnyState, Entity } from '../type'
 import { getComponent } from './getComponent'
 import { getSystemByName } from '../system/getSystemByName'
 
+/**
+ * @deprecated
+ */
 export const setComponent = <Data, State extends AnyState = AnyState>({
   state,
   data,

@@ -1,9 +1,8 @@
-import { updateComponent } from '../../component/updateComponent'
 import { componentName } from '../../component/componentName'
-import { setComponent } from '../../component/setComponent'
 import { Keyboard, InternalInitialState } from '../../type'
 import { defaultKeyboard } from '../../util/defaultComponents'
 import { createSystem, systemPriority } from '../createSystem'
+import { createKeyboard, updateKeyboard } from './keyboardCrud'
 
 export const keyboardEntity = 'keyboard'
 
@@ -47,10 +46,9 @@ export const keyboardSystem = ({
     )
   }
 
-  state = setComponent<Keyboard, InternalInitialState>({
+  state = createKeyboard({
     state,
     entity: keyboardEntity,
-    name: componentName.keyboard,
     data: defaultKeyboard(),
   })
 
@@ -59,7 +57,7 @@ export const keyboardSystem = ({
     componentName: componentName.keyboard,
     state,
     priority: systemPriority.keyboard,
-    tick: ({ state, name, entity }) => {
+    tick: ({ state, entity }) => {
       const keyboardBeforeReset = {
         keys: keyboard.keys,
       }
@@ -76,9 +74,8 @@ export const keyboardSystem = ({
         }, {}),
       }
 
-      state = updateComponent<Keyboard, InternalInitialState>({
+      state = updateKeyboard({
         state,
-        name,
         entity,
         update: () => keyboardBeforeReset,
       })

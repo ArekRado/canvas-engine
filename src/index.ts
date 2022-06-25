@@ -11,7 +11,6 @@ export { getComponent } from './component/getComponent'
 export { getComponentsByName } from './component/getComponentsByName'
 export { recreateAllComponents } from './component/recreateAllComponents'
 export { removeComponent } from './component/removeComponent'
-export { setComponent } from './component/setComponent'
 export { updateComponent } from './component/updateComponent'
 
 export {
@@ -29,7 +28,8 @@ export {
 export { runOneFrame } from './util/runOneFrame'
 export {
   defaultAnimation,
-  defaultCollider as defaultCollideBox,
+  defaultCollider,
+  defaultRigidBody,
   defaultMouseInteraction,
   defaultCamera,
   defaultTransform,
@@ -37,7 +37,3 @@ export {
   defaultKeyboard,
 } from './util/defaultComponents'
 export { getState } from './util/state'
-
-
-// todo
-// every component should have "getX" and "setX" "getTransform" "setTransform"

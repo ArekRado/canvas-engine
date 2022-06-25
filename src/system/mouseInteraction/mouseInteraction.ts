@@ -1,6 +1,4 @@
 import { add } from '@arekrado/vector-2d'
-import { setComponent } from '../../component/setComponent'
-import { getComponent } from '../../component/getComponent'
 import { componentName } from '../../component/componentName'
 import {
   Collider,
@@ -16,6 +14,10 @@ import {
 } from '../collider/detectCollision'
 import { parseV3ToV2 } from '../../util/parseV3ToV2'
 import { mouseEntity } from '../mouse/mouse'
+import { getCollider } from '../collider/colliderCrud'
+import { getTransform } from '../transform/transformCrud'
+import { getMouse } from '../mouse/mouseCrud'
+import { updateMouseInteraction } from './mouseInteractionCrud'
 
 type IsMouseOver = (params: {
   mouse: Mouse
@@ -60,20 +62,17 @@ export const mouseInteractionSystem = (state: InternalInitialState) =>
       // todo rewrite it to set/getMouseInteraction
       // set mouse interaction on mouse move events
 
-      const collider = getComponent<Collider>({
-        name: componentName.collider,
+      const collider = getCollider({
         state,
         entity,
       })
-      const transform = getComponent<Transform>({
-        name: componentName.transform,
+      const transform = getTransform({
         state,
         entity,
       })
 
-      const mouse = getComponent<Mouse>({
+      const mouse = getMouse({
         state,
-        name: componentName.mouse,
         entity: mouseEntity,
       })
 
@@ -88,17 +87,16 @@ export const mouseInteractionSystem = (state: InternalInitialState) =>
         const isMouseLeave = component.isMouseOver && !isMouseOverFlag
         const isClicked = component.isMouseOver && mouse.buttons === 1
 
-        return setComponent<MouseInteraction, InternalInitialState>({
+        return updateMouseInteraction({
           state,
           entity,
-          name: componentName.mouseInteraction,
-          data: {
+          update: () => ({
             isClicked,
             isDoubleClicked: false, // TODO
             isMouseOver: isMouseOverFlag,
             isMouseEnter,
             isMouseLeave,
-          },
+          }),
         })
       }
 

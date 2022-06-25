@@ -1,11 +1,10 @@
 import { createSystem } from '../createSystem'
-import { createComponent } from '../../component/createComponent'
-import { updateComponent } from '../../component/updateComponent'
 import { componentName } from '../../component/componentName'
 import { Camera, ECSEvent, Entity, InternalInitialState } from '../../type'
 import { adjustBabylonCameraToComponentCamera } from './handler/handleResize'
 import { getAspectRatio } from '../../util/getAspectRatio'
 import { createEntity } from '../../entity/createEntity'
+import { createCamera, updateCamera } from './cameraCrud'
 
 export const cameraEntity = 'camera'
 export namespace CameraEvent {
@@ -22,12 +21,10 @@ const update = ({
   state,
   component,
   entity,
-  name,
 }: {
   state: InternalInitialState
   component: Partial<Camera>
   entity: Entity
-  name: string
 }): typeof state => {
   if (
     state.babylonjs.sceneRef &&
@@ -40,10 +37,9 @@ const update = ({
       cameraRef: state.babylonjs.cameraRef,
       Vector3: state.babylonjs.Vector3,
     })
-    state = updateComponent<Camera, InternalInitialState>({
+    state = updateCamera({
       state,
       entity,
-      name,
       update: () => ({ ...component, ...size }),
     })
   }
@@ -56,13 +52,13 @@ export const cameraSystem = (state: InternalInitialState) => {
     state,
     name: componentName.camera,
     componentName: componentName.camera,
-    update: ({ state, component, entity, name }) => {
-      state = update({ state, component, entity, name })
+    update: ({ state, component, entity }) => {
+      state = update({ state, component, entity })
 
       return state
     },
-    create: ({ state, component, entity, name }) => {
-      state = update({ state, component, entity, name })
+    create: ({ state, component, entity }) => {
+      state = update({ state, component, entity })
 
       return state
     },
@@ -73,10 +69,9 @@ export const cameraSystem = (state: InternalInitialState) => {
     state,
   })
 
-  return createComponent<Camera, InternalInitialState>({
+  return createCamera({
     state,
     entity: cameraEntity,
-    name: componentName.camera,
     data: {
       position: [0, 0],
       distance: 1,

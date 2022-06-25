@@ -1,14 +1,12 @@
-import { componentName } from "../component/componentName"
-import { updateComponent } from "../component/updateComponent"
 import { timeEntity } from "../system/time/time"
+import { updateTime } from "../system/time/timeCrud"
 import { InternalInitialState } from "../type"
 import { runOneFrame } from "../util/runOneFrame"
 
 export const tick = (timeNow: number, state: InternalInitialState) => {
-  state = updateComponent({
+  state = updateTime({
     state,
     entity: timeEntity,
-    name: componentName.time,
     update: () => ({
       dataOverwrite: {
         previousTimeNow: timeNow === 0 ? 0 : undefined,

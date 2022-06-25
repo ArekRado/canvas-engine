@@ -1,11 +1,6 @@
-// Is it good to force users to use createComponent instead of setComponent?
-// - it's not DX friendly
-// - but it forces developers to create entity and manage lifecycle
-
+import { getSystemByName } from '../system/getSystemByName'
 import { AnyState, Entity } from '../type'
-import { setComponent } from './setComponent'
 
-// - probably it's easier to understand for new developers how create/update works - set is not easy
 export const createComponent = <Data, State extends AnyState = AnyState>({
   state,
   data,
@@ -17,10 +12,33 @@ export const createComponent = <Data, State extends AnyState = AnyState>({
   entity: Entity
   name: Entity
 }): State => {
-  return setComponent({
-    state,
-    data,
-    entity,
-    name,
-  })
+  const newState = {
+    ...state,
+    component: {
+      ...state.component,
+      [name]: {
+        ...state.component[name],
+        [entity]: data,
+      },
+    },
+  }
+
+  const system = getSystemByName(name, state.system)
+
+  if (system !== undefined) {
+    if (
+      system.create !== undefined &&
+      (state.component[name] === undefined ||
+        state.component[name][entity] === undefined)
+    ) {
+      return system.create({
+        state: newState,
+        component: data,
+        entity,
+        name,
+      }) as State
+    }
+  }
+
+  return newState
 }

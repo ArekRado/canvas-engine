@@ -1,10 +1,10 @@
 import { getState } from '../util/state'
 import { runOneFrame } from '../util/runOneFrame'
-import { updateComponent } from '../component/updateComponent'
 import { InternalInitialState, Time } from '../type'
 import { timeEntity } from '../system/time/time'
 import { componentName } from '../component/componentName'
 import { getComponent } from '../component/getComponent'
+import { updateTime } from '../system/time/timeCrud'
 
 const setTime = ({
   state,
@@ -13,10 +13,9 @@ const setTime = ({
   state: InternalInitialState
   data: Partial<Time>
 }) =>
-  updateComponent({
+  updateTime({
     state,
     entity: timeEntity,
-    name: componentName.time,
     update: () => data,
   })
 

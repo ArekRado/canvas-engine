@@ -3,8 +3,7 @@ import { InternalInitialState, Mouse } from '../../type'
 import { defaultMouse } from '../../util/defaultComponents'
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
-import { setComponent } from '../../component/setComponent'
-import { updateComponent } from '../../component/updateComponent'
+import { createMouse, updateMouse } from './mouseCrud'
 
 export const mouseEntity = 'mouse'
 
@@ -87,10 +86,9 @@ export const mouseSystem = ({
     })
   }
 
-  state = setComponent<Mouse, InternalInitialState>({
+  state = createMouse({
     state,
     entity: mouseEntity,
-    name: componentName.mouse,
     data: defaultMouse(),
   })
 
@@ -99,7 +97,7 @@ export const mouseSystem = ({
     componentName: componentName.mouse,
     state,
     priority: systemPriority.mouse,
-    tick: ({ state, entity, name }) => {
+    tick: ({ state, entity }) => {
       const mouseBeforeReset: Mouse = {
         buttons,
         position,
@@ -121,9 +119,8 @@ export const mouseSystem = ({
         deltaZ: 0,
       }
 
-      state = updateComponent<Mouse, InternalInitialState>({
+      state = updateMouse({
         state,
-        name,
         entity,
         update: () => mouseBeforeReset,
       })

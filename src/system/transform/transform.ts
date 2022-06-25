@@ -1,11 +1,10 @@
 import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
 import { Guid, InternalInitialState, Transform, Vector3D } from '../../type'
 import { createGlobalSystem, systemPriority } from '../createSystem'
-import { setComponent } from '../../component/setComponent'
-import { getComponent } from '../../component/getComponent'
 import { componentName } from '../../component/componentName'
 import { parseV3ToV2 } from '../../util/parseV3ToV2'
 import { Scene } from '@babylonjs/core/scene'
+import { getTransform, updateTransform } from './transformCrud'
 
 const syncTransformWithBabylon = ({
   entity,
@@ -37,8 +36,7 @@ const getParentPosition = (
   parentTransform: Transform,
 ): Vector2D | Vector3D => {
   if (parentTransform.parentId) {
-    const parentParentTransform = getComponent<Transform>({
-      name: componentName.transform,
+    const parentParentTransform = getTransform({
       entity: parentTransform.parentId,
       state,
     })
@@ -64,10 +62,9 @@ export const transformSystem = (state: InternalInitialState) =>
       return Object.entries(state.component.transform).reduce(
         (state, [entity, transform]) => {
           if (transform.parentId) {
-            const parentTransform = getComponent<Transform>({
+            const parentTransform = getTransform({
               state,
               entity: transform.parentId,
-              name: componentName.transform,
             })
 
             if (parentTransform) {
@@ -78,14 +75,13 @@ export const transformSystem = (state: InternalInitialState) =>
                 parseV3ToV2(parentPosition),
               )
 
-              return setComponent<Transform, InternalInitialState>({
+              return updateTransform({
                 state,
                 entity,
-                name: componentName.transform,
-                data: {
+                update: () => ({
                   ...transform,
                   position: newPosition,
-                },
+                }),
               })
             }
           }

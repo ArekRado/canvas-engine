@@ -1,16 +1,18 @@
-import { Animation, InternalInitialState, Time, Vector3D } from '../../type'
+import { Animation, InternalInitialState, Vector3D } from '../../type'
 import { TimingFunction, getValue } from '../../util/bezierFunction'
 import { add, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
 import { createSystem, systemPriority } from '../createSystem'
-import { setComponent } from '../../component/setComponent'
 import { updateComponent } from '../../component/updateComponent'
 import { componentName } from '../../component/componentName'
-import { removeComponent } from '../../component/removeComponent'
 
 import { emitEvent } from '../../event'
-import { getComponent } from '../..//component/getComponent'
 import { timeEntity } from '../time/time'
+import { getTime } from '../time/timeCrud'
+import {
+  removeAnimation,
+  updateAnimation as updateAnimationCrud,
+} from '../animation/animationCrud'
 
 type UpdateAnimationParams = {
   keyframe: Animation.Keyframe
@@ -237,7 +239,7 @@ export const animationSystem = (state: InternalInitialState) =>
     priority: systemPriority.animation,
     create: ({ state }) => state,
     remove: ({ state }) => state,
-    tick: ({ state, component: animation, name, entity }) => {
+    tick: ({ state, component: animation, entity }) => {
       if (animation.isPlaying === false) {
         return state
       }
@@ -297,44 +299,40 @@ export const animationSystem = (state: InternalInitialState) =>
 
       if (animationTimeExceeded) {
         if (animation.deleteWhenFinished) {
-          return removeComponent({
+          return removeAnimation({
             state,
             entity,
-            name: componentName.animation,
           })
         } else {
-          return setComponent({
+          return updateAnimationCrud({
             state,
-            name: componentName.animation,
             entity,
-            data: {
+            update: () => ({
               ...animation,
               currentTime: 0,
               isPlaying: false,
               isFinished: true,
-            },
+            }),
           })
         }
       }
 
-      const time = getComponent<Time>({
+      const time = getTime({
         state,
-        name: componentName.time,
         entity: timeEntity,
       })
       if (!time) return state
 
       const currentTime = animation.currentTime + time.delta
 
-      return setComponent({
+      return updateAnimationCrud({
         state,
-        name,
         entity,
-        data: {
+        update: () => ({
           ...animation,
           currentTime,
           isFinished: animationTimeExceeded,
-        },
+        }),
       })
     },
   })

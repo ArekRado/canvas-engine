@@ -2,6 +2,8 @@ import { InternalInitialState, Material, Mesh, Transform } from '../../type'
 import { createSystem } from '../createSystem'
 import { getComponent } from '../../component/getComponent'
 import { componentName } from '../../component/componentName'
+import { getMaterial } from '../material/materialCrud'
+import { getTransform } from '../transform/transformCrud'
 
 export const meshSystem = (state: InternalInitialState) =>
   createSystem<Mesh, InternalInitialState>({
@@ -20,9 +22,8 @@ export const meshSystem = (state: InternalInitialState) =>
       })
       mesh.uniqueId = component.uniqueId
 
-      const materialComponent = getComponent<Material, InternalInitialState>({
+      const materialComponent = getMaterial({
         state,
-        name: componentName.material,
         entity: component.materialEntity[0],
       })
 
@@ -40,9 +41,8 @@ export const meshSystem = (state: InternalInitialState) =>
         }
       }
 
-      const transform = getComponent<Transform>({
+      const transform = getTransform({
         state,
-        name: componentName.transform,
         entity,
       })
 
@@ -75,9 +75,8 @@ export const meshSystem = (state: InternalInitialState) =>
       const mesh = state.babylonjs.sceneRef?.getMeshByUniqueId(
         component.uniqueId,
       )
-      const transform = getComponent<Transform>({
+      const transform = getTransform({
         state,
-        name: componentName.transform,
         entity,
       })
 

@@ -2,52 +2,63 @@ import { createComponent } from '../component/createComponent'
 import { getComponent } from '../component/getComponent'
 import { removeComponent } from '../component/removeComponent'
 import { updateComponent } from '../component/updateComponent'
-import { AnyState, Entity } from '../type'
+import { InternalInitialState, Entity } from '../type'
 
-export const getComponentCrud = <Component>({ name }: { name: string }) => {
-  type CRUD = {
-    getComponent: (params: {
-      state: AnyState
+export const getComponentCrud = <Component, State extends InternalInitialState = InternalInitialState>({
+  name,
+}: {
+  name: string
+}) => {
+  const crud = {
+    getComponent: ({
+      state,
+      entity,
+    }: {
+      state: State
       entity: Entity
-    }) => ReturnType<typeof getComponent>
-    updateComponent: (params: {
-      state: AnyState
-      entity: Entity
-      update: Parameters<typeof updateComponent>[0]['update']
-    }) => ReturnType<typeof updateComponent>
-    createComponent: (params: {
-      state: AnyState
-      entity: Entity
-      data: Component
-    }) => ReturnType<typeof createComponent>
-    removeComponent: (params: {
-      state: AnyState
-      entity: Entity
-    }) => ReturnType<typeof removeComponent>
-  }
-
-  const crud: CRUD = {
-    getComponent: ({ state, entity }) =>
+    }) =>
       getComponent<Component>({
         state,
         entity,
         name,
       }),
-    updateComponent: ({ state, entity, update }) =>
-      updateComponent<Component>({
+    updateComponent: ({
+      state,
+      entity,
+      update,
+    }: {
+      state: State
+      entity: Entity
+      update: (component: Component) => Partial<Component>
+    }) =>
+      updateComponent<Component, State>({
         state,
         entity,
         name,
         update,
       }),
-    createComponent: ({ state, entity, data }) =>
-      createComponent<Component>({
+    createComponent: ({
+      state,
+      entity,
+      data,
+    }: {
+      state: State
+      entity: Entity
+      data: Component
+    }) =>
+      createComponent<Component, State>({
         state,
         entity,
         name,
         data,
       }),
-    removeComponent: ({ state, entity }) =>
+    removeComponent: ({
+      state,
+      entity,
+    }: {
+      state: State
+      entity: Entity
+    }) =>
       removeComponent({
         state,
         entity,

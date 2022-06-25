@@ -1,16 +1,12 @@
-import {
-  Collider,
-  InternalInitialState,
-  RigidBody,
-  Time,
-  Transform,
-} from '../../type'
+import { Collider, InternalInitialState, RigidBody } from '../../type'
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
-import { getComponent } from '../../component/getComponent'
 import { add, dot, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
-import { updateComponent } from '../../component/updateComponent'
 import { timeEntity } from '../time/time'
+import { getRigidBody, updateRigidBody } from './rigidBodyCrud'
+import { getTime } from '../time/timeCrud'
+import { getTransform, updateTransform } from '../transform/transformCrud'
+import { getCollider, updateCollider } from '../collider/colliderCrud'
 
 const FPS = 1000 / 60
 
@@ -95,48 +91,37 @@ export const rigidBodySystem = (state: InternalInitialState) =>
     componentName: componentName.rigidBody,
     state,
     priority: systemPriority.rigidBody,
-    tick: ({ state, entity, name }) => {
-      const component = getComponent<RigidBody>({
+    tick: ({ state, entity }) => {
+      const component = getRigidBody({
         state,
         entity,
-        name: componentName.rigidBody,
       })
-      const time = getComponent<Time>({
+      const time = getTime({
         state,
         entity: timeEntity,
-        name: componentName.time,
       })
-      const transform = getComponent<Transform>({
+      const transform = getTransform({
         state,
         entity,
-        name: componentName.transform,
       })
-      const collider = getComponent<Collider>({
+      const collider = getCollider({
         state,
         entity,
-        name: componentName.collider,
       })
 
       if (!collider || !transform || !time || !component) return state
-
-      console.log(entity, {
-        position: transform?.position[0],
-        force: component.force[0],
-      })
 
       let force = component.force
 
       const collision = collider._collisions[0]
       if (collision) {
-        const collisionTransform = getComponent<Transform>({
+        const collisionTransform = getTransform({
           state,
           entity: collision.entity,
-          name: componentName.transform,
         })
-        const collisionRigidBody = getComponent<RigidBody>({
+        const collisionRigidBody = getRigidBody({
           state,
           entity: collision.entity,
-          name: componentName.rigidBody,
         })
 
         if (collisionTransform && collisionRigidBody) {
@@ -152,28 +137,25 @@ export const rigidBodySystem = (state: InternalInitialState) =>
 
           force = force1
 
-          state = updateComponent<RigidBody, InternalInitialState>({
+          state = updateRigidBody({
             state,
             entity: collision.entity,
-            name: componentName.rigidBody,
             update: () => ({
               force: force2,
             }),
           })
 
-          state = updateComponent<Collider, InternalInitialState>({
+          state = updateCollider({
             state,
             entity: collision.entity,
-            name: componentName.collider,
             update: removeFirstCollision,
           })
         }
       }
 
-      state = updateComponent<RigidBody, InternalInitialState>({
+      state = updateRigidBody({
         state,
         entity,
-        name,
         update: () => ({
           force: applyFrictionToForce({
             friction: component.friction,
@@ -183,10 +165,9 @@ export const rigidBodySystem = (state: InternalInitialState) =>
         }),
       })
 
-      state = updateComponent<Transform, InternalInitialState>({
+      state = updateTransform({
         state,
         entity,
-        name: componentName.transform,
         update: (transform) => ({
           position: applyForceToPosition({
             force,
