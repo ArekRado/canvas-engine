@@ -1,3 +1,4 @@
+import { getComponent } from '../component/getComponent'
 import {
   AnyStateForSystem,
   Dictionary,
@@ -58,19 +59,28 @@ export const createSystem = <
         | undefined
 
       if (component) {
-        return Object.entries(component).reduce(
-          (acc, [entity, component]: [Entity, ComponentData]) => {
-            return tick
-              ? tick({
-                  state: acc,
-                  component,
-                  name: params.componentName,
-                  entity,
-                })
-              : acc
-          },
-          state,
-        )
+        return Object.keys(component).reduce((acc, entity: Entity) => {
+          if (tick) {
+            const component = getComponent<ComponentData>({
+              state: acc,
+              name: params.name,
+              entity,
+            })
+
+            if (!component) {
+              return acc
+            }
+
+            return tick({
+              state: acc,
+              component,
+              name: params.componentName,
+              entity,
+            })
+          } else {
+            return acc
+          }
+        }, state)
       }
 
       return state

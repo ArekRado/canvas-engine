@@ -24,7 +24,7 @@ type FindCollisionsWith = (pramams: {
   entity: Guid
   state: InternalInitialState
   component: Collider
-}) => Array<Collider['collisions'][0]>
+}) => Array<Collider['_collisions'][0]>
 const findCollisionsWith: FindCollisionsWith = ({
   state,
   component,
@@ -37,7 +37,7 @@ const findCollisionsWith: FindCollisionsWith = ({
   })
   if (!transform) return []
 
-  const collisionList: Array<Collider['collisions'][0]> = []
+  const collisionList: Array<Collider['_collisions'][0]> = []
 
   const allColliders = Object.entries(state.component.collider)
 
@@ -266,7 +266,7 @@ export const colliderSystem = (state: InternalInitialState) =>
         entity,
         name: componentName.collider,
         update: () => ({
-          collisions,
+          _collisions: collisions,
         }),
       })
     },

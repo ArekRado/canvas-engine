@@ -23,7 +23,7 @@ export const defaultAnimation: GetDefaultComponent<
 
 export const defaultCollider: GetDefaultComponent<Collider> = (data = {}) => ({
   position: vectorZero(),
-  collisions: [],
+  _collisions: [],
   data: [],
   layers: [],
   ...data,

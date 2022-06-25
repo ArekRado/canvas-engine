@@ -30,7 +30,6 @@ export { runOneFrame } from './util/runOneFrame'
 export {
   defaultAnimation,
   defaultCollider as defaultCollideBox,
-  defaultCollideCircle,
   defaultMouseInteraction,
   defaultCamera,
   defaultTransform,
@@ -38,3 +37,7 @@ export {
   defaultKeyboard,
 } from './util/defaultComponents'
 export { getState } from './util/state'
+
+
+// todo
+// every component should have "getX" and "setX" "getTransform" "setTransform"

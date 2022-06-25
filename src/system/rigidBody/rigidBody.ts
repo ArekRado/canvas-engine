@@ -8,9 +8,86 @@ import {
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { getComponent } from '../../component/getComponent'
-import { add, scale, sub, Vector2D, vectorZero } from '@arekrado/vector-2d'
+import { add, dot, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import { updateComponent } from '../../component/updateComponent'
 import { timeEntity } from '../time/time'
+
+const FPS = 1000 / 60
+
+export const getElasticCollisionForces = ({
+  m1,
+  v1,
+  m2,
+  v2,
+  position1,
+  position2,
+}: {
+  m1: number
+  v1: Vector2D
+  m2: number
+  v2: Vector2D
+
+  position1: Vector2D
+  position2: Vector2D
+}) => {
+  // Two-dimensional elastic collision, formula with vectors
+  // https://en.wikipedia.org/wiki/Elastic_collision
+  const subP1P2 = sub(position1, position2)
+  const a = (2 * m2) / (m1 + m2)
+  const aa = dot(sub(v1, v2), subP1P2) / Math.pow(magnitude(subP1P2), 2)
+
+  const subP2P1 = sub(position2, position1)
+  const b = (2 * m1) / (m1 + m2)
+  const bb = dot(sub(v2, v1), subP2P1) / Math.pow(magnitude(subP2P1), 2)
+
+  return {
+    force1: sub(v1, scale(a * aa, subP1P2)),
+    force2: sub(v2, scale(b * bb, subP2P1)),
+  }
+}
+
+const applyFrictionToForce = ({
+  friction,
+  timeDelta,
+  force,
+}: {
+  friction: number
+  timeDelta: number
+  force: Vector2D
+}): Vector2D => {
+  // Friction same as force depends on a time.delta
+  const frictionPerSecond = friction * (timeDelta / FPS)
+  const frictionAbs = Math.abs(frictionPerSecond)
+  const x = force[0]
+  const y = force[1]
+
+  return [
+    Math.abs(x) > frictionAbs
+      ? x > 0
+        ? x - frictionPerSecond
+        : x + frictionPerSecond
+      : 0,
+    Math.abs(y) > frictionAbs
+      ? y > 0
+        ? y - frictionPerSecond
+        : y + frictionPerSecond
+      : 0,
+  ]
+}
+
+const removeFirstCollision = (collider: Collider): Partial<Collider> => ({
+  _collisions: collider._collisions.slice(1, collider._collisions.length),
+})
+
+const applyForceToPosition = ({
+  timeDelta,
+  force,
+  position,
+}: {
+  timeDelta: number
+  force: Vector2D
+  position: Vector2D
+}) => add(scale(timeDelta, force), position)
 
 export const rigidBodySystem = (state: InternalInitialState) =>
   createSystem<RigidBody, InternalInitialState>({
@@ -18,7 +95,12 @@ export const rigidBodySystem = (state: InternalInitialState) =>
     componentName: componentName.rigidBody,
     state,
     priority: systemPriority.rigidBody,
-    tick: ({ state, entity, component, name }) => {
+    tick: ({ state, entity, name }) => {
+      const component = getComponent<RigidBody>({
+        state,
+        entity,
+        name: componentName.rigidBody,
+      })
       const time = getComponent<Time>({
         state,
         entity: timeEntity,
@@ -35,48 +117,69 @@ export const rigidBodySystem = (state: InternalInitialState) =>
         name: componentName.collider,
       })
 
-      if (!collider || !transform || !time) return state
+      if (!collider || !transform || !time || !component) return state
+
+      console.log(entity, {
+        position: transform?.position[0],
+        force: component.force[0],
+      })
 
       let force = component.force
 
-      collider.collisions.forEach((collider) => {
+      const collision = collider._collisions[0]
+      if (collision) {
         const collisionTransform = getComponent<Transform>({
           state,
-          entity: collider.entity,
+          entity: collision.entity,
           name: componentName.transform,
         })
         const collisionRigidBody = getComponent<RigidBody>({
           state,
-          entity: collider.entity,
+          entity: collision.entity,
           name: componentName.rigidBody,
         })
 
-        if (!collisionTransform || !collisionRigidBody) return
+        if (collisionTransform && collisionRigidBody) {
+          const { force1, force2 } = getElasticCollisionForces({
+            m1: component.mass,
+            v1: component.force,
+            position1: transform.position as Vector2D,
 
-        force = add(
-          force,
-          scale(collisionRigidBody.mass, collisionRigidBody.force),
-        )
+            m2: collisionRigidBody.mass,
+            v2: collisionRigidBody.force,
+            position2: collisionTransform.position as Vector2D,
+          })
 
-        // updateComponent<RigidBody>({
-        //   state,
-        //   entity: collider.entity,
-        //   name: componentName.rigidBody,
-        //   update: (collisionRigidBody) => ({
-        //     force: add(componentMovementForce, collisionRigidBody.force),
-        //   }),
-        // })
-      })
+          force = force1
 
-      // todo collision with more than rigidbody at the same time
-      // friction
+          state = updateComponent<RigidBody, InternalInitialState>({
+            state,
+            entity: collision.entity,
+            name: componentName.rigidBody,
+            update: () => ({
+              force: force2,
+            }),
+          })
+
+          state = updateComponent<Collider, InternalInitialState>({
+            state,
+            entity: collision.entity,
+            name: componentName.collider,
+            update: removeFirstCollision,
+          })
+        }
+      }
 
       state = updateComponent<RigidBody, InternalInitialState>({
         state,
         entity,
         name,
         update: () => ({
-          force,
+          force: applyFrictionToForce({
+            friction: component.friction,
+            timeDelta: time.delta,
+            force,
+          }),
         }),
       })
 
@@ -85,10 +188,11 @@ export const rigidBodySystem = (state: InternalInitialState) =>
         entity,
         name: componentName.transform,
         update: (transform) => ({
-          position: add(
-            scale(time?.delta, force),
-            transform.position as Vector2D,
-          ),
+          position: applyForceToPosition({
+            force,
+            timeDelta: time.delta,
+            position: transform.position as Vector2D,
+          }),
         }),
       })
 

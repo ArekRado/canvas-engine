@@ -1,13 +1,13 @@
-import { setComponent } from '../../component/setComponent'
 import { componentName } from '../../component/componentName'
 import { createSystem, systemPriority } from '../createSystem'
 import { InternalInitialState, Time } from '../../type'
 import { updateComponent } from '../../component/updateComponent'
+import { createComponent } from '../../component/createComponent'
 
 export const timeEntity = 'timeEntity'
 
 export const timeSystem = (state: InternalInitialState) => {
-  state = setComponent<Time, InternalInitialState>({
+  state = createComponent<Time, InternalInitialState>({
     state,
     entity: timeEntity,
     name: componentName.time,
@@ -28,7 +28,8 @@ export const timeSystem = (state: InternalInitialState) => {
       const timeNow = component.dataOverwrite?.timeNow ?? performance.now()
       const previousTimeNow =
         component.dataOverwrite?.previousTimeNow ?? component.timeNow
-      const delta = component.dataOverwrite?.delta ?? timeNow - previousTimeNow
+      const delta = timeNow - previousTimeNow
+
       state = updateComponent<Time, InternalInitialState>({
         state,
         name,

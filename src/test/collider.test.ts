@@ -96,17 +96,17 @@ describe('collider', () => {
         name: componentName.collider,
         state,
         entity: entity1,
-      })?.collisions
+      })?._collisions
       const collisions2 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity2,
-      })?.collisions
+      })?._collisions
       const collisions3 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity3,
-      })?.collisions
+      })?._collisions
 
       expect(collisions1?.length).toEqual(2)
       expect(collisions1?.[0]?.entity).toEqual(entity2)
@@ -189,17 +189,17 @@ describe('collider', () => {
         name: componentName.collider,
         state,
         entity: entity1,
-      })?.collisions
+      })?._collisions
       const collisions2 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity2,
-      })?.collisions
+      })?._collisions
       const collisions3 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity3,
-      })?.collisions
+      })?._collisions
 
       expect(collisions1?.length).toBe(1)
       expect(collisions1?.length).toBe(1)
@@ -300,22 +300,22 @@ describe('collider', () => {
         name: componentName.collider,
         state,
         entity: entity1,
-      })?.collisions
+      })?._collisions
       const collisions2 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity2,
-      })?.collisions
+      })?._collisions
       const collisions3 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity3,
-      })?.collisions
+      })?._collisions
       const collisions4 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity4,
-      })?.collisions
+      })?._collisions
 
       expect(collisions1?.length).toEqual(2)
       expect(collisions1?.[0]?.entity).toEqual(entity2)
@@ -424,22 +424,22 @@ describe('collider', () => {
         name: componentName.collider,
         state,
         entity: entity1,
-      })?.collisions
+      })?._collisions
       const collisions2 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity2,
-      })?.collisions
+      })?._collisions
       const collisions3 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity3,
-      })?.collisions
+      })?._collisions
       const collisions4 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity4,
-      })?.collisions
+      })?._collisions
 
       expect(collisions1?.length).toEqual(1)
       expect(collisions1?.[0]?.entity).toEqual(entity3)
@@ -546,22 +546,22 @@ describe('collider', () => {
         name: componentName.collider,
         state,
         entity: entity1,
-      })?.collisions
+      })?._collisions
       const collisions2 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity2,
-      })?.collisions
+      })?._collisions
       const collisions3 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity3,
-      })?.collisions
+      })?._collisions
       const collisions4 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity4,
-      })?.collisions
+      })?._collisions
 
       expect(collisions1?.length).toEqual(1)
       expect(collisions1?.[0]?.entity).toEqual(entity3)
@@ -689,27 +689,27 @@ describe('collider', () => {
         name: componentName.collider,
         state,
         entity: entity1,
-      })?.collisions
+      })?._collisions
       const collisions2 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity2,
-      })?.collisions
+      })?._collisions
       const collisions3 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity3,
-      })?.collisions
+      })?._collisions
       const collisions4 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity4,
-      })?.collisions
+      })?._collisions
       const collisions5 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity5,
-      })?.collisions
+      })?._collisions
 
       expect(collisions1?.length).toEqual(2)
       expect(collisions1?.[0]?.entity).toEqual(entity2)
@@ -858,27 +858,27 @@ describe('collider', () => {
         name: componentName.collider,
         state,
         entity: entity1,
-      })?.collisions
+      })?._collisions
       const collisions2 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity2,
-      })?.collisions
+      })?._collisions
       const collisions3 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity3,
-      })?.collisions
+      })?._collisions
       const collisions4 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity4,
-      })?.collisions
+      })?._collisions
       const collisions5 = getComponent<Collider>({
         name: componentName.collider,
         state,
         entity: entity5,
-      })?.collisions
+      })?._collisions
 
       expect(collisions1?.length).toEqual(3)
       expect(collisions1?.[0]?.entity).toEqual(entity2)
@@ -1027,7 +1027,7 @@ describe('collider', () => {
           name: componentName.collider,
           state,
           entity: data.entity,
-        })?.collisions
+        })?._collisions
 
         expect([i, collisions?.map(({ entity }) => entity)]).toEqual([
           i,
@@ -1099,7 +1099,7 @@ describe('collider', () => {
           name: componentName.collider,
           state,
           entity,
-        })?.collisions.map((collision) => collision.entity),
+        })?._collisions.map((collision) => collision.entity),
       ]).toEqual([entity, collisions])
     })
   })
