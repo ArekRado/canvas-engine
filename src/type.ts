@@ -75,8 +75,9 @@ export type RigidBody = {
   friction: number
   velocity: Vector2D
   force: Vector2D
+  isKinematic: boolean, // TODO
+
   // gravityDirection: Vector2D,  // TODO
-  // isKinematic: boolean, // TODO
 }
 
 export namespace Animation {

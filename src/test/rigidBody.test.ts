@@ -9,15 +9,16 @@ import {
 } from '../util/defaultComponents'
 import { tick } from './utils'
 import { getElasticCollisionForces } from '../system/rigidBody/rigidBody'
-import { createTransform, getTransform } from '../system/transform/transformCrud'
+import {
+  createTransform,
+  getTransform,
+} from '../system/transform/transformCrud'
 import { createCollider } from '../system/collider/colliderCrud'
-import { createRigidBody, getRigidBody } from '../system/rigidBody/rigidBodyCrud'
-
-const toFixedVector2D = (v: Vector2D, fractionDigits: number) =>
-  vector(
-    parseFloat(v[0].toFixed(fractionDigits)),
-    parseFloat(v[1].toFixed(fractionDigits)),
-  )
+import {
+  createRigidBody,
+  getRigidBody,
+} from '../system/rigidBody/rigidBodyCrud'
+import { toFixedVector2D } from '../util/toFixedVector2D'
 
 describe('getElasticCollisionForces', () => {
   it('should return proper data', () => {
@@ -34,34 +35,48 @@ describe('getElasticCollisionForces', () => {
       force1: [0, 0],
       force2: [1, 0],
     })
-  })
 
-  expect(
-    getElasticCollisionForces({
-      m1: 1,
-      m2: 1,
-      v1: [1, 0],
-      v2: [-1, 0],
-      position1: [0, 0],
-      position2: [1, 0],
-    }),
-  ).toEqual({
-    force1: [-1, 0],
-    force2: [1, 0],
-  })
+    expect(
+      getElasticCollisionForces({
+        m1: 1,
+        m2: 1,
+        v1: [1, 0],
+        v2: [-1, 0],
+        position1: [0, 0],
+        position2: [1, 0],
+      }),
+    ).toEqual({
+      force1: [-1, 0],
+      force2: [1, 0],
+    })
 
-  expect(
-    getElasticCollisionForces({
-      m1: 3,
-      m2: 5,
-      v1: [4, 0],
-      v2: [-6, 0],
-      position1: [3, 0],
-      position2: [0, 0],
-    }),
-  ).toEqual({
-    force1: [-8.5, 0],
-    force2: [1.5, 0],
+    expect(
+      getElasticCollisionForces({
+        m1: 3,
+        m2: 5,
+        v1: [4, 0],
+        v2: [-6, 0],
+        position1: [3, 0],
+        position2: [0, 0],
+      }),
+    ).toEqual({
+      force1: [-8.5, 0],
+      force2: [1.5, 0],
+    })
+
+    expect(
+      getElasticCollisionForces({
+        m1: 1,
+        m2: 1,
+        v1: [1, 0],
+        v2: [-1, 0],
+        position1: [-0.16, 0.2],
+        position2: [0.16, 0],
+      }),
+    ).toEqual({
+      force1: [-0.4382022471910114, 0.8988764044943821],
+      force2: [0.4382022471910114, -0.8988764044943821],
+    })
   })
 })
 
@@ -230,7 +245,7 @@ describe('rigidBody', () => {
       entity: entity2,
       data: defaultRigidBody({
         force: r2Force,
-        mass: 0,
+        mass: 1,
       }),
     })
 
@@ -253,7 +268,7 @@ describe('rigidBody', () => {
     ).toEqual(r1Force)
   })
 
-  it.only('conservation of momentum in elastic collisions 2 - rigidbodies with the same mass', () => {
+  it('conservation of momentum in elastic collisions 2 - rigidbodies with the same mass', () => {
     const r1Force: Vector2D = [0.1, 0]
     const r2Force: Vector2D = [-0.2, 0]
 
@@ -330,4 +345,6 @@ describe('rigidBody', () => {
     expect(toFixedVector2D(force1, 2)).toEqual(r2Force)
     expect(toFixedVector2D(force2, 2)).toEqual(r1Force)
   })
+
+  it.todo('kinematic rigidBody should not be moved by force')
 })

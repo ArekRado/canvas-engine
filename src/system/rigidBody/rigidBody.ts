@@ -153,29 +153,31 @@ export const rigidBodySystem = (state: InternalInitialState) =>
         }
       }
 
-      state = updateRigidBody({
-        state,
-        entity,
-        update: () => ({
-          force: applyFrictionToForce({
-            friction: component.friction,
-            timeDelta: time.delta,
-            force,
+      if (!component.isKinematic) {
+        state = updateRigidBody({
+          state,
+          entity,
+          update: () => ({
+            force: applyFrictionToForce({
+              friction: component.friction,
+              timeDelta: time.delta,
+              force,
+            }),
           }),
-        }),
-      })
+        })
 
-      state = updateTransform({
-        state,
-        entity,
-        update: (transform) => ({
-          position: applyForceToPosition({
-            force,
-            timeDelta: time.delta,
-            position: transform.position as Vector2D,
+        state = updateTransform({
+          state,
+          entity,
+          update: (transform) => ({
+            position: applyForceToPosition({
+              force,
+              timeDelta: time.delta,
+              position: transform.position as Vector2D,
+            }),
           }),
-        }),
-      })
+        })
+      }
 
       return state
     },

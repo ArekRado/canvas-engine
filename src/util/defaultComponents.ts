@@ -35,6 +35,7 @@ export const defaultRigidBody: GetDefaultComponent<RigidBody> = (
   friction: 0,
   velocity: vectorZero(),
   force: vectorZero(),
+  isKinematic: false,
   ...data,
 })
 
