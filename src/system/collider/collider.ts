@@ -1,25 +1,316 @@
-import { add } from '@arekrado/vector-2d'
-import { InternalInitialState, Transform, Collider, Guid } from '../../type'
+import { add, Vector2D } from '@arekrado/vector-2d'
+import {
+  InternalInitialState,
+  Transform,
+  Collider,
+  Guid,
+  ColliderDataLine,
+  ColliderDataCircle,
+  ColliderDataRectangle,
+  ColliderDataPoint,
+} from '../../type'
 import { createSystem, systemPriority } from '../createSystem'
 import { getComponent } from '../../component/getComponent'
 import { componentName } from '../../component/componentName'
 import {
+  Circle,
   detectCircleCircleCollision,
   detectCircleLineCollision,
   detectLineLineCollision,
+  detectPointCircleCollision,
   detectPointLineCollision,
   detectPointPointCollision,
+  detectPointRectangleCollision,
   detectRectangleCircleCollision,
   detectRectangleLineCollision,
   detectRectangleRectangleCollision,
+  Line,
+  Point,
+  Rectangle,
 } from './detectCollision'
 import { updateCollider } from './colliderCrud'
 import { getTransform } from '../transform/transformCrud'
+import { applyMatrixToVector2D, rotate } from '../../util/matrix'
 
 const hasSameLayer = (
   layers1: Collider['layers'],
   layers2: Collider['layers'],
 ) => layers1.some((l1) => layers2.find((l2) => l2 === l1))
+
+const applyTransformsToPosition = ({
+  colliderPosition,
+  transform,
+}: {
+  colliderPosition: Vector2D
+  transform: Transform
+}): Vector2D => {
+  const position = add(
+    [transform.position[0], transform.position[1]],
+    colliderPosition,
+  )
+
+  const rotatedPosition = applyMatrixToVector2D(
+    rotate(transform.rotation),
+    position,
+  )
+
+  return rotatedPosition
+}
+
+type MapToShapeParams<ColliderData> = {
+  transform: Transform
+  colliderData: ColliderData
+}
+
+const mapToLine = ({
+  transform,
+  colliderData,
+}: MapToShapeParams<ColliderDataLine>): Line => {
+  return {
+    position: applyTransformsToPosition({
+      colliderPosition: colliderData.position,
+      transform,
+    }),
+    position2: applyTransformsToPosition({
+      colliderPosition: colliderData.position2,
+      transform,
+    }),
+  }
+}
+
+const mapToCircle = ({
+  transform,
+  colliderData,
+}: MapToShapeParams<ColliderDataCircle>): Circle => {
+  return {
+    position: applyTransformsToPosition({
+      colliderPosition: colliderData.position,
+      transform,
+    }),
+    radius: colliderData.radius,
+  }
+}
+
+const mapToRectangle = ({
+  transform,
+  colliderData,
+}: MapToShapeParams<ColliderDataRectangle>): Rectangle => {
+  return {
+    position: applyTransformsToPosition({
+      colliderPosition: colliderData.position,
+      transform,
+    }),
+    size: colliderData.size,
+  }
+}
+
+const mapToPoint = ({
+  transform,
+  colliderData,
+}: MapToShapeParams<ColliderDataPoint>): Point =>
+  applyTransformsToPosition({
+    colliderPosition: colliderData.position,
+    transform,
+  })
+
+type CollisionType = 'point' | 'rectangle' | 'circle' | 'line'
+type CollisionDetectorNormalizer = (params: {
+  transform1: Transform
+  collider1Data: Collider['data'][0]
+  transform2: Transform
+  collider2Data: Collider['data'][0]
+}) => boolean
+type CollisionsMatrix = Record<
+  CollisionType,
+  Record<CollisionType, CollisionDetectorNormalizer>
+>
+
+const collisionsMatrix: CollisionsMatrix = {
+  circle: {
+    circle: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectCircleCircleCollision({
+        circle1: mapToCircle({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataCircle,
+        }),
+        circle2: mapToCircle({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataCircle,
+        }),
+      }),
+    line: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectCircleLineCollision({
+        circle: mapToCircle({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataCircle,
+        }),
+        line: mapToLine({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataLine,
+        }),
+      }),
+    point: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectPointCircleCollision({
+        circle: mapToCircle({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataCircle,
+        }),
+        point: mapToPoint({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataPoint,
+        }),
+      }),
+    rectangle: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectRectangleCircleCollision({
+        circle: mapToCircle({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataCircle,
+        }),
+        rectangle: mapToRectangle({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataRectangle,
+        }),
+      }),
+  },
+  line: {
+    circle: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectCircleLineCollision({
+        line: mapToLine({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataLine,
+        }),
+        circle: mapToCircle({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataCircle,
+        }),
+      }),
+    line: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectLineLineCollision({
+        line1: mapToLine({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataLine,
+        }),
+        line2: mapToLine({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataLine,
+        }),
+      }),
+    point: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectPointLineCollision({
+        line: mapToLine({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataLine,
+        }),
+        point: mapToPoint({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataPoint,
+        }),
+      }),
+    rectangle: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectRectangleLineCollision({
+        line: mapToLine({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataLine,
+        }),
+        rectangle: mapToRectangle({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataRectangle,
+        }),
+      }),
+  },
+  point: {
+    circle: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectPointCircleCollision({
+        point: mapToPoint({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataPoint,
+        }),
+        circle: mapToCircle({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataCircle,
+        }),
+      }),
+    line: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectPointLineCollision({
+        point: mapToPoint({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataPoint,
+        }),
+        line: mapToLine({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataLine,
+        }),
+      }),
+    point: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectPointPointCollision({
+        point1: mapToPoint({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataPoint,
+        }),
+        point2: mapToPoint({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataPoint,
+        }),
+      }),
+    rectangle: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectPointRectangleCollision({
+        point: mapToPoint({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataPoint,
+        }),
+        rectangle: mapToRectangle({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataRectangle,
+        }),
+      }),
+  },
+  rectangle: {
+    circle: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectRectangleCircleCollision({
+        rectangle: mapToRectangle({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataRectangle,
+        }),
+        circle: mapToCircle({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataCircle,
+        }),
+      }),
+    line: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectRectangleLineCollision({
+        rectangle: mapToRectangle({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataRectangle,
+        }),
+        line: mapToLine({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataLine,
+        }),
+      }),
+    point: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectPointRectangleCollision({
+        rectangle: mapToRectangle({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataRectangle,
+        }),
+        point: mapToPoint({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataPoint,
+        }),
+      }),
+    rectangle: ({ transform1, collider1Data, transform2, collider2Data }) =>
+      detectRectangleRectangleCollision({
+        rectangle1: mapToRectangle({
+          transform: transform1,
+          colliderData: collider1Data as ColliderDataRectangle,
+        }),
+        rectangle2: mapToRectangle({
+          transform: transform2,
+          colliderData: collider2Data as ColliderDataRectangle,
+        }),
+      }),
+  },
+}
 
 type FindCollisionsWith = (pramams: {
   entity: Guid
@@ -69,172 +360,16 @@ const findCollisionsWith: FindCollisionsWith = ({
         return
       }
 
-      const position = add(
-        [transform.position[0], transform.position[1]],
-        colliderData.position,
-      )
-
       collider2.data.forEach((collider2Data, index) => {
-        const position2 = add(
-          [transform2.position[0], transform2.position[1]],
-          collider2Data.position,
-        )
+        const collisionDetector =
+          collisionsMatrix[colliderData.type][collider2Data.type]
 
-        let isColliding = false
-
-        if (colliderData.type === 'rectangle') {
-          if (collider2Data.type === 'rectangle') {
-            isColliding = detectRectangleRectangleCollision({
-              rectangle1: {
-                position,
-                size: colliderData.size,
-              },
-              rectangle2: {
-                position: position2,
-                size: collider2Data.size,
-              },
-            })
-          } else if (collider2Data.type === 'circle') {
-            isColliding = detectRectangleCircleCollision({
-              rectangle: {
-                position,
-                size: colliderData.size,
-              },
-              circle: {
-                position: position2,
-                radius: collider2Data.radius,
-              },
-            })
-          } else if (collider2Data.type === 'line') {
-            isColliding = detectRectangleLineCollision({
-              rectangle: {
-                position,
-                size: colliderData.size,
-              },
-              line: {
-                position: position2,
-                position2: add(
-                  [transform2.position[0], transform2.position[1]],
-                  collider2Data.position2,
-                ),
-              },
-            })
-          }
-        } else if (colliderData.type === 'point') {
-          if (collider2Data.type === 'point') {
-            isColliding = detectPointPointCollision({
-              point1: position,
-              point2: position2,
-            })
-          } else if (collider2Data.type === 'line') {
-            isColliding = detectPointLineCollision({
-              point: position,
-              line: {
-                position: position2,
-                position2: add(
-                  [transform2.position[0], transform2.position[1]],
-                  collider2Data.position2,
-                ),
-              },
-            })
-          }
-        } else if (colliderData.type === 'circle') {
-          if (collider2Data.type === 'circle') {
-            isColliding = detectCircleCircleCollision({
-              circle1: {
-                position,
-                radius: colliderData.radius,
-              },
-              circle2: {
-                position: position2,
-                radius: collider2Data.radius,
-              },
-            })
-          } else if (collider2Data.type === 'rectangle') {
-            isColliding = detectRectangleCircleCollision({
-              circle: {
-                position,
-                radius: colliderData.radius,
-              },
-              rectangle: {
-                position: position2,
-                size: collider2Data.size,
-              },
-            })
-          } else if (collider2Data.type === 'line') {
-            isColliding = detectCircleLineCollision({
-              circle: {
-                position,
-                radius: colliderData.radius,
-              },
-              line: {
-                position: position2,
-                position2: add(
-                  [transform2.position[0], transform2.position[1]],
-                  collider2Data.position2,
-                ),
-              },
-            })
-          }
-        } else if (colliderData.type === 'line') {
-          if (collider2Data.type === 'point') {
-            isColliding = detectPointLineCollision({
-              point: position2,
-              line: {
-                position,
-                position2: add(
-                  [transform.position[0], transform.position[1]],
-                  colliderData.position2,
-                ),
-              },
-            })
-          } else if (collider2Data.type === 'circle') {
-            isColliding = detectCircleLineCollision({
-              circle: {
-                position: position2,
-                radius: collider2Data.radius,
-              },
-              line: {
-                position: position,
-                position2: add(
-                  [transform.position[0], transform.position[1]],
-                  colliderData.position2,
-                ),
-              },
-            })
-          } else if (collider2Data.type === 'line') {
-            isColliding = detectLineLineCollision({
-              line1: {
-                position,
-                position2: add(
-                  [transform.position[0], transform.position[1]],
-                  colliderData.position2,
-                ),
-              },
-              line2: {
-                position: position2,
-                position2: add(
-                  [transform2.position[0], transform2.position[1]],
-                  collider2Data.position2,
-                ),
-              },
-            })
-          } else if (collider2Data.type === 'rectangle') {
-            isColliding = detectRectangleLineCollision({
-              line: {
-                position,
-                position2: add(
-                  [transform.position[0], transform.position[1]],
-                  colliderData.position2,
-                ),
-              },
-              rectangle: {
-                position: position2,
-                size: collider2Data.size,
-              },
-            })
-          }
-        }
+        const isColliding = collisionDetector({
+          transform1: transform,
+          collider1Data: colliderData,
+          transform2,
+          collider2Data: collider2Data,
+        })
 
         isColliding &&
           collisionList.push({

@@ -5,6 +5,7 @@ type Matrix = [number, number, number, number, number, number]
 const identity = [1, 0, 0, 1, 0, 0]
 const i = identity
 
+// todo is it required to multiply by 1?
 const transform = (m: Matrix): Matrix => [
   i[0] * m[0] + i[2] * m[1],
   i[1] * m[0] + i[3] * m[1],

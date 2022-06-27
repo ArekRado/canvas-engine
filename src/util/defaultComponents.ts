@@ -65,8 +65,8 @@ export const defaultCamera: GetDefaultComponent<Camera> = (data = {}) => ({
 export const defaultTransform: GetDefaultComponent<Transform> = (
   data = {},
 ) => ({
-  rotation: vectorZero(),
-  fromParentRotation: vectorZero(),
+  rotation: 0,
+  fromParentRotation: 0,
   scale: [1, 1],
   fromParentScale: [1, 1],
   position: vectorZero(),

@@ -34,35 +34,40 @@ export type Color = [number, number, number, number]
 //
 ////////////////////////////////////
 
+export type ColliderDataPoint = {
+  type: 'point'
+  position: Vector2D
+}
+export type ColliderDataRectangle = {
+  type: 'rectangle'
+  size: Vector2D
+  /**
+   * Left bottom corner
+   */
+  position: Vector2D
+}
+export type ColliderDataCircle = {
+  type: 'circle'
+  radius: number
+  /**
+   * Left bottom corner
+   */
+  position: Vector2D
+}
+export type ColliderDataLine = {
+  type: 'line'
+  position: Vector2D
+  position2: Vector2D
+}
+
 export type Collider = {
   layers: string[]
   _collisions: Array<{ entity: Entity; index: number }>
   data: Array<
-    | {
-        type: 'point'
-        position: Vector2D
-      }
-    | {
-        type: 'rectangle'
-        size: Vector2D
-        /**
-         * Left bottom corner
-         */
-        position: Vector2D
-      }
-    | {
-        type: 'circle'
-        radius: number
-        /**
-         * Left bottom corner
-         */
-        position: Vector2D
-      }
-    | {
-        type: 'line'
-        position: Vector2D
-        position2: Vector2D
-      }
+    | ColliderDataPoint
+    | ColliderDataRectangle
+    | ColliderDataCircle
+    | ColliderDataLine
     // TODO
     // | {
     //     type: 'polygon'
@@ -75,7 +80,7 @@ export type RigidBody = {
   friction: number
   velocity: Vector2D
   force: Vector2D
-  isKinematic: boolean, // TODO
+  isKinematic: boolean // TODO
 
   // gravityDirection: Vector2D,  // TODO
 }
@@ -264,8 +269,8 @@ export type EventHandler<Event, State extends AnyState = AnyState> = (params: {
 export type Vector3D = [number, number, number]
 
 export type Transform = {
-  rotation: Vector2D | Vector3D
-  fromParentRotation: Vector2D | Vector3D
+  rotation: number
+  fromParentRotation: number
   scale: Vector2D | Vector3D
   fromParentScale: Vector2D | Vector3D
   position: Vector2D | Vector3D

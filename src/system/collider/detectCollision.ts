@@ -1,5 +1,11 @@
 import { equals, magnitude, sub, Vector2D } from '@arekrado/vector-2d'
 
+export type Point = Vector2D
+export type Circle = { position: Vector2D; radius: number }
+export type Rectangle = { position: Vector2D; size: Vector2D }
+export type Line = { position: Vector2D; position2: Vector2D }
+export type Polygon = Vector2D[]
+
 /**
  * XXXXXXXXX | point                         | rectangle                         | circle                      | line
  * point     | detectPointPointCollision     | x                                 | x                           | x
@@ -12,8 +18,8 @@ export const detectPointPointCollision = ({
   point1,
   point2,
 }: {
-  point1: Vector2D
-  point2: Vector2D
+  point1: Point
+  point2: Point
 }) => equals(point1, point2)
 
 export const detectRectangleRectangleCollision = ({
@@ -26,14 +32,8 @@ export const detectRectangleRectangleCollision = ({
     size: [size2x, size2y],
   },
 }: {
-  rectangle1: {
-    position: Vector2D
-    size: Vector2D
-  }
-  rectangle2: {
-    position: Vector2D
-    size: Vector2D
-  }
+  rectangle1: Rectangle
+  rectangle2: Rectangle
 }) =>
   x1 <= x2 + size2x &&
   x1 + size1x >= x2 &&
@@ -44,11 +44,8 @@ export const detectPointRectangleCollision = ({
   point,
   rectangle,
 }: {
-  point: Vector2D
-  rectangle: {
-    position: Vector2D
-    size: Vector2D
-  }
+  point: Point
+  rectangle: Rectangle
 }) =>
   point[0] <= rectangle.position[0] + rectangle.size[0] &&
   point[0] >= rectangle.position[0] &&
@@ -59,11 +56,8 @@ export const detectPointCircleCollision = ({
   point,
   circle,
 }: {
-  point: Vector2D
-  circle: {
-    position: Vector2D
-    radius: number
-  }
+  point: Point
+  circle: Circle
 }) => {
   const distance = magnitude(sub(point, circle.position))
 
@@ -74,14 +68,8 @@ export const detectCircleCircleCollision = ({
   circle1,
   circle2,
 }: {
-  circle1: {
-    position: Vector2D
-    radius: number
-  }
-  circle2: {
-    position: Vector2D
-    radius: number
-  }
+  circle1: Circle
+  circle2: Circle
 }) => {
   const distance = magnitude(sub(circle1.position, circle2.position))
 
@@ -95,14 +83,8 @@ export const detectRectangleCircleCollision = ({
   circle,
   rectangle,
 }: {
-  circle: {
-    position: Vector2D
-    radius: number
-  }
-  rectangle: {
-    position: Vector2D
-    size: Vector2D
-  }
+  circle: Circle
+  rectangle: Rectangle
 }) => {
   const test: Vector2D = [0, 0]
 
@@ -135,8 +117,8 @@ export const detectPointLineCollision = ({
   line,
   point,
 }: {
-  line: { position: Vector2D; position2: Vector2D }
-  point: Vector2D
+  line: Line
+  point: Point
 }) => {
   const lineLength = magnitude(sub(line.position, line.position2))
 
@@ -156,11 +138,8 @@ export const detectCircleLineCollision = ({
   circle,
   line,
 }: {
-  circle: {
-    position: Vector2D
-    radius: number
-  }
-  line: { position: Vector2D; position2: Vector2D }
+  circle: Circle
+  line: Line
 }) => {
   const inside1 = detectPointCircleCollision({ circle, point: line.position })
   if (inside1) return true
@@ -205,8 +184,8 @@ export const detectLineLineCollision = ({
   line1,
   line2,
 }: {
-  line1: { position: Vector2D; position2: Vector2D }
-  line2: { position: Vector2D; position2: Vector2D }
+  line1: Line
+  line2: Line
 }) => {
   const x1 = line1.position[0]
   const y1 = line1.position[1]
@@ -244,11 +223,8 @@ export const detectRectangleLineCollision = ({
   line,
   rectangle,
 }: {
-  line: { position: Vector2D; position2: Vector2D }
-  rectangle: {
-    position: Vector2D
-    size: Vector2D
-  }
+  line: Line
+  rectangle: Rectangle
 }) => {
   // (rx, ry, rx, ry + rh)
   const left = detectLineLineCollision({
@@ -309,3 +285,11 @@ export const detectRectangleLineCollision = ({
 
   return false
 }
+
+export const detectPolygonPointCollision = ({
+  polygon,
+  point,
+}: {
+  polygon: Polygon
+  point: Point
+}) => {}

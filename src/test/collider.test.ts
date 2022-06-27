@@ -6,6 +6,7 @@ import { defaultCollider, defaultTransform } from '../util/defaultComponents'
 import { getState } from '../util/state'
 import { createTransform } from '../system/transform/transformCrud'
 import { createCollider, getCollider } from '../system/collider/colliderCrud'
+import { degreesToRadians } from '../util/radian'
 
 describe('collider', () => {
   describe('detect collisions', () => {
@@ -1032,5 +1033,102 @@ describe('collider', () => {
         })?._collisions.map((collision) => collision.entity),
       ]).toEqual([entity, collisions])
     })
+  })
+
+  it.skip('detect collisions between rotated colliders', () => {
+    const entity1 = generateEntity()
+    const entity2 = generateEntity()
+    const entity3 = generateEntity()
+
+    let state = getState({})
+    state = createEntity({ entity: entity1, state })
+    state = createEntity({ entity: entity2, state })
+    state = createEntity({ entity: entity3, state })
+
+    state = createTransform({
+      state,
+      entity: entity1,
+      data: defaultTransform({
+        position: vector(2, 0),
+      }),
+    })
+    state = createTransform({
+      state,
+      entity: entity2,
+      data: defaultTransform({
+        position: vector(0, 0),
+        rotation: degreesToRadians(90),
+      }),
+    })
+    state = createTransform({
+      state,
+      entity: entity3,
+      data: defaultTransform({
+        position: vector(-1.1, 0),
+        rotation: degreesToRadians(45)
+      }),
+    })
+
+    state = createCollider({
+      state,
+      entity: entity1,
+      data: defaultCollider({
+        layers: ['a'],
+        data: [{ type: 'circle', position: vector(0, 0), radius: 1 }],
+      }),
+    })
+    state = createCollider({
+      state,
+      entity: entity2,
+      data: defaultCollider({
+        layers: ['a'],
+        data: [
+          {
+            type: 'line',
+            position: vector(0, 0),
+            position2: vector(0, 3),
+          },
+        ],
+      }),
+    })
+    state = createCollider({
+      state,
+      entity: entity3,
+      data: defaultCollider({
+        layers: ['a'],
+        data: [
+          {
+            type: 'rectangle',
+            position: vector(0, 0),
+            size: vector(1, 1),
+          },
+        ],
+      }),
+    })
+
+    state = runOneFrame({ state })
+
+    const collisions1 = getCollider({
+      state,
+      entity: entity1,
+    })?._collisions
+    const collisions2 = getCollider({
+      state,
+      entity: entity2,
+    })?._collisions
+    const collisions3 = getCollider({
+      state,
+      entity: entity3,
+    })?._collisions
+
+    expect(collisions1?.length).toEqual(1)
+    expect(collisions1?.[0].entity).toEqual(entity2)
+
+    expect(collisions2?.length).toEqual(2)
+    expect(collisions2?.[0].entity).toEqual(entity1)
+    expect(collisions2?.[1].entity).toEqual(entity3)
+
+    expect(collisions3?.length).toEqual(1)
+    expect(collisions3?.[0].entity).toEqual(entity2)
   })
 })
