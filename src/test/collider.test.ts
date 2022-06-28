@@ -333,7 +333,6 @@ describe('collider', () => {
       state = createTransform({
         state,
         entity: entity3,
-
         data: defaultTransform({
           position: vector(0, 0),
         }),
@@ -341,7 +340,6 @@ describe('collider', () => {
       state = createTransform({
         state,
         entity: entity4,
-
         data: defaultTransform({
           position: vector(99, 99),
         }),
@@ -350,7 +348,6 @@ describe('collider', () => {
       state = createCollider({
         state,
         entity: entity1,
-
         data: defaultCollider({
           layers,
           data: [
@@ -361,7 +358,6 @@ describe('collider', () => {
       state = createCollider({
         state,
         entity: entity2,
-
         data: defaultCollider({
           layers,
           data: [{ type: 'circle', radius: 5, position: vector(5, 5) }],
@@ -370,7 +366,6 @@ describe('collider', () => {
       state = createCollider({
         state,
         entity: entity3,
-
         data: defaultCollider({
           layers,
           data: [{ type: 'circle', radius: 7.2, position: vector(-5, -5) }],
@@ -379,7 +374,6 @@ describe('collider', () => {
       state = createCollider({
         state,
         entity: entity4,
-
         data: defaultCollider({
           layers,
           data: [{ type: 'circle', radius: 7.2, position: vector(-5, -5) }],
@@ -405,16 +399,15 @@ describe('collider', () => {
         entity: entity4,
       })?._collisions
 
-      expect(collisions1?.length).toEqual(1)
-      expect(collisions1?.[0]?.entity).toEqual(entity3)
-      expect(collisions1?.[1]?.entity).not.toBeDefined()
+      expect(collisions1?.length).toEqual(2)
+      expect(collisions1?.[0]?.entity).toEqual(entity2)
+      expect(collisions1?.[1]?.entity).toEqual(entity3)
 
-      expect(collisions2?.length).toEqual(0)
-      expect(collisions2?.[0]?.entity).not.toBeDefined()
+      expect(collisions2?.length).toEqual(1)
+      expect(collisions2?.[0]?.entity).toEqual(entity1)
 
       expect(collisions3?.length).toEqual(1)
       expect(collisions3?.[0]?.entity).toEqual(entity1)
-      expect(collisions3?.[1]?.entity).not.toBeDefined()
 
       expect(collisions4?.length).toEqual(0)
     })
@@ -1035,7 +1028,7 @@ describe('collider', () => {
     })
   })
 
-  it.skip('detect collisions between rotated colliders', () => {
+  it('detect collisions between rotated colliders', () => {
     const entity1 = generateEntity()
     const entity2 = generateEntity()
     const entity3 = generateEntity()
@@ -1060,11 +1053,12 @@ describe('collider', () => {
         rotation: degreesToRadians(90),
       }),
     })
+    // Rotated rectangle should be wide enough to touch line
     state = createTransform({
       state,
       entity: entity3,
       data: defaultTransform({
-        position: vector(-1.1, 0),
+        position: vector(-1, 0),
         rotation: degreesToRadians(45)
       }),
     })

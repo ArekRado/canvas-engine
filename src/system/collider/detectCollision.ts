@@ -7,11 +7,12 @@ export type Line = { position: Vector2D; position2: Vector2D }
 export type Polygon = Vector2D[]
 
 /**
- * XXXXXXXXX | point                         | rectangle                         | circle                      | line
- * point     | detectPointPointCollision     | x                                 | x                           | x
- * rectangle | detectPointrectangleCollision | detectRectangleRectangleCollision | x                           | x
- * circle    | detectPointCircleCollision    | detectRectangleCircleCollision    | detectCircleCircleCollision | x
- * line      | detectPointLineCollision      | detectRectangleLineCollision      | detectCircleLineCollision   | detectLineLineCollision
+ * XXXXXXXXX | point                         | rectangle                         | circle                       | line                       | polygon
+ * point     | detectPointPointCollision     | x                                 | x                            | x                          | x
+ * rectangle | detectPointrectangleCollision | detectRectangleRectangleCollision | x                            | x                          | detectPolygonPolygonCollision
+ * circle    | detectPointCircleCollision    | detectRectangleCircleCollision    | detectCircleCircleCollision  | x                          | x
+ * line      | detectPointLineCollision      | detectRectangleLineCollision      | detectCircleLineCollision    | detectLineLineCollision    | x
+ * polygon   | detectPolygonPointCollision   | detectPolygonPolygonCollision     | detectPolygonCircleCollision | detectPolygonLineCollision | detectPolygonPolygonCollision
  */
 
 export const detectPointPointCollision = ({
@@ -292,4 +293,158 @@ export const detectPolygonPointCollision = ({
 }: {
   polygon: Polygon
   point: Point
-}) => {}
+}) => {
+  let collision = false
+
+  // go through each of the vertices, plus
+  // the next vertex in the list
+  let next = 0
+  for (let current = 0; current < polygon.length; current++) {
+    // get next vertex in list
+    // if we've hit the end, wrap around to 0
+    next = current + 1
+    if (next == polygon.length) next = 0
+
+    // get the PVectors at our current position
+    // this makes our if statement a little cleaner
+    const vc: Vector2D = polygon[current] // c for "current"
+    const vn: Vector2D = polygon[next] // n for "next"
+
+    // compare position, flip 'collision' variable
+    // back and forth
+    if (
+      ((vc[1] >= point[1] && vn[1] < point[1]) ||
+        (vc[1] < point[1] && vn[1] >= point[1])) &&
+      point[0] <
+        ((vn[0] - vc[0]) * (point[1] - vc[1])) / (vn[1] - vc[1]) + vc[0]
+    ) {
+      collision = !collision
+    }
+  }
+  return collision
+}
+
+export const detectPolygonCircleCollision = ({
+  polygon,
+  circle,
+}: {
+  polygon: Polygon
+  circle: Circle
+}) => {
+  // go through each of the vertices, plus
+  // the next vertex in the list
+  let next = 0
+  for (let current = 0; current < polygon.length; current++) {
+    // get next vertex in list
+    // if we've hit the end, wrap around to 0
+    next = current + 1
+    if (next == polygon.length) next = 0
+
+    // get the PVectors at our current position
+    // this makes our if statement a little cleaner
+    const vc = polygon[current] // c for "current"
+    const vn = polygon[next] // n for "next"
+
+    // check for collision between the circle and
+    // a line formed between the two vertices
+    const collision = detectCircleLineCollision({
+      line: {
+        position: vc,
+        position2: vn,
+      },
+      circle,
+    })
+
+    if (collision) return true
+  }
+
+  // the above algorithm only checks if the circle
+  // is touching the edges of the polygon – in most
+  // cases this is enough, but you can un-comment the
+  // following code to also test if the center of the
+  // circle is inside the polygon
+  // const centerInside = detectPolygonPointCollision({
+  //   polygon,
+  //   point: circle.position,
+  // })
+  // if (centerInside) return true
+
+  // otherwise, after all that, return false
+  return false
+}
+
+// TODO: polygon detections should use rectangle detection first to improve speed
+export const detectPolygonLineCollision = ({
+  polygon,
+  line,
+}: {
+  polygon: Polygon
+  line: Line
+}) => {
+  // go through each of the vertices, plus the next
+  // vertex in the list
+  let next = 0
+  for (let current = 0; current < polygon.length; current++) {
+    // get next vertex in list
+    // if we've hit the end, wrap around to 0
+    next = current + 1
+    if (next == polygon.length) next = 0
+
+    // do a Line/Line comparison
+    // if true, return 'true' immediately and
+    // stop testing (faster)
+    const hit = detectLineLineCollision({
+      line1: line,
+      line2: {
+        // get the PVectors at our current position
+        // extract X/Y coordinates from each
+        position: polygon[current],
+        position2: polygon[next],
+      },
+    })
+
+    if (hit) {
+      return true
+    }
+  }
+
+  // never got a hit
+  return false
+}
+
+export const detectPolygonPolygonCollision = ({
+  polygon1,
+  polygon2,
+}: {
+  polygon1: Polygon
+  polygon2: Polygon
+}) => {
+  // go through each of the vertices, plus the next
+  // vertex in the list
+  let next = 0
+  for (let current = 0; current < polygon1.length; current++) {
+    // get next vertex in list
+    // if we've hit the end, wrap around to 0
+    next = current + 1
+    if (next == polygon1.length) next = 0
+
+    // now we can use these two points (a line) to compare
+    // to the other polygon's vertices using polyLine()
+    const collision = detectPolygonLineCollision({
+      polygon: polygon2,
+      line: {
+        // get the PVectors at our current position
+        // this makes our if statement a little cleaner
+        position: polygon1[current],
+        position2: polygon1[next],
+      },
+    })
+    if (collision) return true
+
+    // optional: check if the 2nd polygon is INSIDE the first
+    // collision = polyPoint(p1, p2[0].x, p2[0].y);
+    // if (collision) return true;
+  }
+
+  return false
+}

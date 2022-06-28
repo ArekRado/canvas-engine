@@ -3,6 +3,10 @@ import {
   detectCircleLineCollision,
   detectLineLineCollision,
   detectPointLineCollision,
+  detectPolygonCircleCollision,
+  detectPolygonLineCollision,
+  detectPolygonPointCollision,
+  detectPolygonPolygonCollision,
   detectRectangleLineCollision,
   detectRectangleRectangleCollision,
 } from '../system/collider/detectCollision'
@@ -300,6 +304,183 @@ describe('detectCollision', () => {
       detectRectangleLineCollision({
         rectangle: { position: [0, 0], size: [1, 1] },
         line: { position: [-1, -1], position2: [-2, -2] },
+      }),
+    ).toBeFalsy()
+  })
+
+  it('detectPolygonPointCollision', () => {
+    expect(
+      detectPolygonPointCollision({
+        polygon: [
+          [0, 0],
+          [1, 0],
+          [1, 1],
+          [0, 1],
+        ],
+        point: [0.5, 0.5],
+      }),
+    ).toBeTruthy()
+
+    expect(
+      detectPolygonPointCollision({
+        polygon: [
+          [0, 0],
+          [1, 0],
+          [1, 1],
+          [0, 1],
+        ],
+        point: [0, 0],
+      }),
+    ).toBeFalsy()
+
+    expect(
+      detectPolygonPointCollision({
+        polygon: [
+          [0, 0],
+          [0, 2],
+          [1, 1],
+          [2, 2],
+          [2, 0],
+        ],
+        point: [1, 1.1],
+      }),
+    ).toBeFalsy()
+
+    expect(
+      detectPolygonPointCollision({
+        polygon: [
+          [0, 0],
+          [0, 2],
+          [1, 1],
+          [2, 2],
+          [2, 0],
+        ],
+        point: [1, 0.9],
+      }),
+    ).toBeTruthy()
+  })
+
+  it('detectPolygonCircleCollision', () => {
+    expect(
+      detectPolygonCircleCollision({
+        polygon: [
+          [0, 0],
+          [0, 1],
+          [1, 1],
+          [1, 0],
+        ],
+        circle: { position: [0, 0], radius: 1 },
+      }),
+    ).toBeTruthy()
+
+    // checking if circle is inside is not necessary now
+    // expect(
+    //   detectPolygonCircleCollision({
+    //     polygon: [
+    //       [0, 0],
+    //       [0, 1],
+    //       [1, 1],
+    //       [1, 0],
+    //     ],
+    //     circle: { position: [0.5, 0.5], radius: 0.1 },
+    //   }),
+    // ).toBeTruthy()
+
+    expect(
+      detectPolygonCircleCollision({
+        polygon: [
+          [0, 0],
+          [0, 1],
+          [1, 1],
+          [1, 0],
+        ],
+        circle: { position: [-2, 0], radius: 1 },
+      }),
+    ).toBeFalsy()
+
+    expect(
+      detectPolygonCircleCollision({
+        polygon: [
+          [2, 2],
+          [1, 1],
+          [1, 0],
+          [1, 2],
+        ],
+        circle: { position: [0, 0], radius: 1 },
+      }),
+    ).toBeTruthy()
+  })
+
+  it('detectPolygonLineCollision', () => {
+    expect(
+      detectPolygonLineCollision({
+        polygon: [
+          [0, 0],
+          [0, 1],
+          [1, 1],
+          [1, 0],
+        ],
+        line: { position: [0, 0], position2: [1, 1] },
+      }),
+    ).toBeTruthy()
+
+    expect(
+      detectPolygonLineCollision({
+        polygon: [
+          [2, 2],
+          [1, 1],
+          [1, 0],
+          [1, 2],
+        ],
+        line: { position: [-1, 0.5], position2: [3, 0.5] },
+      }),
+    ).toBeTruthy()
+
+    expect(
+      detectPolygonLineCollision({
+        polygon: [
+          [2, 2],
+          [1, 1],
+          [1, 0],
+          [1, 2],
+        ],
+        line: { position: [-1, -0.5], position2: [3, -0.5] },
+      }),
+    ).toBeFalsy()
+  })
+
+  it('detectPolygonPolygonCollision', () => {
+    expect(
+      detectPolygonPolygonCollision({
+        polygon1: [
+          [0, 0],
+          [0, 1],
+          [1, 1],
+          [1, 0],
+        ],
+        polygon2: [
+          [-0.5, -0.5],
+          [-0.5, 0.5],
+          [0.5, 0.5],
+          [0.5, -0.5],
+        ],
+      }),
+    ).toBeTruthy()
+
+    expect(
+      detectPolygonPolygonCollision({
+        polygon1: [
+          [0, 0],
+          [0, 1],
+          [1, 1],
+          [1, 0],
+        ],
+        polygon2: [
+          [3, 3],
+          [3, 2],
+          [2, 2],
+          [2, 3],
+        ],
       }),
     ).toBeFalsy()
   })

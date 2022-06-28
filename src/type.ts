@@ -59,6 +59,10 @@ export type ColliderDataLine = {
   position: Vector2D
   position2: Vector2D
 }
+export type ColliderDataPolygon = {
+  type: 'polygon'
+  verticles: Vector2D[]
+}
 
 export type Collider = {
   layers: string[]
@@ -68,6 +72,7 @@ export type Collider = {
     | ColliderDataRectangle
     | ColliderDataCircle
     | ColliderDataLine
+    | ColliderDataPolygon
     // TODO
     // | {
     //     type: 'polygon'
