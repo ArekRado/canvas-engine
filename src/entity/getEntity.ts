@@ -1,7 +1,7 @@
-import { AnyState, Entity, Guid } from '../type'
+import { AnyState, Entity } from '../type'
 
 type GetEntity = <State extends AnyState>(params: {
-  entity: Guid
+  entity: Entity
   state: State
 }) => Entity | undefined
 export const getEntity: GetEntity = ({ entity, state }) => state.entity[entity]

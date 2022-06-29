@@ -1,5 +1,5 @@
 import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
-import { Guid, InternalInitialState, Transform, Vector3D } from '../../type'
+import { Entity, InternalInitialState, Transform, Vector3D } from '../../type'
 import { createGlobalSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { parseV3ToV2 } from '../../util/parseV3ToV2'
@@ -11,7 +11,7 @@ const syncTransformWithBabylon = ({
   transform,
   scene,
 }: {
-  entity: Guid
+  entity: Entity
   transform: Transform
   scene: Scene
 }) => {
@@ -21,9 +21,9 @@ const syncTransformWithBabylon = ({
     transformNode.position.y = transform.position[1]
     transformNode.position.z = transform.position[2] ?? 0
 
-    transformNode.rotation.x = transform.rotation[0]
-    transformNode.rotation.y = transform.rotation[1]
-    transformNode.rotation.z = transform.rotation[2] ?? 0
+    transformNode.rotation.x = transform.rotation
+    // transformNode.rotation.y = transform.rotation[1]
+    // transformNode.rotation.z = transform.rotation[2] ?? 0
 
     transformNode.scaling.x = transform.scale[0]
     transformNode.scaling.y = transform.scale[1]

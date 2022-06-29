@@ -4,19 +4,16 @@ import { removeComponent } from '../component/removeComponent'
 import { updateComponent } from '../component/updateComponent'
 import { InternalInitialState, Entity } from '../type'
 
-export const getComponentCrud = <Component, State extends InternalInitialState = InternalInitialState>({
+export const getComponentCrud = <
+  Component,
+  State extends InternalInitialState = InternalInitialState,
+>({
   name,
 }: {
   name: string
 }) => {
   const crud = {
-    getComponent: ({
-      state,
-      entity,
-    }: {
-      state: State
-      entity: Entity
-    }) =>
+    getComponent: ({ state, entity }: { state: State; entity: Entity }) =>
       getComponent<Component>({
         state,
         entity,
@@ -26,16 +23,19 @@ export const getComponentCrud = <Component, State extends InternalInitialState =
       state,
       entity,
       update,
+      callSystemUpdateMethod = true,
     }: {
       state: State
       entity: Entity
       update: (component: Component) => Partial<Component>
+      callSystemUpdateMethod?: boolean
     }) =>
       updateComponent<Component, State>({
         state,
         entity,
         name,
         update,
+        callSystemUpdateMethod,
       }),
     createComponent: ({
       state,
@@ -52,13 +52,7 @@ export const getComponentCrud = <Component, State extends InternalInitialState =
         name,
         data,
       }),
-    removeComponent: ({
-      state,
-      entity,
-    }: {
-      state: State
-      entity: Entity
-    }) =>
+    removeComponent: ({ state, entity }: { state: State; entity: Entity }) =>
       removeComponent({
         state,
         entity,

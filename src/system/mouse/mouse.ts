@@ -4,6 +4,7 @@ import { defaultMouse } from '../../util/defaultComponents'
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { createMouse, updateMouse } from './mouseCrud'
+import { createEntity } from '../../entity/createEntity'
 
 export const mouseEntity = 'mouse'
 
@@ -85,6 +86,11 @@ export const mouseSystem = ({
       }
     })
   }
+
+  state = createEntity({
+    entity: mouseEntity,
+    state,
+  })
 
   state = createMouse({
     state,

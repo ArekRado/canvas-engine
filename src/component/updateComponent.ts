@@ -1,5 +1,5 @@
 import { getSystemByName } from '../system/getSystemByName'
-import { AnyState, Guid } from '../type'
+import { AnyState, Entity } from '../type'
 import { getComponent } from './getComponent'
 
 export const updateComponent = <Data, State extends AnyState = AnyState>({
@@ -7,11 +7,13 @@ export const updateComponent = <Data, State extends AnyState = AnyState>({
   entity,
   state,
   update,
+  callSystemUpdateMethod = true,
 }: {
   name: string
-  entity: Guid
+  entity: Entity
   state: State
   update: (component: Data) => Partial<Data>
+  callSystemUpdateMethod?: boolean
 }): State => {
   const previousComponent = getComponent<Data, State>({
     state,
@@ -20,8 +22,6 @@ export const updateComponent = <Data, State extends AnyState = AnyState>({
   })
 
   if (previousComponent !== undefined) {
-    const system = getSystemByName(name, state.system)
-
     const updatedComponent = {
       ...previousComponent,
       ...update(previousComponent),
@@ -38,14 +38,18 @@ export const updateComponent = <Data, State extends AnyState = AnyState>({
       },
     }
 
-    if (system?.update) {
-      return system.update({
-        state: newState,
-        component: updatedComponent,
-        previousComponent,
-        entity,
-        name,
-      }) as State
+    if (callSystemUpdateMethod) {
+      const system = getSystemByName(name, state.system)
+
+      if (system?.update) {
+        return system.update({
+          state: newState,
+          component: updatedComponent,
+          previousComponent,
+          entity,
+          name,
+        }) as State
+      }
     }
 
     return newState

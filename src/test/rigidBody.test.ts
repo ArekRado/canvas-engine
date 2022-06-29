@@ -1,4 +1,4 @@
-import { vector, Vector2D } from '@arekrado/vector-2d'
+import { vector, Vector2D, vectorZero } from '@arekrado/vector-2d'
 import { getState } from '../util/state'
 import { createEntity } from '../entity/createEntity'
 import { generateEntity } from '../entity/generateEntity'
@@ -8,7 +8,10 @@ import {
   defaultTransform,
 } from '../util/defaultComponents'
 import { tick } from './utils'
-import { getElasticCollisionForces } from '../system/rigidBody/rigidBody'
+import {
+  getElasticCollisionForces,
+  getElasticCollisionForcesStatic,
+} from '../system/rigidBody/rigidBody'
 import {
   createTransform,
   getTransform,
@@ -22,6 +25,20 @@ import { toFixedVector2D } from '../util/toFixedVector2D'
 
 describe('getElasticCollisionForces', () => {
   it('should return proper data', () => {
+    expect(
+      getElasticCollisionForces({
+        m1: 1,
+        m2: 1,
+        v1: [0, 0],
+        v2: [0, 0],
+        position1: [0, 0],
+        position2: [1, 0],
+      }),
+    ).toEqual({
+      force1: [0, 0],
+      force2: [0, 0],
+    })
+
     expect(
       getElasticCollisionForces({
         m1: 1,
@@ -77,6 +94,37 @@ describe('getElasticCollisionForces', () => {
       force1: [-0.4382022471910114, 0.8988764044943821],
       force2: [0.4382022471910114, -0.8988764044943821],
     })
+  })
+})
+
+describe('getElasticCollisionForcesStatic', () => {
+  it('should return proper data', () => {
+    expect(
+      getElasticCollisionForcesStatic({
+        v1: [0, 0],
+        v2: [0, 0],
+        position1: [0, 0],
+        position2: [1, 0],
+      }),
+    ).toEqual([0, 0])
+
+    expect(
+      getElasticCollisionForcesStatic({
+        v1: [1, 0],
+        v2: [0, 0],
+        position1: [0, 0],
+        position2: [1, 0],
+      }),
+    ).toEqual([-1, 0])
+
+    expect(
+      getElasticCollisionForcesStatic({
+        v1: [0.2, 0],
+        v2: [0, 0],
+        position1: [1, 0],
+        position2: [2, 0],
+      }),
+    ).toEqual([-0.2, 0])
   })
 })
 
@@ -346,5 +394,91 @@ describe('rigidBody', () => {
     expect(toFixedVector2D(force2, 2)).toEqual(r1Force)
   })
 
-  it.todo('kinematic rigidBody should not be moved by force')
+  it('conservation of momentum in elastic collisions 3 - static rigidBody should not be moved by force', () => {
+    let state = getState({})
+
+    const entity1 = generateEntity()
+    const entity2 = generateEntity()
+
+    state = createEntity({ entity: entity1, state })
+    state = createEntity({ entity: entity2, state })
+
+    state = createTransform({
+      state,
+      entity: entity1,
+      data: defaultTransform({
+        position: [0, 0],
+      }),
+    })
+    state = createTransform({
+      state,
+      entity: entity2,
+      data: defaultTransform({
+        position: [2, 0],
+      }),
+    })
+
+    state = createCollider({
+      state,
+      entity: entity1,
+      data: defaultCollider({
+        layers: ['a'],
+        data: [{ type: 'circle', position: [0, 0], radius: 1 }],
+      }),
+    })
+    state = createCollider({
+      state,
+      entity: entity2,
+      data: defaultCollider({
+        layers: ['a'],
+        data: [{ type: 'line', position: [0, 3], position2: [0, -3] }],
+      }),
+    })
+
+    state = createRigidBody({
+      state,
+      entity: entity1,
+      data: defaultRigidBody({
+        force: [0.2, 0],
+        mass: 1,
+      }),
+    })
+    state = createRigidBody({
+      state,
+      entity: entity2,
+      data: defaultRigidBody({
+        force: [0, 0],
+        mass: 1,
+        isStatic: true,
+      }),
+    })
+
+    Array.from({ length: 11 }).forEach((_, i) => {
+      state = tick(i, state)
+    })
+
+    // Static rigidBody should not be moved
+    expect(
+      getTransform({
+        state,
+        entity: entity2,
+      })?.position,
+    ).toEqual([2, 0])
+
+    // After collision with kinematic rigidbody force should be reflected
+    expect(
+      getRigidBody({
+        state,
+        entity: entity1,
+      })?.force,
+    ).toEqual([-0.2, 0])
+
+    // Static rigidBody should not have any force
+    expect(
+      getRigidBody({
+        state,
+        entity: entity2,
+      })?.force,
+    ).toEqual(vectorZero())
+  })
 })

@@ -2,10 +2,16 @@ import { componentName } from '../../component/componentName'
 import { createSystem, systemPriority } from '../createSystem'
 import { InternalInitialState, Time } from '../../type'
 import { createTime, updateTime } from './timeCrud'
+import { createEntity } from '../../entity/createEntity'
 
-export const timeEntity = 'timeEntity'
+export const timeEntity = 'time'
 
 export const timeSystem = (state: InternalInitialState) => {
+  state = createEntity({
+    entity: timeEntity,
+    state,
+  })
+
   state = createTime({
     state,
     entity: timeEntity,

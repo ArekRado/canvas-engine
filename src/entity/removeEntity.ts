@@ -1,8 +1,8 @@
 import { removeComponent } from '../component/removeComponent'
-import {  Guid, AnyState } from '../type'
+import { Entity, AnyState } from '../type'
 
 type RemoveEntity = <State extends AnyState>(params: {
-  entity: Guid
+  entity: Entity
   state: State
 }) => State
 export const removeEntity: RemoveEntity = ({ entity, state }) => {

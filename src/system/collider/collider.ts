@@ -3,12 +3,12 @@ import {
   InternalInitialState,
   Transform,
   Collider,
-  Guid,
   ColliderDataLine,
   ColliderDataCircle,
   ColliderDataRectangle,
   ColliderDataPoint,
   ColliderDataPolygon,
+  Entity,
 } from '../../type'
 import { createSystem, systemPriority } from '../createSystem'
 import { getComponent } from '../../component/getComponent'
@@ -21,18 +21,13 @@ import {
   detectPointCircleCollision,
   detectPointLineCollision,
   detectPointPointCollision,
-  detectPointRectangleCollision,
   detectPolygonCircleCollision,
   detectPolygonLineCollision,
   detectPolygonPointCollision,
   detectPolygonPolygonCollision,
-  detectRectangleCircleCollision,
-  detectRectangleLineCollision,
-  detectRectangleRectangleCollision,
   Line,
   Point,
   Polygon,
-  Rectangle,
 } from './detectCollision'
 import { updateCollider } from './colliderCrud'
 import { getTransform } from '../transform/transformCrud'
@@ -349,7 +344,7 @@ const collisionsMatrix: CollisionsMatrix = {
 }
 
 type FindCollisionsWith = (pramams: {
-  entity: Guid
+  entity: Entity
   state: InternalInitialState
   component: Collider
 }) => Array<Collider['_collisions'][0]>
@@ -398,6 +393,8 @@ const findCollisionsWith: FindCollisionsWith = ({
 
       collider2.data.forEach((collider2Data, index) => {
         const collisionDetector =
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           collisionsMatrix[colliderData.type][collider2Data.type]
 
         const isColliding = collisionDetector({

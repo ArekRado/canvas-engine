@@ -21,10 +21,12 @@ const update = ({
   state,
   component,
   entity,
+  callSystemUpdateMethod,
 }: {
   state: InternalInitialState
   component: Partial<Camera>
   entity: Entity
+  callSystemUpdateMethod: boolean
 }): typeof state => {
   if (
     state.babylonjs.sceneRef &&
@@ -41,6 +43,7 @@ const update = ({
       state,
       entity,
       update: () => ({ ...component, ...size }),
+      callSystemUpdateMethod,
     })
   }
 
@@ -53,12 +56,17 @@ export const cameraSystem = (state: InternalInitialState) => {
     name: componentName.camera,
     componentName: componentName.camera,
     update: ({ state, component, entity }) => {
-      state = update({ state, component, entity })
+      state = update({
+        state,
+        component,
+        entity,
+        callSystemUpdateMethod: false,
+      })
 
       return state
     },
     create: ({ state, component, entity }) => {
-      state = update({ state, component, entity })
+      state = update({ state, component, entity, callSystemUpdateMethod: true })
 
       return state
     },

@@ -42,6 +42,23 @@ export const getElasticCollisionForces = ({
   }
 }
 
+export const getElasticCollisionForcesStatic = ({
+  v1,
+  v2,
+  position1,
+  position2,
+}: {
+  v1: Vector2D
+  v2: Vector2D
+  position1: Vector2D
+  position2: Vector2D
+}) => {
+  const subP1P2 = sub(position1, position2)
+  const aa = dot(sub(v1, v2), subP1P2) / Math.pow(magnitude(subP1P2), 2)
+
+  return sub(v1, scale(2 * aa, subP1P2))
+}
+
 const applyFrictionToForce = ({
   friction,
   timeDelta,
@@ -96,6 +113,11 @@ export const rigidBodySystem = (state: InternalInitialState) =>
         state,
         entity,
       })
+
+      // Static rigidBody actually have disabled phisics
+      if (component?.isStatic) {
+        return state
+      }
       const time = getTime({
         state,
         entity: timeEntity,
@@ -125,25 +147,38 @@ export const rigidBodySystem = (state: InternalInitialState) =>
         })
 
         if (collisionTransform && collisionRigidBody) {
-          const { force1, force2 } = getElasticCollisionForces({
-            m1: component.mass,
-            v1: component.force,
-            position1: transform.position as Vector2D,
+          if (collisionRigidBody.isStatic) {
+            // In elastic collision with static rigidbody mass of static rigidbody doesn't matter
+            // we just want to reflect force and don't change static rigidbody
+            const newForce = getElasticCollisionForcesStatic({
+              v1: component.force,
+              position1: transform.position as Vector2D,
+              v2: collisionRigidBody.force,
+              position2: collisionTransform.position as Vector2D,
+            })
 
-            m2: collisionRigidBody.mass,
-            v2: collisionRigidBody.force,
-            position2: collisionTransform.position as Vector2D,
-          })
+            force = newForce
+          } else {
+            const { force1, force2 } = getElasticCollisionForces({
+              m1: component.mass,
+              v1: component.force,
+              position1: transform.position as Vector2D,
 
-          force = force1
+              m2: collisionRigidBody.mass,
+              v2: collisionRigidBody.force,
+              position2: collisionTransform.position as Vector2D,
+            })
 
-          state = updateRigidBody({
-            state,
-            entity: collision.entity,
-            update: () => ({
-              force: force2,
-            }),
-          })
+            force = force1
+
+            state = updateRigidBody({
+              state,
+              entity: collision.entity,
+              update: () => ({
+                force: force2,
+              }),
+            })
+          }
 
           state = updateCollider({
             state,
@@ -153,31 +188,31 @@ export const rigidBodySystem = (state: InternalInitialState) =>
         }
       }
 
-      if (!component.isKinematic) {
-        state = updateRigidBody({
-          state,
-          entity,
-          update: () => ({
-            force: applyFrictionToForce({
-              friction: component.friction,
-              timeDelta: time.delta,
-              force,
-            }),
+      // if (!component.isStatic) {
+      state = updateRigidBody({
+        state,
+        entity,
+        update: () => ({
+          force: applyFrictionToForce({
+            friction: component.friction,
+            timeDelta: time.delta,
+            force,
           }),
-        })
+        }),
+      })
 
-        state = updateTransform({
-          state,
-          entity,
-          update: (transform) => ({
-            position: applyForceToPosition({
-              force,
-              timeDelta: time.delta,
-              position: transform.position as Vector2D,
-            }),
+      state = updateTransform({
+        state,
+        entity,
+        update: (transform) => ({
+          position: applyForceToPosition({
+            force,
+            timeDelta: time.delta,
+            position: transform.position as Vector2D,
           }),
-        })
-      }
+        }),
+      })
+      // }
 
       return state
     },

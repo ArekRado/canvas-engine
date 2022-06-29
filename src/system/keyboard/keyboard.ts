@@ -1,4 +1,5 @@
 import { componentName } from '../../component/componentName'
+import { createEntity } from '../../entity/createEntity'
 import { Keyboard, InternalInitialState } from '../../type'
 import { defaultKeyboard } from '../../util/defaultComponents'
 import { createSystem, systemPriority } from '../createSystem'
@@ -46,6 +47,11 @@ export const keyboardSystem = ({
     )
   }
 
+  state = createEntity({
+    entity: keyboardEntity,
+    state,
+  })
+
   state = createKeyboard({
     state,
     entity: keyboardEntity,
@@ -64,6 +70,8 @@ export const keyboardSystem = ({
 
       keyboard = {
         keys: Object.entries(keyboard.keys).reduce((acc, [key, value]) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           acc[key] = {
             isDown: false,
             isUp: false,

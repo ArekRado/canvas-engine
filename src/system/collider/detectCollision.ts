@@ -147,34 +147,42 @@ export const detectCircleLineCollision = ({
   const inside2 = detectPointCircleCollision({ circle, point: line.position2 })
   if (inside2) return true
 
-  const distX = line.position[0] - line.position2[0]
-  const distY = line.position[1] - line.position2[1]
+  const x1 = line.position[0]
+  const y1 = line.position[1]
+  const x2 = line.position2[0]
+  const y2 = line.position2[1]
+  const cx = circle.position[0]
+  const cy = circle.position[1]
+
+  // get length of the line
+  let distX = x1 - x2
+  let distY = y1 - y2
   const len = Math.sqrt(distX * distX + distY * distY)
 
-  const dot =
-    ((circle.position[0] - line.position[0]) *
-      (line.position2[0] - line.position[0]) +
-      (circle.position[1] - line.position[1]) *
-        (line.position2[1] - line.position[1])) /
-    len ** 2
+  // get dot product of the line and circle
+  const dot = ((cx - x1) * (x2 - x1) + (cy - y1) * (y2 - y1)) / Math.pow(len, 2)
 
-  const closestX =
-    line.position[0] + dot * (line.position2[0] - line.position[0])
-  const closestY =
-    line.position[1] + dot * (line.position2[0] - line.position[1])
+  // find the closest point on the line
+  const closestX = x1 + dot * (x2 - x1)
+  const closestY = y1 + dot * (y2 - y1)
 
+  // is this point actually on the line segment?
+  // if so keep going, but if not, return false
   const onSegment = detectPointLineCollision({
     line,
     point: [closestX, closestY],
   })
   if (!onSegment) return false
 
-  const dist = [closestX - circle.position[0], closestY - circle.position[1]]
-  const distance = Math.sqrt(dist[0] * dist[0] + dist[1] * dist[1])
+  // get distance to closest point
+  distX = closestX - cx
+  distY = closestY - cy
+  const distance = Math.sqrt(distX * distX + distY * distY)
 
-  const isColliding = distance <= circle.radius
-
-  return isColliding
+  if (distance <= circle.radius) {
+    return true
+  }
+  return false
 }
 
 /**

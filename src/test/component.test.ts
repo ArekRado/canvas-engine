@@ -88,6 +88,13 @@ describe('component', () => {
       name: 'test',
       update: () => null,
     })
+    state = updateComponent<null, InternalInitialState>({
+      state,
+      entity: entity1,
+      name: 'test',
+      update: () => null,
+      callSystemUpdateMethod: false
+    })
 
     // Update should not trigger create
     expect(create).toHaveBeenCalledTimes(3)

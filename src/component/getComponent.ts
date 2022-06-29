@@ -1,4 +1,4 @@
-import { AnyState, Guid } from '../type'
+import { AnyState, Entity } from '../type'
 
 export const getComponent = <Data, State extends AnyState = AnyState>({
   name, // TODO - Data should be connected with componentName
@@ -6,6 +6,6 @@ export const getComponent = <Data, State extends AnyState = AnyState>({
   state,
 }: {
   name: string
-  entity: Guid
+  entity: Entity
   state: State
 }): Data | undefined => state.component[name]?.[entity] as Data | undefined

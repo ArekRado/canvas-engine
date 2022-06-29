@@ -183,6 +183,14 @@ describe('detectCollision', () => {
         line: { position: [9, 9], position2: [10, 10] },
       }),
     ).toBeFalsy()
+
+    expect(
+      detectCircleLineCollision({
+        circle: { position: [2, 0], radius: 1 },
+        // line crosess circle, endings are not inside circle
+        line: { position: [2, 3], position2: [2, -3] },
+      }),
+    ).toBeTruthy()
   })
 
   it('detectLineLineCollision', () => {

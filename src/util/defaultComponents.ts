@@ -5,6 +5,9 @@ import {
   Mouse,
   MouseInteraction,
   RigidBody,
+  Mesh,
+  Material,
+  MeshType,
 } from '../type'
 import { Animation, Keyboard, Transform, Collider } from '../type'
 
@@ -31,11 +34,10 @@ export const defaultCollider: GetDefaultComponent<Collider> = (data = {}) => ({
 export const defaultRigidBody: GetDefaultComponent<RigidBody> = (
   data = {},
 ) => ({
-  mass: 0,
+  mass: 1,
   friction: 0,
-  velocity: vectorZero(),
   force: vectorZero(),
-  isKinematic: false,
+  isStatic: false,
   ...data,
 })
 
@@ -95,5 +97,21 @@ export const defaultMouse: GetDefaultComponent<Mouse> = (data = {}) => ({
 
 export const defaultKeyboard: GetDefaultComponent<Keyboard> = (data = {}) => ({
   keys: {},
+  ...data,
+})
+
+export const defaultMaterial: GetDefaultComponent<Material> = (data = {}) => ({
+  uniqueId: -1,
+  ...data,
+})
+
+export const defaultMesh: GetDefaultComponent<Mesh> = (data = {}) => ({
+  type: MeshType.plane,
+  uniqueId: -1,
+  width: 1,
+  height: 1,
+  updatable: false,
+  sideOrientation: 0,
+  materialEntity: [],
   ...data,
 })

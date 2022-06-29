@@ -20,8 +20,6 @@ import { Vector3 } from '@babylonjs/core'
 
 export type Dictionary<Value> = { [key: string]: Value }
 
-export type Guid = string
-
 export type Color = [number, number, number, number]
 
 ////////////////////////////////////
@@ -83,9 +81,8 @@ export type Collider = {
 export type RigidBody = {
   mass: number
   friction: number
-  velocity: Vector2D
   force: Vector2D
-  isKinematic: boolean // TODO
+  isStatic: boolean // TODO
 
   // gravityDirection: Vector2D,  // TODO
 }
@@ -129,7 +126,7 @@ export namespace Animation {
      */
     path: string
     component: string // it should be keyof State['component']
-    entity: Guid
+    entity: Entity
     index?: number
     keyframes: Keyframe[]
   }
@@ -201,7 +198,7 @@ export type AnimatedProperty = {
   type: 'number' | 'vector2D' | 'string'
 }
 
-export type Entity = Guid
+export type Entity = string
 
 export type Time = {
   previousTimeNow: number
@@ -280,7 +277,7 @@ export type Transform = {
   fromParentScale: Vector2D | Vector3D
   position: Vector2D | Vector3D
   fromParentPosition: Vector2D | Vector3D
-  parentId?: Guid
+  parentId?: Entity
 }
 
 ////////////////////////////////////

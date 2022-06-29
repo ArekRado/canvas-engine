@@ -50,9 +50,9 @@ export const meshSystem = (state: InternalInitialState) =>
         mesh.position.y = transform.position[1]
         mesh.position.z = transform.position[2] ?? 0
 
-        mesh.rotation.x = transform.rotation[0]
-        mesh.rotation.y = transform.rotation[1]
-        mesh.rotation.z = transform.rotation[2] ?? 0
+        mesh.rotation.x = transform.rotation
+        mesh.rotation.y = 0
+        mesh.rotation.z = 0
 
         mesh.scaling.x = transform.scale[0]
         mesh.scaling.y = transform.scale[1]
@@ -84,9 +84,9 @@ export const meshSystem = (state: InternalInitialState) =>
         mesh.position.y = transform.position[1]
         mesh.position.z = transform.position[2] ?? 0
 
-        mesh.rotation.x = transform.rotation[0]
-        mesh.rotation.y = transform.rotation[1]
-        mesh.rotation.z = transform.rotation[2] ?? 0
+        mesh.rotation.x = transform.rotation
+        mesh.rotation.y = 0
+        mesh.rotation.z = 0
 
         mesh.scaling.x = transform.scale[0]
         mesh.scaling.y = transform.scale[1]

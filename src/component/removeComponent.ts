@@ -1,4 +1,4 @@
-import { AnyState, Guid } from '../type'
+import { AnyState, Entity } from '../type'
 import { getComponent } from './getComponent'
 import { getSystemByName } from '../system/getSystemByName'
 
@@ -8,7 +8,7 @@ export const removeComponent = <State extends AnyState = AnyState>({
   state,
 }: {
   name: string
-  entity: Guid
+  entity: Entity
   state: State
 }): State => {
   const { [entity]: _, ...dictionaryWithoutComponent } = state.component[name]
