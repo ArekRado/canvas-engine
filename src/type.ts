@@ -7,7 +7,7 @@ import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { Vector3 } from '@babylonjs/core'
-import { Intersection } from './system/collider/detectCollision'
+import { Intersection } from './system/collider/getIntersection'
 
 ////////////////////////////////////
 //

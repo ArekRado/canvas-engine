@@ -2,27 +2,27 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/ban-types */
 import { vector } from '@arekrado/vector-2d'
-import { getInitialState, getSystems } from '../util/state'
-import { createEntity } from '../entity/createEntity'
-import { generateEntity } from '../entity/generateEntity'
-import { runOneFrame } from '../util/runOneFrame'
+import { getInitialState, getSystems } from '../../util/state'
+import { createEntity } from '../../entity/createEntity'
+import { generateEntity } from '../../entity/generateEntity'
+import { runOneFrame } from '../../util/runOneFrame'
 import {
   defaultCollider,
   defaultMouseInteraction,
   defaultTransform,
-} from '../util/defaultComponents'
+} from '../../util/defaultComponents'
 import {
   Collider,
   InternalInitialState,
   Mouse,
   MouseInteraction,
-} from '../type'
-import { createComponent } from '../component/createComponent'
-import { getComponent } from '../component/getComponent'
-import { componentName } from '../component/componentName'
-import { isMouseOver } from '../system/mouseInteraction/mouseInteraction'
-import { Transform } from '../index'
-import { getMouse } from '../system/mouse/mouseCrud'
+} from '../../type'
+import { createComponent } from '../../component/createComponent'
+import { getComponent } from '../../component/getComponent'
+import { componentName } from '../../component/componentName'
+import { getMouseIntersection } from './mouseInteraction'
+import { Transform } from '../../index'
+import { getMouse } from '../mouse/mouseCrud'
 
 describe('mouseInteraction', () => {
   let mousemoveCallback: Function
@@ -90,7 +90,7 @@ describe('mouseInteraction', () => {
 
     // Mouse is not over collide
     expect(
-      isMouseOver({
+      getMouseIntersection({
         mouse: {
           ...mouse,
           position: vector(-10, -10),
@@ -102,7 +102,7 @@ describe('mouseInteraction', () => {
 
     // Mouse is over rectangle
     expect(
-      isMouseOver({
+      getMouseIntersection({
         mouse: {
           ...mouse,
           position: vector(5, 5),
@@ -122,7 +122,7 @@ describe('mouseInteraction', () => {
 
     // Mouse is over circle
     expect(
-      isMouseOver({
+      getMouseIntersection({
         mouse: {
           ...mouse,
           buttons: 1,

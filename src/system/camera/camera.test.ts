@@ -1,10 +1,10 @@
-import { getState } from '../util/state'
-import { runOneFrame } from '../util/runOneFrame'
-import { updateComponent } from '../component/updateComponent'
-import { cameraEntity } from '../system/camera/camera'
-import { componentName } from '../component/componentName'
-import { getComponent } from '../component/getComponent'
-import { Camera } from '../type'
+import { getState } from '../../util/state'
+import { runOneFrame } from '../../util/runOneFrame'
+import { updateComponent } from '../../component/updateComponent'
+import { cameraEntity } from './camera'
+import { componentName } from '../../component/componentName'
+import { getComponent } from '../../component/getComponent'
+import { Camera } from '../../type'
 
 describe('camera', () => {
   it('should pass through camera render lifecycle without any errors', () => {

@@ -1,8 +1,8 @@
 import { getState } from '../util/state'
 
-import { createEntity } from '../entity/createEntity'
-import { removeEntity } from '../entity/removeEntity'
-import { generateEntity } from '../entity/generateEntity'
+import { createEntity } from './createEntity'
+import { removeEntity } from './removeEntity'
+import { generateEntity } from './generateEntity'
 import { defaultCollider, defaultAnimation } from '../util/defaultComponents'
 import { createComponent } from '../component/createComponent'
 import { Animation, Collider } from '../type'

@@ -1,12 +1,12 @@
 import { vector, Vector2D } from '@arekrado/vector-2d'
-import { createEntity } from '../entity/createEntity'
-import { generateEntity } from '../entity/generateEntity'
-import { runOneFrame } from '../util/runOneFrame'
-import { defaultCollider, defaultTransform } from '../util/defaultComponents'
-import { getState } from '../util/state'
-import { createTransform } from '../system/transform/transformCrud'
-import { createCollider, getCollider } from '../system/collider/colliderCrud'
-import { degreesToRadians } from '../util/radian'
+import { createEntity } from '../../entity/createEntity'
+import { generateEntity } from '../../entity/generateEntity'
+import { runOneFrame } from '../../util/runOneFrame'
+import { defaultCollider, defaultTransform } from '../../util/defaultComponents'
+import { getState } from '../../util/state'
+import { createTransform } from '../transform/transformCrud'
+import { createCollider, getCollider } from './colliderCrud'
+import { degreesToRadians } from '../../util/radian'
 
 describe('collider', () => {
   describe('detect collisions', () => {

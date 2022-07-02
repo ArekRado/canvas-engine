@@ -7,7 +7,7 @@ import {
   Transform,
 } from '../../type'
 import { createSystem } from '../createSystem'
-import { Intersection } from '../collider/detectCollision'
+import { Intersection } from '../collider/getIntersection'
 import { mouseEntity } from '../mouse/mouse'
 import { getCollider } from '../collider/colliderCrud'
 import { getTransform } from '../transform/transformCrud'

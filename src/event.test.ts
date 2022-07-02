@@ -1,13 +1,13 @@
-import { createEntity } from '../entity/createEntity'
-import { createComponent } from '../component/createComponent'
-import { getComponent } from '../component/getComponent'
-import { updateComponent } from '../component/updateComponent'
-import { generateEntity } from '../entity/generateEntity'
-import { CameraEvent } from '../system/camera/camera'
-import { addEventHandler, emitEvent, removeEventHandler } from '../event'
-import { ECSEvent, InternalInitialState } from '../type'
-import { runOneFrame } from '../util/runOneFrame'
-import { getState } from '../util/state'
+import { createEntity } from './entity/createEntity'
+import { createComponent } from './component/createComponent'
+import { getComponent } from './component/getComponent'
+import { updateComponent } from './component/updateComponent'
+import { generateEntity } from './entity/generateEntity'
+import { CameraEvent } from './system/camera/camera'
+import { addEventHandler, emitEvent, removeEventHandler } from './event'
+import { ECSEvent, InternalInitialState } from './type'
+import { runOneFrame } from './util/runOneFrame'
+import { getState } from './util/state'
 
 describe('event', () => {
   it('should emit, receive events and add, remove event handlers', () => {

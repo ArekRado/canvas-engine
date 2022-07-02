@@ -1,10 +1,10 @@
 import { vector } from '@arekrado/vector-2d'
-import { getState } from '../util/state'
-import { createEntity } from '../entity/createEntity'
-import { generateEntity } from '../entity/generateEntity'
-import { runOneFrame } from '../util/runOneFrame'
-import { defaultTransform } from '../util/defaultComponents'
-import { createTransform, getTransform } from '../system/transform/transformCrud'
+import { getState } from '../../util/state'
+import { createEntity } from '../../entity/createEntity'
+import { generateEntity } from '../../entity/generateEntity'
+import { runOneFrame } from '../../util/runOneFrame'
+import { defaultTransform } from '../../util/defaultComponents'
+import { createTransform, getTransform } from './transformCrud'
 
 describe('transform', () => {
   it('should set proper position using fromParentPosition and parent.position - simple example', () => {

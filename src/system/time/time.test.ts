@@ -1,10 +1,10 @@
-import { getState } from '../util/state'
-import { runOneFrame } from '../util/runOneFrame'
-import { InternalInitialState, Time } from '../type'
-import { timeEntity } from '../system/time/time'
-import { componentName } from '../component/componentName'
-import { getComponent } from '../component/getComponent'
-import { updateTime } from '../system/time/timeCrud'
+import { getState } from '../../util/state'
+import { runOneFrame } from '../../util/runOneFrame'
+import { InternalInitialState, Time } from '../../type'
+import { timeEntity } from './time'
+import { componentName } from '../../component/componentName'
+import { getComponent } from '../../component/getComponent'
+import { updateTime } from './timeCrud'
 
 const setTime = ({
   state,

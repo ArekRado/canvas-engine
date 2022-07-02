@@ -9,35 +9,42 @@ import {
   ColliderDataPoint,
   ColliderDataPolygon,
   Entity,
+  ECSEvent,
 } from '../../type'
 import { createSystem, systemPriority } from '../createSystem'
 import { getComponent } from '../../component/getComponent'
 import { componentName } from '../../component/componentName'
 import {
   Circle,
-  detectCircleCircleCollision,
-  detectCircleLineCollision,
-  detectLineLineCollision,
-  detectPointCircleCollision,
-  detectPointLineCollision,
-  detectPointPointCollision,
-  detectPolygonCircleCollision,
-  detectPolygonLineCollision,
-  detectPolygonPointCollision,
-  detectPolygonPolygonCollision,
+  getCircleCircleIntersection,
+  getCircleLineIntersection,
+  getLineLineIntersection,
+  getPointCircleIntersection,
+  getPointLineIntersection,
+  getPointPointIntersection,
+  getPolygonCircleIntersection,
+  getPolygonLineIntersection,
+  getPolygonPointIntersection,
+  getPolygonPolygonIntersection,
   Intersection,
   Line,
   Point,
   Polygon,
-} from './detectCollision'
+} from './getIntersection'
 import { updateCollider } from './colliderCrud'
 import { getTransform } from '../transform/transformCrud'
 import { applyMatrixToVector2D, rotate } from '../../util/matrix'
+import { emitEvent } from '../../event'
+import { hasSameLayer } from './hasSameLayer'
 
-const hasSameLayer = (
-  layers1: Collider['layers'],
-  layers2: Collider['layers'],
-) => layers1.some((l1) => layers2.find((l2) => l2 === l1))
+export type CollisionEvent = ECSEvent<
+  'collision',
+  {
+    entity: Entity
+    colliderEntity: Entity
+    intersection: Intersection
+  }
+>
 
 const applyTransformsToPosition = ({
   colliderPosition,
@@ -160,7 +167,7 @@ type CollisionsMatrix = Record<
 export const collisionsMatrix: CollisionsMatrix = {
   circle: {
     circle: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectCircleCircleCollision({
+      getCircleCircleIntersection({
         circle1: mapToCircle({
           transform: transform1,
           colliderData: collider1Data as ColliderDataCircle,
@@ -171,7 +178,7 @@ export const collisionsMatrix: CollisionsMatrix = {
         }),
       }),
     line: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectCircleLineCollision({
+      getCircleLineIntersection({
         circle: mapToCircle({
           transform: transform1,
           colliderData: collider1Data as ColliderDataCircle,
@@ -182,7 +189,7 @@ export const collisionsMatrix: CollisionsMatrix = {
         }),
       }),
     point: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectPointCircleCollision({
+      getPointCircleIntersection({
         circle: mapToCircle({
           transform: transform1,
           colliderData: collider1Data as ColliderDataCircle,
@@ -193,7 +200,7 @@ export const collisionsMatrix: CollisionsMatrix = {
         }),
       }),
     rectangle: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectPolygonCircleCollision({
+      getPolygonCircleIntersection({
         circle: mapToCircle({
           transform: transform1,
           colliderData: collider1Data as ColliderDataCircle,
@@ -206,7 +213,7 @@ export const collisionsMatrix: CollisionsMatrix = {
   },
   line: {
     circle: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectCircleLineCollision({
+      getCircleLineIntersection({
         line: mapToLine({
           transform: transform1,
           colliderData: collider1Data as ColliderDataLine,
@@ -217,7 +224,7 @@ export const collisionsMatrix: CollisionsMatrix = {
         }),
       }),
     line: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectLineLineCollision({
+      getLineLineIntersection({
         line1: mapToLine({
           transform: transform1,
           colliderData: collider1Data as ColliderDataLine,
@@ -228,7 +235,7 @@ export const collisionsMatrix: CollisionsMatrix = {
         }),
       }),
     point: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectPointLineCollision({
+      getPointLineIntersection({
         line: mapToLine({
           transform: transform1,
           colliderData: collider1Data as ColliderDataLine,
@@ -239,7 +246,7 @@ export const collisionsMatrix: CollisionsMatrix = {
         }),
       }),
     rectangle: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectPolygonLineCollision({
+      getPolygonLineIntersection({
         line: mapToLine({
           transform: transform1,
           colliderData: collider1Data as ColliderDataLine,
@@ -252,7 +259,7 @@ export const collisionsMatrix: CollisionsMatrix = {
   },
   point: {
     circle: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectPointCircleCollision({
+      getPointCircleIntersection({
         point: mapToPoint({
           transform: transform1,
           colliderData: collider1Data as ColliderDataPoint,
@@ -263,7 +270,7 @@ export const collisionsMatrix: CollisionsMatrix = {
         }),
       }),
     line: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectPointLineCollision({
+      getPointLineIntersection({
         point: mapToPoint({
           transform: transform1,
           colliderData: collider1Data as ColliderDataPoint,
@@ -274,7 +281,7 @@ export const collisionsMatrix: CollisionsMatrix = {
         }),
       }),
     point: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectPointPointCollision({
+      getPointPointIntersection({
         point1: mapToPoint({
           transform: transform1,
           colliderData: collider1Data as ColliderDataPoint,
@@ -285,7 +292,7 @@ export const collisionsMatrix: CollisionsMatrix = {
         }),
       }),
     rectangle: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectPolygonPointCollision({
+      getPolygonPointIntersection({
         point: mapToPoint({
           transform: transform1,
           colliderData: collider1Data as ColliderDataPoint,
@@ -298,7 +305,7 @@ export const collisionsMatrix: CollisionsMatrix = {
   },
   rectangle: {
     circle: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectPolygonCircleCollision({
+      getPolygonCircleIntersection({
         polygon: mapRectangleToPolygon({
           transform: transform1,
           colliderData: collider1Data as ColliderDataRectangle,
@@ -309,7 +316,7 @@ export const collisionsMatrix: CollisionsMatrix = {
         }),
       }),
     line: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectPolygonLineCollision({
+      getPolygonLineIntersection({
         polygon: mapRectangleToPolygon({
           transform: transform1,
           colliderData: collider1Data as ColliderDataRectangle,
@@ -320,7 +327,7 @@ export const collisionsMatrix: CollisionsMatrix = {
         }),
       }),
     point: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectPolygonPointCollision({
+      getPolygonPointIntersection({
         polygon: mapRectangleToPolygon({
           transform: transform1,
           colliderData: collider1Data as ColliderDataRectangle,
@@ -331,7 +338,7 @@ export const collisionsMatrix: CollisionsMatrix = {
         }),
       }),
     rectangle: ({ transform1, collider1Data, transform2, collider2Data }) =>
-      detectPolygonPolygonCollision({
+      getPolygonPolygonIntersection({
         polygon1: mapRectangleToPolygon({
           transform: transform1,
           colliderData: collider1Data as ColliderDataRectangle,
@@ -410,6 +417,15 @@ const findCollisionsWith: FindCollisionsWith = ({
             colliderIndex: index,
             colliderEntity: collider2Entity,
             intersection,
+          })
+
+          emitEvent<CollisionEvent>({
+            type: 'collision',
+            payload: {
+              entity,
+              colliderEntity: collider2Entity,
+              intersection,
+            },
           })
         }
       })

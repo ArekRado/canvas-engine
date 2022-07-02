@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { getInitialState, getSystems } from '../util/state'
-import { runOneFrame } from '../util/runOneFrame'
+import { getInitialState, getSystems } from '../../util/state'
+import { runOneFrame } from '../../util/runOneFrame'
 import { vector, vectorZero } from '@arekrado/vector-2d'
-import { getComponent } from '../component/getComponent'
-import { Mouse } from '../type'
-import { mouseEntity } from '../system/mouse/mouse'
-import { componentName } from '../component/componentName'
+import { getComponent } from '../../component/getComponent'
+import { Mouse } from '../../type'
+import { mouseEntity } from './mouse'
+import { componentName } from '../../component/componentName'
 
 describe('mouse', () => {
   let mousemoveCallback: Function

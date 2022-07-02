@@ -1,24 +1,24 @@
 import { Vector2D } from '@arekrado/vector-2d'
 import {
-  detectCircleCircleCollision,
-  detectCircleLineCollision,
-  detectLineLineCollision,
-  detectPointCircleCollision,
-  detectPointLineCollision,
-  detectPointPointCollision,
-  detectPolygonCircleCollision,
-  detectPolygonLineCollision,
-  detectPolygonPointCollision,
-  detectPolygonPolygonCollision,
+  getCircleCircleIntersection,
+  getCircleLineIntersection,
+  getLineLineIntersection,
+  getPointCircleIntersection,
+  getPointLineIntersection,
+  getPointPointIntersection,
+  getPolygonCircleIntersection,
+  getPolygonLineIntersection,
+  getPolygonPointIntersection,
+  getPolygonPolygonIntersection,
   Intersection,
-  // detectRectangleLineCollision,
-  // detectRectangleRectangleCollision,
-} from '../system/collider/detectCollision'
-import { toFixedVector2D } from '../util/toFixedVector2D'
+  // getRectangleLineIntersection,
+  // getRectangleRectangleIntersection,
+} from './getIntersection'
+import { toFixedVector2D } from '../../util/toFixedVector2D'
 
-describe('detectCollision', () => {
-  // describe('detectRectangleRectangleCollision', () => {
-  //   it('should detect edge collisions', () => {
+describe('getIntersection', () => {
+  // describe('getRectangleRectangleIntersection', () => {
+  //   it('shouldIntersection collisions', () => {
   //     const edgeV1: Vector2D[] = [
   //       [-1, 1],
   //       [-1, 0],
@@ -32,7 +32,7 @@ describe('detectCollision', () => {
 
   //     edgeV1.forEach((v1) => {
   //       expect(
-  //         detectRectangleRectangleCollision({
+  //         getRectangleRectangleIntersection({
   //           rectangle1: {
   //             position: v1,
   //             size: vector(1, 1),
@@ -46,7 +46,7 @@ describe('detectCollision', () => {
   //     })
   //   })
 
-  //   it('should not detect collisions when object is outside', () => {
+  //   it('should not get cIntersection when object is outside', () => {
   //     const outsideV1: Vector2D[] = [
   //       [-2, 1],
   //       [-2, 0],
@@ -60,7 +60,7 @@ describe('detectCollision', () => {
 
   //     outsideV1.forEach((v1) => {
   //       expect(
-  //         detectRectangleRectangleCollision({
+  //         getRectangleRectangleIntersection({
   //           rectangle1: {
   //             position: v1,
   //             size: vector(1, 1),
@@ -74,7 +74,7 @@ describe('detectCollision', () => {
   //     })
   //   })
 
-  //   it('should detect collisions when object inside', () => {
+  //   it('should get cIntersection when object inside', () => {
   //     const outsideV1: Vector2D[] = [
   //       [0, 0],
   //       [-0.5, 1],
@@ -89,7 +89,7 @@ describe('detectCollision', () => {
 
   //     outsideV1.forEach((v1) => {
   //       expect(
-  //         detectRectangleRectangleCollision({
+  //         getRectangleRectangleIntersection({
   //           rectangle1: {
   //             position: v1,
   //             size: vector(1, 1),
@@ -104,48 +104,48 @@ describe('detectCollision', () => {
   //   })
   // })
 
-  it('detectPointLineCollision', () => {
+  it('getPointLineIntersection', () => {
     expect(
-      detectPointPointCollision({
+      getPointPointIntersection({
         point1: [0, 0],
         point2: [0, 0],
       }),
     ).toEqual({ figure: { data: [0, 0], type: 'point' }, position: [0, 0] })
 
     expect(
-      detectPointPointCollision({
+      getPointPointIntersection({
         point1: [0, 0],
         point2: [1, 1],
       }),
     ).toBeNull()
   })
 
-  it('detectPointCircleCollision', () => {
+  it('getPointCircleIntersection', () => {
     expect(
-      detectPointCircleCollision({
+      getPointCircleIntersection({
         point: [0, 0],
         circle: { position: [0, 0], radius: 1 },
       }),
     ).toEqual({ figure: { data: [0, 0], type: 'point' }, position: [0, 0] })
 
     expect(
-      detectPointCircleCollision({
+      getPointCircleIntersection({
         point: [2, 2],
         circle: { position: [2.1, 2.1], radius: 1 },
       }),
     ).toEqual({ figure: { data: [2, 2], type: 'point' }, position: [2, 2] })
 
     expect(
-      detectPointCircleCollision({
+      getPointCircleIntersection({
         point: [4, 4],
         circle: { position: [2.1, 2.1], radius: 1 },
       }),
     ).toBeNull()
   })
 
-  it('detectCircleCircleCollision', () => {
+  it('getCircleCircleIntersection', () => {
     expect(
-      detectCircleCircleCollision({
+      getCircleCircleIntersection({
         circle1: { position: [2, 0], radius: 1 },
         circle2: { position: [0, 0], radius: 1 },
       }),
@@ -155,7 +155,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectCircleCircleCollision({
+      getCircleCircleIntersection({
         circle1: { position: [3, 0], radius: 2 },
         circle2: { position: [0, 0], radius: 1 },
       }),
@@ -165,7 +165,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectCircleCircleCollision({
+      getCircleCircleIntersection({
         circle1: { position: [3, 0], radius: 1 },
         circle2: { position: [0, 0], radius: 2 },
       }),
@@ -175,7 +175,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectCircleCircleCollision({
+      getCircleCircleIntersection({
         circle1: { position: [0, 0], radius: 1 },
         circle2: { position: [0, 0], radius: 1 },
       }),
@@ -185,7 +185,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectCircleCircleCollision({
+      getCircleCircleIntersection({
         circle1: { position: [1, 1], radius: 2 },
         circle2: { position: [3, 3], radius: 2 },
       }),
@@ -195,16 +195,16 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectCircleCircleCollision({
+      getCircleCircleIntersection({
         circle1: { position: [1, 1], radius: 2 },
         circle2: { position: [4, 4], radius: 2 },
       }),
     ).toEqual(null)
   })
 
-  it('detectPointLineCollision', () => {
+  it('getPointLineIntersection', () => {
     expect(
-      detectPointLineCollision({
+      getPointLineIntersection({
         point: [0, 0],
         line: {
           position: [0, 0],
@@ -217,7 +217,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectPointLineCollision({
+      getPointLineIntersection({
         point: [0, 0],
         line: {
           position: [0, 0],
@@ -230,7 +230,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectPointLineCollision({
+      getPointLineIntersection({
         point: [1, 1],
         line: {
           position: [0, 0],
@@ -243,7 +243,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectPointLineCollision({
+      getPointLineIntersection({
         point: [1, 2],
         line: {
           position: [0, 0],
@@ -253,7 +253,7 @@ describe('detectCollision', () => {
     ).toBeNull()
 
     expect(
-      detectPointLineCollision({
+      getPointLineIntersection({
         point: [1, 1],
         line: {
           position: [0, 0],
@@ -263,9 +263,9 @@ describe('detectCollision', () => {
     ).toBeNull()
   })
 
-  it('detectCircleLineCollision', () => {
+  it('getCircleLineIntersection', () => {
     expect(
-      detectCircleLineCollision({
+      getCircleLineIntersection({
         circle: { position: [0, 0], radius: 1 },
         // line end inside circle
         line: { position: [0.5, 0.5], position2: [3, 3] },
@@ -276,7 +276,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectCircleLineCollision({
+      getCircleLineIntersection({
         circle: { position: [0, 0], radius: 1 },
         // line second end inside circle
         line: { position: [3, 3], position2: [0.5, 0.5] },
@@ -287,7 +287,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectCircleLineCollision({
+      getCircleLineIntersection({
         circle: { position: [0, 0], radius: 1 },
         // line crossing circle
         line: { position: [0, 0], position2: [1, 1] },
@@ -295,7 +295,7 @@ describe('detectCollision', () => {
     ).toEqual({ figure: { data: [0, 0], type: 'point' }, position: [0, 0] })
 
     expect(
-      detectCircleLineCollision({
+      getCircleLineIntersection({
         circle: { position: [0, 0], radius: 1 },
         // line outside circle
         line: { position: [9, 9], position2: [10, 10] },
@@ -303,7 +303,7 @@ describe('detectCollision', () => {
     ).toBeNull()
 
     expect(
-      detectCircleLineCollision({
+      getCircleLineIntersection({
         circle: { position: [2, 0], radius: 1 },
         // line crosess circle, endings are not inside circle
         line: { position: [2, 3], position2: [2, -3] },
@@ -314,23 +314,23 @@ describe('detectCollision', () => {
     })
   })
 
-  it('detectLineLineCollision', () => {
+  it('getLineLineIntersection', () => {
     expect(
-      detectLineLineCollision({
+      getLineLineIntersection({
         line1: { position: [-1, -1], position2: [1, 1] },
         line2: { position: [-1, -1], position2: [1, 1] },
       }),
     ).toBeNull()
 
     expect(
-      detectLineLineCollision({
+      getLineLineIntersection({
         line1: { position: [-1, -1], position2: [1, 1] },
         line2: { position: [1, 1], position2: [2, 2] },
       }),
     ).toBeNull()
 
     expect(
-      detectLineLineCollision({
+      getLineLineIntersection({
         line1: { position: [-1, -1], position2: [1, 1] },
         line2: { position: [-1, 1], position2: [1, -1] },
       }),
@@ -340,21 +340,21 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectLineLineCollision({
+      getLineLineIntersection({
         line1: { position: [-1, -1], position2: [1, 1] },
         line2: { position: [-2, -2], position2: [2, 2] },
       }),
     ).toBeNull()
 
     expect(
-      detectLineLineCollision({
+      getLineLineIntersection({
         line1: { position: [-1, -1], position2: [1, 1] },
         line2: { position: [1, 1], position2: [2, 2] },
       }),
     ).toBeNull()
 
     expect(
-      detectLineLineCollision({
+      getLineLineIntersection({
         line1: { position: [-1, -1], position2: [1, 1] },
         line2: { position: [0.9999, 0.9999], position2: [2, 1] },
       }),
@@ -367,14 +367,14 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectLineLineCollision({
+      getLineLineIntersection({
         line1: { position: [-1, -1], position2: [1, 1] },
         line2: { position: [100, 100], position2: [100, 100] },
       }),
     ).toBeNull()
 
     expect(
-      detectLineLineCollision({
+      getLineLineIntersection({
         line1: { position: [2, -2], position2: [-2, 2] },
         line2: { position: [-2, -2], position2: [1, 1] },
       }),
@@ -384,7 +384,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectLineLineCollision({
+      getLineLineIntersection({
         line1: { position: [-2, -2], position2: [1, 1] },
         line2: { position: [2, -2], position2: [-2, 2] },
       }),
@@ -394,7 +394,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectLineLineCollision({
+      getLineLineIntersection({
         line1: { position: [0, 0], position2: [4, 4] },
         line2: { position: [2, 4], position2: [2, 0] },
       }),
@@ -404,10 +404,10 @@ describe('detectCollision', () => {
     })
   })
 
-  // it('detectRectangleLineCollision', () => {
+  // it('getRectangleLineIntersection', () => {
   //   // left side collision
   //   expect(
-  //     detectRectangleLineCollision({
+  //     getRectangleLineIntersection({
   //       rectangle: { position: [0, 0], size: [1, 1] },
   //       line: { position: [-1.5, 0.5], position2: [0.5, 0.5] },
   //     }),
@@ -415,7 +415,7 @@ describe('detectCollision', () => {
 
   //   // right side collision
   //   expect(
-  //     detectRectangleLineCollision({
+  //     getRectangleLineIntersection({
   //       rectangle: { position: [0, 0], size: [1, 1] },
   //       line: { position: [1.5, 0.5], position2: [0.5, 0.5] },
   //     }),
@@ -423,7 +423,7 @@ describe('detectCollision', () => {
 
   //   // top side collision
   //   expect(
-  //     detectRectangleLineCollision({
+  //     getRectangleLineIntersection({
   //       rectangle: { position: [0, 0], size: [1, 1] },
   //       line: { position: [0.5, 1.5], position2: [0.5, 0.5] },
   //     }),
@@ -431,7 +431,7 @@ describe('detectCollision', () => {
 
   //   // bottom side collision
   //   expect(
-  //     detectRectangleLineCollision({
+  //     getRectangleLineIntersection({
   //       rectangle: { position: [0, 0], size: [1, 1] },
   //       line: { position: [0.5, -1.5], position2: [0.5, 0.5] },
   //     }),
@@ -439,7 +439,7 @@ describe('detectCollision', () => {
 
   //   // left-top to right-bottom
   //   expect(
-  //     detectRectangleLineCollision({
+  //     getRectangleLineIntersection({
   //       rectangle: { position: [0, 0], size: [1, 1] },
   //       line: { position: [-1, 2], position2: [2, -1] },
   //     }),
@@ -447,7 +447,7 @@ describe('detectCollision', () => {
 
   //   // line inside rectangle
   //   expect(
-  //     detectRectangleLineCollision({
+  //     getRectangleLineIntersection({
   //       rectangle: { position: [0, 0], size: [1, 1] },
   //       line: { position: [0.5, 0.5], position2: [0.5, 0.5] },
   //     }),
@@ -455,16 +455,16 @@ describe('detectCollision', () => {
 
   //   // line doesn't touch rectangle
   //   expect(
-  //     detectRectangleLineCollision({
+  //     getRectangleLineIntersection({
   //       rectangle: { position: [0, 0], size: [1, 1] },
   //       line: { position: [-1, -1], position2: [-2, -2] },
   //     }),
   //   ).toBeNull()
   // })
 
-  it('detectPolygonPointCollision', () => {
+  it('getPolygonPointIntersection', () => {
     expect(
-      detectPolygonPointCollision({
+      getPolygonPointIntersection({
         polygon: [
           [0, 0],
           [1, 0],
@@ -479,7 +479,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectPolygonPointCollision({
+      getPolygonPointIntersection({
         polygon: [
           [0, 0],
           [1, 0],
@@ -491,7 +491,7 @@ describe('detectCollision', () => {
     ).toBeNull()
 
     expect(
-      detectPolygonPointCollision({
+      getPolygonPointIntersection({
         polygon: [
           [0, 0],
           [0, 2],
@@ -504,7 +504,7 @@ describe('detectCollision', () => {
     ).toBeNull()
 
     expect(
-      detectPolygonPointCollision({
+      getPolygonPointIntersection({
         polygon: [
           [0, 0],
           [0, 2],
@@ -517,9 +517,9 @@ describe('detectCollision', () => {
     ).toEqual({ figure: { data: [1, 0.9], type: 'point' }, position: [1, 0.9] })
   })
 
-  it('detectPolygonCircleCollision', () => {
+  it('getPolygonCircleIntersection', () => {
     expect(
-      detectPolygonCircleCollision({
+      getPolygonCircleIntersection({
         polygon: [
           [0, 0],
           [0, 1],
@@ -532,7 +532,7 @@ describe('detectCollision', () => {
 
     // checking if circle is inside is not necessary now
     // expect(
-    //   detectPolygonCircleCollision({
+    //   getPolygonCircleIntersection({
     //     polygon: [
     //       [0, 0],
     //       [0, 1],
@@ -544,7 +544,7 @@ describe('detectCollision', () => {
     // ).toEqual([0,0])
 
     expect(
-      detectPolygonCircleCollision({
+      getPolygonCircleIntersection({
         polygon: [
           [0, 0],
           [0, 1],
@@ -556,7 +556,7 @@ describe('detectCollision', () => {
     ).toBeNull()
 
     expect(
-      detectPolygonCircleCollision({
+      getPolygonCircleIntersection({
         polygon: [
           [2, 2],
           [1, 1],
@@ -568,9 +568,9 @@ describe('detectCollision', () => {
     ).toEqual({ figure: { data: [1, 0], type: 'point' }, position: [1, 0] })
   })
 
-  it('detectPolygonLineCollision', () => {
+  it('getPolygonLineIntersection', () => {
     expect(
-      detectPolygonLineCollision({
+      getPolygonLineIntersection({
         polygon: [
           [0, 0],
           [0, 1],
@@ -585,7 +585,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectPolygonLineCollision({
+      getPolygonLineIntersection({
         polygon: [
           [2, 2],
           [1, 1],
@@ -600,7 +600,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectPolygonLineCollision({
+      getPolygonLineIntersection({
         polygon: [
           [2, 2],
           [1, 1],
@@ -612,9 +612,9 @@ describe('detectCollision', () => {
     ).toBeNull()
   })
 
-  it('detectPolygonPolygonCollision', () => {
+  it('getPolygonPolygonIntersection', () => {
     expect(
-      detectPolygonPolygonCollision({
+      getPolygonPolygonIntersection({
         polygon1: [
           [0, 0],
           [0, 1],
@@ -637,7 +637,7 @@ describe('detectCollision', () => {
     })
 
     expect(
-      detectPolygonPolygonCollision({
+      getPolygonPolygonIntersection({
         polygon1: [
           [0, 0],
           [0, 1],

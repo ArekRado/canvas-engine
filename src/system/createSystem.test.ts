@@ -1,5 +1,5 @@
 import { getState } from '../util/state'
-import { createGlobalSystem } from '../system/createSystem'
+import { createGlobalSystem } from './createSystem'
 import { InternalInitialState } from '../type'
 import { runOneFrame } from '../util/runOneFrame'
 

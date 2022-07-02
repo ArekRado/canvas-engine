@@ -1,8 +1,8 @@
 import { createComponent } from '../component/createComponent'
 import { createGlobalSystem, createSystem } from '../system/createSystem'
 import { InternalInitialState } from '../type'
-import { runOneFrame } from '../util/runOneFrame'
-import { getInitialState } from '../util/state'
+import { runOneFrame } from './runOneFrame'
+import { getInitialState } from './state'
 
 describe('runOneFrame', () => {
   it('should call system tick in proper order depending on system priority', () => {

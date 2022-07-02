@@ -1,28 +1,28 @@
 import { vector, Vector2D, vectorZero } from '@arekrado/vector-2d'
-import { getState } from '../util/state'
-import { createEntity } from '../entity/createEntity'
-import { generateEntity } from '../entity/generateEntity'
+import { getState } from '../../util/state'
+import { createEntity } from '../../entity/createEntity'
+import { generateEntity } from '../../entity/generateEntity'
 import {
   defaultCollider,
   defaultRigidBody,
   defaultTransform,
-} from '../util/defaultComponents'
-import { tick } from './utils'
+} from '../../util/defaultComponents'
+import { tick } from '../../util/testUtils'
 import {
   getElasticCollisionForces,
   getElasticCollisionForcesStatic,
-} from '../system/rigidBody/rigidBody'
+} from './rigidBody'
 import {
   createTransform,
   getTransform,
-} from '../system/transform/transformCrud'
-import { createCollider } from '../system/collider/colliderCrud'
+} from '../transform/transformCrud'
+import { createCollider } from '../collider/colliderCrud'
 import {
   createRigidBody,
   getRigidBody,
-} from '../system/rigidBody/rigidBodyCrud'
-import { toFixedVector2D } from '../util/toFixedVector2D'
-import { degreesToRadians } from '../util/radian'
+} from './rigidBodyCrud'
+import { toFixedVector2D } from '../../util/toFixedVector2D'
+import { degreesToRadians } from '../../util/radian'
 
 describe('getElasticCollisionForces', () => {
   it('should return proper data', () => {

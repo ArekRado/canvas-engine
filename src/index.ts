@@ -56,3 +56,8 @@ export * from './system/mouseInteraction/mouseInteractionCrud'
 export * from './system/rigidBody/rigidBodyCrud'
 export * from './system/time/timeCrud'
 export * from './system/transform/transformCrud'
+
+
+// TODO
+// Events inside system
+// Collision events

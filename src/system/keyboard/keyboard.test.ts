@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/ban-types */
-import { getInitialState, getSystems } from '../util/state'
-import { runOneFrame } from '../util/runOneFrame'
-import { getComponent } from '../component/getComponent'
-import { componentName } from '../component/componentName'
-import { Keyboard } from '../type'
-import { keyboardEntity } from '../system/keyboard/keyboard'
+import { getInitialState, getSystems } from '../../util/state'
+import { runOneFrame } from '../../util/runOneFrame'
+import { getComponent } from '../../component/getComponent'
+import { componentName } from '../../component/componentName'
+import { Keyboard } from '../../type'
+import { keyboardEntity } from './keyboard'
 
 describe('keyboard', () => {
   let keyupCallback: Function

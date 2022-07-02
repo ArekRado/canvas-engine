@@ -1,30 +1,30 @@
 import { vector, Vector2D } from '@arekrado/vector-2d'
-import { defaultAnimation, defaultTransform } from '../util/defaultComponents'
+import { defaultAnimation, defaultTransform } from '../../util/defaultComponents'
 import {
   getActiveKeyframe,
   updateNumberAnimation,
   updateVector2DAnimation,
   updateVector3DAnimation,
   // updateStringAnimation,
-} from '../system/animation/animation'
-import { generateEntity } from '../entity/generateEntity'
-import { createEntity } from '../entity/createEntity'
+} from './animation'
+import { generateEntity } from '../../entity/generateEntity'
+import { createEntity } from '../../entity/createEntity'
 import {
   Animation,
   Transform,
   ECSEvent,
   InternalInitialState,
   Vector3D,
-} from '../type'
-import { getComponent } from '../component/getComponent'
-import { componentName } from '../component/componentName'
+} from '../../type'
+import { getComponent } from '../../component/getComponent'
+import { componentName } from '../../component/componentName'
 
-import { getState } from '../util/state'
-import { addEventHandler } from '../event'
-import { createSystem } from '../system/createSystem'
-import { tick } from './utils'
-import { createAnimation } from '../system/animation/animationCrud'
-import { createComponent } from '../component/createComponent'
+import { getState } from '../../util/state'
+import { addEventHandler } from '../../event'
+import { createSystem } from '../createSystem'
+import { tick } from '../../util/testUtils'
+import { createAnimation } from './animationCrud'
+import { createComponent } from '../../component/createComponent'
 
 type AnyComponent<Value> = { value: Value }
 
