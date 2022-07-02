@@ -70,7 +70,10 @@ type CollisionData = {
 }
 
 export type Collider = {
-  layers: string[]
+  layer: {
+    belongs: string[]
+    interacts: string[]
+  }
   _collisions: Array<CollisionData>
   data: Array<
     | ColliderDataPoint

@@ -24,8 +24,8 @@
   "private": false,
   "description": "",
   "scripts": {
-    "test": "jest ./src/test --config=jest.config.js --env=jsdom --watch=false --coverage",
-    "test:watch": "jest ./src/test --config=jest.config.js --env=jsdom --watch --coverage=false",
+    "test": "jest ./src --config=jest.config.js --env=jsdom --watch=false --coverage",
+    "test:watch": "jest ./src --config=jest.config.js --env=jsdom --watch --coverage=false",
     "publish:dry": "npm publish --dry-run",
     "lint": "eslint ./src --ext .ts,.tsx",
     "lint:fix": "eslint ./src --ext .ts --fix"

@@ -40,8 +40,14 @@ import { hasSameLayer } from './hasSameLayer'
 export type CollisionEvent = ECSEvent<
   'collision',
   {
-    entity: Entity
-    colliderEntity: Entity
+    collider1: {
+      entity: Entity
+      index: number
+    }
+    collider2: {
+      entity: Entity
+      index: number
+    }
     intersection: Intersection
   }
 >
@@ -371,14 +377,14 @@ const findCollisionsWith: FindCollisionsWith = ({
 
   const allColliders = Object.entries(state.component.collider)
 
-  component.data.forEach((colliderData) => {
+  component.data.forEach((colliderData, index1) => {
     allColliders.forEach(([collider2Entity, collider2]) => {
       // Do not test collision with the same colliders
       if (entity === collider2Entity) {
         return
       }
 
-      if (hasSameLayer(component.layers, collider2.layers) === false) {
+      if (hasSameLayer(component.layer, collider2.layer) === false) {
         return
       }
 
@@ -399,7 +405,7 @@ const findCollisionsWith: FindCollisionsWith = ({
         return
       }
 
-      collider2.data.forEach((collider2Data, index) => {
+      collider2.data.forEach((collider2Data, index2) => {
         const collisionDetector: CollisionDetectorNormalizer =
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -414,7 +420,7 @@ const findCollisionsWith: FindCollisionsWith = ({
 
         if (intersection !== null) {
           collisionList.push({
-            colliderIndex: index,
+            colliderIndex: index2,
             colliderEntity: collider2Entity,
             intersection,
           })
@@ -422,8 +428,14 @@ const findCollisionsWith: FindCollisionsWith = ({
           emitEvent<CollisionEvent>({
             type: 'collision',
             payload: {
-              entity,
-              colliderEntity: collider2Entity,
+              collider1: {
+                entity,
+                index: index1,
+              },
+              collider2: {
+                entity: collider2Entity,
+                index: index2,
+              },
               intersection,
             },
           })

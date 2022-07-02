@@ -12,15 +12,9 @@ import {
   getElasticCollisionForces,
   getElasticCollisionForcesStatic,
 } from './rigidBody'
-import {
-  createTransform,
-  getTransform,
-} from '../transform/transformCrud'
+import { createTransform, getTransform } from '../transform/transformCrud'
 import { createCollider } from '../collider/colliderCrud'
-import {
-  createRigidBody,
-  getRigidBody,
-} from './rigidBodyCrud'
+import { createRigidBody, getRigidBody } from './rigidBodyCrud'
 import { toFixedVector2D } from '../../util/toFixedVector2D'
 import { degreesToRadians } from '../../util/radian'
 
@@ -158,7 +152,10 @@ describe('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultCollider({
-        layers: ['a'],
+        layer: {
+          belongs: ['a'],
+          interacts: ['a'],
+        },
         data: [{ type: 'circle', position: [0, 0], radius: 0.1 }],
       }),
     })
@@ -202,7 +199,10 @@ describe('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultCollider({
-        layers: ['a'],
+        layer: {
+          belongs: ['a'],
+          interacts: ['a'],
+        },
         data: [{ type: 'circle', position: [0, 0], radius: 0.1 }],
       }),
     })
@@ -277,7 +277,10 @@ describe('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultCollider({
-        layers: ['a'],
+        layer: {
+          belongs: ['a'],
+          interacts: ['a'],
+        },
         data: [{ type: 'circle', position: [0, 0], radius: 0.1 }],
       }),
     })
@@ -285,7 +288,10 @@ describe('rigidBody', () => {
       state,
       entity: entity2,
       data: defaultCollider({
-        layers: ['a'],
+        layer: {
+          belongs: ['a'],
+          interacts: ['a'],
+        },
         data: [{ type: 'circle', position: [0, 0], radius: 0.1 }],
       }),
     })
@@ -357,7 +363,10 @@ describe('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultCollider({
-        layers: ['a'],
+        layer: {
+          belongs: ['a'],
+          interacts: ['a'],
+        },
         data: [{ type: 'circle', position: [0, 0], radius: 1 }],
       }),
     })
@@ -365,7 +374,10 @@ describe('rigidBody', () => {
       state,
       entity: entity2,
       data: defaultCollider({
-        layers: ['a'],
+        layer: {
+          belongs: ['a'],
+          interacts: ['a'],
+        },
         data: [{ type: 'circle', position: [0, 0], radius: 1 }],
       }),
     })
@@ -432,7 +444,10 @@ describe('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultCollider({
-        layers: ['a'],
+        layer: {
+          belongs: ['a'],
+          interacts: ['a'],
+        },
         data: [{ type: 'circle', position: [0, 0], radius: 1 }],
       }),
     })
@@ -440,7 +455,10 @@ describe('rigidBody', () => {
       state,
       entity: entity2,
       data: defaultCollider({
-        layers: ['a'],
+        layer: {
+          belongs: ['a'],
+          interacts: ['a'],
+        },
         data: [{ type: 'line', position: [0, 10], position2: [0, -10] }],
       }),
     })
@@ -521,7 +539,10 @@ describe('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultCollider({
-        layers: ['a'],
+        layer: {
+          belongs: ['a'],
+          interacts: ['a'],
+        },
         data: [{ type: 'circle', position: [0, 0], radius: 1 }],
       }),
     })
@@ -529,7 +550,10 @@ describe('rigidBody', () => {
       state,
       entity: entity2,
       data: defaultCollider({
-        layers: ['a'],
+        layer: {
+          belongs: ['a'],
+          interacts: ['a'],
+        },
         data: [{ type: 'line', position: [0, 10], position2: [0, -10] }],
       }),
     })
@@ -595,7 +619,10 @@ describe('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultCollider({
-        layers: ['a'],
+        layer: {
+          belongs: ['a'],
+          interacts: ['a'],
+        },
         data: [{ type: 'circle', position: [0, 0], radius: 1 }],
       }),
     })
@@ -603,7 +630,10 @@ describe('rigidBody', () => {
       state,
       entity: entity2,
       data: defaultCollider({
-        layers: ['a'],
+        layer: {
+          belongs: ['a'],
+          interacts: ['a'],
+        },
         data: [{ type: 'line', position: [0, 10], position2: [0, -10] }],
       }),
     })
