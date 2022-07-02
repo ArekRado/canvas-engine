@@ -1,4 +1,3 @@
-import { add } from '@arekrado/vector-2d'
 import { componentName } from '../../component/componentName'
 import {
   Collider,
@@ -8,47 +7,51 @@ import {
   Transform,
 } from '../../type'
 import { createSystem } from '../createSystem'
-import {
-  detectPointRectangleCollision,
-  detectPointCircleCollision,
-} from '../collider/detectCollision'
-import { parseV3ToV2 } from '../../util/parseV3ToV2'
+import { Intersection } from '../collider/detectCollision'
 import { mouseEntity } from '../mouse/mouse'
 import { getCollider } from '../collider/colliderCrud'
 import { getTransform } from '../transform/transformCrud'
 import { getMouse } from '../mouse/mouseCrud'
 import { updateMouseInteraction } from './mouseInteractionCrud'
+import {
+  CollisionDetectorNormalizer,
+  collisionsMatrix,
+} from '../collider/collider'
+import { defaultTransform } from '../../util/defaultComponents'
 
 type IsMouseOver = (params: {
   mouse: Mouse
   collider?: Collider
   transform: Transform
-}) => boolean
-export const isMouseOver: IsMouseOver = ({ mouse, collider, transform }) => {
-  let hasCollision = false
+}) => Intersection | null
+export const getMouseIntersection: IsMouseOver = ({
+  mouse,
+  collider,
+  transform,
+}) => {
+  let intersection: Intersection | null = null
   collider?.data.forEach((colliderData) => {
-    if (!hasCollision && colliderData.type === 'rectangle') {
-      hasCollision = detectPointRectangleCollision({
-        point: mouse.position,
-        rectangle: {
-          position: add(parseV3ToV2(transform.position), colliderData.position),
-          size: colliderData.size,
-        },
-      })
-    }
+    if (intersection === null) {
+      const collisionDetector: CollisionDetectorNormalizer =
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        collisionsMatrix['point'][colliderData.type]
 
-    if (!hasCollision && colliderData.type === 'circle') {
-      hasCollision = detectPointCircleCollision({
-        point: mouse.position,
-        circle: {
-          position: add(parseV3ToV2(transform.position), colliderData.position),
-          radius: colliderData.radius,
+      intersection = collisionDetector({
+        transform1: defaultTransform({
+          // position: camera.position ???
+        }),
+        collider1Data: {
+          type: 'point',
+          position: mouse.position,
         },
+        transform2: transform,
+        collider2Data: colliderData,
       })
     }
   })
 
-  return hasCollision
+  return intersection
 }
 
 export const mouseInteractionSystem = (state: InternalInitialState) =>
@@ -77,14 +80,14 @@ export const mouseInteractionSystem = (state: InternalInitialState) =>
       })
 
       if (collider && mouse && transform) {
-        const isMouseOverFlag = isMouseOver({
+        const intersection = getMouseIntersection({
           transform,
           mouse,
           collider,
         })
 
-        const isMouseEnter = !component.isMouseOver && isMouseOverFlag
-        const isMouseLeave = component.isMouseOver && !isMouseOverFlag
+        const isMouseEnter = !component.isMouseOver && intersection !== null
+        const isMouseLeave = component.isMouseOver && intersection === null
         const isClicked = component.isMouseOver && mouse.buttons === 1
 
         return updateMouseInteraction({
@@ -93,9 +96,10 @@ export const mouseInteractionSystem = (state: InternalInitialState) =>
           update: () => ({
             isClicked,
             isDoubleClicked: false, // TODO
-            isMouseOver: isMouseOverFlag,
+            isMouseOver: intersection !== null,
             isMouseEnter,
             isMouseLeave,
+            intersection,
           }),
         })
       }

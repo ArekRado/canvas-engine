@@ -7,6 +7,7 @@ import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { Vector3 } from '@babylonjs/core'
+import { Intersection } from './system/collider/detectCollision'
 
 ////////////////////////////////////
 //
@@ -62,9 +63,15 @@ export type ColliderDataPolygon = {
   verticles: Vector2D[]
 }
 
+type CollisionData = {
+  colliderEntity: Entity
+  colliderIndex: number
+  intersection: Intersection
+}
+
 export type Collider = {
   layers: string[]
-  _collisions: Array<{ entity: Entity; index: number }>
+  _collisions: Array<CollisionData>
   data: Array<
     | ColliderDataPoint
     | ColliderDataRectangle
@@ -158,6 +165,8 @@ export type MouseInteraction = {
   isMouseEnter: boolean
   // When the pointer is moved out of an element
   isMouseLeave: boolean
+
+  intersection: Intersection | null
 }
 
 export enum MeshType {

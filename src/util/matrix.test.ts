@@ -31,6 +31,12 @@ describe('matrix', () => {
           5,
         ),
       ).toEqual([1.36603, 0.36603])
+      expect(
+        toFixedVector2D(
+          applyMatrixToVector2D(rotate(degreesToRadians(-90)), [0.2, 0]),
+          5,
+        ),
+      ).toEqual([0, 0.2])
     })
   })
 })

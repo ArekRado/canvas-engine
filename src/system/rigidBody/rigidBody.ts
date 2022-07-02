@@ -137,16 +137,12 @@ export const rigidBodySystem = (state: InternalInitialState) =>
 
       const collision = collider._collisions[0]
       if (collision) {
-        const collisionTransform = getTransform({
-          state,
-          entity: collision.entity,
-        })
         const collisionRigidBody = getRigidBody({
           state,
-          entity: collision.entity,
+          entity: collision.colliderEntity,
         })
 
-        if (collisionTransform && collisionRigidBody) {
+        if (collisionRigidBody) {
           if (collisionRigidBody.isStatic) {
             // In elastic collision with static rigidbody mass of static rigidbody doesn't matter
             // we just want to reflect force and don't change static rigidbody
@@ -154,7 +150,7 @@ export const rigidBodySystem = (state: InternalInitialState) =>
               v1: component.force,
               position1: transform.position as Vector2D,
               v2: collisionRigidBody.force,
-              position2: collisionTransform.position as Vector2D,
+              position2: collision.intersection.position,
             })
 
             force = newForce
@@ -166,14 +162,14 @@ export const rigidBodySystem = (state: InternalInitialState) =>
 
               m2: collisionRigidBody.mass,
               v2: collisionRigidBody.force,
-              position2: collisionTransform.position as Vector2D,
+              position2: collision.intersection.position,
             })
 
             force = force1
 
             state = updateRigidBody({
               state,
-              entity: collision.entity,
+              entity: collision.colliderEntity,
               update: () => ({
                 force: force2,
               }),
@@ -182,13 +178,12 @@ export const rigidBodySystem = (state: InternalInitialState) =>
 
           state = updateCollider({
             state,
-            entity: collision.entity,
+            entity: collision.colliderEntity,
             update: removeFirstCollision,
           })
         }
       }
 
-      // if (!component.isStatic) {
       state = updateRigidBody({
         state,
         entity,
@@ -212,7 +207,6 @@ export const rigidBodySystem = (state: InternalInitialState) =>
           }),
         }),
       })
-      // }
 
       return state
     },

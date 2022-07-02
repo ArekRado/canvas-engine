@@ -97,14 +97,14 @@ describe('collider', () => {
       })?._collisions
 
       expect(collisions1?.length).toEqual(2)
-      expect(collisions1?.[0]?.entity).toEqual(entity2)
-      expect(collisions1?.[1]?.entity).toEqual(entity3)
+      expect(collisions1?.[0]?.colliderEntity).toEqual(entity2)
+      expect(collisions1?.[1]?.colliderEntity).toEqual(entity3)
 
       expect(collisions2?.length).toEqual(1)
-      expect(collisions2?.[0]?.entity).toEqual(entity1)
+      expect(collisions2?.[0]?.colliderEntity).toEqual(entity1)
 
       expect(collisions3?.length).toEqual(1)
-      expect(collisions3?.[0]?.entity).toEqual(entity1)
+      expect(collisions3?.[0]?.colliderEntity).toEqual(entity1)
     })
 
     it('detect collisions point-point', () => {
@@ -186,8 +186,8 @@ describe('collider', () => {
       expect(collisions1?.length).toBe(1)
       expect(collisions1?.length).toBe(1)
 
-      expect(collisions1?.[0]?.entity).toEqual(entity2)
-      expect(collisions2?.[0]?.entity).toEqual(entity1)
+      expect(collisions1?.[0]?.colliderEntity).toEqual(entity2)
+      expect(collisions2?.[0]?.colliderEntity).toEqual(entity1)
 
       expect(collisions3?.length).toBe(0)
     })
@@ -292,14 +292,14 @@ describe('collider', () => {
       })?._collisions
 
       expect(collisions1?.length).toEqual(2)
-      expect(collisions1?.[0]?.entity).toEqual(entity2)
-      expect(collisions1?.[1]?.entity).toEqual(entity3)
+      expect(collisions1?.[0]?.colliderEntity).toEqual(entity2)
+      expect(collisions1?.[1]?.colliderEntity).toEqual(entity3)
 
       expect(collisions2?.length).toEqual(1)
-      expect(collisions2?.[0]?.entity).toEqual(entity1)
+      expect(collisions2?.[0]?.colliderEntity).toEqual(entity1)
 
       expect(collisions3?.length).toEqual(1)
-      expect(collisions3?.[0]?.entity).toEqual(entity1)
+      expect(collisions3?.[0]?.colliderEntity).toEqual(entity1)
 
       expect(collisions4?.length).toEqual(0)
     })
@@ -400,14 +400,14 @@ describe('collider', () => {
       })?._collisions
 
       expect(collisions1?.length).toEqual(2)
-      expect(collisions1?.[0]?.entity).toEqual(entity2)
-      expect(collisions1?.[1]?.entity).toEqual(entity3)
+      expect(collisions1?.[0]?.colliderEntity).toEqual(entity2)
+      expect(collisions1?.[1]?.colliderEntity).toEqual(entity3)
 
       expect(collisions2?.length).toEqual(1)
-      expect(collisions2?.[0]?.entity).toEqual(entity1)
+      expect(collisions2?.[0]?.colliderEntity).toEqual(entity1)
 
       expect(collisions3?.length).toEqual(1)
-      expect(collisions3?.[0]?.entity).toEqual(entity1)
+      expect(collisions3?.[0]?.colliderEntity).toEqual(entity1)
 
       expect(collisions4?.length).toEqual(0)
     })
@@ -513,15 +513,15 @@ describe('collider', () => {
       })?._collisions
 
       expect(collisions1?.length).toEqual(1)
-      expect(collisions1?.[0]?.entity).toEqual(entity3)
-      expect(collisions1?.[1]?.entity).not.toBeDefined()
+      expect(collisions1?.[0]?.colliderEntity).toEqual(entity3)
+      expect(collisions1?.[1]?.colliderEntity).not.toBeDefined()
 
       expect(collisions2?.length).toEqual(0)
-      expect(collisions2?.[0]?.entity).not.toBeDefined()
+      expect(collisions2?.[0]?.colliderEntity).not.toBeDefined()
 
       expect(collisions3?.length).toEqual(1)
-      expect(collisions3?.[0]?.entity).toEqual(entity1)
-      expect(collisions3?.[1]?.entity).not.toBeDefined()
+      expect(collisions3?.[0]?.colliderEntity).toEqual(entity1)
+      expect(collisions3?.[1]?.colliderEntity).not.toBeDefined()
 
       expect(collisions4?.length).toEqual(0)
     })
@@ -651,14 +651,14 @@ describe('collider', () => {
       })?._collisions
 
       expect(collisions1?.length).toEqual(2)
-      expect(collisions1?.[0]?.entity).toEqual(entity2)
-      expect(collisions1?.[1]?.entity).toEqual(entity3)
+      expect(collisions1?.[0]?.colliderEntity).toEqual(entity2)
+      expect(collisions1?.[1]?.colliderEntity).toEqual(entity3)
 
       expect(collisions2?.length).toEqual(1)
-      expect(collisions2?.[0]?.entity).toEqual(entity1)
+      expect(collisions2?.[0]?.colliderEntity).toEqual(entity1)
 
       expect(collisions3?.length).toEqual(1)
-      expect(collisions3?.[0]?.entity).toEqual(entity1)
+      expect(collisions3?.[0]?.colliderEntity).toEqual(entity1)
 
       expect(collisions4?.length).toEqual(0)
 
@@ -810,24 +810,24 @@ describe('collider', () => {
       })?._collisions
 
       expect(collisions1?.length).toEqual(3)
-      expect(collisions1?.[0]?.entity).toEqual(entity2)
-      expect(collisions1?.[1]?.entity).toEqual(entity3)
-      expect(collisions1?.[2]?.entity).toEqual(entity4)
-      expect(collisions1?.[3]?.entity).not.toBeDefined()
+      expect(collisions1?.[0]?.colliderEntity).toEqual(entity2)
+      expect(collisions1?.[1]?.colliderEntity).toEqual(entity3)
+      expect(collisions1?.[2]?.colliderEntity).toEqual(entity4)
+      expect(collisions1?.[3]?.colliderEntity).not.toBeDefined()
 
       expect(collisions2?.length).toEqual(1)
-      expect(collisions2?.[0]?.entity).toEqual(entity1)
-      expect(collisions2?.[1]?.entity).not.toBeDefined()
+      expect(collisions2?.[0]?.colliderEntity).toEqual(entity1)
+      expect(collisions2?.[1]?.colliderEntity).not.toBeDefined()
 
       expect(collisions3?.length).toEqual(1)
-      expect(collisions3?.[0]?.entity).toEqual(entity1)
-      expect(collisions3?.[1]?.entity).not.toBeDefined()
+      expect(collisions3?.[0]?.colliderEntity).toEqual(entity1)
+      expect(collisions3?.[1]?.colliderEntity).not.toBeDefined()
 
-      expect(collisions4?.[0]?.entity).toEqual(entity1)
-      expect(collisions4?.[1]?.entity).not.toBeDefined()
+      expect(collisions4?.[0]?.colliderEntity).toEqual(entity1)
+      expect(collisions4?.[1]?.colliderEntity).not.toBeDefined()
 
       expect(collisions5?.length).toEqual(0)
-      expect(collisions5?.[0]?.entity).not.toBeDefined()
+      expect(collisions5?.[0]?.colliderEntity).not.toBeDefined()
     })
 
     it('detect collisions rectangle-line', () => {
@@ -955,7 +955,7 @@ describe('collider', () => {
           entity: data.entity,
         })?._collisions
 
-        expect([i, collisions?.map(({ entity }) => entity)]).toEqual([
+        expect([i, collisions?.map(({ colliderEntity }) => colliderEntity)]).toEqual([
           i,
           data.collisions,
         ])
@@ -1023,7 +1023,7 @@ describe('collider', () => {
         getCollider({
           state,
           entity,
-        })?._collisions.map((collision) => collision.entity),
+        })?._collisions.map((collision) => collision.colliderEntity),
       ]).toEqual([entity, collisions])
     })
   })
@@ -1116,13 +1116,13 @@ describe('collider', () => {
     })?._collisions
 
     expect(collisions1?.length).toEqual(1)
-    expect(collisions1?.[0].entity).toEqual(entity2)
+    expect(collisions1?.[0].colliderEntity).toEqual(entity2)
 
     expect(collisions2?.length).toEqual(2)
-    expect(collisions2?.[0].entity).toEqual(entity1)
-    expect(collisions2?.[1].entity).toEqual(entity3)
+    expect(collisions2?.[0].colliderEntity).toEqual(entity1)
+    expect(collisions2?.[1].colliderEntity).toEqual(entity3)
 
     expect(collisions3?.length).toEqual(1)
-    expect(collisions3?.[0].entity).toEqual(entity2)
+    expect(collisions3?.[0].colliderEntity).toEqual(entity2)
   })
 })

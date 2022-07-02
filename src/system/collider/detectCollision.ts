@@ -1,10 +1,34 @@
-import { equals, magnitude, sub, Vector2D } from '@arekrado/vector-2d'
+import {
+  add,
+  equals,
+  magnitude,
+  normalize,
+  scale,
+  sub,
+  Vector2D,
+} from '@arekrado/vector-2d'
 
 export type Point = Vector2D
 export type Circle = { position: Vector2D; radius: number }
 export type Rectangle = { position: Vector2D; size: Vector2D }
 export type Line = { position: Vector2D; position2: Vector2D }
 export type Polygon = Vector2D[]
+export type Intersection = {
+  position: Vector2D
+  figure:
+    | {
+        type: 'circle'
+        data: Circle
+      }
+    | {
+        type: 'line'
+        data: Line
+      }
+    | {
+        type: 'point'
+        data: Point
+      }
+}
 
 /**
  * XXXXXXXXX | point                         | rectangle                         | circle                       | line                       | polygon
@@ -21,37 +45,46 @@ export const detectPointPointCollision = ({
 }: {
   point1: Point
   point2: Point
-}) => equals(point1, point2)
+}): Intersection | null =>
+  equals(point1, point2)
+    ? {
+        position: point1,
+        figure: {
+          type: 'point',
+          data: point1,
+        },
+      }
+    : null
 
-export const detectRectangleRectangleCollision = ({
-  rectangle1: {
-    position: [x1, y1],
-    size: [size1x, size1y],
-  },
-  rectangle2: {
-    position: [x2, y2],
-    size: [size2x, size2y],
-  },
-}: {
-  rectangle1: Rectangle
-  rectangle2: Rectangle
-}) =>
-  x1 <= x2 + size2x &&
-  x1 + size1x >= x2 &&
-  y1 <= y2 + size2y &&
-  y1 + size1y >= y2
+// export const detectRectangleRectangleCollision = ({
+//   rectangle1: {
+//     position: [x1, y1],
+//     size: [size1x, size1y],
+//   },
+//   rectangle2: {
+//     position: [x2, y2],
+//     size: [size2x, size2y],
+//   },
+// }: {
+//   rectangle1: Rectangle
+//   rectangle2: Rectangle
+// }) =>
+//   x1 <= x2 + size2x &&
+//   x1 + size1x >= x2 &&
+//   y1 <= y2 + size2y &&
+//   y1 + size1y >= y2
 
-export const detectPointRectangleCollision = ({
-  point,
-  rectangle,
-}: {
-  point: Point
-  rectangle: Rectangle
-}) =>
-  point[0] <= rectangle.position[0] + rectangle.size[0] &&
-  point[0] >= rectangle.position[0] &&
-  point[1] <= rectangle.position[1] + rectangle.size[1] &&
-  point[1] >= rectangle.position[1]
+// export const detectPointRectangleCollision = ({
+//   point,
+//   rectangle,
+// }: {
+//   point: Point
+//   rectangle: Rectangle
+// }) =>
+//   point[0] <= rectangle.position[0] + rectangle.size[0] &&
+//   point[0] >= rectangle.position[0] &&
+//   point[1] <= rectangle.position[1] + rectangle.size[1] &&
+//   point[1] >= rectangle.position[1]
 
 export const detectPointCircleCollision = ({
   point,
@@ -59,10 +92,15 @@ export const detectPointCircleCollision = ({
 }: {
   point: Point
   circle: Circle
-}) => {
+}): Intersection | null => {
   const distance = magnitude(sub(point, circle.position))
-
-  return distance <= circle.radius
+  if (distance <= circle.radius) {
+    return {
+      position: point,
+      figure: { type: 'point', data: point },
+    }
+  }
+  return null
 }
 
 export const detectCircleCircleCollision = ({
@@ -71,44 +109,58 @@ export const detectCircleCircleCollision = ({
 }: {
   circle1: Circle
   circle2: Circle
-}) => {
-  const distance = magnitude(sub(circle1.position, circle2.position))
+}): Intersection | null => {
+  const positionDiff = sub(circle1.position, circle2.position)
+  const distance = magnitude(positionDiff)
 
-  return distance <= circle1.radius + circle2.radius
-}
-
-/**
- * @url http://jeffreythompson.org/collision-detection/circle-rect.php
- */
-export const detectRectangleCircleCollision = ({
-  circle,
-  rectangle,
-}: {
-  circle: Circle
-  rectangle: Rectangle
-}) => {
-  const test: Vector2D = [0, 0]
-
-  if (circle.position[0] < rectangle.position[0]) {
-    test[0] = rectangle.position[0]
-  } else if (circle.position[0] > rectangle.position[0] + rectangle.size[0]) {
-    test[0] = rectangle.position[0] + rectangle.size[0]
+  if (distance <= circle1.radius + circle2.radius) {
+    return {
+      position: add(
+        circle2.position,
+        scale(circle2.radius, normalize(positionDiff)),
+      ),
+      figure: {
+        type: 'circle',
+        data: circle2,
+      },
+    }
   }
 
-  if (circle.position[1] < rectangle.position[1]) {
-    test[1] = rectangle.position[1]
-  } else if (circle.position[1] > rectangle.position[1] + rectangle.size[1]) {
-    test[1] = rectangle.position[1] + rectangle.size[1]
-  }
-
-  const distX = circle.position[0] - test[0]
-  const distY = circle.position[1] - test[1]
-  const distance = Math.sqrt(distX ** 2 + distY ** 2)
-
-  const isColliding = distance <= circle.radius
-
-  return isColliding
+  return null
 }
+
+// /**
+//  * @url http://jeffreythompson.org/collision-detection/circle-rect.php
+//  */
+// export const detectRectangleCircleCollision = ({
+//   circle,
+//   rectangle,
+// }: {
+//   circle: Circle
+//   rectangle: Rectangle
+// }) => {
+//   const test: Vector2D = [0, 0]
+
+//   if (circle.position[0] < rectangle.position[0]) {
+//     test[0] = rectangle.position[0]
+//   } else if (circle.position[0] > rectangle.position[0] + rectangle.size[0]) {
+//     test[0] = rectangle.position[0] + rectangle.size[0]
+//   }
+
+//   if (circle.position[1] < rectangle.position[1]) {
+//     test[1] = rectangle.position[1]
+//   } else if (circle.position[1] > rectangle.position[1] + rectangle.size[1]) {
+//     test[1] = rectangle.position[1] + rectangle.size[1]
+//   }
+
+//   const distX = circle.position[0] - test[0]
+//   const distY = circle.position[1] - test[1]
+//   const distance = Math.sqrt(distX ** 2 + distY ** 2)
+
+//   const isColliding = distance <= circle.radius
+
+//   return isColliding
+// }
 
 /**
  *
@@ -120,15 +172,21 @@ export const detectPointLineCollision = ({
 }: {
   line: Line
   point: Point
-}) => {
+}): Intersection | null => {
   const lineLength = magnitude(sub(line.position, line.position2))
 
   const distance1 = magnitude(sub(point, line.position))
   const distance2 = magnitude(sub(point, line.position2))
 
-  const isColliding = lineLength === distance1 + distance2
-
-  return isColliding
+  return lineLength === distance1 + distance2
+    ? {
+        position: point,
+        figure: {
+          type: 'line',
+          data: line,
+        },
+      }
+    : null
 }
 
 /**
@@ -141,11 +199,11 @@ export const detectCircleLineCollision = ({
 }: {
   circle: Circle
   line: Line
-}) => {
+}): Intersection | null => {
   const inside1 = detectPointCircleCollision({ circle, point: line.position })
-  if (inside1) return true
+  if (inside1) return inside1
   const inside2 = detectPointCircleCollision({ circle, point: line.position2 })
-  if (inside2) return true
+  if (inside2) return inside2
 
   const x1 = line.position[0]
   const y1 = line.position[1]
@@ -172,7 +230,7 @@ export const detectCircleLineCollision = ({
     line,
     point: [closestX, closestY],
   })
-  if (!onSegment) return false
+  if (onSegment === null) return null
 
   // get distance to closest point
   distX = closestX - cx
@@ -180,9 +238,15 @@ export const detectCircleLineCollision = ({
   const distance = Math.sqrt(distX * distX + distY * distY)
 
   if (distance <= circle.radius) {
-    return true
+    return {
+      position: [closestX, closestY],
+      figure: {
+        type: 'line',
+        data: line,
+      },
+    }
   }
-  return false
+  return null
 }
 
 /**
@@ -195,7 +259,7 @@ export const detectLineLineCollision = ({
 }: {
   line1: Line
   line2: Line
-}) => {
+}): Intersection | null => {
   const x1 = line1.position[0]
   const y1 = line1.position[1]
   const x2 = line1.position2[0]
@@ -215,85 +279,89 @@ export const detectLineLineCollision = ({
     ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
 
   if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
-    return true
+    // collision point
+    const intersectionX = x1 + uA * (x2 - x1)
+    const intersectionY = y1 + uA * (y2 - y1)
+
+    return {
+      position: [intersectionX, intersectionY],
+      figure: {
+        type: 'line',
+        data: line2,
+      },
+    }
   }
-  return false
-
-  // collision point
-  // float intersectionX = x1 + (uA * (x2-x1));
-  // float intersectionY = y1 + (uA * (y2-y1));
+  return null
 }
 
-/**
- *
- * @see http://jeffreythompson.org/collision-detection/line-rect.php
- */
-export const detectRectangleLineCollision = ({
-  line,
-  rectangle,
-}: {
-  line: Line
-  rectangle: Rectangle
-}) => {
-  // (rx, ry, rx, ry + rh)
-  const left = detectLineLineCollision({
-    line1: line,
-    line2: {
-      position: rectangle.position,
-      position2: [
-        rectangle.position[0],
-        rectangle.position[1] + rectangle.size[0],
-      ],
-    },
-  })
+// /**
+//  *
+//  * @see http://jeffreythompson.org/collision-detection/line-rect.php
+//  */
+// export const detectRectangleLineCollision = ({
+//   line,
+//   rectangle,
+// }: {
+//   line: Line
+//   rectangle: Rectangle
+// }) => {
+//   // (rx, ry, rx, ry + rh)
+//   const left = detectLineLineCollision({
+//     line1: line,
+//     line2: {
+//       position: rectangle.position,
+//       position2: [
+//         rectangle.position[0],
+//         rectangle.position[1] + rectangle.size[0],
+//       ],
+//     },
+//   })
 
-  if (left) return true
-  // (rx + rw, ry, rx + rw, ry + rh)
-  const right = detectLineLineCollision({
-    line1: line,
-    line2: {
-      position: rectangle.position,
-      position2: [
-        rectangle.position[0] + rectangle.size[0],
-        rectangle.position[1] + rectangle.size[1],
-      ],
-    },
-  })
+//   if (left) return left
+//   // (rx + rw, ry, rx + rw, ry + rh)
+//   const right = detectLineLineCollision({
+//     line1: line,
+//     line2: {
+//       position: rectangle.position,
+//       position2: [
+//         rectangle.position[0] + rectangle.size[0],
+//         rectangle.position[1] + rectangle.size[1],
+//       ],
+//     },
+//   })
 
-  if (right) return true
-  // (rx, ry, rx + rw, ry)
-  const top = detectLineLineCollision({
-    line1: line,
-    line2: {
-      position: rectangle.position,
-      position2: [
-        rectangle.position[0] + rectangle.size[0],
-        rectangle.position[1],
-      ],
-    },
-  })
+//   if (right) return right
+//   // (rx, ry, rx + rw, ry)
+//   const top = detectLineLineCollision({
+//     line1: line,
+//     line2: {
+//       position: rectangle.position,
+//       position2: [
+//         rectangle.position[0] + rectangle.size[0],
+//         rectangle.position[1],
+//       ],
+//     },
+//   })
 
-  if (top) return true
+//   if (top) return top
 
-  // (rx, ry + rh, rx + rw, ry + rh)
-  const bottom = detectLineLineCollision({
-    line1: line,
-    line2: {
-      position: [
-        rectangle.position[0],
-        rectangle.position[1] + rectangle.size[1],
-      ],
-      position2: [
-        rectangle.position[0] + rectangle.size[0],
-        rectangle.position[1] + rectangle.size[1],
-      ],
-    },
-  })
+//   // (rx, ry + rh, rx + rw, ry + rh)
+//   const bottom = detectLineLineCollision({
+//     line1: line,
+//     line2: {
+//       position: [
+//         rectangle.position[0],
+//         rectangle.position[1] + rectangle.size[1],
+//       ],
+//       position2: [
+//         rectangle.position[0] + rectangle.size[0],
+//         rectangle.position[1] + rectangle.size[1],
+//       ],
+//     },
+//   })
 
-  if (bottom) return true
-
-  return false
-}
+//   return bottom
+// }
 
 export const detectPolygonPointCollision = ({
   polygon,
@@ -301,7 +369,7 @@ export const detectPolygonPointCollision = ({
 }: {
   polygon: Polygon
   point: Point
-}) => {
+}): Intersection | null => {
   let collision = false
 
   // go through each of the vertices, plus
@@ -329,7 +397,16 @@ export const detectPolygonPointCollision = ({
       collision = !collision
     }
   }
+
   return collision
+    ? {
+        position: point,
+        figure: {
+          type: 'point',
+          data: point,
+        },
+      }
+    : null
 }
 
 export const detectPolygonCircleCollision = ({
@@ -338,7 +415,7 @@ export const detectPolygonCircleCollision = ({
 }: {
   polygon: Polygon
   circle: Circle
-}) => {
+}): Intersection | null => {
   // go through each of the vertices, plus
   // the next vertex in the list
   let next = 0
@@ -355,7 +432,7 @@ export const detectPolygonCircleCollision = ({
 
     // check for collision between the circle and
     // a line formed between the two vertices
-    const collision = detectCircleLineCollision({
+    const intersectionPoint = detectCircleLineCollision({
       line: {
         position: vc,
         position2: vn,
@@ -363,7 +440,7 @@ export const detectPolygonCircleCollision = ({
       circle,
     })
 
-    if (collision) return true
+    if (intersectionPoint !== null) return intersectionPoint
   }
 
   // the above algorithm only checks if the circle
@@ -378,7 +455,7 @@ export const detectPolygonCircleCollision = ({
   // if (centerInside) return true
 
   // otherwise, after all that, return false
-  return false
+  return null
 }
 
 // TODO: polygon detections should use rectangle detection first to improve speed
@@ -388,7 +465,7 @@ export const detectPolygonLineCollision = ({
 }: {
   polygon: Polygon
   line: Line
-}) => {
+}): Intersection | null => {
   // go through each of the vertices, plus the next
   // vertex in the list
   let next = 0
@@ -412,12 +489,12 @@ export const detectPolygonLineCollision = ({
     })
 
     if (hit) {
-      return true
+      return hit
     }
   }
 
   // never got a hit
-  return false
+  return null
 }
 
 export const detectPolygonPolygonCollision = ({
@@ -426,7 +503,7 @@ export const detectPolygonPolygonCollision = ({
 }: {
   polygon1: Polygon
   polygon2: Polygon
-}) => {
+}): Intersection | null => {
   // go through each of the vertices, plus the next
   // vertex in the list
   let next = 0
@@ -447,12 +524,12 @@ export const detectPolygonPolygonCollision = ({
         position2: polygon1[next],
       },
     })
-    if (collision) return true
+    if (collision) return collision
 
     // optional: check if the 2nd polygon is INSIDE the first
     // collision = polyPoint(p1, p2[0].x, p2[0].y);
     // if (collision) return true;
   }
 
-  return false
+  return null
 }

@@ -22,6 +22,7 @@ import {
   getRigidBody,
 } from '../system/rigidBody/rigidBodyCrud'
 import { toFixedVector2D } from '../util/toFixedVector2D'
+import { degreesToRadians } from '../util/radian'
 
 describe('getElasticCollisionForces', () => {
   it('should return proper data', () => {
@@ -125,6 +126,15 @@ describe('getElasticCollisionForcesStatic', () => {
         position2: [2, 0],
       }),
     ).toEqual([-0.2, 0])
+
+    expect(
+      getElasticCollisionForcesStatic({
+        v1: [0.2, 0.2],
+        v2: [0, 0],
+        position1: [1, 0],
+        position2: [2, 0],
+      }),
+    ).toEqual([-0.2, 0.2])
   })
 })
 
@@ -431,7 +441,7 @@ describe('rigidBody', () => {
       entity: entity2,
       data: defaultCollider({
         layers: ['a'],
-        data: [{ type: 'line', position: [0, 3], position2: [0, -3] }],
+        data: [{ type: 'line', position: [0, 10], position2: [0, -10] }],
       }),
     })
 
@@ -480,5 +490,155 @@ describe('rigidBody', () => {
         entity: entity2,
       })?.force,
     ).toEqual(vectorZero())
+  })
+
+  it('conservation of momentum in elastic collisions 4 - collision circle-line should correctly bounce circle. Position should not change bounce angle', () => {
+    let state = getState({})
+
+    const entity1 = generateEntity()
+    const entity2 = generateEntity()
+
+    state = createEntity({ entity: entity1, state })
+    state = createEntity({ entity: entity2, state })
+
+    state = createTransform({
+      state,
+      entity: entity1,
+      data: defaultTransform({
+        position: [0, 0],
+      }),
+    })
+    state = createTransform({
+      state,
+      entity: entity2,
+      data: defaultTransform({
+        // Line has different Y axis but collision point is still the same
+        position: [2, 1],
+      }),
+    })
+
+    state = createCollider({
+      state,
+      entity: entity1,
+      data: defaultCollider({
+        layers: ['a'],
+        data: [{ type: 'circle', position: [0, 0], radius: 1 }],
+      }),
+    })
+    state = createCollider({
+      state,
+      entity: entity2,
+      data: defaultCollider({
+        layers: ['a'],
+        data: [{ type: 'line', position: [0, 10], position2: [0, -10] }],
+      }),
+    })
+
+    state = createRigidBody({
+      state,
+      entity: entity1,
+      data: defaultRigidBody({
+        force: [0.2, 0],
+        mass: 1,
+      }),
+    })
+    state = createRigidBody({
+      state,
+      entity: entity2,
+      data: defaultRigidBody({
+        force: [0, 0],
+        mass: 1,
+        isStatic: true,
+      }),
+    })
+
+    Array.from({ length: 11 }).forEach((_, i) => {
+      state = tick(i, state)
+    })
+
+    // Collider and transform positions doens't matter because bounce force is calculated depending on a intersection position
+    expect(
+      getRigidBody({
+        state,
+        entity: entity1,
+      })?.force,
+    ).toEqual([-0.2, 0])
+  })
+
+  it('conservation of momentum in elastic collisions 5 - collision circle-line should correctly bounce circle. Rotated line should change correctly circle force', () => {
+    let state = getState({})
+
+    const entity1 = generateEntity()
+    const entity2 = generateEntity()
+
+    state = createEntity({ entity: entity1, state })
+    state = createEntity({ entity: entity2, state })
+
+    state = createTransform({
+      state,
+      entity: entity1,
+      data: defaultTransform({
+        position: [0, 0],
+      }),
+    })
+    state = createTransform({
+      state,
+      entity: entity2,
+      data: defaultTransform({
+        // Line has different Y axis but collision point is still the same
+        position: [2, 1],
+        rotation: degreesToRadians(45),
+      }),
+    })
+
+    state = createCollider({
+      state,
+      entity: entity1,
+      data: defaultCollider({
+        layers: ['a'],
+        data: [{ type: 'circle', position: [0, 0], radius: 1 }],
+      }),
+    })
+    state = createCollider({
+      state,
+      entity: entity2,
+      data: defaultCollider({
+        layers: ['a'],
+        data: [{ type: 'line', position: [0, 10], position2: [0, -10] }],
+      }),
+    })
+
+    state = createRigidBody({
+      state,
+      entity: entity1,
+      data: defaultRigidBody({
+        force: [0.2, 0],
+        mass: 1,
+      }),
+    })
+    state = createRigidBody({
+      state,
+      entity: entity2,
+      data: defaultRigidBody({
+        force: [0, 0],
+        mass: 1,
+        isStatic: true,
+      }),
+    })
+
+    Array.from({ length: 11 }).forEach((_, i) => {
+      state = tick(i, state)
+    })
+
+    // After collision with line rotated by 45 degrees circle force should be reflected by 90 degrees - [0.2, 0] -> [0, 0.2]
+    expect(
+      toFixedVector2D(
+        getRigidBody({
+          state,
+          entity: entity1,
+        })?.force as Vector2D,
+        5,
+      ),
+    ).toEqual([0, 0.2])
   })
 })

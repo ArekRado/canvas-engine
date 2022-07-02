@@ -51,6 +51,7 @@ export const defaultMouseInteraction: GetDefaultComponent<MouseInteraction> = (
   isMouseOver: false,
   isMouseEnter: false,
   isMouseLeave: false,
+  intersection: null,
   ...data,
 })
 

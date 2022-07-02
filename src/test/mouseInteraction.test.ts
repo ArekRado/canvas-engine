@@ -100,7 +100,7 @@ describe('mouseInteraction', () => {
       }),
     ).toBeFalsy()
 
-    // Mouse is over collideBox
+    // Mouse is over rectangle
     expect(
       isMouseOver({
         mouse: {
@@ -120,7 +120,7 @@ describe('mouseInteraction', () => {
       }),
     ).toBeTruthy()
 
-    // Mouse is over collideCircle
+    // Mouse is over circle
     expect(
       isMouseOver({
         mouse: {
@@ -202,8 +202,8 @@ describe('mouseInteraction', () => {
     expect(mouseInteraction1?.isMouseEnter).toBeFalsy()
     expect(mouseInteraction1?.isMouseLeave).toBeFalsy()
 
-    // Mouse is over collideBox
-    mousemoveCallback({ pageX: 100, pageY: 100 })
+    // Mouse is over rectangle
+    mousemoveCallback({ pageX: 105, pageY: 105 })
     state = runOneFrame({ state })
 
     const mouseInteraction2 = getComponent<MouseInteraction>({
@@ -216,7 +216,7 @@ describe('mouseInteraction', () => {
     expect(mouseInteraction2?.isMouseEnter).toBeTruthy()
     expect(mouseInteraction2?.isMouseLeave).toBeFalsy()
 
-    // Mouse is over collideCircle
+    // Mouse is over circle
     mousemoveCallback({ pageX: 200, pageY: 200 })
     state = runOneFrame({ state })
 

@@ -25,6 +25,7 @@ import {
   detectPolygonLineCollision,
   detectPolygonPointCollision,
   detectPolygonPolygonCollision,
+  Intersection,
   Line,
   Point,
   Polygon,
@@ -145,18 +146,18 @@ const mapToPoint = ({
   })
 
 type CollisionType = 'point' | 'rectangle' | 'circle' | 'line'
-type CollisionDetectorNormalizer = (params: {
+export type CollisionDetectorNormalizer = (params: {
   transform1: Transform
   collider1Data: Collider['data'][0]
   transform2: Transform
   collider2Data: Collider['data'][0]
-}) => boolean
+}) => Intersection | null
 type CollisionsMatrix = Record<
   CollisionType,
   Record<CollisionType, CollisionDetectorNormalizer>
 >
 
-const collisionsMatrix: CollisionsMatrix = {
+export const collisionsMatrix: CollisionsMatrix = {
   circle: {
     circle: ({ transform1, collider1Data, transform2, collider2Data }) =>
       detectCircleCircleCollision({
@@ -392,23 +393,25 @@ const findCollisionsWith: FindCollisionsWith = ({
       }
 
       collider2.data.forEach((collider2Data, index) => {
-        const collisionDetector =
+        const collisionDetector: CollisionDetectorNormalizer =
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           collisionsMatrix[colliderData.type][collider2Data.type]
 
-        const isColliding = collisionDetector({
+        const intersection = collisionDetector({
           transform1: transform,
           collider1Data: colliderData,
           transform2,
           collider2Data: collider2Data,
         })
 
-        isColliding &&
+        if (intersection !== null) {
           collisionList.push({
-            index,
-            entity: collider2Entity,
+            colliderIndex: index,
+            colliderEntity: collider2Entity,
+            intersection,
           })
+        }
       })
     })
   })
