@@ -7,7 +7,6 @@ import {
   RigidBody,
   Mesh,
   Material,
-  MeshType,
 } from '../type'
 import { Animation, Keyboard, Transform, Collider } from '../type'
 
@@ -107,12 +106,14 @@ export const defaultMaterial: GetDefaultComponent<Material> = (data = {}) => ({
 })
 
 export const defaultMesh: GetDefaultComponent<Mesh> = (data = {}) => ({
-  type: MeshType.plane,
-  uniqueId: -1,
-  width: 1,
-  height: 1,
-  updatable: false,
-  sideOrientation: 0,
   materialEntity: [],
+  uniqueId: -1,
+  data: {
+    type: 'plane',
+    width: 1,
+    height: 1,
+    updatable: false,
+    sideOrientation: 0,
+  },
   ...data,
 })

@@ -10,15 +10,37 @@ export const meshSystem = (state: InternalInitialState) =>
     name: componentName.mesh,
     componentName: componentName.mesh,
     create: ({ state, component, entity }) => {
-      const { MeshBuilder, sceneRef } = state.babylonjs
-      if (!(MeshBuilder && sceneRef)) return state
+      const { MeshBuilder, sceneRef, Vector3, Color3 } = state.babylonjs
+      if (!(MeshBuilder && sceneRef && Vector3 && Color3)) return state
 
-      const mesh = MeshBuilder.CreatePlane(component.type, {
-        width: component.width,
-        height: component.height,
-        updatable: component.updatable,
-        sideOrientation: component.sideOrientation,
-      })
+      let mesh
+
+      switch (component.data.type) {
+        case 'plane':
+          mesh = MeshBuilder.CreatePlane('plane', {
+            width: component.data.width,
+            height: component.data.height,
+            updatable: component.data.updatable,
+            sideOrientation: component.data.sideOrientation,
+          })
+          break
+        case 'lines':
+          mesh = MeshBuilder.CreateLines('lines', {
+            points: component.data.points.reduce((acc, point) => {
+              acc.push(new Vector3(point[0], point[1], 0))
+
+              return acc
+            }, [] as any[] /** XD */),
+            colors: component.data.colors.reduce((acc, color) => {
+              acc.push(new Color3(color[0], color[1], color[2]))
+
+              return acc
+            }, [] as any[] /** XD */),
+          })
+
+          break
+      }
+
       mesh.uniqueId = component.uniqueId
 
       const materialComponent = getMaterial({

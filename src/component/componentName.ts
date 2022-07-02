@@ -10,4 +10,5 @@ export enum componentName {
   camera = 'camera',
   mesh = 'mesh',
   material = 'material',
+  line2D = 'line2D',
 }

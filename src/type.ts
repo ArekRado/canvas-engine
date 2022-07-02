@@ -169,22 +169,23 @@ export type MouseInteraction = {
   intersection: Intersection | null
 }
 
-export enum MeshType {
-  plane = 'plane',
-}
-
 export type Mesh = {
-  type: MeshType
   uniqueId: number
-  width: number
-  height: number
-  updatable: boolean
-  sideOrientation: number
-
   materialEntity: Entity[]
-  // sourcePlane: Plane
-  // frontUVs: Vector4
-  // backUVs: Vector4
+
+  data:
+    | {
+        type: 'plane'
+        width: number
+        height: number
+        updatable: boolean
+        sideOrientation: number
+      }
+    | {
+        type: 'lines'
+        points: Vector2D[]
+        colors: Color[]
+      }
 }
 
 export type Material = {
