@@ -1,21 +1,13 @@
 import { createSystem } from '../createSystem'
 import { componentName } from '../../component/componentName'
-import { Camera, ECSEvent, Entity, InternalInitialState } from '../../type'
+import { Camera, Entity, InternalInitialState } from '../../type'
 import { adjustBabylonCameraToComponentCamera } from './handler/handleResize'
 import { getAspectRatio } from '../../util/getAspectRatio'
 import { createEntity } from '../../entity/createEntity'
 import { createCamera, updateCamera } from './cameraCrud'
+import { generateEntity } from '../../entity/generateEntity'
 
-export const cameraEntity = 'camera'
-export namespace CameraEvent {
-  export enum Type {
-    resize = 'CameraEvent-resize',
-  }
-
-  export type All = ResizeEvent
-
-  export type ResizeEvent = ECSEvent<Type.resize, null>
-}
+export const cameraEntity = generateEntity()
 
 const update = ({
   state,
@@ -44,13 +36,15 @@ const update = ({
       entity,
       update: () => ({ ...component, ...size }),
       callSystemUpdateMethod,
-    })
+    }) as InternalInitialState
   }
 
   return state
 }
 
-export const cameraSystem = (state: InternalInitialState) => {
+export const cameraSystem = (
+  state: InternalInitialState,
+): InternalInitialState => {
   state = createSystem<Camera, InternalInitialState>({
     state,
     name: componentName.camera,
@@ -88,5 +82,5 @@ export const cameraSystem = (state: InternalInitialState) => {
       left: 1,
       right: 1,
     },
-  })
+  }) as InternalInitialState
 }

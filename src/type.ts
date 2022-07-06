@@ -5,7 +5,7 @@ import { Scene } from '@babylonjs/core/scene'
 import { TimingFunction } from './util/bezierFunction'
 import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture'
-import { Color3 } from '@babylonjs/core/Maths/math.color'
+import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
 import { Vector3 } from '@babylonjs/core'
 import { Intersection } from './system/collider/getIntersection'
 
@@ -173,15 +173,19 @@ export type MouseInteraction = {
 }
 
 export type Mesh = {
-  uniqueId: number
   materialEntity: Entity[]
-
+  updatable: boolean
   data:
     | {
         type: 'plane'
+        /**
+         * no updatable
+         */
         width: number
+        /**
+         * no updatable
+         */
         height: number
-        updatable: boolean
         sideOrientation: number
       }
     | {
@@ -267,6 +271,28 @@ export type Camera = {
   right: number
 }
 
+export type Vector3D = [number, number, number]
+
+export type Transform = {
+  rotation: number
+  fromParentRotation: number
+  scale: Vector2D | Vector3D
+  fromParentScale: Vector2D | Vector3D
+  position: Vector2D | Vector3D
+  fromParentPosition: Vector2D | Vector3D
+  parentId?: Entity
+}
+
+////////////////////////////////////
+//
+//
+//
+// Event
+//
+//
+//
+////////////////////////////////////
+
 export type ECSEvent<Type, Payload> = {
   type: Type
   payload: Payload
@@ -281,17 +307,29 @@ export type EventHandler<Event, State extends AnyState = AnyState> = (params: {
   state: State
 }) => State
 
-export type Vector3D = [number, number, number]
-
-export type Transform = {
-  rotation: number
-  fromParentRotation: number
-  scale: Vector2D | Vector3D
-  fromParentScale: Vector2D | Vector3D
-  position: Vector2D | Vector3D
-  fromParentPosition: Vector2D | Vector3D
-  parentId?: Entity
+export enum CanvasEngineEvent {
+  windowResize = 'CanvasEngineEvent-windowResize',
+  colliderCollision = 'CanvasEngineEvent-colliderCollision',
 }
+
+export type CollisionEvent = ECSEvent<
+  CanvasEngineEvent.colliderCollision,
+  {
+    collider1: {
+      entity: Entity
+      index: number
+    }
+    collider2: {
+      entity: Entity
+      index: number
+    }
+    intersection: Intersection
+  }
+>
+
+export type WindowResizeEvent = ECSEvent<CanvasEngineEvent.windowResize, null>
+
+export type AllEvents = WindowResizeEvent | CollisionEvent
 
 ////////////////////////////////////
 //
@@ -414,6 +452,7 @@ export type EmptyState<Component, System> = {
     MeshBuilder?: typeof MeshBuilder
     Texture?: typeof Texture
     Color3?: typeof Color3
+    Color4?: typeof Color4
   }
 }
 

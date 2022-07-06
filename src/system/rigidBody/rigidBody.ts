@@ -1,4 +1,4 @@
-import { Collider, InternalInitialState, RigidBody } from '../../type'
+import { AnyState, Collider, RigidBody } from '../../type'
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { add, dot, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
@@ -102,8 +102,8 @@ const applyForceToPosition = ({
   position: Vector2D
 }) => add(scale(timeDelta, force), position)
 
-export const rigidBodySystem = (state: InternalInitialState) =>
-  createSystem<RigidBody, InternalInitialState>({
+export const rigidBodySystem = (state: AnyState) =>
+  createSystem<RigidBody, AnyState>({
     name: componentName.rigidBody,
     componentName: componentName.rigidBody,
     state,

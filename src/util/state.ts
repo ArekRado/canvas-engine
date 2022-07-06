@@ -49,6 +49,7 @@ export const getSystems = ({
   MeshBuilder,
   Texture,
   Color3,
+  Color4,
 }: {
   state: AnyState
   document?: Document
@@ -60,6 +61,7 @@ export const getSystems = ({
   MeshBuilder?: AnyState['babylonjs']['MeshBuilder']
   Texture?: AnyState['babylonjs']['Texture']
   Color3?: AnyState['babylonjs']['Color3']
+  Color4?: AnyState['babylonjs']['Color4']
 }): InternalInitialState => {
   if (process.env.NODE_ENV === 'development') {
     if (
@@ -81,6 +83,7 @@ export const getSystems = ({
           MeshBuilder: !!MeshBuilder,
           Texture: !!Texture,
           Color3: !!Color3,
+          Color4: !!Color4,
         },
       )
     }
@@ -93,31 +96,34 @@ export const getSystems = ({
   state.babylonjs.MeshBuilder = MeshBuilder
   state.babylonjs.Texture = Texture
   state.babylonjs.Color3 = Color3
+  state.babylonjs.Color4 = Color4
 
   let internatlState = state as InternalInitialState
 
-  internatlState = eventSystem(internatlState)
-  internatlState = timeSystem(internatlState)
-  internatlState = cameraSystem(internatlState)
-  internatlState = transformSystem(internatlState)
-  internatlState = colliderSystem(internatlState)
-  internatlState = animationSystem(internatlState)
-  internatlState = mouseInteractionSystem(internatlState)
-  internatlState = materialSystem(internatlState)
-  internatlState = meshSystem(internatlState)
-  internatlState = rigidBodySystem(internatlState)
+  internatlState = eventSystem(internatlState) as InternalInitialState
+  internatlState = timeSystem(internatlState) as InternalInitialState
+  internatlState = cameraSystem(internatlState) as InternalInitialState
+  internatlState = transformSystem(internatlState) as InternalInitialState
+  internatlState = colliderSystem(internatlState) as InternalInitialState
+  internatlState = animationSystem(internatlState) as InternalInitialState
+  internatlState = mouseInteractionSystem(
+    internatlState,
+  ) as InternalInitialState
+  internatlState = materialSystem(internatlState) as InternalInitialState
+  internatlState = meshSystem(internatlState) as InternalInitialState
+  internatlState = rigidBodySystem(internatlState) as InternalInitialState
 
   if (containerId) {
     internatlState = mouseSystem({
       state: internatlState,
       document: document ?? window.document,
       containerId,
-    })
+    }) as InternalInitialState
     internatlState = keyboardSystem({
       state: internatlState,
       document: document ?? window.document,
       containerId,
-    })
+    }) as InternalInitialState
   }
 
   return internatlState
@@ -134,6 +140,7 @@ export const getState = <State extends AnyState = AnyState>({
   MeshBuilder,
   Texture,
   Color3,
+  Color4,
 }: {
   state?: State
   document?: Document
@@ -145,6 +152,7 @@ export const getState = <State extends AnyState = AnyState>({
   MeshBuilder?: AnyState['babylonjs']['MeshBuilder']
   Texture?: AnyState['babylonjs']['Texture']
   Color3?: AnyState['babylonjs']['Color3']
+  Color4?: AnyState['babylonjs']['Color4']
 }): InternalInitialState =>
   getSystems({
     state: state || getInitialState(),
@@ -157,4 +165,5 @@ export const getState = <State extends AnyState = AnyState>({
     MeshBuilder,
     Texture,
     Color3,
+    Color4,
   })

@@ -2,19 +2,19 @@ import { createComponent } from '../component/createComponent'
 import { getComponent } from '../component/getComponent'
 import { removeComponent } from '../component/removeComponent'
 import { updateComponent } from '../component/updateComponent'
-import { InternalInitialState, Entity } from '../type'
+import { AnyState, Entity } from '../type'
 
-export const getComponentCrud = <
+export const createComponentCrud = <
   Component,
-  State extends InternalInitialState = InternalInitialState,
+  State extends AnyState = AnyState,
 >({
   name,
 }: {
   name: string
 }) => {
   const crud = {
-    getComponent: ({ state, entity }: { state: State; entity: Entity }) =>
-      getComponent<Component>({
+    getComponent:({ state, entity }: { state: State; entity: Entity }) =>
+      getComponent<Component, State>({
         state,
         entity,
         name,

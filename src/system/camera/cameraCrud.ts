@@ -1,8 +1,8 @@
 import { componentName } from '../../component/componentName'
 import { Camera } from '../../type'
-import { getComponentCrud } from '../../util/createComponentCrud'
+import { createComponentCrud } from '../../util/createComponentCrud'
 
-const crud = getComponentCrud<Camera>({ name: componentName.camera })
+const crud = createComponentCrud<Camera>({ name: componentName.camera })
 
 export const getCamera = crud.getComponent
 export const createCamera = crud.createComponent

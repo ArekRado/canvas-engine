@@ -1,8 +1,8 @@
 import { componentName } from '../../component/componentName'
 import { Material } from '../../type'
-import { getComponentCrud } from '../../util/createComponentCrud'
+import { createComponentCrud } from '../../util/createComponentCrud'
 
-const crud = getComponentCrud<Material>({ name: componentName.material })
+const crud = createComponentCrud<Material>({ name: componentName.material })
 
 export const getMaterial = crud.getComponent
 export const createMaterial = crud.createComponent

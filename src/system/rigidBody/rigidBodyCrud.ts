@@ -1,8 +1,8 @@
 import { componentName } from '../../component/componentName'
 import { RigidBody } from '../../type'
-import { getComponentCrud } from '../../util/createComponentCrud'
+import { createComponentCrud } from '../../util/createComponentCrud'
 
-const crud = getComponentCrud<RigidBody>({
+const crud = createComponentCrud<RigidBody>({
   name: componentName.rigidBody,
 })
 

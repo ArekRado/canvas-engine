@@ -2,9 +2,9 @@ import {
   AnyState,
   Camera,
   EventHandler,
-  InternalInitialState,
+  WindowResizeEvent,
 } from '../../../type'
-import { cameraEntity, CameraEvent } from '../camera'
+import { cameraEntity } from '../camera'
 import { updateCamera } from '../cameraCrud'
 
 export const getCameraSize = (distance: number, aspectRatio: number) => {
@@ -60,8 +60,8 @@ export const adjustBabylonCameraToComponentCamera = ({
 }
 
 export const handleResize: EventHandler<
-  CameraEvent.ResizeEvent,
-  InternalInitialState
+  WindowResizeEvent,
+  AnyState
 > = ({ state }) => {
   state = updateCamera({
     state,

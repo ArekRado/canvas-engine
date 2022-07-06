@@ -10,7 +10,7 @@ export const createComponent = <Data, State extends AnyState = AnyState>({
   state: State
   data: Data
   entity: Entity
-  name: Entity
+  name: string
 }): State => {
   const newState = {
     ...state,

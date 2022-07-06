@@ -1,7 +1,7 @@
 import { componentName } from '../../component/componentName'
 import {
   Collider,
-  InternalInitialState,
+  AnyState,
   Mouse,
   MouseInteraction,
   Transform,
@@ -54,8 +54,8 @@ export const getMouseIntersection: IsMouseOver = ({
   return intersection
 }
 
-export const mouseInteractionSystem = (state: InternalInitialState) =>
-  createSystem<MouseInteraction, InternalInitialState>({
+export const mouseInteractionSystem = (state: AnyState) =>
+  createSystem<MouseInteraction, AnyState>({
     state,
     name: componentName.mouseInteraction,
     componentName: componentName.mouseInteraction,

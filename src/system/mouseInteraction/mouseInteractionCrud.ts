@@ -1,8 +1,8 @@
 import { componentName } from '../../component/componentName'
 import { MouseInteraction } from '../../type'
-import { getComponentCrud } from '../../util/createComponentCrud'
+import { createComponentCrud } from '../../util/createComponentCrud'
 
-const crud = getComponentCrud<MouseInteraction>({
+const crud = createComponentCrud<MouseInteraction>({
   name: componentName.mouseInteraction,
 })
 

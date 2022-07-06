@@ -1,5 +1,5 @@
 import { vector, vectorZero } from '@arekrado/vector-2d'
-import { InternalInitialState, Mouse } from '../../type'
+import { AnyState, Mouse } from '../../type'
 import { defaultMouse } from '../../util/defaultComponents'
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
@@ -30,7 +30,7 @@ export const mouseSystem = ({
   containerId,
   document,
 }: {
-  state: InternalInitialState
+  state: AnyState
   document: Document
   containerId: string
 }) => {

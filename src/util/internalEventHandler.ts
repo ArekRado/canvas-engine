@@ -1,19 +1,16 @@
-import { CameraEvent } from '../system/camera/camera'
 import { handleResize } from '../system/camera/handler/handleResize'
-import { InternalInitialState } from '../type'
-
-export type AllEvents = CameraEvent.All
+import { AllEvents, CanvasEngineEvent, AnyState } from '../type'
 
 export const internalEventHandler = <AllEvents2>({
   state,
   event,
 }: {
-  state: InternalInitialState
+  state: AnyState
   event: AllEvents2 & AllEvents
-}): InternalInitialState => {
+}): AnyState => {
   switch (event.type) {
     // Camera
-    case CameraEvent.Type.resize:
+    case CanvasEngineEvent.windowResize:
       state = handleResize({ state, event })
       break
 

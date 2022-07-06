@@ -82,7 +82,7 @@ export const transformSystem = (state: InternalInitialState) =>
                   ...transform,
                   position: newPosition,
                 }),
-              })
+              }) as InternalInitialState
             }
           }
 

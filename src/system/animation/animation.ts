@@ -1,4 +1,5 @@
-import { Animation, InternalInitialState, Vector3D } from '../../type'
+
+import { Animation, AnyState, Vector3D } from '../../type'
 import { TimingFunction, getValue } from '../../util/bezierFunction'
 import { add, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
@@ -231,8 +232,8 @@ export const updateAnimation = (params: UpdateAnimationParams) => {
   return 0 // :<
 }
 
-export const animationSystem = (state: InternalInitialState) =>
-  createSystem<Animation.AnimationComponent, InternalInitialState>({
+export const animationSystem = (state: AnyState) =>
+  createSystem<Animation.AnimationComponent, AnyState>({
     state,
     name: componentName.animation,
     componentName: componentName.animation,

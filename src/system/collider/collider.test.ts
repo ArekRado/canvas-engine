@@ -8,7 +8,7 @@ import { createTransform } from '../transform/transformCrud'
 import { createCollider, getCollider } from './colliderCrud'
 import { degreesToRadians } from '../../util/radian'
 import { addEventHandler } from '../../event'
-import { Collider } from '../../type'
+import { CanvasEngineEvent, Collider } from '../../type'
 
 describe('collider', () => {
   describe('detect collisions', () => {
@@ -1255,7 +1255,7 @@ describe('collider', () => {
           position: [0, 0],
         },
       },
-      type: 'collision',
+      type: CanvasEngineEvent.colliderCollision,
     })
 
     expect(eventHandler.mock.calls[1][0].event).toEqual({
@@ -1279,7 +1279,7 @@ describe('collider', () => {
           position: [0, 0],
         },
       },
-      type: 'collision',
+      type: CanvasEngineEvent.colliderCollision,
     })
   })
 })

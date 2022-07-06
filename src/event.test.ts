@@ -3,9 +3,14 @@ import { createComponent } from './component/createComponent'
 import { getComponent } from './component/getComponent'
 import { updateComponent } from './component/updateComponent'
 import { generateEntity } from './entity/generateEntity'
-import { CameraEvent } from './system/camera/camera'
 import { addEventHandler, emitEvent, removeEventHandler } from './event'
-import { ECSEvent, InternalInitialState } from './type'
+import {
+  AllEvents,
+  CanvasEngineEvent,
+  ECSEvent,
+  InternalInitialState,
+  WindowResizeEvent,
+} from './type'
 import { runOneFrame } from './util/runOneFrame'
 import { getState } from './util/state'
 
@@ -45,8 +50,8 @@ describe('event', () => {
   })
 
   it('should handle internal events emmited from external functions', () => {
-    const event: CameraEvent.ResizeEvent = {
-      type: CameraEvent.Type.resize,
+    const event: ECSEvent<WindowResizeEvent, null> = {
+      type: CanvasEngineEvent.windowResize,
       payload: null,
     }
     const eventHandler = jest.fn(({ state }) => state)
@@ -76,8 +81,8 @@ describe('event', () => {
   it('should handle deeply nested events', () => {
     type Test = { count: number }
     const name = 'test'
-    const event: CameraEvent.ResizeEvent = {
-      type: CameraEvent.Type.resize,
+    const event: ECSEvent<WindowResizeEvent, null> = {
+      type: CanvasEngineEvent.windowResize,
       payload: null,
     }
     const entity = generateEntity()

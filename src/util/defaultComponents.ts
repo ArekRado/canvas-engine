@@ -111,11 +111,11 @@ export const defaultMaterial: GetDefaultComponent<Material> = (data = {}) => ({
 export const defaultMesh: GetDefaultComponent<Mesh> = (data = {}) => ({
   materialEntity: [],
   uniqueId: -1,
+  updatable: false,
   data: {
     type: 'plane',
     width: 1,
     height: 1,
-    updatable: false,
     sideOrientation: 0,
   },
   ...data,

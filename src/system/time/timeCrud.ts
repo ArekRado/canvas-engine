@@ -1,8 +1,8 @@
 import { componentName } from '../../component/componentName'
 import { Time } from '../../type'
-import { getComponentCrud } from '../../util/createComponentCrud'
+import { createComponentCrud } from '../../util/createComponentCrud'
 
-const crud = getComponentCrud<Time>({
+const crud = createComponentCrud<Time>({
   name: componentName.time,
 })
 

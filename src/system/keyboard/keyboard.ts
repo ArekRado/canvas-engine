@@ -1,6 +1,6 @@
 import { componentName } from '../../component/componentName'
 import { createEntity } from '../../entity/createEntity'
-import { Keyboard, InternalInitialState } from '../../type'
+import { Keyboard, AnyState } from '../../type'
 import { defaultKeyboard } from '../../util/defaultComponents'
 import { createSystem, systemPriority } from '../createSystem'
 import { createKeyboard, updateKeyboard } from './keyboardCrud'
@@ -16,7 +16,7 @@ export const keyboardSystem = ({
   containerId,
   document,
 }: {
-  state: InternalInitialState
+  state: AnyState
   document: Document
   containerId: string
 }) => {

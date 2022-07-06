@@ -1,6 +1,6 @@
 import { add, Vector2D } from '@arekrado/vector-2d'
 import {
-  InternalInitialState,
+  AnyState,
   Transform,
   Collider,
   ColliderDataLine,
@@ -9,7 +9,9 @@ import {
   ColliderDataPoint,
   ColliderDataPolygon,
   Entity,
-  ECSEvent,
+  CollisionEvent,
+  CanvasEngineEvent,
+  Dictionary,
 } from '../../type'
 import { createSystem, systemPriority } from '../createSystem'
 import { getComponent } from '../../component/getComponent'
@@ -36,21 +38,6 @@ import { getTransform } from '../transform/transformCrud'
 import { applyMatrixToVector2D, rotate } from '../../util/matrix'
 import { emitEvent } from '../../event'
 import { hasSameLayer } from './hasSameLayer'
-
-export type CollisionEvent = ECSEvent<
-  'collision',
-  {
-    collider1: {
-      entity: Entity
-      index: number
-    }
-    collider2: {
-      entity: Entity
-      index: number
-    }
-    intersection: Intersection
-  }
->
 
 const applyTransformsToPosition = ({
   colliderPosition,
@@ -359,7 +346,7 @@ export const collisionsMatrix: CollisionsMatrix = {
 
 type FindCollisionsWith = (pramams: {
   entity: Entity
-  state: InternalInitialState
+  state: AnyState
   component: Collider
 }) => Array<Collider['_collisions'][0]>
 const findCollisionsWith: FindCollisionsWith = ({
@@ -375,7 +362,7 @@ const findCollisionsWith: FindCollisionsWith = ({
 
   const collisionList: Array<Collider['_collisions'][0]> = []
 
-  const allColliders = Object.entries(state.component.collider)
+  const allColliders = Object.entries(state.component.collider as Dictionary<Collider>)
 
   component.data.forEach((colliderData, index1) => {
     allColliders.forEach(([collider2Entity, collider2]) => {
@@ -426,7 +413,7 @@ const findCollisionsWith: FindCollisionsWith = ({
           })
 
           emitEvent<CollisionEvent>({
-            type: 'collision',
+            type: CanvasEngineEvent.colliderCollision,
             payload: {
               collider1: {
                 entity,
@@ -447,8 +434,8 @@ const findCollisionsWith: FindCollisionsWith = ({
   return collisionList
 }
 
-export const colliderSystem = (state: InternalInitialState) =>
-  createSystem<Collider, InternalInitialState>({
+export const colliderSystem = (state: AnyState) =>
+  createSystem<Collider, AnyState>({
     state,
     name: componentName.collider,
     componentName: componentName.collider,

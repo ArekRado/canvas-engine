@@ -1,8 +1,8 @@
 import { componentName } from '../../component/componentName'
 import { Collider } from '../../type'
-import { getComponentCrud } from '../../util/createComponentCrud'
+import { createComponentCrud } from '../../util/createComponentCrud'
 
-const crud = getComponentCrud<Collider>({ name: componentName.collider })
+const crud = createComponentCrud<Collider>({ name: componentName.collider })
 
 export const getCollider = crud.getComponent
 export const createCollider = crud.createComponent

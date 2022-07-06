@@ -1,8 +1,8 @@
 import { componentName } from '../../component/componentName'
 import { Animation } from '../../type'
-import { getComponentCrud } from '../../util/createComponentCrud'
+import { createComponentCrud } from '../../util/createComponentCrud'
 
-const crud = getComponentCrud<Animation.AnimationComponent>({ name: componentName.animation })
+const crud = createComponentCrud<Animation.AnimationComponent>({ name: componentName.animation })
 
 export const getAnimation = crud.getComponent
 export const createAnimation = crud.createComponent

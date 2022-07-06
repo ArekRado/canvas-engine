@@ -57,6 +57,7 @@ export * from './system/rigidBody/rigidBodyCrud'
 export * from './system/time/timeCrud'
 export * from './system/transform/transformCrud'
 
+export { createComponentCrud } from './util/createComponentCrud'
 
 // TODO
 // Events inside system

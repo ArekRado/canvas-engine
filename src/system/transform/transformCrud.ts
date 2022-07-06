@@ -1,8 +1,8 @@
 import { componentName } from '../../component/componentName'
 import { Transform } from '../../type'
-import { getComponentCrud } from '../../util/createComponentCrud'
+import { createComponentCrud } from '../../util/createComponentCrud'
 
-const crud = getComponentCrud<Transform>({
+const crud = createComponentCrud<Transform>({
   name: componentName.transform,
 })
 
