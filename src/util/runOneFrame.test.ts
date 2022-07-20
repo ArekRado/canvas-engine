@@ -1,8 +1,10 @@
 import { createComponent } from '../component/createComponent'
+import { generateEntity } from '../entity/generateEntity'
 import { createGlobalSystem, createSystem } from '../system/createSystem'
 import { InternalInitialState } from '../type'
 import { runOneFrame } from './runOneFrame'
-import { getInitialState } from './state'
+import { getInitialState, getState } from './state'
+import { tick } from './testUtils'
 
 describe('runOneFrame', () => {
   it('should call system tick in proper order depending on system priority', () => {
@@ -83,5 +85,52 @@ describe('runOneFrame', () => {
     runOneFrame({ state })
 
     expect(callQueue.toString()).toBe('tick5,tick3,tick1,tick2,tick4')
+  })
+
+  it('system - should call fixedTick in the correct amount of calls', () => {
+    const componentName = 'a'
+    const fixedTickMock = jest.fn<
+      InternalInitialState,
+      [{ state: InternalInitialState }]
+    >(({ state }) => state)
+
+    let state = createSystem({
+      state: getState({}),
+      componentName,
+      name: 'test',
+      fixedTick: fixedTickMock,
+    })
+
+    state = createComponent({
+      state,
+      name: componentName,
+      entity: generateEntity(),
+      data: {},
+    })
+
+    state = tick(10, state)
+
+    runOneFrame({ state })
+
+    expect(fixedTickMock).toHaveBeenCalledTimes(10)
+  })
+
+  it('globalSystem - should call fixedTick in the correct amount of calls', () => {
+    const fixedTickMock = jest.fn<
+      InternalInitialState,
+      [{ state: InternalInitialState }]
+    >(({ state }) => state)
+
+    let state = createGlobalSystem({
+      state: getState({}),
+      name: 'test',
+      fixedTick: fixedTickMock,
+    })
+
+    state = tick(10, state)
+
+    runOneFrame({ state })
+
+    expect(fixedTickMock).toHaveBeenCalledTimes(10)
   })
 })

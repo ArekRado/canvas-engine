@@ -40,11 +40,9 @@ describe('createGlobalSystem', () => {
 
     expect(tick).toHaveBeenCalled()
   })
+})
 
-  it.todo(
-    'should call update method should not be called when system is created',
-  )
-
+describe('createSystem', () => {
   it.todo('should call update method when setState is called')
 
   it.todo('test priority')

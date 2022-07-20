@@ -6,6 +6,12 @@ import { createEntity } from '../../entity/createEntity'
 
 export const timeEntity = 'time'
 
+export let MAX_ALLOWED_DELTA = process.env.NODE_ENV === 'test' ? 10000 : 34
+
+export const mutateMaxAllowedDelta = (newMaxAllowedDelta: number) => {
+  MAX_ALLOWED_DELTA = newMaxAllowedDelta
+}
+
 export const timeSystem = (state: AnyState) => {
   state = createEntity({
     entity: timeEntity,
@@ -38,7 +44,7 @@ export const timeSystem = (state: AnyState) => {
         state,
         entity,
         update: () => ({
-          delta,
+          delta: Math.min(MAX_ALLOWED_DELTA, delta),
           timeNow,
           previousTimeNow,
         }),

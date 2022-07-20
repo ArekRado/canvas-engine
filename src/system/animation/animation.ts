@@ -1,5 +1,4 @@
-
-import { Animation, AnyState, Vector3D } from '../../type'
+import { Animation, AnyState, Color, Vector3D } from '../../type'
 import { TimingFunction, getValue } from '../../util/bezierFunction'
 import { add, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import set from 'just-safe-set'
@@ -41,6 +40,31 @@ const vector3d = {
     v1[0] + v1[1] + v1[2] < v2[0] + v2[1] + v2[2],
   isGreater: (v1: Vector3D, v2: Vector3D): boolean =>
     v1[0] + v1[1] + v1[2] > v2[0] + v2[1] + v2[2],
+}
+
+const vector4d = {
+  add: (v1: Color, v2: Color): Color => [
+    v1[0] + v2[0],
+    v1[1] + v2[1],
+    v1[2] + v2[2],
+    v1[3] + v2[3],
+  ],
+  sub: (v1: Color, v2: Color): Color => [
+    v1[0] - v2[0],
+    v1[1] - v2[1],
+    v1[2] - v2[2],
+    v1[3] - v2[3],
+  ],
+  scale: (value: number, v1: Color): Color => [
+    v1[0] * value,
+    v1[1] * value,
+    v1[2] * value,
+    v1[3] * value,
+  ],
+  isLesser: (v1: Color, v2: Color): boolean =>
+    v1[0] + v1[1] + v1[2] + v1[3] < v2[0] + v2[1] + v2[2] + v2[3],
+  isGreater: (v1: Color, v2: Color): boolean =>
+    v1[0] + v1[1] + v1[2] + v1[3] > v2[0] + v2[1] + v2[2] + v2[3],
 }
 
 const getPercentageProgress = (
@@ -206,6 +230,31 @@ export const updateVector3DAnimation = ({
     : newValue
 }
 
+export const updateVector4DAnimation = ({
+  keyframe,
+  progress,
+  timingMode,
+}: UpdateAnimationParams) => {
+  const v1 = keyframe.valueRange[0] as Color
+  const v2 = keyframe.valueRange[1] as Color
+
+  if (timingMode === 'step') {
+    return v1
+  }
+
+  const normalizedMax = vector4d.sub(v2, v1)
+  const newValue = vector4d.add(v1, vector4d.scale(progress, normalizedMax))
+  const isNegative = vector4d.isLesser(v1, v2)
+
+  return isNegative
+    ? vector4d.isGreater(newValue, v2)
+      ? v2
+      : newValue
+    : vector4d.isLesser(newValue, v2)
+    ? v2
+    : newValue
+}
+
 export const updateStringAnimation = ({ keyframe }: UpdateAnimationParams) => {
   return keyframe.valueRange as string
 }
@@ -226,6 +275,8 @@ export const updateAnimation = (params: UpdateAnimationParams) => {
       return updateVector2DAnimation(params)
     } else if (valueRange[0].length === 3) {
       return updateVector3DAnimation(params)
+    } else if (valueRange[0].length === 4) {
+      return updateVector4DAnimation(params)
     }
   }
 

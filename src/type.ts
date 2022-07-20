@@ -125,7 +125,7 @@ export namespace Animation {
   export type Keyframe = {
     duration: number
     timingFunction: TimingFunction
-    valueRange: Vector2D | [Vector2D, Vector2D] | [Vector3D, Vector3D] | string
+    valueRange: Vector2D | [Vector2D, Vector2D] | [Vector3D, Vector3D] | [Color, Color] | string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     endFrameEvent?: ECSEvent<unknown, any>
   }
@@ -370,6 +370,7 @@ export type System<
    * Called on each runOneFrame
    */
   tick: ((params: { state: State }) => State) | undefined
+  fixedTick: ((params: { state: State }) => State) | undefined
   remove: ((params: SystemMethodParams<Component, State>) => State) | undefined
   update:
     | ((
@@ -385,12 +386,14 @@ export type CreateGlobalSystemParams<State extends AnyStateForSystem> = {
   name: string
   create?: (params: { state: State }) => State
   tick?: (params: { state: State }) => State
+  fixedTick?: (params: { state: State }) => State
   priority?: number
 }
 
 export type GlobalSystem<State extends AnyStateForSystem> = {
   name: string
   tick?: (params: { state: State }) => State
+  fixedTick?: (params: { state: State }) => State
   create: undefined
   remove: (params: { state: State }) => State
   priority: number
