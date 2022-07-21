@@ -1,15 +1,29 @@
-import { AnyState, AnyStateForSystem, SystemMethodParams } from '../type'
+import { timeEntity } from '../system/time/time'
+import { getTime, updateTime } from '../system/time/timeCrud'
+import { AnyState } from '../type'
 
-export const triggerFixedTick = <
-  State extends AnyStateForSystem = AnyStateForSystem,
->({
-  state,
-  fixedTick,
-}: {
-  state: State
-  fixedTick: (params: SystemMethodParams<unknown, State>) => State
-}) => {
-  
+export const FIXED_TICK_TIME = 1 // 1ms
+
+let moduloTimeBuffer = 0 // in situation when delta is 15.65 fixedTick will be triggered 15 times, next frame will use this value to increase amount of calls
+
+const getFixedTickAmount = (state: AnyState): number => {
+  const delta =
+    getTime({
+      entity: timeEntity,
+      state,
+    })?.delta ?? 0
+
+  let fixedTickLoops = Math.floor(delta / FIXED_TICK_TIME)
+  const modulo = delta % FIXED_TICK_TIME
+
+  if (modulo + moduloTimeBuffer >= FIXED_TICK_TIME) {
+    fixedTickLoops += 1
+    moduloTimeBuffer -= FIXED_TICK_TIME
+  } else {
+    moduloTimeBuffer += modulo
+  }
+
+  return fixedTickLoops
 }
 
 export const runOneFrame = <State extends AnyState = AnyState>({
@@ -17,15 +31,56 @@ export const runOneFrame = <State extends AnyState = AnyState>({
 }: {
   state: State
 }): State => {
-  return [...state.system, ...state.globalSystem]
+  const fixedTickLoops = getFixedTickAmount(state)
+
+  const allSystems = [...state.system, ...state.globalSystem]
     .concat()
     .sort((a, b) => (a.priority > b.priority ? 1 : -1))
-    .reduce((acc, system) => {
-      acc = system.fixedTick
-        ? triggerFixedTick({ state: acc, fixedTick: system.fixedTick })
-        : acc
-      acc = system.tick ? (system.tick({ state: acc }) as State) : acc
 
-      return acc
-    }, state)
+  // Loop for normal ticks
+  allSystems.forEach((system) => {
+    if (system.tick) {
+      state = system.tick({ state }) as State
+    }
+  })
+
+  const timeAfterSystem = getTime({
+    entity: timeEntity,
+    state,
+  })
+
+  // Loop for fixedTicks
+  Array.from({ length: fixedTickLoops }).forEach(() => {
+    // Fixed tick has to have delta equal to FIXED_TICK_TIME
+    state = updateTime({
+      state,
+      entity: timeEntity,
+      update: (time) => ({
+        delta: FIXED_TICK_TIME,
+        timeNow: time.timeNow + FIXED_TICK_TIME,
+        dataOverwrite: {
+          ...time.dataOverwrite,
+          delta: FIXED_TICK_TIME,
+          timeNow: time.timeNow + FIXED_TICK_TIME,
+        },
+      }),
+    }) as State
+
+    allSystems.forEach((system) => {
+      if (system.fixedTick) {
+        state = system.fixedTick({ state }) as State
+      }
+    })
+  })
+
+  // reset time after fixed updates. It's the easiest way to return to previous time values without worrying about modulo
+  state = updateTime({
+    state,
+    entity: timeEntity,
+    update: () => ({
+      ...timeAfterSystem,
+    }),
+  }) as State
+
+  return state
 }

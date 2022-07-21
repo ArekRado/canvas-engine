@@ -30,12 +30,10 @@ const triggerTickForAllComponents = <
 >({
   state,
   componentName,
-  systemName,
   tickCallback,
 }: {
   state: State
   componentName: string
-  systemName: string
   tickCallback: (params: SystemMethodParams<ComponentData, State>) => State
 }): State => {
   const component = state.component[componentName] as
@@ -46,9 +44,9 @@ const triggerTickForAllComponents = <
     return Object.keys(component).reduce((acc, entity: Entity) => {
       const component = getComponent<ComponentData>({
         state: acc,
-        name: systemName,
+        name: componentName,
         entity,
-      })
+      }) as ComponentData
 
       if (!component) {
         return acc
@@ -97,30 +95,24 @@ export const createSystem = <
     priority: params.priority || systemPriority.last,
     create: params.create,
     update: params.update,
-    tick: ({ state }: { state: State }) => {
-      if (!tick) {
-        return state
-      }
-
-      return triggerTickForAllComponents({
-        state,
-        componentName: params.componentName,
-        systemName: params.name,
-        tickCallback: tick,
-      })
-    },
-    fixedTick: ({ state }: { state: State }) => {
-      if (!fixedTick) {
-        return state
-      }
-
-      return triggerTickForAllComponents({
-        state,
-        componentName: params.componentName,
-        systemName: params.name,
-        tickCallback: fixedTick,
-      })
-    },
+    tick: tick
+      ? ({ state }: { state: State }) => {
+          return triggerTickForAllComponents({
+            state,
+            componentName: params.componentName,
+            tickCallback: tick,
+          })
+        }
+      : undefined,
+    fixedTick: fixedTick
+      ? ({ state }: { state: State }) => {
+          return triggerTickForAllComponents({
+            state,
+            componentName: params.componentName,
+            tickCallback: fixedTick,
+          })
+        }
+      : undefined,
     remove: params.remove,
   }
 
