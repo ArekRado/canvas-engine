@@ -108,7 +108,7 @@ export const rigidBodySystem = (state: AnyState) =>
     componentName: componentName.rigidBody,
     state,
     priority: systemPriority.rigidBody,
-    tick: ({ state, entity }) => {
+    fixedTick: ({ state, entity }) => {
       const component = getRigidBody({
         state,
         entity,

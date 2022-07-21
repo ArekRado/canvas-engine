@@ -4,7 +4,9 @@ import { AnyState } from '../type'
 
 export const FIXED_TICK_TIME = 1 // 1ms
 
-let moduloTimeBuffer = 0 // in situation when delta is 15.65 fixedTick will be triggered 15 times, next frame will use this value to increase amount of calls
+ let _moduloTimeBuffer = 0 // in situation when delta is 15.65 fixedTick will be triggered 15 times, next frame will use this value to increase amount of calls
+
+export const _resetModuloTimeBuffer = () => _moduloTimeBuffer = 0
 
 const getFixedTickAmount = (state: AnyState): number => {
   const delta =
@@ -16,11 +18,11 @@ const getFixedTickAmount = (state: AnyState): number => {
   let fixedTickLoops = Math.floor(delta / FIXED_TICK_TIME)
   const modulo = delta % FIXED_TICK_TIME
 
-  if (modulo + moduloTimeBuffer >= FIXED_TICK_TIME) {
+  if (modulo + _moduloTimeBuffer >= FIXED_TICK_TIME) {
     fixedTickLoops += 1
-    moduloTimeBuffer -= FIXED_TICK_TIME
+    _moduloTimeBuffer -= FIXED_TICK_TIME
   } else {
-    moduloTimeBuffer += modulo
+    _moduloTimeBuffer += modulo
   }
 
   return fixedTickLoops
@@ -37,14 +39,7 @@ export const runOneFrame = <State extends AnyState = AnyState>({
     .concat()
     .sort((a, b) => (a.priority > b.priority ? 1 : -1))
 
-  // Loop for normal ticks
-  allSystems.forEach((system) => {
-    if (system.tick) {
-      state = system.tick({ state }) as State
-    }
-  })
-
-  const timeAfterSystem = getTime({
+  const timeBeforeFixedTicks = getTime({
     entity: timeEntity,
     state,
   })
@@ -78,9 +73,16 @@ export const runOneFrame = <State extends AnyState = AnyState>({
     state,
     entity: timeEntity,
     update: () => ({
-      ...timeAfterSystem,
+      ...timeBeforeFixedTicks,
     }),
   }) as State
+
+  // Loop for normal ticks
+  allSystems.forEach((system) => {
+    if (system.tick) {
+      state = system.tick({ state }) as State
+    }
+  })
 
   return state
 }

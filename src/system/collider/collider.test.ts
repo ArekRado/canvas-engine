@@ -1,14 +1,23 @@
 import { vector, Vector2D } from '@arekrado/vector-2d'
 import { createEntity } from '../../entity/createEntity'
 import { generateEntity } from '../../entity/generateEntity'
-import { runOneFrame } from '../../util/runOneFrame'
 import { defaultCollider, defaultTransform } from '../../util/defaultComponents'
 import { getState } from '../../util/state'
 import { createTransform } from '../transform/transformCrud'
 import { createCollider, getCollider } from './colliderCrud'
 import { degreesToRadians } from '../../util/radian'
-import { addEventHandler } from '../../event'
-import { CanvasEngineEvent, Collider } from '../../type'
+import { addEventHandler, removeEventHandler } from '../../event'
+import { AnyState, CanvasEngineEvent, Collider } from '../../type'
+import { tick } from '../../util/testUtils'
+
+const runOneFrameWithFixedTime = (state: AnyState): AnyState => {
+  // to trigger fixedTick delta has to be changed by 1ms
+  state = tick(1, state)
+  state = tick(2, state)
+  state = tick(2, state)
+
+  return state
+}
 
 describe('collider', () => {
   describe('detect collisions', () => {
@@ -87,7 +96,7 @@ describe('collider', () => {
         }),
       })
 
-      state = runOneFrame({ state })
+      state = runOneFrameWithFixedTime(state)
 
       const collisions1 = getCollider({
         state,
@@ -174,7 +183,7 @@ describe('collider', () => {
         }),
       })
 
-      state = runOneFrame({ state })
+      state = runOneFrameWithFixedTime(state)
 
       const collisions1 = getCollider({
         state,
@@ -278,7 +287,7 @@ describe('collider', () => {
         }),
       })
 
-      state = runOneFrame({ state })
+      state = runOneFrameWithFixedTime(state)
 
       const collisions1 = getCollider({
         state,
@@ -386,7 +395,7 @@ describe('collider', () => {
         }),
       })
 
-      state = runOneFrame({ state })
+      state = runOneFrameWithFixedTime(state)
 
       const collisions1 = getCollider({
         state,
@@ -499,7 +508,7 @@ describe('collider', () => {
         }),
       })
 
-      state = runOneFrame({ state })
+      state = runOneFrameWithFixedTime(state)
 
       const collisions1 = getCollider({
         state,
@@ -633,7 +642,7 @@ describe('collider', () => {
         }),
       })
 
-      state = runOneFrame({ state })
+      state = runOneFrameWithFixedTime(state)
 
       const collisions1 = getCollider({
         state,
@@ -792,7 +801,7 @@ describe('collider', () => {
         }),
       })
 
-      state = runOneFrame({ state })
+      state = runOneFrameWithFixedTime(state)
 
       const collisions1 = getCollider({
         state,
@@ -921,7 +930,7 @@ describe('collider', () => {
         })
       })
 
-      state = runOneFrame({ state })
+      state = runOneFrameWithFixedTime(state)
       ;[
         {
           entity: entity1,
@@ -1046,7 +1055,7 @@ describe('collider', () => {
       })
     })
 
-    state = runOneFrame({ state })
+    state = runOneFrameWithFixedTime(state)
     ;[
       {
         entity: entity1,
@@ -1159,7 +1168,7 @@ describe('collider', () => {
       }),
     })
 
-    state = runOneFrame({ state })
+    state = runOneFrameWithFixedTime(state)
 
     const collisions1 = getCollider({
       state,
@@ -1185,15 +1194,16 @@ describe('collider', () => {
     expect(collisions3?.[0].colliderEntity).toEqual(entity2)
   })
 
-  it.only('should emit collision event with correct data', () => {
-    const eventHandler = jest.fn(({ state }) => state)
-
-    addEventHandler(eventHandler)
-
+  it('should emit collision event with correct data', () => {
     const entity1 = generateEntity()
     const entity2 = generateEntity()
 
     let state = getState({})
+    state = runOneFrameWithFixedTime(state)
+
+    const eventHandler = jest.fn(({ state }) => state)
+    addEventHandler(eventHandler)
+
     state = createEntity({ entity: entity1, state })
     state = createEntity({ entity: entity2, state })
 
@@ -1231,8 +1241,7 @@ describe('collider', () => {
       }),
     })
 
-    state = runOneFrame({ state })
-    state = runOneFrame({ state })
+    state = runOneFrameWithFixedTime(state)
 
     expect(eventHandler.mock.calls[0][0].event).toEqual({
       payload: {
@@ -1281,5 +1290,7 @@ describe('collider', () => {
       },
       type: CanvasEngineEvent.colliderCollision,
     })
+
+    removeEventHandler(eventHandler)
   })
 })

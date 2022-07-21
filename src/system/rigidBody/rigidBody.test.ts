@@ -169,7 +169,9 @@ describe('rigidBody', () => {
       }),
     })
 
+    // todo: why it needs 3 ticks?
     state = tick(0, state)
+    state = tick(10, state)
     state = tick(10, state)
 
     const transform = getTransform({
@@ -177,7 +179,7 @@ describe('rigidBody', () => {
       entity: entity1,
     })
 
-    expect(transform?.position).toEqual([1, 0])
+    expect(toFixedVector2D(transform?.position as Vector2D, 2)).toEqual([1, 0])
   })
 
   it('should use friction to reduce force', () => {
@@ -219,31 +221,43 @@ describe('rigidBody', () => {
 
     state = tick(0, state)
     state = tick(10, state)
+    state = tick(10, state)
 
     expect(
-      getTransform({
-        state,
-        entity: entity1,
-      })?.position,
-    ).toEqual([100, 0])
+      toFixedVector2D(
+        getTransform({
+          state,
+          entity: entity1,
+        })?.position as Vector2D,
+        3,
+      ),
+    ).toEqual([94.6, 0])
 
+    state = tick(20, state)
     state = tick(20, state)
 
     expect(
-      getTransform({
-        state,
-        entity: entity1,
-      })?.position,
-    ).toEqual([188, 0])
+      toFixedVector2D(
+        getTransform({
+          state,
+          entity: entity1,
+        })?.position as Vector2D,
+        3,
+      ),
+    ).toEqual([177.2, 0])
 
+    state = tick(40, state)
     state = tick(40, state)
 
     expect(
-      getTransform({
-        state,
-        entity: entity1,
-      })?.position,
-    ).toEqual([340, 0])
+      toFixedVector2D(
+        getTransform({
+          state,
+          entity: entity1,
+        })?.position as Vector2D,
+        3,
+      ),
+    ).toEqual([306.4, 0])
   })
 
   it('conservation of momentum in elastic collisions 1 - rigidbodies with the same mass', () => {
@@ -313,7 +327,7 @@ describe('rigidBody', () => {
       }),
     })
 
-    Array.from({ length: 11 }).forEach((_, i) => {
+    Array.from({ length: 12 }).forEach((_, i) => {
       state = tick(i, state)
     })
 

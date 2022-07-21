@@ -440,7 +440,7 @@ export const colliderSystem = (state: AnyState) =>
     name: componentName.collider,
     componentName: componentName.collider,
     priority: systemPriority.collider,
-    tick: ({ state, component, entity }) => {
+    fixedTick: ({ state, component, entity }) => {
       const collisions = findCollisionsWith({
         entity,
         state,
