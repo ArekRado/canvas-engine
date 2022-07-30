@@ -1,4 +1,4 @@
-import { AnyState, Collider, RigidBody } from '../../type'
+import { AnyState, Collider, Entity, RigidBody } from '../../type'
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { add, dot, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
@@ -92,6 +92,17 @@ const removeFirstCollision = (collider: Collider): Partial<Collider> => ({
   _collisions: collider._collisions.slice(1, collider._collisions.length),
 })
 
+const hadSameCollisionInPreviousTick = ({
+  collisionEntity,
+  collider,
+}: {
+  collisionEntity: Entity
+  collider: Collider
+}) =>
+  collider._previousCollisions.some(
+    (data) => data.colliderEntity === collisionEntity,
+  )
+
 const applyForceToPosition = ({
   timeDelta,
   force,
@@ -165,6 +176,7 @@ export const rigidBodySystem = (state: AnyState) =>
               position2: collision.intersection.position,
             })
 
+            // if elementsStuckInEachOther then rotate forces outside centers
             force = force1
 
             state = updateRigidBody({
@@ -181,6 +193,30 @@ export const rigidBodySystem = (state: AnyState) =>
             entity: collision.colliderEntity,
             update: removeFirstCollision,
           })
+
+
+          // 
+          // Push out rigidbodies which stuck in each other
+          //
+          const elementsStuckInEachOther = hadSameCollisionInPreviousTick({
+            collisionEntity: collision.colliderEntity,
+            collider,
+          })
+
+          if (elementsStuckInEachOther) {
+            const collisionTransform = getTransform({
+              state,
+              entity: collision.colliderEntity,
+            })
+
+            force = scale(
+              magnitude(force),
+              sub(
+                transform.position as Vector2D,
+                collisionTransform?.position as Vector2D,
+              ),
+            )
+          }
         }
       }
 

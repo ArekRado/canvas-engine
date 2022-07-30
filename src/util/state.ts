@@ -30,6 +30,7 @@ export const getInitialState = (): InternalInitialState => ({
   },
   globalSystem: [],
   system: [],
+  animationFrame: -1,
   babylonjs: {
     sceneRef: undefined,
     cameraRef: undefined,

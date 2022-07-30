@@ -26,6 +26,8 @@ export {
 } from './event'
 
 export { runOneFrame } from './util/runOneFrame'
+export { runRenderLoop } from './util/runRenderLoop'
+
 export {
   defaultAnimation,
   defaultCollider,

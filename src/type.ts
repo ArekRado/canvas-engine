@@ -74,6 +74,10 @@ export type Collider = {
     belongs: string[]
     interacts: string[]
   }
+  /**
+   * Used to detect if collider stuck inside another collider
+   */
+  _previousCollisions: Array<CollisionData>
   _collisions: Array<CollisionData>
   data: Array<
     | ColliderDataPoint
@@ -125,7 +129,12 @@ export namespace Animation {
   export type Keyframe = {
     duration: number
     timingFunction: TimingFunction
-    valueRange: Vector2D | [Vector2D, Vector2D] | [Vector3D, Vector3D] | [Color, Color] | string
+    valueRange:
+      | Vector2D
+      | [Vector2D, Vector2D]
+      | [Vector3D, Vector3D]
+      | [Color, Color]
+      | string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     endFrameEvent?: ECSEvent<unknown, any>
   }
@@ -300,8 +309,6 @@ export type ECSEvent<Type, Payload> = {
 
 export type EmitEvent = (event: unknown) => void
 
-// export type Event = {}>
-
 export type EventHandler<Event, State extends AnyState = AnyState> = (params: {
   event: Event
   state: State
@@ -310,6 +317,8 @@ export type EventHandler<Event, State extends AnyState = AnyState> = (params: {
 export enum CanvasEngineEvent {
   windowResize = 'CanvasEngineEvent-windowResize',
   colliderCollision = 'CanvasEngineEvent-colliderCollision',
+
+  renderLoopStart = 'CanvasEngineEvent-renderLoopStart',
 }
 
 export type CollisionEvent = ECSEvent<
@@ -328,8 +337,17 @@ export type CollisionEvent = ECSEvent<
 >
 
 export type WindowResizeEvent = ECSEvent<CanvasEngineEvent.windowResize, null>
+export type RenderLoopStartEvent = ECSEvent<
+  CanvasEngineEvent.renderLoopStart,
+  {
+    animationFrame: number
+  }
+>
 
-export type AllEvents = WindowResizeEvent | CollisionEvent
+export type AllEvents =
+  | WindowResizeEvent
+  | CollisionEvent
+  | RenderLoopStartEvent
 
 ////////////////////////////////////
 //
@@ -446,6 +464,10 @@ export type EmptyState<Component, System> = {
   system: Array<System>
   globalSystem: Array<GlobalSystem<AnyState>>
 
+  /**
+   * used to cancel requestAnimationFrame loop
+   */
+  animationFrame: number
   // Babylonjs
   babylonjs: {
     sceneRef?: Scene

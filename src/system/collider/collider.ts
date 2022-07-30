@@ -362,7 +362,9 @@ const findCollisionsWith: FindCollisionsWith = ({
 
   const collisionList: Array<Collider['_collisions'][0]> = []
 
-  const allColliders = Object.entries(state.component.collider as Dictionary<Collider>)
+  const allColliders = Object.entries(
+    state.component.collider as Dictionary<Collider>,
+  )
 
   component.data.forEach((colliderData, index1) => {
     allColliders.forEach(([collider2Entity, collider2]) => {
@@ -450,7 +452,8 @@ export const colliderSystem = (state: AnyState) =>
       return updateCollider({
         state,
         entity,
-        update: () => ({
+        update: (collider) => ({
+          _previousCollisions: collider._collisions,
           _collisions: collisions,
         }),
       })

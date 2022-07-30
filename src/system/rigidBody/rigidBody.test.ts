@@ -1,4 +1,4 @@
-import { vector, Vector2D, vectorZero } from '@arekrado/vector-2d'
+import { distance, vector, Vector2D, vectorZero } from '@arekrado/vector-2d'
 import { getState } from '../../util/state'
 import { createEntity } from '../../entity/createEntity'
 import { generateEntity } from '../../entity/generateEntity'
@@ -13,10 +13,11 @@ import {
   getElasticCollisionForcesStatic,
 } from './rigidBody'
 import { createTransform, getTransform } from '../transform/transformCrud'
-import { createCollider } from '../collider/colliderCrud'
+import { createCollider, getCollider } from '../collider/colliderCrud'
 import { createRigidBody, getRigidBody } from './rigidBodyCrud'
 import { toFixedVector2D } from '../../util/toFixedVector2D'
 import { degreesToRadians } from '../../util/radian'
+import { AnyState } from '../../type'
 
 describe('getElasticCollisionForces', () => {
   it('should return proper data', () => {
@@ -134,7 +135,7 @@ describe('getElasticCollisionForcesStatic', () => {
 
 describe('rigidBody', () => {
   it('should move rigidBody using force', () => {
-    let state = getState({})
+    let state = getState({}) as AnyState
 
     const entity1 = generateEntity()
 
@@ -183,7 +184,7 @@ describe('rigidBody', () => {
   })
 
   it('should use friction to reduce force', () => {
-    let state = getState({})
+    let state = getState({}) as AnyState
 
     const entity1 = generateEntity()
 
@@ -264,7 +265,7 @@ describe('rigidBody', () => {
     const r1Force: Vector2D = [0.1, 0]
     const r2Force: Vector2D = [0, 0]
 
-    let state = getState({})
+    let state = getState({}) as AnyState
 
     const entity1 = generateEntity()
     const entity2 = generateEntity()
@@ -350,7 +351,7 @@ describe('rigidBody', () => {
     const r1Force: Vector2D = [0.1, 0]
     const r2Force: Vector2D = [-0.2, 0]
 
-    let state = getState({})
+    let state = getState({}) as AnyState
 
     const entity1 = generateEntity()
     const entity2 = generateEntity()
@@ -431,7 +432,7 @@ describe('rigidBody', () => {
   })
 
   it('conservation of momentum in elastic collisions 3 - static rigidBody should not be moved by force', () => {
-    let state = getState({})
+    let state = getState({}) as AnyState
 
     const entity1 = generateEntity()
     const entity2 = generateEntity()
@@ -525,7 +526,7 @@ describe('rigidBody', () => {
   })
 
   it('conservation of momentum in elastic collisions 4 - collision circle-line should correctly bounce circle. Position should not change bounce angle', () => {
-    let state = getState({})
+    let state = getState({}) as AnyState
 
     const entity1 = generateEntity()
     const entity2 = generateEntity()
@@ -604,7 +605,7 @@ describe('rigidBody', () => {
   })
 
   it('conservation of momentum in elastic collisions 5 - collision circle-line should correctly bounce circle. Rotated line should change correctly circle force', () => {
-    let state = getState({})
+    let state = getState({}) as AnyState
 
     const entity1 = generateEntity()
     const entity2 = generateEntity()
@@ -684,5 +685,105 @@ describe('rigidBody', () => {
         5,
       ),
     ).toEqual([0, 0.2])
+  })
+
+  it('should apply additional force to rigidbodies when they collides with each other in two ticks in a row', () => {
+    // if rigidbody stuck inside another rigidbody then phisic will push them to the center, we want to move them outside.
+
+    let state = getState({}) as AnyState
+
+    const entity1 = generateEntity()
+    const entity2 = generateEntity()
+
+    state = createEntity({ entity: entity1, state })
+    state = createEntity({ entity: entity2, state })
+
+    state = createTransform({
+      state,
+      entity: entity1,
+      data: defaultTransform({
+        position: [3.777196043997166, 2.5104600747657106],
+      }),
+    })
+    state = createTransform({
+      state,
+      entity: entity2,
+      data: defaultTransform({
+        position: [2.7081851982875227, 2.1153390722823326],
+      }),
+    })
+
+    state = createCollider({
+      state,
+      entity: entity1,
+      data: defaultCollider({
+        data: [
+          {
+            type: 'circle',
+            radius: 0.6646845178296792,
+            position: [0, 0],
+          },
+        ],
+        layer: {
+          belongs: ['knight'],
+          interacts: ['knight', 'barrier'],
+        },
+      }),
+    })
+    state = createCollider({
+      state,
+      entity: entity2,
+      data: defaultCollider({
+        data: [
+          {
+            type: 'circle',
+            radius: 0.6628101775793278,
+            position: [0, 0],
+          },
+        ],
+        layer: {
+          belongs: ['knight'],
+          interacts: ['knight', 'barrier'],
+        },
+      }),
+    })
+
+    state = createRigidBody({
+      state,
+      entity: entity1,
+      data: defaultRigidBody({
+        mass: 0.6646845178296792,
+        force: [0.0006659534850252688, -0.00025463924853605054],
+      }),
+    })
+    state = createRigidBody({
+      state,
+      entity: entity2,
+      data: defaultRigidBody({
+        mass: 0.6628101775793278,
+        force: [-0.0006650088452932791, -0.0017474685339102045],
+        isStatic: false,
+      }),
+    })
+
+    state = tick(0, state)
+    state = tick(75, state)
+    state = tick(75, state)
+
+    // Rigidbody logic should push out colliders
+
+    expect(
+      getCollider({
+        state,
+        entity: entity1,
+      })?._collisions,
+    ).toEqual([])
+
+    expect(
+      getCollider({
+        state,
+        entity: entity2,
+      })?._collisions,
+    ).toEqual([])
   })
 })

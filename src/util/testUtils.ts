@@ -1,9 +1,12 @@
 import { timeEntity } from '../system/time/time'
 import { updateTime } from '../system/time/timeCrud'
-import { InternalInitialState } from '../type'
+import { AnyState, InternalInitialState } from '../type'
 import { runOneFrame, _resetModuloTimeBuffer } from './runOneFrame'
 
-export const tick = (timeNow: number, state: InternalInitialState) => {
+export const tick = (
+  timeNow: number,
+  state: InternalInitialState | AnyState,
+) => {
   // if (timeNow === 0) {
   //   _resetModuloTimeBuffer()
   // }
