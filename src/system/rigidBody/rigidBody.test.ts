@@ -17,7 +17,15 @@ import { createCollider, getCollider } from '../collider/colliderCrud'
 import { createRigidBody, getRigidBody } from './rigidBodyCrud'
 import { toFixedVector2D } from '../../util/toFixedVector2D'
 import { degreesToRadians } from '../../util/radian'
-import { AnyState } from '../../type'
+import {
+  AnyState,
+  Collider,
+  ColliderDataCircle,
+  ColliderDataLine,
+  ColliderDataPoint,
+  ColliderDataPolygon,
+  ColliderDataRectangle,
+} from '../../type'
 
 describe('getElasticCollisionForces', () => {
   it('should return proper data', () => {
@@ -157,7 +165,7 @@ describe('rigidBody', () => {
           belongs: ['a'],
           interacts: ['a'],
         },
-        data: [{ type: 'circle', position: [0, 0], radius: 0.1 }],
+        data: { type: 'circle', position: [0, 0], radius: 0.1 },
       }),
     })
 
@@ -206,7 +214,7 @@ describe('rigidBody', () => {
           belongs: ['a'],
           interacts: ['a'],
         },
-        data: [{ type: 'circle', position: [0, 0], radius: 0.1 }],
+        data: { type: 'circle', position: [0, 0], radius: 0.1 },
       }),
     })
 
@@ -296,7 +304,7 @@ describe('rigidBody', () => {
           belongs: ['a'],
           interacts: ['a'],
         },
-        data: [{ type: 'circle', position: [0, 0], radius: 0.1 }],
+        data: { type: 'circle', position: [0, 0], radius: 0.1 },
       }),
     })
     state = createCollider({
@@ -307,7 +315,7 @@ describe('rigidBody', () => {
           belongs: ['a'],
           interacts: ['a'],
         },
-        data: [{ type: 'circle', position: [0, 0], radius: 0.1 }],
+        data: { type: 'circle', position: [0, 0], radius: 0.1 },
       }),
     })
 
@@ -382,7 +390,7 @@ describe('rigidBody', () => {
           belongs: ['a'],
           interacts: ['a'],
         },
-        data: [{ type: 'circle', position: [0, 0], radius: 1 }],
+        data: { type: 'circle', position: [0, 0], radius: 1 },
       }),
     })
     state = createCollider({
@@ -393,7 +401,7 @@ describe('rigidBody', () => {
           belongs: ['a'],
           interacts: ['a'],
         },
-        data: [{ type: 'circle', position: [0, 0], radius: 1 }],
+        data: { type: 'circle', position: [0, 0], radius: 1 },
       }),
     })
 
@@ -463,7 +471,7 @@ describe('rigidBody', () => {
           belongs: ['a'],
           interacts: ['a'],
         },
-        data: [{ type: 'circle', position: [0, 0], radius: 1 }],
+        data: { type: 'circle', position: [0, 0], radius: 1 },
       }),
     })
     state = createCollider({
@@ -474,7 +482,7 @@ describe('rigidBody', () => {
           belongs: ['a'],
           interacts: ['a'],
         },
-        data: [{ type: 'line', position: [0, 10], position2: [0, -10] }],
+        data: { type: 'line', position: [0, 10], position2: [0, -10] },
       }),
     })
 
@@ -558,7 +566,7 @@ describe('rigidBody', () => {
           belongs: ['a'],
           interacts: ['a'],
         },
-        data: [{ type: 'circle', position: [0, 0], radius: 1 }],
+        data: { type: 'circle', position: [0, 0], radius: 1 },
       }),
     })
     state = createCollider({
@@ -569,7 +577,7 @@ describe('rigidBody', () => {
           belongs: ['a'],
           interacts: ['a'],
         },
-        data: [{ type: 'line', position: [0, 10], position2: [0, -10] }],
+        data: { type: 'line', position: [0, 10], position2: [0, -10] },
       }),
     })
 
@@ -638,7 +646,7 @@ describe('rigidBody', () => {
           belongs: ['a'],
           interacts: ['a'],
         },
-        data: [{ type: 'circle', position: [0, 0], radius: 1 }],
+        data: { type: 'circle', position: [0, 0], radius: 1 },
       }),
     })
     state = createCollider({
@@ -649,7 +657,7 @@ describe('rigidBody', () => {
           belongs: ['a'],
           interacts: ['a'],
         },
-        data: [{ type: 'line', position: [0, 10], position2: [0, -10] }],
+        data: { type: 'line', position: [0, 10], position2: [0, -10] },
       }),
     })
 
@@ -717,13 +725,13 @@ describe('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultCollider({
-        data: [
+        data: 
           {
             type: 'circle',
             radius: 0.6646845178296792,
             position: [0, 0],
           },
-        ],
+        
         layer: {
           belongs: ['knight'],
           interacts: ['knight', 'barrier'],
@@ -734,13 +742,13 @@ describe('rigidBody', () => {
       state,
       entity: entity2,
       data: defaultCollider({
-        data: [
+        data: 
           {
             type: 'circle',
             radius: 0.6628101775793278,
             position: [0, 0],
           },
-        ],
+        
         layer: {
           belongs: ['knight'],
           interacts: ['knight', 'barrier'],
@@ -767,8 +775,8 @@ describe('rigidBody', () => {
     })
 
     state = tick(0, state)
-    state = tick(75, state)
-    state = tick(75, state)
+    state = tick(275, state)
+    state = tick(275, state)
 
     // Rigidbody logic should push out colliders
 
@@ -785,5 +793,117 @@ describe('rigidBody', () => {
         entity: entity2,
       })?._collisions,
     ).toEqual([])
+  })
+})
+
+describe('rigidBody + collider stress tests', () => {
+  it.skip('stress test', () => {
+    const amountOfColliders = 200
+    let state = getState({}) as AnyState
+
+    const getRandomPosition = () =>
+      vector(Math.random() * 10 - 5, Math.random() * 10 - 5)
+
+    const getRandomLayers = () =>
+      ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l'].filter(
+        () => Math.random() > 0.5,
+      )
+
+    const colliderData = [
+      (): ColliderDataPoint => ({
+        type: 'point',
+        position: getRandomPosition(),
+      }),
+      (): ColliderDataRectangle => ({
+        type: 'rectangle',
+        size: getRandomPosition(),
+        /**
+         * Left bottom corner
+         */
+        position: getRandomPosition(),
+      }),
+      (): ColliderDataCircle => ({
+        type: 'circle',
+        radius: Math.random() * 10,
+        /**
+         * Left bottom corner
+         */
+        position: getRandomPosition(),
+      }),
+      (): ColliderDataLine => ({
+        type: 'line',
+        position: getRandomPosition(),
+        position2: getRandomPosition(),
+      }),
+      (): ColliderDataPolygon => ({
+        type: 'polygon',
+        verticles: [
+          getRandomPosition(),
+          getRandomPosition(),
+          getRandomPosition(),
+          getRandomPosition(),
+          getRandomPosition(),
+          getRandomPosition(),
+          getRandomPosition(),
+          getRandomPosition(),
+          getRandomPosition(),
+          getRandomPosition(),
+        ],
+      }),
+    ]
+
+    const getRandomColliderData = (): Collider['data'] =>
+      colliderData[Math.floor(Math.random() * colliderData.length)]()
+
+    Array.from({ length: amountOfColliders }).forEach(() => {
+      const transformScale = vector(Math.random(), Math.random())
+
+      const entity = generateEntity()
+      state = createEntity({ entity, state })
+      state = createTransform({
+        state,
+        entity,
+        data: defaultTransform({
+          position: getRandomPosition(),
+          rotation: degreesToRadians(Math.random() * 360),
+          scale: transformScale,
+        }),
+      })
+      state = createCollider({
+        state,
+        entity,
+        data: defaultCollider({
+          data: getRandomColliderData(),
+          layer: {
+            belongs: getRandomLayers(),
+            interacts: getRandomLayers(),
+          },
+        }),
+      })
+      state = createRigidBody({
+        state,
+        entity,
+        data: defaultRigidBody({
+          mass: Math.random(),
+          force: [Math.random(), Math.random()],
+        }),
+      })
+    })
+
+    const timeBefore = performance.now()
+    state = tick(0, state)
+    state = tick(10, state)
+    state = tick(10, state)
+
+    const timeAfter = performance.now()
+    const delta = timeAfter - timeBefore
+
+    console.log('delta', delta)
+
+    // 100 - 600-800ms
+    // 200 - 5s
+    // 1000 - 55s
+
+    expect(delta).toBeLessThan(10000)
   })
 })

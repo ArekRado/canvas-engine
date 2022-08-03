@@ -26,7 +26,11 @@ export const defaultAnimation: GetDefaultComponent<
 export const defaultCollider: GetDefaultComponent<Collider> = (data = {}) => ({
   _previousCollisions: [],
   _collisions: [],
-  data: [],
+  data: {
+    type: 'point',
+    position: vectorZero(),
+  },
+  _rectangleContour: [vectorZero(), vectorZero()],
   layer: {
     belongs: [],
     interacts: [],

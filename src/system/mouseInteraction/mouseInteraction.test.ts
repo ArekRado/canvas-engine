@@ -108,13 +108,11 @@ describe('mouseInteraction', () => {
           position: vector(5, 5),
         },
         collider: defaultCollider({
-          data: [
-            {
-              position: [0, 0],
-              type: 'rectangle',
-              size: vector(10, 10),
-            },
-          ],
+          data: {
+            position: [0, 0],
+            type: 'rectangle',
+            size: vector(10, 10),
+          },
         }),
         transform: defaultTransform(),
       }),
@@ -129,13 +127,11 @@ describe('mouseInteraction', () => {
           position: vector(5, 5),
         },
         collider: defaultCollider({
-          data: [
-            {
-              position: [0, 0],
-              type: 'circle',
-              radius: 10,
-            },
-          ],
+          data: {
+            position: [0, 0],
+            type: 'circle',
+            radius: 10,
+          },
         }),
         transform: defaultTransform(),
       }),
@@ -146,11 +142,6 @@ describe('mouseInteraction', () => {
     let state = getInitialStateWithMouse()
 
     const entity = generateEntity()
-
-    state = createEntity({
-      entity,
-      state,
-    })
 
     state = createEntity({ entity, state })
 
@@ -173,18 +164,11 @@ describe('mouseInteraction', () => {
       entity,
       name: componentName.collider,
       data: defaultCollider({
-        data: [
-          {
-            position: vector(200, 200),
-            type: 'circle',
-            radius: 10,
-          },
-          {
-            position: vector(100, 100),
-            type: 'rectangle',
-            size: vector(10, 10),
-          },
-        ],
+        data: {
+          position: vector(100, 100),
+          type: 'rectangle',
+          size: vector(10, 10),
+        },
       }),
     })
 
@@ -215,20 +199,6 @@ describe('mouseInteraction', () => {
     expect(mouseInteraction2?.isMouseOver).toBeTruthy()
     expect(mouseInteraction2?.isMouseEnter).toBeTruthy()
     expect(mouseInteraction2?.isMouseLeave).toBeFalsy()
-
-    // Mouse is over circle
-    mousemoveCallback({ pageX: 200, pageY: 200 })
-    state = runOneFrame({ state })
-
-    const mouseInteraction3 = getComponent<MouseInteraction>({
-      name: componentName.mouseInteraction,
-      state,
-      entity,
-    })
-
-    expect(mouseInteraction3?.isMouseOver).toBeTruthy()
-    expect(mouseInteraction3?.isMouseEnter).toBeFalsy()
-    expect(mouseInteraction3?.isMouseLeave).toBeFalsy()
 
     // Mouse is not over element again
     mousemoveCallback({ pageX: 300, pageY: 300 })

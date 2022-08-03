@@ -7,7 +7,7 @@ import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
 import { Vector3 } from '@babylonjs/core'
-import { Intersection } from './system/collider/getIntersection'
+import { Intersection, Rectangle } from './system/collider/getIntersection'
 
 ////////////////////////////////////
 //
@@ -32,6 +32,7 @@ export type Color = [number, number, number, number]
 //
 //
 ////////////////////////////////////
+export type RectangleContour = [Vector2D, Vector2D]
 
 export type ColliderDataPoint = {
   type: 'point'
@@ -65,7 +66,6 @@ export type ColliderDataPolygon = {
 
 type CollisionData = {
   colliderEntity: Entity
-  colliderIndex: number
   intersection: Intersection
 }
 
@@ -79,17 +79,13 @@ export type Collider = {
    */
   _previousCollisions: Array<CollisionData>
   _collisions: Array<CollisionData>
-  data: Array<
+  _rectangleContour: RectangleContour
+  data:
     | ColliderDataPoint
     | ColliderDataRectangle
     | ColliderDataCircle
     | ColliderDataLine
     | ColliderDataPolygon
-    // TODO
-    // | {
-    //     type: 'polygon'
-    //   }
-  >
 }
 
 export type RigidBody = {
@@ -324,14 +320,8 @@ export enum CanvasEngineEvent {
 export type CollisionEvent = ECSEvent<
   CanvasEngineEvent.colliderCollision,
   {
-    collider1: {
-      entity: Entity
-      index: number
-    }
-    collider2: {
-      entity: Entity
-      index: number
-    }
+    colliderEntity1: Entity
+    colliderEntity2: Entity
     intersection: Intersection
   }
 >

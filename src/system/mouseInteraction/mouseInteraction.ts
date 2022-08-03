@@ -13,11 +13,11 @@ import { getCollider } from '../collider/colliderCrud'
 import { getTransform } from '../transform/transformCrud'
 import { getMouse } from '../mouse/mouseCrud'
 import { updateMouseInteraction } from './mouseInteractionCrud'
+import { defaultTransform } from '../../util/defaultComponents'
 import {
   CollisionDetectorNormalizer,
   collisionsMatrix,
-} from '../collider/collider'
-import { defaultTransform } from '../../util/defaultComponents'
+} from '../collider/collisionsMatrix'
 
 type IsMouseOver = (params: {
   mouse: Mouse
@@ -30,26 +30,25 @@ export const getMouseIntersection: IsMouseOver = ({
   transform,
 }) => {
   let intersection: Intersection | null = null
-  collider?.data.forEach((colliderData) => {
-    if (intersection === null) {
-      const collisionDetector: CollisionDetectorNormalizer =
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        collisionsMatrix['point'][colliderData.type]
+  const colliderData = collider?.data
+  if (intersection === null) {
+    const collisionDetector: CollisionDetectorNormalizer =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      collisionsMatrix['point'][colliderData.type]
 
-      intersection = collisionDetector({
-        transform1: defaultTransform({
-          // position: camera.position ???
-        }),
-        collider1Data: {
-          type: 'point',
-          position: mouse.position,
-        },
-        transform2: transform,
-        collider2Data: colliderData,
-      })
-    }
-  })
+    intersection = collisionDetector({
+      transform1: defaultTransform({
+        // position: camera.position ???
+      }),
+      collider1Data: {
+        type: 'point',
+        position: mouse.position,
+      },
+      transform2: transform,
+      collider2Data: colliderData,
+    })
+  }
 
   return intersection
 }
