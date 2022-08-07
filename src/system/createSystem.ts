@@ -17,10 +17,11 @@ export enum systemPriority {
   keyboard = -1,
 
   time = 1,
-  collider = 2,
-  rigidBody = 3,
-  transform = 4,
-  animation = 5,
+  colliderQuadTree = 2,
+  collider = 3,
+  rigidBody = 4,
+  transform = 5,
+  animation = 6,
   // draw = -2,
 }
 

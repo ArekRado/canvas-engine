@@ -4,7 +4,7 @@ import {
   applyTransformsToPosition,
   mapRectangleToPolygon,
   mapToPolygon,
-} from './collisionsMatrix'
+} from '../collider/collisionsMatrix'
 
 const getEdgePositions = (vectors: Vector2D[]): RectangleContour => {
   let top = 0

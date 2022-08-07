@@ -10,7 +10,7 @@ import {
 import { createSystem, systemPriority } from '../createSystem'
 import { getComponent } from '../../component/getComponent'
 import { componentName } from '../../component/componentName'
-import { updateCollider } from './colliderCrud'
+import { getCollider, updateCollider } from './colliderCrud'
 import { getTransform } from '../transform/transformCrud'
 import { emitEvent } from '../../event'
 import { hasSameLayer } from './hasSameLayer'
@@ -18,7 +18,7 @@ import {
   CollisionDetectorNormalizer,
   collisionsMatrix,
 } from './collisionsMatrix'
-import { getColliderContour } from './getColliderContour'
+import { quadTreeCache } from '../colliderQuadTree/colliderQuadTree'
 
 type FindCollisionsWith = (pramams: {
   entity: Entity
@@ -38,14 +38,24 @@ const findCollisionsWith: FindCollisionsWith = ({
 
   const collisionList: Array<Collider['_collisions'][0]> = []
 
-  const allColliders = Object.entries(
-    state.component.collider as Dictionary<Collider>,
+  // const allColliders = Object.entries(
+  //   state.component.collider as Dictionary<Collider>,
+  // )
+
+  const possibleColliderCollisions = quadTreeCache.retrieve(
+    component._rectangleContour,
   )
 
   const colliderData = component.data
-  allColliders.forEach(([collider2Entity, collider2]) => {
+  // allColliders.forEach(([collider2Entity, collider2]) => {
+  possibleColliderCollisions.forEach(({ entity: collider2Entity }) => {
+    const collider2 = getCollider({
+      state,
+      entity: collider2Entity,
+    })
+
     // Do not test collision with the same colliders
-    if (entity === collider2Entity) {
+    if (collider2 === undefined || entity === collider2Entity) {
       return
     }
 
@@ -109,45 +119,45 @@ export const colliderSystem = (state: AnyState) =>
     name: componentName.collider,
     componentName: componentName.collider,
     priority: systemPriority.collider,
-    create: ({ state, entity, component }) => {
-      const transform = getTransform({ state, entity })
+    // create: ({ state, entity, component }) => {
+    //   const transform = getTransform({ state, entity })
 
-      if (transform) {
-        state = updateCollider({
-          callSystemUpdateMethod: false,
-          state,
-          entity,
-          update: () => ({
-            _rectangleContour: getColliderContour({
-              collider: component,
-              transform,
-            }),
-          }),
-        })
-      }
+    //   if (transform) {
+    //     state = updateCollider({
+    //       callSystemUpdateMethod: false,
+    //       state,
+    //       entity,
+    //       update: () => ({
+    //         _rectangleContour: getColliderContour({
+    //           collider: component,
+    //           transform,
+    //         }),
+    //       }),
+    //     })
+    //   }
 
-      return state
-    },
-    update: ({ state, entity, component, previousComponent }) => {
-      if (component.data !== previousComponent.data) {
-        const transform = getTransform({ state, entity })
+    //   return state
+    // },
+    // update: ({ state, entity, component, previousComponent }) => {
+    //   if (component.data !== previousComponent.data) {
+    //     const transform = getTransform({ state, entity })
 
-        if (transform) {
-          state = updateCollider({
-            callSystemUpdateMethod: false,
-            state,
-            entity,
-            update: () => ({
-              _rectangleContour: getColliderContour({
-                collider: component,
-                transform,
-              }),
-            }),
-          })
-        }
-      }
-      return state
-    },
+    //     if (transform) {
+    //       state = updateCollider({
+    //         callSystemUpdateMethod: false,
+    //         state,
+    //         entity,
+    //         update: () => ({
+    //           _rectangleContour: getColliderContour({
+    //             collider: component,
+    //             transform,
+    //           }),
+    //         }),
+    //       })
+    //     }
+    //   }
+    //   return state
+    // },
     fixedTick: ({ state, component, entity }) => {
       // cache.reset()
 

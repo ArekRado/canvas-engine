@@ -797,7 +797,7 @@ describe('rigidBody', () => {
 })
 
 describe('rigidBody + collider stress tests', () => {
-  it.skip('stress test', () => {
+  it.only('stress test', () => {
     const amountOfColliders = 200
     let state = getState({}) as AnyState
 
@@ -838,11 +838,6 @@ describe('rigidBody + collider stress tests', () => {
       (): ColliderDataPolygon => ({
         type: 'polygon',
         verticles: [
-          getRandomPosition(),
-          getRandomPosition(),
-          getRandomPosition(),
-          getRandomPosition(),
-          getRandomPosition(),
           getRandomPosition(),
           getRandomPosition(),
           getRandomPosition(),

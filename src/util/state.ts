@@ -12,6 +12,7 @@ import { materialSystem } from '../system/material/material'
 import { eventSystem } from '../event'
 import { AnyState, InternalInitialState } from '../type'
 import { rigidBodySystem } from '../system/rigidBody/rigidBody'
+import { colliderQuadTreeSystem } from '../system/colliderQuadTree/colliderQuadTree'
 
 export const getInitialState = (): InternalInitialState => ({
   entity: {},
@@ -105,6 +106,7 @@ export const getSystems = ({
   internatlState = timeSystem(internatlState) as InternalInitialState
   internatlState = cameraSystem(internatlState) as InternalInitialState
   internatlState = transformSystem(internatlState) as InternalInitialState
+  internatlState = colliderQuadTreeSystem(internatlState) as InternalInitialState
   internatlState = colliderSystem(internatlState) as InternalInitialState
   internatlState = animationSystem(internatlState) as InternalInitialState
   internatlState = mouseInteractionSystem(
