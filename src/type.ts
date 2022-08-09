@@ -32,7 +32,19 @@ export type Color = [number, number, number, number]
 //
 //
 ////////////////////////////////////
-export type RectangleContour = [Vector2D, Vector2D]
+/**
+ * [left-bottom] [right-top]
+ */
+export type RectangleContour = [
+  /**
+   * left-bottom
+   */
+  Vector2D,
+  /**
+   * right-top
+   */
+  Vector2D,
+]
 
 export type ColliderDataPoint = {
   type: 'point'

@@ -20,6 +20,8 @@ import {
 } from './collisionsMatrix'
 import { quadTreeCache } from '../colliderQuadTree/colliderQuadTree'
 
+export let comparisions = 0
+
 type FindCollisionsWith = (pramams: {
   entity: Entity
   state: AnyState
@@ -48,6 +50,7 @@ const findCollisionsWith: FindCollisionsWith = ({
 
   const colliderData = component.data
   // allColliders.forEach(([collider2Entity, collider2]) => {
+    // if(possibleColliderCollisions.length === 1)
   possibleColliderCollisions.forEach(({ entity: collider2Entity }) => {
     const collider2 = getCollider({
       state,
@@ -92,6 +95,8 @@ const findCollisionsWith: FindCollisionsWith = ({
       transform2,
       collider2Data: collider2Data,
     })
+
+    comparisions++
 
     if (intersection !== null) {
       collisionList.push({

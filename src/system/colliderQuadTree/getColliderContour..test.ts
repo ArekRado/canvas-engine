@@ -33,7 +33,7 @@ describe('getColliderContour', () => {
         }),
       ).toEqual([
         [1, 1],
-        [0, 0],
+        [1, 1],
       ])
 
       expect(
@@ -51,11 +51,27 @@ describe('getColliderContour', () => {
         }),
       ).toEqual([
         [-4, -4],
-        [0, 0],
+        [-4, -4],
       ])
     })
 
     it('rectangle', () => {
+      expect(
+        getColliderContour({
+          transform: defaultTransform(),
+          collider: defaultCollider({
+            data: {
+              type: 'rectangle',
+              size: [30, 10],
+              position: [80, 40],
+            },
+          }),
+        }),
+      ).toEqual([
+        [80, 40],
+        [110, 50],
+      ])
+
       expect(
         getColliderContour({
           transform: defaultTransform({
@@ -91,26 +107,26 @@ describe('getColliderContour', () => {
         }),
       ).toEqual([
         [-1, -1],
-        [1, 1],
+        [0, 0],
       ])
 
-      expect(
-        getColliderContour({
-          transform: defaultTransform({
-            position: [0, 0],
-            rotation: degreesToRadians(90),
-          }),
-          collider: defaultCollider({
-            data: {
-              type: 'rectangle',
-              size: [1, 1],
-              position: [0, 0],
-            },
-          }),
+      const p = getColliderContour({
+        transform: defaultTransform({
+          position: [0, 0],
+          rotation: degreesToRadians(90),
         }),
-      ).toEqual([
+        collider: defaultCollider({
+          data: {
+            type: 'rectangle',
+            size: [1, 1],
+            position: [0, 0],
+          },
+        }),
+      })
+
+      expect([toFixedVector2D(p[0], 3), toFixedVector2D(p[1], 3)]).toEqual([
         [0, -1],
-        [1, 1],
+        [1, 0],
       ])
 
       const p1 = getColliderContour({
@@ -129,7 +145,7 @@ describe('getColliderContour', () => {
 
       expect([toFixedVector2D(p1[0], 3), toFixedVector2D(p1[1], 3)]).toEqual([
         [-1, -1],
-        [1, 1],
+        [0, 0],
       ])
 
       const p2 = getColliderContour({
@@ -148,7 +164,7 @@ describe('getColliderContour', () => {
 
       expect([toFixedVector2D(p2[0], 3), toFixedVector2D(p2[1], 3)]).toEqual([
         [0, -0.707],
-        [1.414, 1.414],
+        [1.414, 0.707],
       ])
     })
 
@@ -252,6 +268,22 @@ describe('getColliderContour', () => {
     it('line', () => {
       expect(
         getColliderContour({
+          transform: defaultTransform(),
+          collider: defaultCollider({
+            data: {
+              type: 'line',
+              position: [250, 50],
+              position2: [270, 80],
+            },
+          }),
+        }),
+      ).toEqual([
+        [250, 50],
+        [270, 80],
+      ])
+
+      expect(
+        getColliderContour({
           transform: defaultTransform({
             position: [0, 0],
             rotation: degreesToRadians(0),
@@ -304,7 +336,7 @@ describe('getColliderContour', () => {
         }),
       ).toEqual([
         [-1, -1],
-        [1, 1],
+        [0, 0],
       ])
 
       const p1 = getColliderContour({
@@ -322,7 +354,7 @@ describe('getColliderContour', () => {
       })
       expect([toFixedVector2D(p1[0], 3), toFixedVector2D(p1[1], 3)]).toEqual([
         [0, -1],
-        [1, 1],
+        [1, 0],
       ])
 
       const p2 = getColliderContour({
@@ -341,7 +373,7 @@ describe('getColliderContour', () => {
 
       expect([toFixedVector2D(p2[0], 3), toFixedVector2D(p2[1], 3)]).toEqual([
         [-1, -1],
-        [1, 1],
+        [0, 0],
       ])
 
       const p3 = getColliderContour({
@@ -385,7 +417,7 @@ describe('getColliderContour', () => {
 
       expect([toFixedVector2D(p1[0], 3), toFixedVector2D(p1[1], 3)]).toEqual([
         [-1, -1],
-        [2, 2],
+        [1, 1],
       ])
 
       const p2 = getColliderContour({
@@ -408,7 +440,7 @@ describe('getColliderContour', () => {
 
       expect([toFixedVector2D(p2[0], 3), toFixedVector2D(p2[1], 3)]).toEqual([
         [-1.414, -0.354],
-        [2.828, 0.707],
+        [1.414, 0.354],
       ])
     })
   })

@@ -1,4 +1,10 @@
-import { distance, vector, Vector2D, vectorZero } from '@arekrado/vector-2d'
+import {
+  add,
+  distance,
+  vector,
+  Vector2D,
+  vectorZero,
+} from '@arekrado/vector-2d'
 import { getState } from '../../util/state'
 import { createEntity } from '../../entity/createEntity'
 import { generateEntity } from '../../entity/generateEntity'
@@ -26,6 +32,7 @@ import {
   ColliderDataPolygon,
   ColliderDataRectangle,
 } from '../../type'
+import { comparisions } from '../collider/collider'
 
 describe('getElasticCollisionForces', () => {
   it('should return proper data', () => {
@@ -725,13 +732,12 @@ describe('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultCollider({
-        data: 
-          {
-            type: 'circle',
-            radius: 0.6646845178296792,
-            position: [0, 0],
-          },
-        
+        data: {
+          type: 'circle',
+          radius: 0.6646845178296792,
+          position: [0, 0],
+        },
+
         layer: {
           belongs: ['knight'],
           interacts: ['knight', 'barrier'],
@@ -742,13 +748,12 @@ describe('rigidBody', () => {
       state,
       entity: entity2,
       data: defaultCollider({
-        data: 
-          {
-            type: 'circle',
-            radius: 0.6628101775793278,
-            position: [0, 0],
-          },
-        
+        data: {
+          type: 'circle',
+          radius: 0.6628101775793278,
+          position: [0, 0],
+        },
+
         layer: {
           belongs: ['knight'],
           interacts: ['knight', 'barrier'],
@@ -797,12 +802,17 @@ describe('rigidBody', () => {
 })
 
 describe('rigidBody + collider stress tests', () => {
-  it.only('stress test', () => {
-    const amountOfColliders = 200
+  it.skip('stress test', () => {
+    const amountOfColliders = 100
     let state = getState({}) as AnyState
 
-    const getRandomPosition = () =>
-      vector(Math.random() * 10 - 5, Math.random() * 10 - 5)
+    const getRandomNumber = (max = 600) => Math.floor(Math.random() * max)
+
+    const getRandomPosition = (max = 400) =>
+      vector(getRandomNumber(max), getRandomNumber(max))
+
+    const getRandomSize = (max = 40) =>
+      vector(getRandomNumber(max), getRandomNumber(max))
 
     const getRandomLayers = () =>
       ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l'].filter(
@@ -814,37 +824,50 @@ describe('rigidBody + collider stress tests', () => {
         type: 'point',
         position: getRandomPosition(),
       }),
-      (): ColliderDataRectangle => ({
-        type: 'rectangle',
-        size: getRandomPosition(),
-        /**
-         * Left bottom corner
-         */
-        position: getRandomPosition(),
-      }),
+      (): ColliderDataRectangle => {
+        const position = getRandomPosition()
+
+        return {
+          type: 'rectangle',
+          size: getRandomSize(),
+          /**
+           * Left bottom corner
+           */
+          position,
+        }
+      },
       (): ColliderDataCircle => ({
         type: 'circle',
-        radius: Math.random() * 10,
+        radius: Math.floor(Math.random() * 50),
         /**
          * Left bottom corner
          */
         position: getRandomPosition(),
       }),
-      (): ColliderDataLine => ({
-        type: 'line',
-        position: getRandomPosition(),
-        position2: getRandomPosition(),
-      }),
-      (): ColliderDataPolygon => ({
-        type: 'polygon',
-        verticles: [
-          getRandomPosition(),
-          getRandomPosition(),
-          getRandomPosition(),
-          getRandomPosition(),
-          getRandomPosition(),
-        ],
-      }),
+      (): ColliderDataLine => {
+        const position = getRandomPosition()
+
+        return {
+          type: 'line',
+          position,
+          position2: add(getRandomSize(), position),
+        }
+      },
+      (): ColliderDataPolygon => {
+        const position = getRandomPosition()
+
+        return {
+          type: 'polygon',
+          verticles: [
+            position,
+            add(getRandomSize(), position),
+            add(getRandomSize(), position),
+            add(getRandomSize(), position),
+            add(getRandomSize(), position),
+            add(getRandomSize(), position),
+          ],
+        }
+      },
     ]
 
     const getRandomColliderData = (): Collider['data'] =>
@@ -859,9 +882,9 @@ describe('rigidBody + collider stress tests', () => {
         state,
         entity,
         data: defaultTransform({
-          position: getRandomPosition(),
-          rotation: degreesToRadians(Math.random() * 360),
-          scale: transformScale,
+          // position: getRandomPosition(),
+          // rotation: degreesToRadians(Math.random() * 360),
+          // scale: transformScale,
         }),
       })
       state = createCollider({
@@ -887,13 +910,18 @@ describe('rigidBody + collider stress tests', () => {
 
     const timeBefore = performance.now()
     state = tick(0, state)
-    state = tick(10, state)
-    state = tick(10, state)
+    state = tick(1, state)
+    state = tick(1, state)
 
     const timeAfter = performance.now()
     const delta = timeAfter - timeBefore
-
-    console.log('delta', delta)
+    // 388460
+    // 383600
+    // 387810
+    // 387740
+    // 385870
+    // 386590
+    console.log({ delta, comparisions })
 
     // 100 - 600-800ms
     // 200 - 5s

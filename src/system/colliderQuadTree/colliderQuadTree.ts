@@ -47,7 +47,7 @@ export const colliderQuadTreeSystem = (state: AnyState) =>
       }> = []
 
       const allColliders = Object.entries(state.component.collider)
-
+let a:any=[];
       allColliders.forEach(([entity, collider]) => {
         const transform = getTransform({
           state,
@@ -77,6 +77,8 @@ export const colliderQuadTreeSystem = (state: AnyState) =>
             }),
           })
 
+          a.push(colliderContour)
+
           colliderContours.push({
             colliderContour,
             entity,
@@ -91,8 +93,8 @@ export const colliderQuadTreeSystem = (state: AnyState) =>
           width: right - left,
           height: top - bottom,
         },
-        max_objects: allColliders.length,
-        max_level: 99
+        max_objects: 10,
+        max_levels: 8
       })
 
       colliderContours.forEach(({ colliderContour: c, entity }) => {

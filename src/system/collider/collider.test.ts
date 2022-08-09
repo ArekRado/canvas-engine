@@ -983,7 +983,7 @@ describe('collider', () => {
     })
   })
 
-  it('should detect collisions only between the same layer', () => {
+  it.only('should detect collisions only between the same layer', () => {
     let state = getState({}) as AnyState
 
     const entity1 = generateEntity()
@@ -1059,7 +1059,7 @@ describe('collider', () => {
         }),
       })
     })
-
+test.htmls
     state = runOneFrameWithFixedTime(state)
     ;[
       {

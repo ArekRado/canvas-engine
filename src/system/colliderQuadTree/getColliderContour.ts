@@ -7,10 +7,10 @@ import {
 } from '../collider/collisionsMatrix'
 
 const getEdgePositions = (vectors: Vector2D[]): RectangleContour => {
-  let top = 0
-  let bottom = 0
-  let left = 0
-  let right = 0
+  let top = -Number.MAX_SAFE_INTEGER
+  let bottom = Number.MAX_SAFE_INTEGER
+  let left = Number.MAX_SAFE_INTEGER
+  let right = -Number.MAX_SAFE_INTEGER
 
   vectors.forEach((v) => {
     if (top < v[1]) {
@@ -30,7 +30,7 @@ const getEdgePositions = (vectors: Vector2D[]): RectangleContour => {
 
   return [
     [left, bottom],
-    [right - left, top - bottom],
+    [right, top],
   ]
 }
 
@@ -43,13 +43,11 @@ export const getColliderContour = ({
 }): RectangleContour => {
   switch (collider.data.type) {
     case 'point':
-      return [
-        applyTransformsToPosition({
-          transform,
-          colliderPosition: collider.data.position,
-        }),
-        [0, 0],
-      ]
+      const point = applyTransformsToPosition({
+        transform,
+        colliderPosition: collider.data.position,
+      })
+      return [point, point]
     case 'rectangle':
       return getEdgePositions(
         mapRectangleToPolygon({
