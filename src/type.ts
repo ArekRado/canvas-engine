@@ -7,7 +7,7 @@ import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
 import { Vector3 } from '@babylonjs/core'
-import { Intersection, Rectangle } from './system/collider/getIntersection'
+import { Intersection } from './system/collider/getIntersection'
 
 ////////////////////////////////////
 //
@@ -33,17 +33,19 @@ export type Color = [number, number, number, number]
 //
 ////////////////////////////////////
 /**
- * [left-bottom] [right-top]
+ * left,bottom,right,top
  */
 export type RectangleContour = [
   /**
    * left-bottom
    */
-  Vector2D,
+  number,
+  number,
   /**
    * right-top
    */
-  Vector2D,
+  number,
+  number,
 ]
 
 export type ColliderDataPoint = {

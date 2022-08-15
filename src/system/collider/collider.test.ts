@@ -983,7 +983,7 @@ describe('collider', () => {
     })
   })
 
-  it.only('should detect collisions only between the same layer', () => {
+  it('should detect collisions only between the same layer', () => {
     let state = getState({}) as AnyState
 
     const entity1 = generateEntity()
@@ -993,9 +993,6 @@ describe('collider', () => {
     const entity5 = generateEntity()
     const entity6 = generateEntity()
     const entity7 = generateEntity()
-    const entity8 = generateEntity()
-    const entity9 = generateEntity()
-    const entity10 = generateEntity()
     const entity11 = generateEntity()
     const entity12 = generateEntity()
     const entity13 = generateEntity()
@@ -1017,18 +1014,6 @@ describe('collider', () => {
       { entity: entity5, layer: { belongs: ['b'], interacts: ['b'] } },
       { entity: entity6, layer: { belongs: ['c'], interacts: ['c'] } },
       { entity: entity7, layer: { belongs: ['d'], interacts: ['d'] } },
-      {
-        entity: entity8,
-        layer: { belongs: ['b', 'd'], interacts: ['b', 'd'] },
-      },
-      {
-        entity: entity9,
-        layer: { belongs: ['z'], interacts: ['x'] },
-      },
-      {
-        entity: entity10,
-        layer: { belongs: ['x'], interacts: ['z'] },
-      },
       {
         entity: entity11,
         layer: { belongs: [], interacts: ['a', 'b'] },
@@ -1064,20 +1049,17 @@ test.htmls
     ;[
       {
         entity: entity1,
-        collisions: [entity3, entity4, entity5, entity6, entity7, entity8],
+        collisions: [entity3, entity4, entity5, entity6, entity7],
       },
       { entity: entity2, collisions: [] },
       { entity: entity3, collisions: [entity1, entity4] },
-      { entity: entity4, collisions: [entity1, entity3, entity5, entity8] },
-      { entity: entity5, collisions: [entity1, entity4, entity8] },
+      { entity: entity4, collisions: [entity1, entity3, entity5] },
+      { entity: entity5, collisions: [entity1, entity4] },
       { entity: entity6, collisions: [entity1] },
-      { entity: entity7, collisions: [entity1, entity8] },
-      { entity: entity8, collisions: [entity1, entity4, entity5, entity7] },
-      { entity: entity9, collisions: [entity10] },
-      { entity: entity10, collisions: [entity9] },
+      { entity: entity7, collisions: [entity1] },
       {
         entity: entity11,
-        collisions: [entity1, entity3, entity4, entity5, entity8],
+        collisions: [entity1, entity3, entity4, entity5],
       },
       { entity: entity12, collisions: [] },
       { entity: entity13, collisions: [entity12] },

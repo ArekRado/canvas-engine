@@ -27,6 +27,13 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+type Rect = {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
 /**
  * The QuadTree uses rectangle objects for all areas ("Rect").
  * All rectangles require the properties x, y, width, height
@@ -45,7 +52,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @param {number} [max_levels=4]       (optional) total max levels inside root QuadTree (default: 4)
  * @param {number} [level=0]            (optional) depth level, required for subnodes (default: 0)
  */
-export function QuadTree({ bounds, max_objects, max_levels, level }) {
+export function QuadTree(
+  this: any,
+  {
+    bounds,
+    max_objects,
+    max_levels,
+    level,
+  }: { bounds: Rect; max_objects?: number; max_levels?: number; level?: number },
+) {
   this.max_objects = max_objects || 10
   this.max_levels = max_levels || 4
 
@@ -61,14 +76,14 @@ export function QuadTree({ bounds, max_objects, max_levels, level }) {
  * @memberof QuadTree
  */
 QuadTree.prototype.split = function () {
-  var nextLevel = this.level + 1,
-    subWidth = this.bounds.width / 2,
-    subHeight = this.bounds.height / 2,
-    x = this.bounds.x,
-    y = this.bounds.y
+  const nextLevel = this.level + 1
+  const subWidth = this.bounds.width / 2
+  const subHeight = this.bounds.height / 2
+  const x = this.bounds.x
+  const y = this.bounds.y
 
   //top right node
-  this.nodes[0] = new QuadTree({
+  this.nodes[0] = new (QuadTree as any)({
     bounds: {
       x: x + subWidth,
       y: y,
@@ -81,7 +96,7 @@ QuadTree.prototype.split = function () {
   })
 
   //top left node
-  this.nodes[1] = new QuadTree({
+  this.nodes[1] = new (QuadTree as any)({
     bounds: {
       x: x,
       y: y,
@@ -94,7 +109,7 @@ QuadTree.prototype.split = function () {
   })
 
   //bottom left node
-  this.nodes[2] = new QuadTree({
+  this.nodes[2] = new (QuadTree as any)({
     bounds: {
       x: x,
       y: y + subHeight,
@@ -107,7 +122,7 @@ QuadTree.prototype.split = function () {
   })
 
   //bottom right node
-  this.nodes[3] = new QuadTree({
+  this.nodes[3] = new (QuadTree as any)({
     bounds: {
       x: x + subWidth,
       y: y + subHeight,
@@ -126,15 +141,15 @@ QuadTree.prototype.split = function () {
  * @return {number[]}       an array of indexes of the intersecting subnodes (0-3 = top-right, top-left, bottom-left, bottom-right / ne, nw, sw, se)
  * @memberof QuadTree
  */
-QuadTree.prototype.getIndex = function (pRect) {
-  var indexes = [],
-    verticalMidpoint = this.bounds.x + this.bounds.width / 2,
-    horizontalMidpoint = this.bounds.y + this.bounds.height / 2
+QuadTree.prototype.getIndex = function (pRect: Rect) {
+  const indexes = []
+  const verticalMidpoint = this.bounds.x + this.bounds.width / 2
+  const horizontalMidpoint = this.bounds.y + this.bounds.height / 2
 
-  var startIsNorth = pRect.y < horizontalMidpoint,
-    startIsWest = pRect.x < verticalMidpoint,
-    endIsEast = pRect.x + pRect.width > verticalMidpoint,
-    endIsSouth = pRect.y + pRect.height > horizontalMidpoint
+  const startIsNorth = pRect.y < horizontalMidpoint
+  const startIsWest = pRect.x < verticalMidpoint
+  const endIsEast = pRect.x + pRect.width > verticalMidpoint
+  const endIsSouth = pRect.y + pRect.height > horizontalMidpoint
 
   //top-right quad
   if (startIsNorth && endIsEast) {
@@ -166,9 +181,9 @@ QuadTree.prototype.getIndex = function (pRect) {
  * @param {Rect} pRect      bounds of the object to be added ({ x, y, width, height })
  * @memberof QuadTree
  */
-QuadTree.prototype.insert = function (pRect) {
-  var i = 0,
-    indexes
+QuadTree.prototype.insert = function (pRect: Rect) {
+  let i = 0
+  let indexes
 
   //if we have subnodes, call insert on matching subnodes
   if (this.nodes.length) {
@@ -193,7 +208,7 @@ QuadTree.prototype.insert = function (pRect) {
     //add all objects to their corresponding subnode
     for (i = 0; i < this.objects.length; i++) {
       indexes = this.getIndex(this.objects[i])
-      for (var k = 0; k < indexes.length; k++) {
+      for (let k = 0; k < indexes.length; k++) {
         this.nodes[indexes[k]].insert(this.objects[i])
       }
     }
@@ -209,13 +224,13 @@ QuadTree.prototype.insert = function (pRect) {
  * @return {Rect[]}         array with all detected objects
  * @memberof QuadTree
  */
-QuadTree.prototype.retrieve = function (pRect) {
-  var indexes = this.getIndex(pRect),
-    returnObjects = this.objects
+QuadTree.prototype.retrieve = function (pRect: Rect): Rect[] {
+  const indexes = this.getIndex(pRect)
+  let returnObjects = this.objects
 
   //if we have subnodes, retrieve their objects
   if (this.nodes.length) {
-    for (var i = 0; i < indexes.length; i++) {
+    for (let i = 0; i < indexes.length; i++) {
       returnObjects = returnObjects.concat(
         this.nodes[indexes[i]].retrieve(pRect),
       )
@@ -223,7 +238,7 @@ QuadTree.prototype.retrieve = function (pRect) {
   }
 
   //remove duplicates
-  returnObjects = returnObjects.filter(function (item, index) {
+  returnObjects = returnObjects.filter(function (item: any, index: any) {
     return returnObjects.indexOf(item) >= index
   })
 
@@ -237,7 +252,7 @@ QuadTree.prototype.retrieve = function (pRect) {
 QuadTree.prototype.clear = function () {
   this.objects = []
 
-  for (var i = 0; i < this.nodes.length; i++) {
+  for (let i = 0; i < this.nodes.length; i++) {
     if (this.nodes.length) {
       this.nodes[i].clear()
     }

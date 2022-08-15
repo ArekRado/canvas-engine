@@ -5,7 +5,6 @@ import {
   Entity,
   CollisionEvent,
   CanvasEngineEvent,
-  Dictionary,
 } from '../../type'
 import { createSystem, systemPriority } from '../createSystem'
 import { getComponent } from '../../component/getComponent'

@@ -28,10 +28,7 @@ const getEdgePositions = (vectors: Vector2D[]): RectangleContour => {
     }
   })
 
-  return [
-    [left, bottom],
-    [right, top],
-  ]
+  return [left, bottom, right, top]
 }
 
 export const getColliderContour = ({
@@ -47,7 +44,7 @@ export const getColliderContour = ({
         transform,
         colliderPosition: collider.data.position,
       })
-      return [point, point]
+      return [point[0], point[1], point[0], point[1]]
     case 'rectangle':
       return getEdgePositions(
         mapRectangleToPolygon({
@@ -62,11 +59,10 @@ export const getColliderContour = ({
         transform.position as Vector2D,
       )
       return [
-        position,
-        [
-          position[0] + collider.data.radius / 2,
-          position[1] + collider.data.radius / 2,
-        ],
+        position[0],
+        position[1],
+        position[0] + collider.data.radius / 2,
+        position[1] + collider.data.radius / 2,
       ]
 
     case 'line':

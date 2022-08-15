@@ -17,7 +17,7 @@ type QuadTreeCache = {
   retrieve: (rectangle: RectangleContour) => Array<{ entity: Entity }>
 }
 
-export let quadTreeCache: QuadTreeCache = new QuadTree({
+export let quadTreeCache: QuadTreeCache = new (QuadTree as any)({
   bounds: {
     x: 0,
     y: 0,
@@ -47,7 +47,7 @@ export const colliderQuadTreeSystem = (state: AnyState) =>
       }> = []
 
       const allColliders = Object.entries(state.component.collider)
-let a:any=[];
+// const a:any=[];
       allColliders.forEach(([entity, collider]) => {
         const transform = getTransform({
           state,
@@ -56,17 +56,17 @@ let a:any=[];
 
         if (transform) {
           const colliderContour = getColliderContour({ collider, transform })
-          if (top < colliderContour[1][1]) {
-            top = colliderContour[1][1]
+          if (top < colliderContour[3]) {
+            top = colliderContour[3]
           }
-          if (bottom < colliderContour[0][1]) {
-            bottom = colliderContour[0][1]
+          if (bottom < colliderContour[1]) {
+            bottom = colliderContour[1]
           }
-          if (left < colliderContour[0][0]) {
-            left = colliderContour[0][0]
+          if (left < colliderContour[0]) {
+            left = colliderContour[0]
           }
-          if (right < colliderContour[1][0]) {
-            right = colliderContour[1][0]
+          if (right < colliderContour[2]) {
+            right = colliderContour[2]
           }
 
           state = updateCollider({
@@ -77,7 +77,7 @@ let a:any=[];
             }),
           })
 
-          a.push(colliderContour)
+          // a.push(colliderContour)
 
           colliderContours.push({
             colliderContour,
@@ -86,7 +86,7 @@ let a:any=[];
         }
       })
 
-      quadTreeCache = new QuadTree({
+      quadTreeCache = new (QuadTree as any)({
         bounds: {
           x: left,
           y: bottom,
@@ -100,10 +100,10 @@ let a:any=[];
       colliderContours.forEach(({ colliderContour: c, entity }) => {
         quadTreeCache.insert({
           entity,
-          x: c[0][0],
-          y: c[0][1],
-          width: c[1][0] - c[0][0],
-          height: c[1][1] - c[0][1],
+          x: c[0],
+          y: c[1],
+          width: c[2] - c[0],
+          height: c[3] - c[1],
         })
       })
 

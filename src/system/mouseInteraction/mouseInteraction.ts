@@ -31,7 +31,7 @@ export const getMouseIntersection: IsMouseOver = ({
 }) => {
   let intersection: Intersection | null = null
   const colliderData = collider?.data
-  if (intersection === null) {
+  if (colliderData && intersection === null) {
     const collisionDetector: CollisionDetectorNormalizer =
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
