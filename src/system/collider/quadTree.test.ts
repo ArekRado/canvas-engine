@@ -1,18 +1,12 @@
 import {
-  clearQuadTreeCache,
   flatQuadTree,
   getQuadTree,
-  getQuadTreeCache,
   RectangleData,
   splitBounds,
 } from './quadTree'
 
 describe('quadTree', () => {
-  beforeEach(() => {
-    clearQuadTreeCache()
-  })
-
-  describe('splitBounds', () => {
+  describe.skip('splitBounds', () => {
     it('should return proper bounds for each possition', () => {
       expect(
         splitBounds({
@@ -72,10 +66,7 @@ describe('quadTree', () => {
     ).toEqual([20, 30, 110, 40])
   })
 
-  describe('quadTree cache', () => {
-    beforeEach(() => {
-      clearQuadTreeCache()
-    })
+  describe.skip('flatQuadTree', () => {
 
     it('should return proper data', () => {
       const rectangle: RectangleData = {
@@ -417,7 +408,7 @@ describe('quadTree', () => {
     })
   })
 
-  it('should split tree node when rectangles are placed in the same area', () => {
+  it.only('should split tree node when rectangles are placed in the same area', () => {
     const rectangle1: RectangleData = {
       entity: '1',
       rectangle: [0, 0, 10, 10],
@@ -434,6 +425,7 @@ describe('quadTree', () => {
       maxLevel: 5,
     })
 
+    expect(tree).toEqual([])
     expect(tree.bottomLeft?.bottomLeft?.bottomLeft?.data).toEqual([rectangle1])
     expect(tree.bottomLeft?.bottomLeft?.topRight?.data).toEqual([rectangle2])
   })
@@ -478,7 +470,7 @@ describe('quadTree', () => {
     expect(tree.data).toEqual([rectangle1, rectangle2])
   })
 
-  it.only('should detect when rectangle is ', () => {
+  it('should detect when rectangle is ', () => {
     // top and bottom left
     const rectangle1: RectangleData = {
       entity: '1',

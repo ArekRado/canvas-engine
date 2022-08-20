@@ -30,7 +30,7 @@ export const defaultCollider: GetDefaultComponent<Collider> = (data = {}) => ({
     type: 'point',
     position: vectorZero(),
   },
-  _rectangleContour: [vectorZero(), vectorZero()],
+  _rectangleContour: [0, 0, 0, 0],
   layer: {
     belongs: [],
     interacts: [],

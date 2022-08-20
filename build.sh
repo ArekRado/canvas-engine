@@ -1,6 +1,6 @@
 #!/bin/sh
 
-npm run lint:fix
+# npm run lint:fix
 
 rm -rf dist/*
 ./node_modules/typescript/bin/tsc --project tsconfig.build.json

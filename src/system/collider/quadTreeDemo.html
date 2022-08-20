@@ -1,0 +1,305 @@
+<html>
+  <head>
+    <style>
+      html {
+        background-color: black;
+      }
+      canvas {
+        width: 600px;
+        height: 600px;
+        border: 1px solid blue;
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="demo" width="600" height="600"></canvas>
+
+    <script>
+      const canvasSize = [600, 600]
+      const canvas = document.getElementById('demo')
+      const ctx = canvas.getContext('2d')
+
+      const getAABBCollision = ({
+        rectangle1: [r1x1, r1y1, r1x2, r1y2],
+        rectangle2: [r2x1, r2y1, r2x2, r2y2],
+      }) => r1x1 <= r2x2 && r1x2 >= r2x1 && r1y1 <= r2y2 && r1y2 >= r2y1
+
+      const emptyQuadTree = {
+        topRight: null,
+        topLeft: null,
+        bottomRight: null,
+        bottomLeft: null,
+        data: [],
+      }
+      const flatQuadTree = (tree) => {
+        const a = []
+        if (tree.topRight) a.push(flatQuadTree(tree.topRight))
+        if (tree.topLeft) a.push(flatQuadTree(tree.topLeft))
+        if (tree.bottomRight) a.push(flatQuadTree(tree.bottomRight))
+        if (tree.bottomLeft) a.push(flatQuadTree(tree.bottomLeft))
+        return a.concat(tree.data)
+      }
+      const splitBounds = ({ bounds, position }) => {
+        const boundHalfWidth = (bounds[2] - bounds[0]) / 2
+        const boundHalfHeight = (bounds[3] - bounds[1]) / 2
+        switch (position) {
+          case 'topRight':
+            return [
+              bounds[0] + boundHalfWidth,
+              bounds[1] + boundHalfHeight,
+              bounds[2],
+              bounds[3],
+            ]
+          case 'topLeft':
+            return [
+              bounds[0],
+              bounds[1] + boundHalfHeight,
+              bounds[2] - boundHalfWidth,
+              bounds[3],
+            ]
+          case 'bottomRight':
+            return [
+              bounds[0] + boundHalfWidth,
+              bounds[1],
+              bounds[2],
+              bounds[3] - boundHalfHeight,
+            ]
+          case 'bottomLeft':
+            return [
+              bounds[0],
+              bounds[1],
+              bounds[2] - boundHalfWidth,
+              bounds[3] - boundHalfHeight,
+            ]
+        }
+      }
+      const getQuadTree = ({
+        bounds,
+        rectangles,
+        maxRectanglesPerNode = 10,
+        maxLevel = 1,
+        treeNode = emptyQuadTree,
+      }) => {
+        if (
+          maxLevel === 0 ||
+          maxRectanglesPerNode >= rectangles.length ||
+          rectangles.length <= 1
+        ) {
+          return {
+            topRight: treeNode.topRight,
+            topLeft: treeNode.topLeft,
+            bottomRight: treeNode.bottomRight,
+            bottomLeft: treeNode.bottomLeft,
+            data: rectangles,
+          }
+        } else {
+          const newTree = rectangles.reduce((acc, data) => {
+            if (
+              getAABBCollision({
+                rectangle1: data.rectangle,
+                rectangle2: bounds,
+              }) === false
+            ) {
+              return acc
+              // return {
+              //   ...acc,
+              //   data: acc.data.filter(({ entity }) => entity !== data.entity),
+              // }
+            }
+
+            const splittedBounds = {
+              topRight: splitBounds({ bounds, position: 'topRight' }),
+              topLeft: splitBounds({ bounds, position: 'topLeft' }),
+              bottomRight: splitBounds({ bounds, position: 'bottomRight' }),
+              bottomLeft: splitBounds({ bounds, position: 'bottomLeft' }),
+            }
+
+            const topRight = getAABBCollision({
+              rectangle1: data.rectangle,
+              rectangle2: splittedBounds.topRight,
+            })
+              ? getQuadTree({
+                  bounds: splittedBounds.topRight,
+                  rectangles: acc.topRight?.data.concat(data) ?? [data],
+                  maxRectanglesPerNode,
+                  treeNode: acc.topRight ?? emptyQuadTree,
+                  maxLevel: maxLevel - 1,
+                })
+              : null
+
+            const topLeft = getAABBCollision({
+              rectangle1: data.rectangle,
+              rectangle2: splittedBounds.topLeft,
+            })
+              ? getQuadTree({
+                  bounds: splittedBounds.topLeft,
+                  rectangles: acc.topLeft?.data.concat(data) ?? [data],
+                  maxRectanglesPerNode,
+                  treeNode: acc.topLeft ?? emptyQuadTree,
+                  maxLevel: maxLevel - 1,
+                })
+              : null
+
+            const bottomRight = getAABBCollision({
+              rectangle1: data.rectangle,
+              rectangle2: splittedBounds.bottomRight,
+            })
+              ? getQuadTree({
+                  bounds: splittedBounds.bottomRight,
+                  rectangles: acc.bottomRight?.data.concat(data) ?? [data],
+                  maxRectanglesPerNode,
+                  treeNode: acc.bottomRight ?? emptyQuadTree,
+                  maxLevel: maxLevel - 1,
+                })
+              : null
+
+            const bottomLeft = getAABBCollision({
+              rectangle1: data.rectangle,
+              rectangle2: splittedBounds.bottomLeft,
+            })
+              ? getQuadTree({
+                  bounds: splittedBounds.bottomLeft,
+                  rectangles: acc.bottomLeft?.data.concat(data) ?? [data],
+                  maxRectanglesPerNode,
+                  treeNode: acc.bottomLeft ?? emptyQuadTree,
+                  maxLevel: maxLevel - 1,
+                })
+              : null
+
+            // if (maxLevel === 2) {
+            //   console.log(topRight, {
+            //     bounds: splitBounds({ bounds, position: 'topRight' }),
+            //     rectangles: acc.topRight?.data.concat(data) ?? [data],
+            //     maxRectanglesPerNode,
+            //     treeNode: acc.topRight ?? emptyQuadTree,
+            //     maxLevel: maxLevel - 1,
+            //   })
+            // }
+
+            return {
+              topRight,
+              topLeft,
+              bottomRight,
+              bottomLeft,
+              data: [],
+            }
+          }, treeNode)
+
+          const isNodeEmpty =
+            (newTree.topRight === null &&
+              newTree.topLeft === null &&
+              newTree.bottomRight === null &&
+              newTree.bottomLeft === null) ||
+            (newTree.topRight?.data.length === 0 &&
+              newTree.topLeft?.data.length === 0 &&
+              newTree.bottomRight?.data.length === 0 &&
+              newTree.bottomLeft?.data.length === 0)
+
+          if (isNodeEmpty) {
+            return null
+          } else {
+            return newTree
+          }
+        }
+      }
+
+      const drawLine = ([x1, y1, x2, y2]) => {
+        ctx.beginPath()
+        ctx.moveTo(x1, canvasSize[1] - y1)
+        ctx.lineTo(x2, canvasSize[1] - y2)
+
+        ctx.strokeStyle = 'rgb(255,0,0)'
+        ctx.lineWidth = 1
+        ctx.stroke()
+      }
+
+      const drawRectangle = ([x1, y1, x2, y2]) => {
+        drawLine([x1, y1, x1, y2])
+        drawLine([x1, y2, x2, y2])
+        drawLine([x2, y2, x2, y1])
+        drawLine([x2, y1, x1, y1])
+      }
+
+      const drawQuadTree = (quadTree, bounds) => {
+        let shouldSplit = false
+        if (quadTree.topRight !== null) {
+          shouldSplit = true
+          drawQuadTree(
+            quadTree.topRight,
+            splitBounds({ bounds, position: 'topRight' }),
+          )
+        }
+        if (quadTree.topLeft !== null) {
+          shouldSplit = true
+          drawQuadTree(
+            quadTree.topLeft,
+            splitBounds({ bounds, position: 'topLeft' }),
+          )
+        }
+        if (quadTree.bottomRight !== null) {
+          shouldSplit = true
+          drawQuadTree(
+            quadTree.bottomRight,
+            splitBounds({ bounds, position: 'bottomRight' }),
+          )
+        }
+        if (quadTree.bottomLeft !== null) {
+          shouldSplit = true
+          drawQuadTree(
+            quadTree.bottomLeft,
+            splitBounds({ bounds, position: 'bottomLeft' }),
+          )
+        }
+
+        if (shouldSplit) {
+          const boundHalfWidth = (bounds[2] - bounds[0]) / 2
+          const boundHalfHeight = (bounds[3] - bounds[1]) / 2
+
+          drawLine([
+            bounds[0] + boundHalfWidth,
+            bounds[1],
+            bounds[2] - boundHalfWidth,
+            bounds[3],
+          ])
+          drawLine([
+            bounds[0],
+            bounds[1] + boundHalfHeight,
+            bounds[2],
+            bounds[3] - boundHalfHeight,
+          ])
+        }
+      }
+
+      // drawLine([1, 500, 300, 500])
+      // drawRectangle([1, 500, 300, 500])
+
+      // DEMO data
+
+      const rectangle1 = {
+        entity: '1',
+        rectangle: [0, 0, 60, 60],
+      }
+      const rectangle2 = {
+        entity: '2',
+        rectangle: [160, 160, 210, 210],
+      }
+
+      const rectangles = [rectangle1, rectangle2]
+
+      const quadTree = getQuadTree({
+        bounds: [0, 0, canvasSize[0], canvasSize[1]],
+        rectangles,
+        maxRectanglesPerNode: 1,
+        maxLevel: 4,
+      })
+
+      console.log('quadTree: ', quadTree)
+      drawQuadTree(quadTree, [0, 0, canvasSize[0], canvasSize[1]])
+
+      rectangles.forEach(({ rectangle }) => {
+        drawRectangle(rectangle)
+      })
+    </script>
+  </body>
+</html>

@@ -7,7 +7,6 @@ import {
   sub,
   Vector2D,
 } from '@arekrado/vector-2d'
-import { RectangleContour } from '../../type';
 
 export type Point = Vector2D
 export type Circle = { position: Vector2D; radius: number }
