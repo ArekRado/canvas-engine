@@ -1,4 +1,5 @@
-import { Entity, RectangleContour } from '../type'
+import { Entity, RectangleContour } from '../../type'
+import { getAABBCollision } from './getAABBCollision'
 
 export type RectangleData = {
   rectangle: RectangleContour
@@ -19,6 +20,29 @@ export const emptyQuadTree = {
   bottomRight: null,
   bottomLeft: null,
   data: [],
+}
+
+let cache: RectangleData[][] = []
+
+export const clearQuadTreeCache = () => {
+  cache = []
+}
+
+export const getQuadTreeCache = () => cache
+
+export const flatQuadTree = (tree: QuadTree): RectangleData[][] => {
+  const a: RectangleData[][] = []
+
+  if (tree.topRight)
+    a.push(flatQuadTree(tree.topRight) as unknown as RectangleData[])
+  if (tree.topLeft)
+    a.push(flatQuadTree(tree.topLeft) as unknown as RectangleData[])
+  if (tree.bottomRight)
+    a.push(flatQuadTree(tree.bottomRight) as unknown as RectangleData[])
+  if (tree.bottomLeft)
+    a.push(flatQuadTree(tree.bottomLeft) as unknown as RectangleData[])
+
+  return a.concat(tree.data)
 }
 
 export const splitBounds = ({
@@ -63,7 +87,7 @@ export const splitBounds = ({
   }
 }
 
-export const quadTree = ({
+export const getQuadTree = ({
   bounds,
   rectangles,
   maxRectanglesPerNode = 10,
@@ -76,7 +100,13 @@ export const quadTree = ({
   maxLevel?: number
   treeNode?: QuadTree
 }): QuadTree => {
-  if (maxLevel === 0 || maxRectanglesPerNode >= rectangles.length || rectangles.length <= 1) {
+  if (
+    maxLevel === 0 ||
+    maxRectanglesPerNode >= rectangles.length ||
+    rectangles.length <= 1
+  ) {
+    cache.push(rectangles)
+
     return {
       topRight: treeNode.topRight,
       topLeft: treeNode.topLeft,
@@ -87,14 +117,25 @@ export const quadTree = ({
   } else {
     return rectangles.reduce((acc, data) => {
       const [x1, y1, x2, y2] = data.rectangle
+      // if (
+      //   getAABBCollision({
+      //     rectangle1: data.rectangle,
+      //     rectangle2: bounds,
+      //   }) === false
+      // ) {
+      //   return acc
+      // }
+
       const nodeHalfWidth = (bounds[2] - bounds[0]) / 2
       const nodeHalfHeight = (bounds[3] - bounds[1]) / 2
+
+      let newQuadTree
 
       if (x1 > nodeHalfWidth) {
         if (y1 > nodeHalfHeight) {
           return {
-            topRight: quadTree({
-              bounds: splitBounds({ bounds, position: 'topRight' }),
+            topRight: getQuadTree({
+              bounds: { bounds, position: 'topRight' },
               rectangles: acc.topRight?.data.concat(data) ?? [data],
               maxRectanglesPerNode,
               treeNode: acc.topRight ?? emptyQuadTree,
@@ -109,7 +150,7 @@ export const quadTree = ({
           return {
             topRight: acc.topRight,
             topLeft: acc.topLeft,
-            bottomRight: quadTree({
+            bottomRight: getQuadTree({
               bounds: splitBounds({ bounds, position: 'bottomRight' }),
               rectangles: acc.bottomRight?.data.concat(data) ?? [data],
               maxRectanglesPerNode,
@@ -124,7 +165,7 @@ export const quadTree = ({
         if (y1 > nodeHalfHeight) {
           return {
             topRight: acc.topRight,
-            topLeft: quadTree({
+            topLeft: getQuadTree({
               bounds: splitBounds({ bounds, position: 'topLeft' }),
               rectangles: acc.topLeft?.data.concat(data) ?? [data],
               maxRectanglesPerNode,
@@ -140,7 +181,7 @@ export const quadTree = ({
             topRight: acc.topRight,
             topLeft: acc.topLeft,
             bottomRight: acc.bottomRight,
-            bottomLeft: quadTree({
+            bottomLeft: getQuadTree({
               bounds: splitBounds({ bounds, position: 'bottomLeft' }),
               rectangles: acc.bottomLeft?.data.concat(data) ?? [data],
               maxRectanglesPerNode,

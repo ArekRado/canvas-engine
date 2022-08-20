@@ -852,7 +852,7 @@ describe('collider', () => {
       expect(collisions5?.[0]?.colliderEntity).not.toBeDefined()
     })
 
-    it('detect collisions rectangle-line', () => {
+    it.only('detect collisions rectangle-line', () => {
       // rectangle
       const entity1 = generateEntity()
       // left side collision
@@ -1044,7 +1044,7 @@ describe('collider', () => {
         }),
       })
     })
-test.htmls
+
     state = runOneFrameWithFixedTime(state)
     ;[
       {

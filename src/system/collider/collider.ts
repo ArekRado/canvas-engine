@@ -5,8 +5,14 @@ import {
   Entity,
   CollisionEvent,
   CanvasEngineEvent,
+  Dictionary,
+  RectangleContour,
 } from '../../type'
-import { createSystem, systemPriority } from '../createSystem'
+import {
+  createGlobalSystem,
+  createSystem,
+  systemPriority,
+} from '../createSystem'
 import { getComponent } from '../../component/getComponent'
 import { componentName } from '../../component/componentName'
 import { getCollider, updateCollider } from './colliderCrud'
@@ -17,9 +23,12 @@ import {
   CollisionDetectorNormalizer,
   collisionsMatrix,
 } from './collisionsMatrix'
-import { quadTreeCache } from '../colliderQuadTree/colliderQuadTree'
+import { quadTreeCache } from './colliderQuadTree'
+import { getColliderContour } from './getColliderContour'
+import { flatQuadTree, getQuadTree, RectangleData } from './quadTree'
 
 export let comparisions = 0
+export let comparisionsQuadTree = 0
 
 type FindCollisionsWith = (pramams: {
   entity: Entity
@@ -39,22 +48,20 @@ const findCollisionsWith: FindCollisionsWith = ({
 
   const collisionList: Array<Collider['_collisions'][0]> = []
 
-  // const allColliders = Object.entries(
-  //   state.component.collider as Dictionary<Collider>,
-  // )
-
-  const possibleColliderCollisions = quadTreeCache.retrieve(
-    component._rectangleContour,
+  const allColliders = Object.entries(
+    state.component.collider as Dictionary<Collider>,
   )
 
+  // const possibleColliderCollisions = quadTreeCache
+
   const colliderData = component.data
-  // allColliders.forEach(([collider2Entity, collider2]) => {
+  allColliders.forEach(([collider2Entity, collider2]) => {
     // if(possibleColliderCollisions.length === 1)
-  possibleColliderCollisions.forEach(({ entity: collider2Entity }) => {
-    const collider2 = getCollider({
-      state,
-      entity: collider2Entity,
-    })
+    // possibleColliderCollisions.forEach(({ entity: collider2Entity }) => {
+    // const collider2 = getCollider({
+    //   state,
+    //   entity: collider2Entity,
+    // })
 
     // Do not test collision with the same colliders
     if (collider2 === undefined || entity === collider2Entity) {
@@ -117,61 +124,79 @@ const findCollisionsWith: FindCollisionsWith = ({
   return collisionList
 }
 
-export const colliderSystem = (state: AnyState) =>
-  createSystem<Collider, AnyState>({
-    state,
-    name: componentName.collider,
-    componentName: componentName.collider,
-    priority: systemPriority.collider,
-    // create: ({ state, entity, component }) => {
-    //   const transform = getTransform({ state, entity })
+const findCollisionsInNode = ({
+  rectangles,
+  state,
+}: {
+  rectangles: RectangleData[]
+  state: AnyState
+}): AnyState => {
+  rectangles.forEach(({ entity }) => {
+    const collisions: Array<Collider['_collisions'][0]> = []
 
-    //   if (transform) {
-    //     state = updateCollider({
-    //       callSystemUpdateMethod: false,
-    //       state,
-    //       entity,
-    //       update: () => ({
-    //         _rectangleContour: getColliderContour({
-    //           collider: component,
-    //           transform,
-    //         }),
-    //       }),
-    //     })
-    //   }
+    const collider = getCollider({
+      state,
+      entity,
+    })
+    const transform = getTransform({
+      state,
+      entity,
+    })
 
-    //   return state
-    // },
-    // update: ({ state, entity, component, previousComponent }) => {
-    //   if (component.data !== previousComponent.data) {
-    //     const transform = getTransform({ state, entity })
+    if (transform === undefined || collider === undefined) return
 
-    //     if (transform) {
-    //       state = updateCollider({
-    //         callSystemUpdateMethod: false,
-    //         state,
-    //         entity,
-    //         update: () => ({
-    //           _rectangleContour: getColliderContour({
-    //             collider: component,
-    //             transform,
-    //           }),
-    //         }),
-    //       })
-    //     }
-    //   }
-    //   return state
-    // },
-    fixedTick: ({ state, component, entity }) => {
-      // cache.reset()
+    const colliderData = collider.data
 
-      const collisions = findCollisionsWith({
-        entity,
+    rectangles.forEach(({ entity: collider2Entity }) => {
+      if (entity === collider2Entity) {
+        return
+      }
+
+      const collider2 = getCollider({
         state,
-        component,
+        entity,
+      })
+      const transform2 = getTransform({
+        state,
+        entity,
       })
 
-      return updateCollider({
+      if (transform2 === undefined || collider2 === undefined) {
+        return
+      }
+
+      const collider2Data = collider2.data
+      const collisionDetector: CollisionDetectorNormalizer =
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        collisionsMatrix[colliderData.type][collider2Data.type]
+
+      const intersection = collisionDetector({
+        transform1: transform,
+        collider1Data: colliderData,
+        transform2,
+        collider2Data: collider2Data,
+      })
+
+      comparisionsQuadTree++
+
+      if (intersection !== null) {
+        collisions.push({
+          colliderEntity: collider2Entity,
+          intersection,
+        })
+
+        emitEvent<CollisionEvent>({
+          type: CanvasEngineEvent.colliderCollision,
+          payload: {
+            colliderEntity1: entity,
+            colliderEntity2: collider2Entity,
+            intersection,
+          },
+        })
+      }
+
+      state = updateCollider({
         state,
         entity,
         update: (collider) => ({
@@ -179,5 +204,100 @@ export const colliderSystem = (state: AnyState) =>
           _collisions: collisions,
         }),
       })
+    })
+  })
+
+  return state
+}
+
+export const colliderSystem = (state: AnyState) =>
+  createGlobalSystem<AnyState>({
+    state,
+    name: componentName.collider,
+    priority: systemPriority.collider,
+    fixedTick: ({ state }) => {
+      let top = 1
+      let bottom = 0
+      let left = 0
+      let right = 1
+
+      const colliders = Object.entries<Collider>(state.component.collider)
+
+      const colliderContours: Array<RectangleData> = []
+
+      const allColliders = Object.entries(state.component.collider)
+
+      allColliders.forEach(([entity, collider]) => {
+        const transform = getTransform({
+          state,
+          entity,
+        })
+
+        if (transform) {
+          const colliderContour = getColliderContour({ collider, transform })
+          if (top < colliderContour[3]) {
+            top = colliderContour[3]
+          }
+          if (bottom < colliderContour[1]) {
+            bottom = colliderContour[1]
+          }
+          if (left < colliderContour[0]) {
+            left = colliderContour[0]
+          }
+          if (right < colliderContour[2]) {
+            right = colliderContour[2]
+          }
+
+          // state = updateCollider({
+          //   state,
+          //   entity,
+          //   update: () => ({
+          //     _rectangleContour: colliderContour,
+          //   }),
+          // })
+
+          colliderContours.push({
+            rectangle: colliderContour,
+            entity,
+          })
+        }
+      })
+
+      // const quadTree = flatQuadTree(
+      //   getQuadTree({
+      //     bounds: [bottom, left, top, right],
+      //     rectangles: colliderContours,
+      //     maxRectanglesPerNode: 8,
+      //     maxLevel: 10,
+      //   }),
+      // )
+
+      // quadTree.forEach((rectangles) => {
+      //   if (Array.isArray(rectangles) && rectangles.length > 1) {
+      //     state = findCollisionsInNode({
+      //       rectangles,
+      //       state,
+      //     })
+      //   }
+      // })
+
+      colliders.forEach(([entity, component]) => {
+        const collisions = findCollisionsWith({
+          entity,
+          state,
+          component,
+        })
+
+        state = updateCollider({
+          state,
+          entity,
+          update: (collider) => ({
+            _previousCollisions: collider._collisions,
+            _collisions: collisions,
+          }),
+        })
+      })
+
+      return state
     },
   })

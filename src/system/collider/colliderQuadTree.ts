@@ -1,30 +1,11 @@
 import { AnyState, Entity, RectangleContour } from '../../type'
 import { createGlobalSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
-import { QuadTree } from './quadTree'
 import { getColliderContour } from './getColliderContour'
 import { getTransform } from '../transform/transformCrud'
-import { updateCollider } from '../collider/colliderCrud'
+import { updateCollider } from './colliderCrud'
 
-type QuadTreeCache = {
-  insert: (param: {
-    entity: Entity
-    x: number
-    y: number
-    width: number
-    height: number
-  }) => void
-  retrieve: (rectangle: RectangleContour) => Array<{ entity: Entity }>
-}
-
-export let quadTreeCache: QuadTreeCache = new (QuadTree as any)({
-  bounds: {
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-  },
-})
+export let quadTreeCache = []
 
 export const colliderQuadTreeSystem = (state: AnyState) =>
   createGlobalSystem<AnyState>({
@@ -32,10 +13,6 @@ export const colliderQuadTreeSystem = (state: AnyState) =>
     name: componentName.colliderQuadTree,
     priority: systemPriority.collider,
     fixedTick: ({ state }) => {
-      // if (quadTreeCache !== null) {
-      //   quadTreeCache.clear()
-      // }
-
       let top = 1
       let bottom = 0
       let left = 0
@@ -47,7 +24,7 @@ export const colliderQuadTreeSystem = (state: AnyState) =>
       }> = []
 
       const allColliders = Object.entries(state.component.collider)
-// const a:any=[];
+
       allColliders.forEach(([entity, collider]) => {
         const transform = getTransform({
           state,
@@ -86,26 +63,26 @@ export const colliderQuadTreeSystem = (state: AnyState) =>
         }
       })
 
-      quadTreeCache = new (QuadTree as any)({
-        bounds: {
-          x: left,
-          y: bottom,
-          width: right - left,
-          height: top - bottom,
-        },
-        max_objects: 10,
-        max_levels: 8
-      })
+      // quadTreeCache = new (QuadTree as any)({
+      //   bounds: {
+      //     x: left,
+      //     y: bottom,
+      //     width: right - left,
+      //     height: top - bottom,
+      //   },
+      //   max_objects: 10,
+      //   max_levels: 8
+      // })
 
-      colliderContours.forEach(({ colliderContour: c, entity }) => {
-        quadTreeCache.insert({
-          entity,
-          x: c[0],
-          y: c[1],
-          width: c[2] - c[0],
-          height: c[3] - c[1],
-        })
-      })
+      // colliderContours.forEach(({ colliderContour: c, entity }) => {
+      //   quadTreeCache.insert({
+      //     entity,
+      //     x: c[0],
+      //     y: c[1],
+      //     width: c[2] - c[0],
+      //     height: c[3] - c[1],
+      //   })
+      // })
 
       return state
     },

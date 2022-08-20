@@ -1,7 +1,8 @@
 import { defaultCollider, defaultTransform } from '../../util/defaultComponents'
 import { degreesToRadians } from '../../util/radian'
-import { toFixedVector2D } from '../../util/toFixedVector2D'
 import { getColliderContour } from './getColliderContour'
+
+const toFixed = (x: number) => parseFloat(x.toFixed(3))
 
 describe('getColliderContour', () => {
   describe('should generate proper rectangle contour depending on collider', () => {
@@ -16,10 +17,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([
-        [0, 0],
-        [0, 0],
-      ])
+      ).toEqual([0, 0, 0, 0])
 
       expect(
         getColliderContour({
@@ -31,10 +29,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([
-        [1, 1],
-        [1, 1],
-      ])
+      ).toEqual([1, 1, 1, 1])
 
       expect(
         getColliderContour({
@@ -49,10 +44,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([
-        [-4, -4],
-        [-4, -4],
-      ])
+      ).toEqual([-4, -4, -4, -4])
     })
 
     it('rectangle', () => {
@@ -67,10 +59,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([
-        [80, 40],
-        [110, 50],
-      ])
+      ).toEqual([80, 40, 110, 50])
 
       expect(
         getColliderContour({
@@ -86,10 +75,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([
-        [0, 0],
-        [1, 1],
-      ])
+      ).toEqual([0, 0, 1, 1])
 
       expect(
         getColliderContour({
@@ -105,10 +91,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([
-        [-1, -1],
-        [0, 0],
-      ])
+      ).toEqual([-1, -1, 0, 0])
 
       const p = getColliderContour({
         transform: defaultTransform({
@@ -124,10 +107,12 @@ describe('getColliderContour', () => {
         }),
       })
 
-      expect([toFixedVector2D(p[0], 3), toFixedVector2D(p[1], 3)]).toEqual([
-        [0, -1],
-        [1, 0],
-      ])
+      expect([
+        toFixed(p[0]),
+        toFixed(p[1]),
+        toFixed(p[2]),
+        toFixed(p[3]),
+      ]).toEqual([0, -1, 1, 0])
 
       const p1 = getColliderContour({
         transform: defaultTransform({
@@ -143,10 +128,12 @@ describe('getColliderContour', () => {
         }),
       })
 
-      expect([toFixedVector2D(p1[0], 3), toFixedVector2D(p1[1], 3)]).toEqual([
-        [-1, -1],
-        [0, 0],
-      ])
+      expect([
+        toFixed(p1[0]),
+        toFixed(p1[1]),
+        toFixed(p1[2]),
+        toFixed(p1[3]),
+      ]).toEqual([-1, -1, 0, 0])
 
       const p2 = getColliderContour({
         transform: defaultTransform({
@@ -162,10 +149,12 @@ describe('getColliderContour', () => {
         }),
       })
 
-      expect([toFixedVector2D(p2[0], 3), toFixedVector2D(p2[1], 3)]).toEqual([
-        [0, -0.707],
-        [1.414, 0.707],
-      ])
+      expect([
+        toFixed(p2[0]),
+        toFixed(p2[1]),
+        toFixed(p2[2]),
+        toFixed(p2[3]),
+      ]).toEqual([0, -0.707, 1.414, 0.707])
     })
 
     it('circle', () => {
@@ -183,10 +172,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([
-        [0, 0],
-        [0.5, 0.5],
-      ])
+      ).toEqual([0, 0, 0.5, 0.5])
 
       expect(
         getColliderContour({
@@ -202,10 +188,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([
-        [-1, -1],
-        [-0.5, -0.5],
-      ])
+      ).toEqual([-1, -1, -0.5, -0.5])
 
       expect(
         getColliderContour({
@@ -221,10 +204,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([
-        [0, 0],
-        [0.5, 0.5],
-      ])
+      ).toEqual([0, 0, 0.5, 0.5])
 
       const p1 = getColliderContour({
         transform: defaultTransform({
@@ -240,10 +220,7 @@ describe('getColliderContour', () => {
         }),
       })
 
-      expect([toFixedVector2D(p1[0], 3), toFixedVector2D(p1[1], 3)]).toEqual([
-        [0, 0],
-        [0.5, 0.5],
-      ])
+      expect([p1[0], p1[1], p1[2], p1[3]]).toEqual([0, 0, 0.5, 0.5])
 
       const p2 = getColliderContour({
         transform: defaultTransform({
@@ -259,10 +236,7 @@ describe('getColliderContour', () => {
         }),
       })
 
-      expect([toFixedVector2D(p2[0], 3), toFixedVector2D(p2[1], 3)]).toEqual([
-        [0, 0],
-        [0.5, 0.5],
-      ])
+      expect([p2[0], p2[1], p2[2], p2[3]]).toEqual([0, 0, 0.5, 0.5])
     })
 
     it('line', () => {
@@ -277,10 +251,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([
-        [250, 50],
-        [270, 80],
-      ])
+      ).toEqual([250, 50, 270, 80])
 
       expect(
         getColliderContour({
@@ -296,10 +267,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([
-        [0, 0],
-        [1, 1],
-      ])
+      ).toEqual([0, 0, 1, 1])
 
       expect(
         getColliderContour({
@@ -315,10 +283,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([
-        [0, 0],
-        [1, 1],
-      ])
+      ).toEqual([0, 0, 1, 1])
 
       expect(
         getColliderContour({
@@ -334,10 +299,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([
-        [-1, -1],
-        [0, 0],
-      ])
+      ).toEqual([-1, -1, 0, 0])
 
       const p1 = getColliderContour({
         transform: defaultTransform({
@@ -352,10 +314,12 @@ describe('getColliderContour', () => {
           },
         }),
       })
-      expect([toFixedVector2D(p1[0], 3), toFixedVector2D(p1[1], 3)]).toEqual([
-        [0, -1],
-        [1, 0],
-      ])
+      expect([
+        toFixed(p1[0]),
+        toFixed(p1[1]),
+        toFixed(p1[2]),
+        toFixed(p1[3]),
+      ]).toEqual([0, -1, 1, 0])
 
       const p2 = getColliderContour({
         transform: defaultTransform({
@@ -371,10 +335,12 @@ describe('getColliderContour', () => {
         }),
       })
 
-      expect([toFixedVector2D(p2[0], 3), toFixedVector2D(p2[1], 3)]).toEqual([
-        [-1, -1],
-        [0, 0],
-      ])
+      expect([
+        toFixed(p2[0]),
+        toFixed(p2[1]),
+        toFixed(p2[2]),
+        toFixed(p2[3]),
+      ]).toEqual([-1, -1, 0, 0])
 
       const p3 = getColliderContour({
         transform: defaultTransform({
@@ -390,10 +356,12 @@ describe('getColliderContour', () => {
         }),
       })
 
-      expect([toFixedVector2D(p3[0], 3), toFixedVector2D(p3[1], 3)]).toEqual([
-        [0, 0],
-        [1.414, 0],
-      ])
+      expect([
+        toFixed(p3[0]),
+        toFixed(p3[1]),
+        toFixed(p3[2]),
+        toFixed(p3[3]),
+      ]).toEqual([0, 0, 1.414, 0])
     })
 
     it('polygon', () => {
@@ -415,10 +383,7 @@ describe('getColliderContour', () => {
         }),
       })
 
-      expect([toFixedVector2D(p1[0], 3), toFixedVector2D(p1[1], 3)]).toEqual([
-        [-1, -1],
-        [1, 1],
-      ])
+      expect([p1[0], p1[1], p1[2], p1[3]]).toEqual([-1, -1, 1, 1])
 
       const p2 = getColliderContour({
         transform: defaultTransform({
@@ -438,10 +403,12 @@ describe('getColliderContour', () => {
         }),
       })
 
-      expect([toFixedVector2D(p2[0], 3), toFixedVector2D(p2[1], 3)]).toEqual([
-        [-1.414, -0.354],
-        [1.414, 0.354],
-      ])
+      expect([
+        toFixed(p2[0]),
+        toFixed(p2[1]),
+        toFixed(p2[2]),
+        toFixed(p2[3]),
+      ]).toEqual([-1.414, -0.354, 1.414, 0.354])
     })
   })
 })
