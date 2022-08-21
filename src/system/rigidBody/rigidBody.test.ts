@@ -802,7 +802,7 @@ describe('rigidBody', () => {
 })
 
 describe('rigidBody + collider stress tests', () => {
-  it.skip('stress test', () => {
+  it.only('stress test', () => {
     const amountOfColliders = 100
     let state = getState({}) as AnyState
 

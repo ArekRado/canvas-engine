@@ -1,12 +1,13 @@
 import {
-  flatQuadTree,
+  getQuadTreeCollisions,
   getQuadTree,
   RectangleData,
   splitBounds,
+  emptyQuadTree,
 } from './quadTree'
 
 describe('quadTree', () => {
-  describe.skip('splitBounds', () => {
+  describe('splitBounds', () => {
     it('should return proper bounds for each possition', () => {
       expect(
         splitBounds({
@@ -66,8 +67,7 @@ describe('quadTree', () => {
     ).toEqual([20, 30, 110, 40])
   })
 
-  describe.skip('flatQuadTree', () => {
-
+  describe('getQuadTreeCollisions', () => {
     it('should return proper data', () => {
       const rectangle: RectangleData = {
         entity: '1',
@@ -77,10 +77,11 @@ describe('quadTree', () => {
       const quadTree = getQuadTree({
         bounds: [0, 0, 100, 100],
         rectangles: [rectangle],
-        maxRectanglesPerNode: 10,
       })
 
-      expect(flatQuadTree(quadTree)).toEqual([rectangle])
+      if (quadTree) {
+        expect(getQuadTreeCollisions({ quadTree, maxLevel: 1 })).toEqual([])
+      }
     })
 
     it('should return proper data', () => {
@@ -104,16 +105,12 @@ describe('quadTree', () => {
       const quadTree = getQuadTree({
         bounds: [0, 0, 100, 100],
         rectangles: [rectangle1, rectangle2, rectangle3, rectangle4],
-        maxRectanglesPerNode: 1,
         maxLevel: 2,
       })
 
-      expect(flatQuadTree(quadTree)).toEqual([
-        [rectangle3],
-        [rectangle2],
-        [rectangle4],
-        [rectangle1],
-      ])
+      if (quadTree) {
+        expect(getQuadTreeCollisions({ quadTree, maxLevel: 2 })).toEqual([])
+      }
     })
 
     it('should return proper data', () => {
@@ -137,14 +134,14 @@ describe('quadTree', () => {
       const quadTree = getQuadTree({
         bounds: [0, 0, 100, 100],
         rectangles: [rectangle1, rectangle2, rectangle3, rectangle4],
-        maxRectanglesPerNode: 2,
         maxLevel: 2,
       })
 
-      expect(flatQuadTree(quadTree)).toEqual([
-        [rectangle3, rectangle4],
-        [rectangle1, rectangle2],
-      ])
+      if (quadTree) {
+        expect(getQuadTreeCollisions({ quadTree, maxLevel: 2 })).toEqual([
+          [rectangle1.entity, rectangle2.entity],
+        ])
+      }
     })
 
     it('should return proper data', () => {
@@ -188,15 +185,14 @@ describe('quadTree', () => {
           rectangle6,
           rectangle7,
         ],
-        maxRectanglesPerNode: 1,
         maxLevel: 2,
       })
 
-      expect(flatQuadTree(quadTree)).toEqual([
-        [[rectangle3, rectangle4, rectangle5, rectangle6]],
-        [rectangle7],
-        [[rectangle1, rectangle2]],
-      ])
+      if (quadTree) {
+        expect(getQuadTreeCollisions({ quadTree, maxLevel: 2 })).toEqual([
+          [rectangle1.entity, rectangle2.entity],
+        ])
+      }
     })
 
     it('should return proper data', () => {
@@ -240,19 +236,24 @@ describe('quadTree', () => {
           rectangle6,
           rectangle7,
         ],
-        maxRectanglesPerNode: 1,
-        maxLevel: 2,
+        maxLevel: 4,
       })
 
-      expect(flatQuadTree(quadTree)).toEqual([
-        [
-          [rectangle2],
-          [rectangle3],
-          [rectangle4],
-          [rectangle1, rectangle5, rectangle6],
-          rectangle7,
-        ],
-      ])
+      if (quadTree) {
+        expect(getQuadTreeCollisions({ quadTree, maxLevel: 4 })).toEqual([
+          [rectangle2.entity, rectangle5.entity, rectangle7.entity],
+          [rectangle5.entity, rectangle7.entity],
+          [rectangle3.entity, rectangle5.entity],
+          [rectangle4.entity, rectangle5.entity],
+          [rectangle2.entity, rectangle5.entity],
+          [rectangle2.entity, rectangle5.entity, rectangle6.entity],
+          [rectangle5.entity, rectangle6.entity],
+          [rectangle3.entity, rectangle5.entity, rectangle6.entity],
+          [rectangle4.entity, rectangle5.entity, rectangle6.entity],
+          [rectangle1.entity, rectangle5.entity, rectangle6.entity],
+          [rectangle1.entity, rectangle5.entity],
+        ])
+      }
     })
   })
 
@@ -264,7 +265,6 @@ describe('quadTree', () => {
     const tree = getQuadTree({
       bounds: [0, 0, 100, 100],
       rectangles: [rectangle],
-      maxRectanglesPerNode: 10,
     })
 
     expect(tree).toEqual({
@@ -273,26 +273,6 @@ describe('quadTree', () => {
       bottomRight: null,
       bottomLeft: null,
       data: [rectangle],
-    })
-  })
-
-  it('should return simple node without splits when amount of rectangles doesnt excess maxRectanglesPerNode', () => {
-    const rectangle: RectangleData = {
-      entity: '1',
-      rectangle: [10, 10, 20, 20],
-    }
-    const tree = getQuadTree({
-      bounds: [0, 0, 100, 100],
-      rectangles: [rectangle, rectangle, rectangle, rectangle, rectangle],
-      maxRectanglesPerNode: 10,
-    })
-
-    expect(tree).toEqual({
-      topRight: null,
-      topLeft: null,
-      bottomRight: null,
-      bottomLeft: null,
-      data: [rectangle, rectangle, rectangle, rectangle, rectangle],
     })
   })
 
@@ -318,36 +298,32 @@ describe('quadTree', () => {
       getQuadTree({
         bounds: [0, 0, 100, 100],
         rectangles: [rectangle1, rectangle2],
-        maxRectanglesPerNode: 1,
         maxLevel: 2,
-      }).bottomLeft?.data,
+      })?.bottomLeft?.data,
     ).toEqual([rectangle1])
 
     expect(
       getQuadTree({
         bounds: [0, 0, 100, 100],
         rectangles: [rectangle1, rectangle2],
-        maxRectanglesPerNode: 1,
         maxLevel: 2,
-      }).topLeft?.data,
+      })?.topLeft?.data,
     ).toEqual([rectangle2])
 
     expect(
       getQuadTree({
         bounds: [0, 0, 100, 100],
         rectangles: [rectangle3, rectangle4],
-        maxRectanglesPerNode: 1,
         maxLevel: 2,
-      }).topRight?.data,
+      })?.topRight?.data,
     ).toEqual([rectangle3])
 
     expect(
       getQuadTree({
         bounds: [0, 0, 100, 100],
         rectangles: [rectangle3, rectangle4],
-        maxRectanglesPerNode: 1,
         maxLevel: 2,
-      }).bottomRight?.data,
+      })?.bottomRight?.data,
     ).toEqual([rectangle4])
   })
 
@@ -371,7 +347,6 @@ describe('quadTree', () => {
     const tree = getQuadTree({
       bounds: [0, 0, 100, 100],
       rectangles: [rectangle1, rectangle2, rectangle3, rectangle4],
-      maxRectanglesPerNode: 1,
       maxLevel: 2,
     })
 
@@ -408,7 +383,7 @@ describe('quadTree', () => {
     })
   })
 
-  it.only('should split tree node when rectangles are placed in the same area', () => {
+  it('should split tree node when rectangles are placed in the same area', () => {
     const rectangle1: RectangleData = {
       entity: '1',
       rectangle: [0, 0, 10, 10],
@@ -421,13 +396,11 @@ describe('quadTree', () => {
     const tree = getQuadTree({
       bounds: [0, 0, 100, 100],
       rectangles: [rectangle1, rectangle2],
-      maxRectanglesPerNode: 1,
       maxLevel: 5,
     })
 
-    expect(tree).toEqual([])
-    expect(tree.bottomLeft?.bottomLeft?.bottomLeft?.data).toEqual([rectangle1])
-    expect(tree.bottomLeft?.bottomLeft?.topRight?.data).toEqual([rectangle2])
+    expect(tree?.bottomLeft?.bottomLeft?.bottomLeft?.data).toEqual([rectangle1])
+    expect(tree?.bottomLeft?.bottomLeft?.topRight?.data).toEqual([rectangle2])
   })
 
   it('should put rectangles in one data when maxLevel is not enough to move them in separated areas', () => {
@@ -443,31 +416,10 @@ describe('quadTree', () => {
     const tree = getQuadTree({
       bounds: [0, 0, 100, 100],
       rectangles: [rectangle1, rectangle2],
-      maxRectanglesPerNode: 1,
       maxLevel: 1,
     })
 
-    expect(tree.bottomLeft?.data).toEqual([rectangle1, rectangle2])
-  })
-
-  it('should put rectangles in one data when maxRectanglesPerNode is enough to calculate the grid', () => {
-    const rectangle1: RectangleData = {
-      entity: '1',
-      rectangle: [0, 0, 10, 10],
-    }
-    const rectangle2: RectangleData = {
-      entity: '2',
-      rectangle: [25, 25, 30, 30],
-    }
-
-    const tree = getQuadTree({
-      bounds: [0, 0, 100, 100],
-      rectangles: [rectangle1, rectangle2],
-      maxRectanglesPerNode: 2,
-      maxLevel: 5,
-    })
-
-    expect(tree.data).toEqual([rectangle1, rectangle2])
+    expect(tree?.bottomLeft?.data).toEqual([rectangle1, rectangle2])
   })
 
   it('should detect when rectangle is ', () => {
@@ -490,10 +442,83 @@ describe('quadTree', () => {
     const tree = getQuadTree({
       bounds: [0, 0, 100, 100],
       rectangles: [rectangle1, rectangle2, rectangle3],
-      maxRectanglesPerNode: 1,
       maxLevel: 5,
     })
 
-    expect(tree.data).toEqual([])
+    expect(tree?.data).toEqual([])
+  })
+
+  it('should detect proper collisions', () => {
+    const rectangle1: RectangleData = {
+      entity: '1',
+      rectangle: [20, 20, 60, 60],
+    }
+    const rectangle2: RectangleData = {
+      entity: '2',
+      rectangle: [160, 160, 190, 190],
+    }
+    const rectangle3: RectangleData = {
+      entity: '3',
+      rectangle: [250, 250, 280, 280],
+    }
+    const rectangle4: RectangleData = {
+      entity: '4',
+      rectangle: [90, 90, 100, 100],
+    }
+    const rectangle5: RectangleData = {
+      entity: '5',
+      rectangle: [130, 130, 140, 140],
+    }
+    const rectangle6: RectangleData = {
+      entity: '6',
+      rectangle: [310, 500, 590, 590],
+    }
+    const rectangle7: RectangleData = {
+      entity: '7',
+      rectangle: [305, 495, 400, 525],
+    }
+
+    const collisions = getQuadTreeCollisions({
+      quadTree:
+        getQuadTree({
+          bounds: [0, 0, 600, 600],
+          rectangles: [
+            rectangle1,
+            rectangle2,
+            rectangle3,
+            rectangle4,
+            rectangle5,
+            rectangle6,
+            rectangle7,
+          ],
+          maxLevel: 4,
+        }) ?? emptyQuadTree,
+      maxLevel: 4,
+    })
+
+    expect(collisions).toEqual([['6', '7']])
+
+    const collisions2 = getQuadTreeCollisions({
+      quadTree:
+        getQuadTree({
+          bounds: [0, 0, 600, 600],
+          rectangles: [
+            rectangle1,
+            rectangle2,
+            rectangle3,
+            rectangle4,
+            rectangle5,
+            rectangle6,
+            rectangle7,
+          ],
+          maxLevel: 3,
+        }) ?? emptyQuadTree,
+      maxLevel: 3,
+    })
+
+    expect(collisions2).toEqual([
+      ['6', '7'],
+      ['4', '5'],
+    ])
   })
 })
