@@ -32,12 +32,41 @@
         bottomLeft: null,
         data: [],
       }
-      const flatQuadTree = (tree) => {
+      const flatQuadTree = (tree, maxLevel) => {
         const a = []
-        if (tree.topRight) a.push(flatQuadTree(tree.topRight))
-        if (tree.topLeft) a.push(flatQuadTree(tree.topLeft))
-        if (tree.bottomRight) a.push(flatQuadTree(tree.bottomRight))
-        if (tree.bottomLeft) a.push(flatQuadTree(tree.bottomLeft))
+        if (tree.topRight) {
+          const data = flatQuadTree(tree.topRight, maxLevel - 1)
+          if (maxLevel === 1 && data.length > 1) {
+            a.push(data)
+          } else if (data[0]?.length > 1) {
+            a.push(...data)
+          }
+        }
+        if (tree.topLeft) {
+          const data = flatQuadTree(tree.topLeft, maxLevel - 1)
+          if (maxLevel === 1 && data.length > 1) {
+            a.push(data)
+          } else if (data[0]?.length > 1) {
+            a.push(...data)
+          }
+        }
+        if (tree.bottomRight) {
+          const data = flatQuadTree(tree.bottomRight, maxLevel - 1)
+          if (maxLevel === 1 && data.length > 1) {
+            a.push(data)
+          } else if (data[0]?.length > 1) {
+            a.push(...data)
+          }
+        }
+        if (tree.bottomLeft) {
+          const data = flatQuadTree(tree.bottomLeft, maxLevel - 1)
+          if (maxLevel === 1 && data.length > 1) {
+            a.push(data)
+          } else if (data[0]?.length > 1) {
+            a.push(...data)
+          }
+        }
+
         return a.concat(tree.data)
       }
       const splitBounds = ({ bounds, position }) => {
@@ -81,11 +110,17 @@
         maxLevel = 1,
         treeNode = emptyQuadTree,
       }) => {
-        if (
-          maxLevel === 0 ||
-          maxRectanglesPerNode >= rectangles.length ||
-          rectangles.length <= 1
-        ) {
+        const isNodeEmpty =
+          (treeNode.topRight === null &&
+            treeNode.topLeft === null &&
+            treeNode.bottomRight === null &&
+            treeNode.bottomLeft === null) ||
+          (treeNode.topRight?.data.length === 0 &&
+            treeNode.topLeft?.data.length === 0 &&
+            treeNode.bottomRight?.data.length === 0 &&
+            treeNode.bottomLeft?.data.length === 0)
+
+        if (maxLevel === 0 || (rectangles.length <= 1 && isNodeEmpty)) {
           return {
             topRight: treeNode.topRight,
             topLeft: treeNode.topLeft,
@@ -95,19 +130,6 @@
           }
         } else {
           const newTree = rectangles.reduce((acc, data) => {
-            if (
-              getAABBCollision({
-                rectangle1: data.rectangle,
-                rectangle2: bounds,
-              }) === false
-            ) {
-              return acc
-              // return {
-              //   ...acc,
-              //   data: acc.data.filter(({ entity }) => entity !== data.entity),
-              // }
-            }
-
             const splittedBounds = {
               topRight: splitBounds({ bounds, position: 'topRight' }),
               topLeft: splitBounds({ bounds, position: 'topLeft' }),
@@ -126,7 +148,7 @@
                   treeNode: acc.topRight ?? emptyQuadTree,
                   maxLevel: maxLevel - 1,
                 })
-              : null
+              : acc.topRight
 
             const topLeft = getAABBCollision({
               rectangle1: data.rectangle,
@@ -139,7 +161,7 @@
                   treeNode: acc.topLeft ?? emptyQuadTree,
                   maxLevel: maxLevel - 1,
                 })
-              : null
+              : acc.topLeft
 
             const bottomRight = getAABBCollision({
               rectangle1: data.rectangle,
@@ -152,7 +174,7 @@
                   treeNode: acc.bottomRight ?? emptyQuadTree,
                   maxLevel: maxLevel - 1,
                 })
-              : null
+              : acc.bottomRight
 
             const bottomLeft = getAABBCollision({
               rectangle1: data.rectangle,
@@ -165,17 +187,7 @@
                   treeNode: acc.bottomLeft ?? emptyQuadTree,
                   maxLevel: maxLevel - 1,
                 })
-              : null
-
-            // if (maxLevel === 2) {
-            //   console.log(topRight, {
-            //     bounds: splitBounds({ bounds, position: 'topRight' }),
-            //     rectangles: acc.topRight?.data.concat(data) ?? [data],
-            //     maxRectanglesPerNode,
-            //     treeNode: acc.topRight ?? emptyQuadTree,
-            //     maxLevel: maxLevel - 1,
-            //   })
-            // }
+              : acc.bottomLeft
 
             return {
               topRight,
@@ -186,39 +198,25 @@
             }
           }, treeNode)
 
-          const isNodeEmpty =
-            (newTree.topRight === null &&
-              newTree.topLeft === null &&
-              newTree.bottomRight === null &&
-              newTree.bottomLeft === null) ||
-            (newTree.topRight?.data.length === 0 &&
-              newTree.topLeft?.data.length === 0 &&
-              newTree.bottomRight?.data.length === 0 &&
-              newTree.bottomLeft?.data.length === 0)
-
-          if (isNodeEmpty) {
-            return null
-          } else {
-            return newTree
-          }
+          return newTree
         }
       }
 
-      const drawLine = ([x1, y1, x2, y2]) => {
+      const drawLine = ([x1, y1, x2, y2], color = 'rgb(255,0,0)') => {
         ctx.beginPath()
         ctx.moveTo(x1, canvasSize[1] - y1)
         ctx.lineTo(x2, canvasSize[1] - y2)
 
-        ctx.strokeStyle = 'rgb(255,0,0)'
+        ctx.strokeStyle = color
         ctx.lineWidth = 1
         ctx.stroke()
       }
 
-      const drawRectangle = ([x1, y1, x2, y2]) => {
-        drawLine([x1, y1, x1, y2])
-        drawLine([x1, y2, x2, y2])
-        drawLine([x2, y2, x2, y1])
-        drawLine([x2, y1, x1, y1])
+      const drawRectangle = ([x1, y1, x2, y2], color = 'rgb(255,0,0)') => {
+        drawLine([x1, y1, x1, y2], color)
+        drawLine([x1, y2, x2, y2], color)
+        drawLine([x2, y2, x2, y1], color)
+        drawLine([x2, y1, x1, y1], color)
       }
 
       const drawQuadTree = (quadTree, bounds) => {
@@ -278,27 +276,58 @@
 
       const rectangle1 = {
         entity: '1',
-        rectangle: [0, 0, 60, 60],
+        rectangle: [20, 20, 60, 60],
       }
       const rectangle2 = {
         entity: '2',
-        rectangle: [160, 160, 210, 210],
+        rectangle: [160, 160, 190, 190],
+      }
+      const rectangle3 = {
+        entity: '3',
+        rectangle: [250, 250, 280, 280],
+      }
+      const rectangle4 = {
+        entity: '4',
+        rectangle: [90, 90, 100, 100],
+      }
+      const rectangle5 = {
+        entity: '5',
+        rectangle: [130, 130, 140, 140],
+      }
+      const rectangle6 = {
+        entity: '6',
+        rectangle: [310, 500, 590, 590],
+      }
+      const rectangle7 = {
+        entity: '7',
+        rectangle: [305, 495, 400, 525],
       }
 
-      const rectangles = [rectangle1, rectangle2]
+      const rectangles = [
+        rectangle1,
+        rectangle2,
+        rectangle3,
+        rectangle4,
+        rectangle5,
+        rectangle6,
+        rectangle7,
+      ]
 
+      const maxLevel = 4
       const quadTree = getQuadTree({
         bounds: [0, 0, canvasSize[0], canvasSize[1]],
         rectangles,
         maxRectanglesPerNode: 1,
-        maxLevel: 4,
+        maxLevel,
       })
 
       console.log('quadTree: ', quadTree)
+      console.log('flatQuadTree: ', flatQuadTree(quadTree, maxLevel))
+
       drawQuadTree(quadTree, [0, 0, canvasSize[0], canvasSize[1]])
 
       rectangles.forEach(({ rectangle }) => {
-        drawRectangle(rectangle)
+        drawRectangle(rectangle, 'rgb(0,255,0)')
       })
     </script>
   </body>

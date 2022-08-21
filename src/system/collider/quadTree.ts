@@ -22,19 +22,46 @@ export const emptyQuadTree = {
   data: [],
 }
 
-export const flatQuadTree = (tree: QuadTree): RectangleData[][] => {
-  const a: RectangleData[][] = []
+export const getQuadTreeCollisions = (
+  tree: QuadTree,
+  maxLevel: number,
+): RectangleData[][] => {
+  const nodeData: RectangleData[][] = []
 
-  if (tree.topRight)
-    a.push(flatQuadTree(tree.topRight) as unknown as RectangleData[])
-  if (tree.topLeft)
-    a.push(flatQuadTree(tree.topLeft) as unknown as RectangleData[])
-  if (tree.bottomRight)
-    a.push(flatQuadTree(tree.bottomRight) as unknown as RectangleData[])
-  if (tree.bottomLeft)
-    a.push(flatQuadTree(tree.bottomLeft) as unknown as RectangleData[])
+  if (tree.topRight) {
+    const data = getQuadTreeCollisions(tree.topRight, maxLevel - 1)
+    if (maxLevel === 1 && data.length > 1) {
+      nodeData.push(data as unknown as RectangleData[])
+    } else if (data?.[0]?.length > 1) {
+      nodeData.push(...data)
+    }
+  }
+  if (tree.topLeft) {
+    const data = getQuadTreeCollisions(tree.topLeft, maxLevel - 1)
+    if (maxLevel === 1 && data.length > 1) {
+      nodeData.push(data as unknown as RectangleData[])
+    } else if (data?.[0]?.length > 1) {
+      nodeData.push(...data)
+    }
+  }
+  if (tree.bottomRight) {
+    const data = getQuadTreeCollisions(tree.bottomRight, maxLevel - 1)
+    if (maxLevel === 1 && data.length > 1) {
+      nodeData.push(data as unknown as RectangleData[])
+    } else if (data?.[0]?.length > 1) {
+      nodeData.push(...data)
+    }
+  }
+  if (tree.bottomLeft) {
+    const data = getQuadTreeCollisions(tree.bottomLeft, maxLevel - 1)
+    if (maxLevel === 1 && data.length > 1) {
+      nodeData.push(data as unknown as RectangleData[])
+    } else if (data?.[0]?.length > 1) {
+      nodeData.push(...data)
+    }
+  }
 
-  return a.concat(tree.data)
+  return nodeData.concat(tree.data)
 }
 
 export const splitBounds = ({
@@ -92,11 +119,17 @@ export const getQuadTree = ({
   maxLevel?: number
   treeNode?: QuadTree
 }): QuadTree | null => {
-  if (
-    maxLevel === 0 ||
-    maxRectanglesPerNode >= rectangles.length ||
-    rectangles.length <= 1
-  ) {
+  const isNodeEmpty =
+    (treeNode.topRight === null &&
+      treeNode.topLeft === null &&
+      treeNode.bottomRight === null &&
+      treeNode.bottomLeft === null) ||
+    (treeNode.topRight?.data.length === 0 &&
+      treeNode.topLeft?.data.length === 0 &&
+      treeNode.bottomRight?.data.length === 0 &&
+      treeNode.bottomLeft?.data.length === 0)
+
+  if (maxLevel === 0 || (rectangles.length <= 1 && isNodeEmpty)) {
     return {
       topRight: treeNode.topRight,
       topLeft: treeNode.topLeft,
@@ -106,19 +139,6 @@ export const getQuadTree = ({
     }
   } else {
     const newTree = rectangles.reduce((acc, data) => {
-      // const [x1, y1, x2, y2] = data.rectangle
-      if (
-        getAABBCollision({
-          rectangle1: data.rectangle,
-          rectangle2: bounds,
-        }) === false
-      ) {
-        return {
-          ...acc,
-          data: acc.data.filter(({ entity }) => entity !== data.entity),
-        }
-      }
-
       const splittedBounds = {
         topRight: splitBounds({ bounds, position: 'topRight' }),
         topLeft: splitBounds({ bounds, position: 'topLeft' }),
@@ -137,7 +157,7 @@ export const getQuadTree = ({
             treeNode: acc.topRight ?? emptyQuadTree,
             maxLevel: maxLevel - 1,
           })
-        : null
+        : acc.topRight
 
       const topLeft = getAABBCollision({
         rectangle1: data.rectangle,
@@ -150,7 +170,7 @@ export const getQuadTree = ({
             treeNode: acc.topLeft ?? emptyQuadTree,
             maxLevel: maxLevel - 1,
           })
-        : null
+        : acc.topLeft
 
       const bottomRight = getAABBCollision({
         rectangle1: data.rectangle,
@@ -163,7 +183,7 @@ export const getQuadTree = ({
             treeNode: acc.bottomRight ?? emptyQuadTree,
             maxLevel: maxLevel - 1,
           })
-        : null
+        : acc.bottomRight
 
       const bottomLeft = getAABBCollision({
         rectangle1: data.rectangle,
@@ -176,8 +196,7 @@ export const getQuadTree = ({
             treeNode: acc.bottomLeft ?? emptyQuadTree,
             maxLevel: maxLevel - 1,
           })
-        : null
-
+        : acc.bottomLeft
 
       return {
         topRight,
@@ -188,20 +207,6 @@ export const getQuadTree = ({
       }
     }, treeNode)
 
-    const isNodeEmpty =
-      (newTree.topRight === null &&
-        newTree.topLeft === null &&
-        newTree.bottomRight === null &&
-        newTree.bottomLeft === null) ||
-      (newTree.topRight?.data.length === 0 &&
-        newTree.topLeft?.data.length === 0 &&
-        newTree.bottomRight?.data.length === 0 &&
-        newTree.bottomLeft?.data.length === 0)
-
-    if (isNodeEmpty) {
-      return null
-    } else {
-      return newTree
-    }
+    return newTree
   }
 }
