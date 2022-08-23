@@ -202,7 +202,7 @@
         const flattenQuadTree = flatQuadTree(quadTree, maxLevel)
         const uniqueCollisions = {}
         flattenQuadTree.forEach((data) => {
-          if(!Array.isArray(data)) {
+          if (!Array.isArray(data)) {
             return
           }
           const entities = []

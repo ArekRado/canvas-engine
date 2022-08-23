@@ -132,12 +132,12 @@ const findCollisionsInNode = ({
       state,
       entity,
     })
-    const transform = getTransform({
+    const transform1 = getTransform({
       state,
       entity,
     })
 
-    if (transform === undefined || collider === undefined) return
+    if (transform1 === undefined || collider === undefined) return
 
     const colliderData = collider.data
 
@@ -148,14 +148,18 @@ const findCollisionsInNode = ({
 
       const collider2 = getCollider({
         state,
-        entity,
+        entity:collider2Entity,
       })
       const transform2 = getTransform({
         state,
-        entity,
+        entity:collider2Entity,
       })
 
       if (transform2 === undefined || collider2 === undefined) {
+        return
+      }
+
+      if (hasSameLayer(collider.layer, collider2.layer) === false) {
         return
       }
 
@@ -166,7 +170,7 @@ const findCollisionsInNode = ({
         collisionsMatrix[colliderData.type][collider2Data.type]
 
       const intersection = collisionDetector({
-        transform1: transform,
+        transform1,
         collider1Data: colliderData,
         transform2,
         collider2Data: collider2Data,
@@ -199,6 +203,8 @@ const findCollisionsInNode = ({
         }),
       })
     })
+
+    // console.log(`entity ${entity} collisions`, collisions)
   })
 
   return state
@@ -210,12 +216,12 @@ export const colliderSystem = (state: AnyState) =>
     name: componentName.collider,
     priority: systemPriority.collider,
     fixedTick: ({ state }) => {
-      let top = 1
-      let bottom = 0
-      let left = 0
-      let right = 1
+      let top = -Infinity
+      let bottom = Infinity
+      let left = Infinity
+      let right = -Infinity
 
-      const colliders = Object.entries<Collider>(state.component.collider)
+      // const colliders = Object.entries<Collider>(state.component.collider)
 
       const colliderContours: Array<RectangleData> = []
 
@@ -232,10 +238,10 @@ export const colliderSystem = (state: AnyState) =>
           if (top < colliderContour[3]) {
             top = colliderContour[3]
           }
-          if (bottom < colliderContour[1]) {
+          if (bottom > colliderContour[1]) {
             bottom = colliderContour[1]
           }
-          if (left < colliderContour[0]) {
+          if (left > colliderContour[0]) {
             left = colliderContour[0]
           }
           if (right < colliderContour[2]) {
@@ -257,13 +263,22 @@ export const colliderSystem = (state: AnyState) =>
         }
       })
 
+      const quadTree = getQuadTree({
+        bounds: [bottom, left, top, right],
+        rectangles: colliderContours,
+        maxLevel: 5,
+      })
+
       const collisions = getQuadTreeCollisions({
         maxLevel: 5,
-        quadTree: getQuadTree({
-          bounds: [bottom, left, top, right],
-          rectangles: colliderContours,
-          maxLevel: 5,
-        }),
+        quadTree,
+      })
+
+      console.log({
+        bounds: [bottom, left, top, right],
+        colliderContours: JSON.stringify(colliderContours),
+        collisions,
+        // quadTree: JSON.stringify(quadTree),
       })
 
       collisions.forEach((entities) => {
