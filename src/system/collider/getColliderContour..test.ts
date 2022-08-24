@@ -172,7 +172,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([0, 0, 0.5, 0.5])
+      ).toEqual([0, 0, 1, 1])
 
       expect(
         getColliderContour({
@@ -188,7 +188,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([-1, -1, -0.5, -0.5])
+      ).toEqual([-1, -1, 0, 0])
 
       expect(
         getColliderContour({
@@ -204,7 +204,7 @@ describe('getColliderContour', () => {
             },
           }),
         }),
-      ).toEqual([0, 0, 0.5, 0.5])
+      ).toEqual([0, 0, 1, 1])
 
       const p1 = getColliderContour({
         transform: defaultTransform({
@@ -220,7 +220,7 @@ describe('getColliderContour', () => {
         }),
       })
 
-      expect([p1[0], p1[1], p1[2], p1[3]]).toEqual([0, 0, 0.5, 0.5])
+      expect([p1[0], p1[1], p1[2], p1[3]]).toEqual([0, 0, 1, 1])
 
       const p2 = getColliderContour({
         transform: defaultTransform({
@@ -236,7 +236,7 @@ describe('getColliderContour', () => {
         }),
       })
 
-      expect([p2[0], p2[1], p2[2], p2[3]]).toEqual([0, 0, 0.5, 0.5])
+      expect([p2[0], p2[1], p2[2], p2[3]]).toEqual([0, 0, 1, 1])
     })
 
     it('line', () => {

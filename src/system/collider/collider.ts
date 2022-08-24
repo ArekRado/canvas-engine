@@ -23,6 +23,7 @@ import { getQuadTree, getQuadTreeCollisions, RectangleData } from './quadTree'
 
 export let comparisions = 0
 export let comparisionsQuadTree = 0
+let collisionComparisionCache: Dictionary<number> = {}
 
 type FindCollisionsWith = (pramams: {
   entity: Entity
@@ -142,17 +143,25 @@ const findCollisionsInNode = ({
     const colliderData = collider.data
 
     entities.forEach((collider2Entity) => {
+      const cacheKey = `${entity}-${collider2Entity}`
+
+      if (collisionComparisionCache[cacheKey] !== undefined) {
+        return
+      } else {
+        collisionComparisionCache[cacheKey] = 1
+      }
+
       if (entity === collider2Entity) {
         return
       }
 
       const collider2 = getCollider({
         state,
-        entity:collider2Entity,
+        entity: collider2Entity,
       })
       const transform2 = getTransform({
         state,
-        entity:collider2Entity,
+        entity: collider2Entity,
       })
 
       if (transform2 === undefined || collider2 === undefined) {
@@ -175,6 +184,19 @@ const findCollisionsInNode = ({
         transform2,
         collider2Data: collider2Data,
       })
+
+      // if (
+      //   (entity === '1' && collider2Entity === '2') ||
+      //   (entity === '2' && collider2Entity === '1')
+      // ) {
+      //   console.log({
+      //     intersection,
+      //     position: transform1.position,
+      //     collider1Data: colliderData,
+      //     position2: transform2.position,
+      //     collider2Data: collider2Data,
+      //   })
+      // }
 
       comparisionsQuadTree++
 
@@ -274,12 +296,14 @@ export const colliderSystem = (state: AnyState) =>
         quadTree,
       })
 
-      console.log({
-        bounds: [bottom, left, top, right],
-        colliderContours: JSON.stringify(colliderContours),
-        collisions,
-        // quadTree: JSON.stringify(quadTree),
-      })
+      // console.log({
+      //   bounds: [bottom, left, top, right],
+      //   colliderContours: JSON.stringify(colliderContours),
+      //   collisions,
+      //   // quadTree: JSON.stringify(quadTree),
+      // })
+
+      collisionComparisionCache = {}
 
       collisions.forEach((entities) => {
         state = findCollisionsInNode({

@@ -61,8 +61,8 @@ export const getColliderContour = ({
       return [
         position[0],
         position[1],
-        position[0] + collider.data.radius / 2,
-        position[1] + collider.data.radius / 2,
+        position[0] + collider.data.radius,
+        position[1] + collider.data.radius,
       ]
 
     case 'line':

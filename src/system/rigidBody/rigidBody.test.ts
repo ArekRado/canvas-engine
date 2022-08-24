@@ -803,7 +803,7 @@ describe('rigidBody', () => {
 
 describe('rigidBody + collider stress tests', () => {
   it.only('stress test', () => {
-    const amountOfColliders = 100
+    const amountOfColliders = 1000
     let state = getState({}) as AnyState
 
     const getRandomNumber = (max = 600) => Math.floor(Math.random() * max)

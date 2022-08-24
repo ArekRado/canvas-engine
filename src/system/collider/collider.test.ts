@@ -691,7 +691,7 @@ describe('collider', () => {
       expect(collisions5?.length).toEqual(0)
     })
 
-    it.only('detect collisions circle-line', () => {
+    it('detect collisions circle-line', () => {
       // circle
       const entity1 = generateEntity()
       // line end inside circle
@@ -831,7 +831,7 @@ describe('collider', () => {
         entity: entity5,
       })?._collisions
 
-      // expect(collisions1?.length).toEqual(3)
+      expect(collisions1?.length).toEqual(3)
       expect(collisions1?.[0]?.colliderEntity).toEqual(entity2)
       expect(collisions1?.[1]?.colliderEntity).toEqual(entity3)
       expect(collisions1?.[2]?.colliderEntity).toEqual(entity4)
@@ -1089,7 +1089,6 @@ describe('collider', () => {
       entity: entity2,
       data: defaultTransform({
         position: vector(1, 0),
-        rotation: degreesToRadians(90),
       }),
     })
     // Rotated rectangle should be wide enough to touch line
@@ -1097,7 +1096,7 @@ describe('collider', () => {
       state,
       entity: entity3,
       data: defaultTransform({
-        position: vector(-1, 0),
+        position: vector(-0.1, 0),
         rotation: degreesToRadians(45),
       }),
     })
@@ -1159,12 +1158,10 @@ describe('collider', () => {
       entity: entity3,
     })?._collisions
 
-    expect(collisions1?.length).toEqual(1)
-    expect(collisions1?.[0]?.colliderEntity).toEqual(entity2)
+    expect(collisions1?.length).toEqual(0)
 
-    expect(collisions2?.length).toEqual(2)
-    expect(collisions2?.[0]?.colliderEntity).toEqual(entity1)
-    expect(collisions2?.[1]?.colliderEntity).toEqual(entity3)
+    expect(collisions2?.length).toEqual(1)
+    expect(collisions2?.[0]?.colliderEntity).toEqual(entity3)
 
     expect(collisions3?.length).toEqual(1)
     expect(collisions3?.[0]?.colliderEntity).toEqual(entity2)
