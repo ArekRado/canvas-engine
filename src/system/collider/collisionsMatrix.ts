@@ -59,16 +59,19 @@ export const mapToPolygon = ({
   transform,
   colliderData,
 }: MapToShapeParams<ColliderDataPolygon>): Polygon => {
-  return colliderData.verticles.reduce((acc, point) => {
-    const newPoint = applyTransformsToPosition({
-      colliderPosition: point,
-      transform,
-    })
+  const points: Vector2D[] = []
+  for (let i = 0; i < colliderData.verticles.length; i++) {
+    const point = colliderData.verticles[i]
 
-    acc.push(newPoint)
+    points.push(
+      applyTransformsToPosition({
+        colliderPosition: point,
+        transform,
+      }),
+    )
+  }
 
-    return acc
-  }, [] as Vector2D[])
+  return points
 }
 
 const mapToLine = ({

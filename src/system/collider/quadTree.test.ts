@@ -4,6 +4,7 @@ import {
   RectangleData,
   splitBounds,
   emptyQuadTree,
+  removeDuplicatedCollisoins,
 } from './quadTree'
 
 describe('quadTree', () => {
@@ -139,7 +140,7 @@ describe('quadTree', () => {
 
       if (quadTree) {
         expect(getQuadTreeCollisions({ quadTree, maxLevel: 2 })).toEqual([
-          [rectangle1.entity, rectangle2.entity],
+          [rectangle2.entity, rectangle1.entity],
         ])
       }
     })
@@ -190,7 +191,7 @@ describe('quadTree', () => {
 
       if (quadTree) {
         expect(getQuadTreeCollisions({ quadTree, maxLevel: 2 })).toEqual([
-          [rectangle1.entity, rectangle2.entity],
+          [rectangle2.entity, rectangle1.entity],
         ])
       }
     })
@@ -241,19 +242,140 @@ describe('quadTree', () => {
 
       if (quadTree) {
         expect(getQuadTreeCollisions({ quadTree, maxLevel: 4 })).toEqual([
-          [rectangle2.entity, rectangle5.entity, rectangle7.entity],
-          [rectangle5.entity, rectangle7.entity],
-          [rectangle3.entity, rectangle5.entity],
-          [rectangle4.entity, rectangle5.entity],
-          [rectangle2.entity, rectangle5.entity],
-          [rectangle2.entity, rectangle5.entity, rectangle6.entity],
-          [rectangle5.entity, rectangle6.entity],
-          [rectangle3.entity, rectangle5.entity, rectangle6.entity],
-          [rectangle4.entity, rectangle5.entity, rectangle6.entity],
-          [rectangle1.entity, rectangle5.entity, rectangle6.entity],
-          [rectangle1.entity, rectangle5.entity],
+          ['5', '2'],
+          ['7', '2'],
+          ['7', '5'],
+          ['5', '3'],
+          ['5', '4'],
+          ['6', '2'],
+          ['6', '5'],
+          ['6', '3'],
+          ['6', '4'],
+          ['5', '1'],
+          ['6', '1'],
         ])
       }
+    })
+
+    it('should remove duplicated collisons', () => {
+      const colllisions: RectangleData[][] = [
+        [
+          { rectangle: [52, 201, 86, 231], entity: '1' },
+          { rectangle: [64, 145, 99, 165], entity: '2' },
+          { rectangle: [82, 182, 117, 206], entity: '3' },
+          { rectangle: [93, 139, 129, 177], entity: '4' },
+          { rectangle: [62, 128, 84, 153], entity: '5' },
+          { rectangle: [100, 166, 133, 199], entity: '6' },
+          { rectangle: [113, 180, 113, 180], entity: '11' },
+        ],
+
+        [
+          { rectangle: [195, 62, 240, 107], entity: '1' },
+          { rectangle: [164, 53, 192, 82], entity: '3' },
+          { rectangle: [195, 60, 233, 95], entity: '4' },
+          { rectangle: [168, 126, 198, 160], entity: '2' },
+          { rectangle: [159, 114, 187, 142], entity: '11' },
+          { rectangle: [146, 65, 187, 106], entity: '5' },
+          { rectangle: [123, 95, 170, 142], entity: '8' },
+          { rectangle: [165, 149, 194, 187], entity: '7' },
+          { rectangle: [115, 104, 152, 140], entity: '10' },
+          { rectangle: [117, 84, 160, 127], entity: '9' },
+        ],
+        [
+          { rectangle: [94, 93, 94, 93], entity: '111' },
+          { rectangle: [115, 112, 147, 118], entity: '2' },
+          { rectangle: [111, 66, 146, 102], entity: '5' },
+          { rectangle: [54, 50, 81, 77], entity: '3' },
+          { rectangle: [54, 121, 90, 123], entity: '4' },
+          { rectangle: [64, 145, 99, 165], entity: '7' },
+          { rectangle: [146, 65, 187, 106], entity: '4' },
+          { rectangle: [123, 95, 170, 142], entity: '7' },
+          { rectangle: [93, 139, 129, 177], entity: '64' },
+          { rectangle: [62, 128, 84, 153], entity: '11' },
+          { rectangle: [75, 85, 92, 98], entity: '96' },
+          { rectangle: [115, 104, 152, 140], entity: '6' },
+          { rectangle: [117, 84, 160, 127], entity: '7' },
+        ],
+      ]
+
+      expect(removeDuplicatedCollisoins(colllisions)).toEqual([
+        ['2', '1'],
+        ['3', '1'],
+        ['4', '1'],
+        ['5', '1'],
+        ['6', '1'],
+        ['11', '1'],
+        ['3', '2'],
+        ['4', '2'],
+        ['5', '2'],
+        ['6', '2'],
+        ['11', '2'],
+        ['4', '3'],
+        ['3', '5'],
+        ['6', '3'],
+        ['11', '3'],
+        ['4', '5'],
+        ['6', '4'],
+        ['11', '4'],
+        ['6', '5'],
+        ['11', '5'],
+        ['6', '11'],
+        ['8', '1'],
+        ['7', '1'],
+        ['10', '1'],
+        ['9', '1'],
+        ['8', '3'],
+        ['7', '3'],
+        ['10', '3'],
+        ['9', '3'],
+        ['8', '4'],
+        ['7', '4'],
+        ['10', '4'],
+        ['9', '4'],
+        ['8', '2'],
+        ['7', '2'],
+        ['10', '2'],
+        ['9', '2'],
+        ['8', '11'],
+        ['7', '11'],
+        ['10', '11'],
+        ['9', '11'],
+        ['8', '5'],
+        ['7', '5'],
+        ['10', '5'],
+        ['9', '5'],
+        ['7', '8'],
+        ['10', '8'],
+        ['9', '8'],
+        ['10', '7'],
+        ['9', '7'],
+        ['9', '10'],
+        ['2', '111'],
+        ['5', '111'],
+        ['3', '111'],
+        ['4', '111'],
+        ['7', '111'],
+        ['64', '111'],
+        ['11', '111'],
+        ['96', '111'],
+        ['6', '111'],
+        ['64', '2'],
+        ['96', '2'],
+        ['64', '5'],
+        ['96', '5'],
+        ['64', '3'],
+        ['96', '3'],
+        ['64', '4'],
+        ['96', '4'],
+        ['7', '64'],
+        ['7', '96'],
+        ['7', '6'],
+        ['11', '64'],
+        ['96', '64'],
+        ['6', '64'],
+        ['96', '11'],
+        ['6', '96'],
+      ])
     })
   })
 
@@ -496,7 +618,7 @@ describe('quadTree', () => {
       maxLevel: 4,
     })
 
-    expect(collisions).toEqual([['6', '7']])
+    expect(collisions).toEqual([['7', '6']])
 
     const collisions2 = getQuadTreeCollisions({
       quadTree:
@@ -517,8 +639,8 @@ describe('quadTree', () => {
     })
 
     expect(collisions2).toEqual([
-      ['6', '7'],
-      ['4', '5'],
+      ['7', '6'],
+      ['5', '4'],
     ])
   })
 })

@@ -1,6 +1,5 @@
 import {
   AnyState,
-  Transform,
   Collider,
   Entity,
   CollisionEvent,
@@ -8,7 +7,6 @@ import {
   Dictionary,
 } from '../../type'
 import { createGlobalSystem, systemPriority } from '../createSystem'
-import { getComponent } from '../../component/getComponent'
 import { componentName } from '../../component/componentName'
 import { getCollider, updateCollider } from './colliderCrud'
 import { getTransform } from '../transform/transformCrud'
@@ -21,103 +19,8 @@ import {
 import { getColliderContour } from './getColliderContour'
 import { getQuadTree, getQuadTreeCollisions, RectangleData } from './quadTree'
 
-export let comparisions = 0
 export let comparisionsQuadTree = 0
-let collisionComparisionCache: Dictionary<number> = {}
-
-type FindCollisionsWith = (pramams: {
-  entity: Entity
-  state: AnyState
-  component: Collider
-}) => Array<Collider['_collisions'][0]>
-const findCollisionsWith: FindCollisionsWith = ({
-  state,
-  component,
-  entity,
-}) => {
-  const transform = getTransform({
-    state,
-    entity,
-  })
-  if (!transform) return []
-
-  const collisionList: Array<Collider['_collisions'][0]> = []
-
-  const allColliders = Object.entries(
-    state.component.collider as Dictionary<Collider>,
-  )
-
-  // const possibleColliderCollisions = quadTreeCache
-
-  const colliderData = component.data
-  allColliders.forEach(([collider2Entity, collider2]) => {
-    // if(possibleColliderCollisions.length === 1)
-    // possibleColliderCollisions.forEach(({ entity: collider2Entity }) => {
-    // const collider2 = getCollider({
-    //   state,
-    //   entity: collider2Entity,
-    // })
-
-    // Do not test collision with the same colliders
-    if (collider2 === undefined || entity === collider2Entity) {
-      return
-    }
-
-    if (hasSameLayer(component.layer, collider2.layer) === false) {
-      return
-    }
-
-    // TODO Do not test collision if collision already exist
-    // if (
-    //   collider2.collisions.find((collision) => collision.entity === entity)
-    // ) {
-    //   return setCollider2Collisions - how?
-    // }
-
-    const transform2 = getComponent<Transform>({
-      state,
-      entity: collider2Entity,
-      name: componentName.transform,
-    })
-
-    if (!transform2) {
-      return
-    }
-
-    const collider2Data = collider2.data
-    const collisionDetector: CollisionDetectorNormalizer =
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      collisionsMatrix[colliderData.type][collider2Data.type]
-
-    const intersection = collisionDetector({
-      transform1: transform,
-      collider1Data: colliderData,
-      transform2,
-      collider2Data: collider2Data,
-    })
-
-    comparisions++
-
-    if (intersection !== null) {
-      collisionList.push({
-        colliderEntity: collider2Entity,
-        intersection,
-      })
-
-      emitEvent<CollisionEvent>({
-        type: CanvasEngineEvent.colliderCollision,
-        payload: {
-          colliderEntity1: entity,
-          colliderEntity2: collider2Entity,
-          intersection,
-        },
-      })
-    }
-  })
-
-  return collisionList
-}
+// let collisionComparisionCache: Dictionary<number> = {}
 
 const findCollisionsInNode = ({
   entities,
@@ -126,7 +29,8 @@ const findCollisionsInNode = ({
   entities: Entity[]
   state: AnyState
 }): AnyState => {
-  entities.forEach((entity) => {
+  for (let i = 0; i < entities.length; i++) {
+    const entity = entities[i]
     const collisions: Array<Collider['_collisions'][0]> = []
 
     const collider = getCollider({
@@ -138,21 +42,24 @@ const findCollisionsInNode = ({
       entity,
     })
 
-    if (transform1 === undefined || collider === undefined) return
+    if (transform1 === undefined || collider === undefined) {
+      continue
+    }
 
     const colliderData = collider.data
 
-    entities.forEach((collider2Entity) => {
-      const cacheKey = `${entity}-${collider2Entity}`
+    for (let j = 0; j < entities.length; j++) {
+      const collider2Entity = entities[j]
+      // const cacheKey = `${entity}-${collider2Entity}`
 
-      if (collisionComparisionCache[cacheKey] !== undefined) {
-        return
-      } else {
-        collisionComparisionCache[cacheKey] = 1
-      }
+      // if (collisionComparisionCache[cacheKey] !== undefined) {
+      //   continue
+      // } else {
+      //   collisionComparisionCache[cacheKey] = 1
+      // }
 
       if (entity === collider2Entity) {
-        return
+        continue
       }
 
       const collider2 = getCollider({
@@ -165,11 +72,11 @@ const findCollisionsInNode = ({
       })
 
       if (transform2 === undefined || collider2 === undefined) {
-        return
+        continue
       }
 
       if (hasSameLayer(collider.layer, collider2.layer) === false) {
-        return
+        continue
       }
 
       const collider2Data = collider2.data
@@ -184,19 +91,6 @@ const findCollisionsInNode = ({
         transform2,
         collider2Data: collider2Data,
       })
-
-      // if (
-      //   (entity === '1' && collider2Entity === '2') ||
-      //   (entity === '2' && collider2Entity === '1')
-      // ) {
-      //   console.log({
-      //     intersection,
-      //     position: transform1.position,
-      //     collider1Data: colliderData,
-      //     position2: transform2.position,
-      //     collider2Data: collider2Data,
-      //   })
-      // }
 
       comparisionsQuadTree++
 
@@ -224,10 +118,8 @@ const findCollisionsInNode = ({
           _collisions: collisions,
         }),
       })
-    })
-
-    // console.log(`entity ${entity} collisions`, collisions)
-  })
+    }
+  }
 
   return state
 }
@@ -243,13 +135,13 @@ export const colliderSystem = (state: AnyState) =>
       let left = Infinity
       let right = -Infinity
 
-      // const colliders = Object.entries<Collider>(state.component.collider)
-
       const colliderContours: Array<RectangleData> = []
 
       const allColliders = Object.entries(state.component.collider)
 
-      allColliders.forEach(([entity, collider]) => {
+      for (let i = 0; i < allColliders.length; i++) {
+        const [entity, collider] = allColliders[i]
+
         const transform = getTransform({
           state,
           entity,
@@ -270,64 +162,35 @@ export const colliderSystem = (state: AnyState) =>
             right = colliderContour[2]
           }
 
-          // state = updateCollider({
-          //   state,
-          //   entity,
-          //   update: () => ({
-          //     _rectangleContour: colliderContour,
-          //   }),
-          // })
-
           colliderContours.push({
             rectangle: colliderContour,
             entity,
           })
         }
-      })
+      }
 
+      const maxLevel = 5
       const quadTree = getQuadTree({
         bounds: [bottom, left, top, right],
         rectangles: colliderContours,
-        maxLevel: 5,
+        maxLevel,
       })
 
-      const collisions = getQuadTreeCollisions({
-        maxLevel: 5,
-        quadTree,
-      })
-
-      // console.log({
-      //   bounds: [bottom, left, top, right],
-      //   colliderContours: JSON.stringify(colliderContours),
-      //   collisions,
-      //   // quadTree: JSON.stringify(quadTree),
-      // })
-
-      collisionComparisionCache = {}
-
-      collisions.forEach((entities) => {
-        state = findCollisionsInNode({
-          entities,
-          state,
+      if (quadTree) {
+        const collisions = getQuadTreeCollisions({
+          maxLevel,
+          quadTree,
         })
-      })
 
-      // colliders.forEach(([entity, component]) => {
-      //   const collisions = findCollisionsWith({
-      //     entity,
-      //     state,
-      //     component,
-      //   })
+        // collisionComparisionCache = {}
 
-      //   state = updateCollider({
-      //     state,
-      //     entity,
-      //     update: (collider) => ({
-      //       _previousCollisions: collider._collisions,
-      //       _collisions: collisions,
-      //     }),
-      //   })
-      // })
+        for (let i = 0; i < collisions.length; i++) {
+          state = findCollisionsInNode({
+            entities: collisions[i],
+            state,
+          })
+        }
+      }
 
       return state
     },

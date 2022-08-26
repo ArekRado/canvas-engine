@@ -7,7 +7,12 @@ import { createTransform } from '../transform/transformCrud'
 import { createCollider, getCollider } from './colliderCrud'
 import { degreesToRadians } from '../../util/radian'
 import { addEventHandler, removeEventHandler } from '../../event'
-import { AnyState, CanvasEngineEvent, Collider } from '../../type'
+import {
+  AnyState,
+  CanvasEngineEvent,
+  Collider,
+  CollisionEvent,
+} from '../../type'
 import { tick } from '../../util/testUtils'
 
 const runOneFrameWithFixedTime = (state: AnyState): AnyState => {
@@ -979,6 +984,15 @@ describe('collider', () => {
   it('should detect collisions only between the same layer', () => {
     let state = getState({}) as AnyState
 
+    const allCollisions: CollisionEvent['payload'][] = []
+    addEventHandler(({ state, event }) => {
+      if (event.type === CanvasEngineEvent.colliderCollision) {
+        allCollisions.push(event.payload)
+      }
+
+      return state
+    })
+
     const entity1 = generateEntity()
     const entity2 = generateEntity()
     const entity3 = generateEntity()
@@ -1057,13 +1071,15 @@ describe('collider', () => {
       { entity: entity12, collisions: [] },
       { entity: entity13, collisions: [entity12] },
     ].forEach(({ entity, collisions }) => {
-      expect([
-        entity,
-        getCollider({
-          state,
-          entity,
-        })?._collisions.map((collision) => collision.colliderEntity),
-      ]).toEqual([entity, collisions])
+      collisions.forEach((entity2) => {
+        const collision = allCollisions.find(
+          (collision) =>
+            collision.colliderEntity1 === entity &&
+            collision.colliderEntity2 === entity2,
+        )
+
+        expect(collision).toBeDefined()
+      })
     })
   })
 
@@ -1218,8 +1234,8 @@ describe('collider', () => {
 
     expect(eventHandler.mock.calls[0][0].event).toEqual({
       payload: {
-        colliderEntity1: entity1,
-        colliderEntity2: entity2,
+        colliderEntity1: entity2,
+        colliderEntity2: entity1,
         intersection: {
           figure: {
             data: {
@@ -1236,8 +1252,8 @@ describe('collider', () => {
 
     expect(eventHandler.mock.calls[1][0].event).toEqual({
       payload: {
-        colliderEntity1: entity2,
-        colliderEntity2: entity1,
+        colliderEntity1: entity1,
+        colliderEntity2: entity2,
         intersection: {
           figure: {
             data: {
@@ -1306,8 +1322,8 @@ describe('collider', () => {
 
     expect(eventHandler.mock.calls[0][0].event).toEqual({
       payload: {
-        colliderEntity1: entity1,
-        colliderEntity2: entity2,
+        colliderEntity1: entity2,
+        colliderEntity2: entity1,
         intersection: {
           figure: {
             data: {
@@ -1324,8 +1340,8 @@ describe('collider', () => {
 
     expect(eventHandler.mock.calls[1][0].event).toEqual({
       payload: {
-        colliderEntity1: entity2,
-        colliderEntity2: entity1,
+        colliderEntity1: entity1,
+        colliderEntity2: entity2,
         intersection: {
           figure: {
             data: {

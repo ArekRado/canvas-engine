@@ -32,7 +32,7 @@ import {
   ColliderDataPolygon,
   ColliderDataRectangle,
 } from '../../type'
-import { comparisions, comparisionsQuadTree } from '../collider/collider'
+import { comparisionsQuadTree } from '../collider/collider'
 
 describe('getElasticCollisionForces', () => {
   it('should return proper data', () => {
@@ -921,7 +921,7 @@ describe('rigidBody + collider stress tests', () => {
     // 387740
     // 385870
     // 386590
-    console.log({ delta, comparisions, comparisionsQuadTree })
+    console.log({ delta, comparisionsQuadTree })
 
     // 100 - 600-800ms
     // 200 - 5s

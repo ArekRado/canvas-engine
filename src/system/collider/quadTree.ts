@@ -69,6 +69,33 @@ const flatQuadTree = (tree: QuadTree, maxLevel: number): RectangleData[][] => {
   return nodeData.concat(tree.data)
 }
 
+export const removeDuplicatedCollisoins = (
+  collisions: RectangleData[][],
+): string[][] => {
+  const cache: Dictionary<[string, string]> = {}
+
+  for (let i = 0; i < collisions.length; i++) {
+    const node = collisions[i]
+
+    for (let j = 0; j < node.length; j++) {
+      const entity1 = node[j].entity
+      for (let k = 0; k < node.length; k++) {
+        const entity2 = node[k].entity
+        if (entity1 !== entity2) {
+          // simply sort entities so it will overwrite duplicated keys in both combinations
+          const cacheKey =
+            entity1 > entity2
+              ? `${entity1},${entity2}`
+              : `${entity2},${entity1}`
+          cache[cacheKey] = [entity1, entity2]
+        }
+      }
+    }
+  }
+
+  return Object.values(cache)
+}
+
 export const getQuadTreeCollisions = ({
   quadTree,
   maxLevel,
@@ -77,25 +104,27 @@ export const getQuadTreeCollisions = ({
   maxLevel: number
 }) => {
   const flattenQuadTree = flatQuadTree(quadTree, maxLevel)
+return removeDuplicatedCollisoins(flattenQuadTree)
+  // const uniqueCollisions: Dictionary<Entity[]> = {}
+  // for (let i = 0; i < flattenQuadTree.length; i++) {
+  //   const data = flattenQuadTree[i]
 
-  const uniqueCollisions: Dictionary<Entity[]> = {}
-  flattenQuadTree.forEach((data) => {
-    if(!Array.isArray(data)) {
-      return
-    }
+  //   if (!Array.isArray(data)) {
+  //     continue
+  //   }
 
-    const entities: Entity[] = []
-    let key = ''
+  //   const entities: Entity[] = []
+  //   let key = ''
 
-    data.forEach(({ entity }) => {
-      entities.push(entity)
-      key = `${key},${entity}`
-    })
+  //   data.forEach(({ entity }) => {
+  //     entities.push(entity)
+  //     key = `${key},${entity}`
+  //   })
 
-    uniqueCollisions[key] = entities
-  })
+  //   uniqueCollisions[key] = entities
+  // }
 
-  return Object.values(uniqueCollisions)
+  // return Object.values(uniqueCollisions)
 }
 
 export const splitBounds = ({
@@ -171,7 +200,10 @@ export const getQuadTree = ({
       data: rectangles,
     }
   } else {
-    const newTree = rectangles.reduce((acc, data) => {
+    let newTree = treeNode
+    for (let i = 0; i < rectangles.length; i++) {
+      const data = rectangles[i]
+
       const splittedBounds = {
         topRight: splitBounds({ bounds, position: 'topRight' }),
         topLeft: splitBounds({ bounds, position: 'topLeft' }),
@@ -185,11 +217,11 @@ export const getQuadTree = ({
       })
         ? getQuadTree({
             bounds: splittedBounds.topRight,
-            rectangles: acc.topRight?.data.concat(data) ?? [data],
-            treeNode: acc.topRight ?? emptyQuadTree,
+            rectangles: newTree.topRight?.data.concat(data) ?? [data],
+            treeNode: newTree.topRight ?? emptyQuadTree,
             maxLevel: maxLevel - 1,
           })
-        : acc.topRight
+        : newTree.topRight
 
       const topLeft = getAABBCollision({
         rectangle1: data.rectangle,
@@ -197,11 +229,11 @@ export const getQuadTree = ({
       })
         ? getQuadTree({
             bounds: splittedBounds.topLeft,
-            rectangles: acc.topLeft?.data.concat(data) ?? [data],
-            treeNode: acc.topLeft ?? emptyQuadTree,
+            rectangles: newTree.topLeft?.data.concat(data) ?? [data],
+            treeNode: newTree.topLeft ?? emptyQuadTree,
             maxLevel: maxLevel - 1,
           })
-        : acc.topLeft
+        : newTree.topLeft
 
       const bottomRight = getAABBCollision({
         rectangle1: data.rectangle,
@@ -209,11 +241,11 @@ export const getQuadTree = ({
       })
         ? getQuadTree({
             bounds: splittedBounds.bottomRight,
-            rectangles: acc.bottomRight?.data.concat(data) ?? [data],
-            treeNode: acc.bottomRight ?? emptyQuadTree,
+            rectangles: newTree.bottomRight?.data.concat(data) ?? [data],
+            treeNode: newTree.bottomRight ?? emptyQuadTree,
             maxLevel: maxLevel - 1,
           })
-        : acc.bottomRight
+        : newTree.bottomRight
 
       const bottomLeft = getAABBCollision({
         rectangle1: data.rectangle,
@@ -221,20 +253,20 @@ export const getQuadTree = ({
       })
         ? getQuadTree({
             bounds: splittedBounds.bottomLeft,
-            rectangles: acc.bottomLeft?.data.concat(data) ?? [data],
-            treeNode: acc.bottomLeft ?? emptyQuadTree,
+            rectangles: newTree.bottomLeft?.data.concat(data) ?? [data],
+            treeNode: newTree.bottomLeft ?? emptyQuadTree,
             maxLevel: maxLevel - 1,
           })
-        : acc.bottomLeft
+        : newTree.bottomLeft
 
-      return {
+      newTree = {
         topRight,
         topLeft,
         bottomRight,
         bottomLeft,
         data: [],
       }
-    }, treeNode)
+    }
 
     return newTree
   }

@@ -4,9 +4,9 @@ import { AnyState } from '../type'
 
 export const FIXED_TICK_TIME = 1 // 1ms
 
- let _moduloTimeBuffer = 0 // in situation when delta is 15.65 fixedTick will be triggered 15 times, next frame will use this value to increase amount of calls
+let _moduloTimeBuffer = 0 // in situation when delta is 15.65 fixedTick will be triggered 15 times, next frame will use this value to increase amount of calls
 
-export const _resetModuloTimeBuffer = () => _moduloTimeBuffer = 0
+export const _resetModuloTimeBuffer = () => (_moduloTimeBuffer = 0)
 
 const getFixedTickAmount = (state: AnyState): number => {
   const delta =
@@ -61,11 +61,12 @@ export const runOneFrame = <State extends AnyState = AnyState>({
       }),
     }) as State
 
-    allSystems.forEach((system) => {
+    for (let i = 0; i < allSystems.length; i++) {
+      const system = allSystems[i]
       if (system.fixedTick) {
         state = system.fixedTick({ state }) as State
       }
-    })
+    }
   })
 
   // reset time after fixed updates. It's the easiest way to return to previous time values without worrying about modulo
@@ -78,11 +79,12 @@ export const runOneFrame = <State extends AnyState = AnyState>({
   }) as State
 
   // Loop for normal ticks
-  allSystems.forEach((system) => {
+  for (let i = 0; i < allSystems.length; i++) {
+    const system = allSystems[i]
     if (system.tick) {
       state = system.tick({ state }) as State
     }
-  })
+  }
 
   return state
 }
