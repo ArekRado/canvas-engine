@@ -276,7 +276,7 @@ describe('rigidBody', () => {
     ).toEqual([306.4, 0])
   })
 
-  it('conservation of momentum in elastic collisions 1 - rigidbodies with the same mass', () => {
+  it.only('conservation of momentum in elastic collisions 1 - rigidbodies with the same mass', () => {
     const r1Force: Vector2D = [0.1, 0]
     const r2Force: Vector2D = [0, 0]
 
@@ -511,7 +511,7 @@ describe('rigidBody', () => {
       }),
     })
 
-    Array.from({ length: 11 }).forEach((_, i) => {
+    Array.from({ length: 12 }).forEach((_, i) => {
       state = tick(i, state)
     })
 
@@ -523,14 +523,6 @@ describe('rigidBody', () => {
       })?.position,
     ).toEqual([2, 0])
 
-    // After collision with kinematic rigidbody force should be reflected
-    expect(
-      getRigidBody({
-        state,
-        entity: entity1,
-      })?.force,
-    ).toEqual([-0.2, 0])
-
     // Static rigidBody should not have any force
     expect(
       getRigidBody({
@@ -538,6 +530,17 @@ describe('rigidBody', () => {
         entity: entity2,
       })?.force,
     ).toEqual(vectorZero())
+
+    // After collision with kinematic rigidbody force should be reflected
+    expect(
+      toFixedVector2D(
+        getRigidBody({
+          state,
+          entity: entity1,
+        })?.force ?? vectorZero(),
+        2,
+      ),
+    ).toEqual([-0.2, 0])
   })
 
   it('conservation of momentum in elastic collisions 4 - collision circle-line should correctly bounce circle. Position should not change bounce angle', () => {
@@ -606,16 +609,19 @@ describe('rigidBody', () => {
       }),
     })
 
-    Array.from({ length: 11 }).forEach((_, i) => {
+    Array.from({ length: 10 }).forEach((_, i) => {
       state = tick(i, state)
     })
 
     // Collider and transform positions doens't matter because bounce force is calculated depending on a intersection position
     expect(
-      getRigidBody({
-        state,
-        entity: entity1,
-      })?.force,
+      toFixedVector2D(
+        getRigidBody({
+          state,
+          entity: entity1,
+        })?.force ?? vectorZero(),
+        2,
+      ),
     ).toEqual([-0.2, 0])
   })
 
@@ -789,20 +795,20 @@ describe('rigidBody', () => {
       getCollider({
         state,
         entity: entity1,
-      })?._collisions,
+      })?._collision,
     ).toEqual([])
 
     expect(
       getCollider({
         state,
         entity: entity2,
-      })?._collisions,
+      })?._collision,
     ).toEqual([])
   })
 })
 
 describe('rigidBody + collider stress tests', () => {
-  it.only('stress test', () => {
+  it.skip('stress test', () => {
     const amountOfColliders = 1000
     let state = getState({}) as AnyState
 

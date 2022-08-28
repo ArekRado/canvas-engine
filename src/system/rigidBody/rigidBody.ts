@@ -97,9 +97,9 @@ const applyFrictionToForce = ({
   ]
 }
 
-const removeFirstCollision = (collider: Collider): Partial<Collider> => ({
-  _collisions: collider._collisions.slice(1, collider._collisions.length),
-})
+// const removeFirstCollision = (collider: Collider): Partial<Collider> => ({
+//   _collision: collider._collision.slice(1, collider._collision.length),
+// })
 
 const hadSameCollisionInPreviousTick = ({
   collisionEntity,
@@ -108,9 +108,9 @@ const hadSameCollisionInPreviousTick = ({
   collisionEntity: Entity
   collider: Collider
 }) =>
-  collider._previousCollisions.some(
-    (data) => data.colliderEntity === collisionEntity,
-  )
+  collider._previousCollision?.colliderEntity
+    ? collider._previousCollision.colliderEntity === collisionEntity
+    : false
 
 const pushBackStuckRigidbodies = ({
   state,
@@ -122,7 +122,7 @@ const pushBackStuckRigidbodies = ({
 }: {
   state: AnyState
   entity: Entity
-  collision: Collider['_collisions'][0]
+  collision: NonNullable<Collider['_collision']>
   collider: Collider
   transform: Transform
   force: Vector2D
@@ -210,7 +210,7 @@ export const rigidBodySystem = (state: AnyState) =>
 
       let force = component.force
 
-      const collision = collider._collisions[0]
+      const collision = collider._collision
       if (collision) {
         const collisionRigidBody = getRigidBody({
           state,
@@ -255,7 +255,9 @@ export const rigidBodySystem = (state: AnyState) =>
           state = updateCollider({
             state,
             entity: collision.colliderEntity,
-            update: removeFirstCollision,
+            update: () => ({
+              _collision: undefined,
+            }),
           })
 
           //

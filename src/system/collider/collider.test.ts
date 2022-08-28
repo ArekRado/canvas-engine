@@ -12,8 +12,24 @@ import {
   CanvasEngineEvent,
   Collider,
   CollisionEvent,
+  Entity,
+  EventHandler,
 } from '../../type'
 import { tick } from '../../util/testUtils'
+
+const findCollision = ({
+  allCollisions,
+  e1,
+  e2,
+}: {
+  allCollisions: Array<CollisionEvent['payload']>
+  e1: Entity
+  e2: Entity
+}) =>
+  allCollisions.find(
+    ({ colliderEntity1, colliderEntity2 }) =>
+      colliderEntity1 === e1 && colliderEntity2 === e2,
+  )
 
 const runOneFrameWithFixedTime = (state: AnyState): AnyState => {
   // to trigger fixedTick delta has to be changed by 1ms
@@ -25,6 +41,27 @@ const runOneFrameWithFixedTime = (state: AnyState): AnyState => {
 }
 
 describe('collider', () => {
+  let allCollisions: CollisionEvent['payload'][] = []
+  const handleCollision: EventHandler<CollisionEvent, AnyState> = ({
+    state,
+    event,
+  }) => {
+    if (event.type === CanvasEngineEvent.colliderCollision) {
+      allCollisions.push(event.payload)
+    }
+
+    return state
+  }
+
+  beforeEach(() => {
+    addEventHandler(handleCollision)
+  })
+
+  afterEach(() => {
+    allCollisions = []
+    removeEventHandler(handleCollision)
+  })
+
   describe('detect collisions', () => {
     const layer: Collider['layer'] = {
       belongs: ['default'],
@@ -105,28 +142,26 @@ describe('collider', () => {
 
       state = runOneFrameWithFixedTime(state)
 
-      const collisions1 = getCollider({
-        state,
-        entity: entity1,
-      })?._collisions
-      const collisions2 = getCollider({
-        state,
-        entity: entity2,
-      })?._collisions
-      const collisions3 = getCollider({
-        state,
-        entity: entity3,
-      })?._collisions
+      expect(
+        findCollision({ e1: entity1, e2: entity2, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity3, allCollisions }),
+      ).toBeDefined()
 
-      expect(collisions1?.length).toEqual(1)
-      expect(collisions1?.[0]?.colliderEntity).toEqual(entity2)
-      // expect(collisions1?.[1]?.colliderEntity).toEqual(entity3)
+      expect(
+        findCollision({ e1: entity2, e2: entity1, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions2?.length).toEqual(1)
-      expect(collisions2?.[0]?.colliderEntity).toEqual(entity1)
-
-      expect(collisions3?.length).toEqual(1)
-      expect(collisions3?.[0]?.colliderEntity).toEqual(entity1)
+      expect(
+        findCollision({ e1: entity3, e2: entity1, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
     })
 
     it('detect collisions point-point', () => {
@@ -192,26 +227,26 @@ describe('collider', () => {
 
       state = runOneFrameWithFixedTime(state)
 
-      const collisions1 = getCollider({
-        state,
-        entity: entity1,
-      })?._collisions
-      const collisions2 = getCollider({
-        state,
-        entity: entity2,
-      })?._collisions
-      const collisions3 = getCollider({
-        state,
-        entity: entity3,
-      })?._collisions
+      expect(
+        findCollision({ e1: entity1, e2: entity2, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions1?.length).toBe(1)
-      expect(collisions1?.length).toBe(1)
+      expect(
+        findCollision({ e1: entity2, e2: entity1, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions1?.[0]?.colliderEntity).toEqual(entity2)
-      expect(collisions2?.[0]?.colliderEntity).toEqual(entity1)
-
-      expect(collisions3?.length).toBe(0)
+      expect(
+        findCollision({ e1: entity3, e2: entity1, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
     })
 
     it('detect collisions circle-circle', () => {
@@ -296,34 +331,57 @@ describe('collider', () => {
 
       state = runOneFrameWithFixedTime(state)
 
-      const collisions1 = getCollider({
-        state,
-        entity: entity1,
-      })?._collisions
-      const collisions2 = getCollider({
-        state,
-        entity: entity2,
-      })?._collisions
-      const collisions3 = getCollider({
-        state,
-        entity: entity3,
-      })?._collisions
-      const collisions4 = getCollider({
-        state,
-        entity: entity4,
-      })?._collisions
+      expect(
+        findCollision({ e1: entity1, e2: entity1, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity2, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity3, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions1?.length).toEqual(2)
-      expect(collisions1?.[0]?.colliderEntity).toEqual(entity2)
-      expect(collisions1?.[1]?.colliderEntity).toEqual(entity3)
+      expect(
+        findCollision({ e1: entity2, e2: entity1, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions2?.length).toEqual(1)
-      expect(collisions2?.[0]?.colliderEntity).toEqual(entity1)
+      expect(
+        findCollision({ e1: entity3, e2: entity1, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions3?.length).toEqual(1)
-      expect(collisions3?.[0]?.colliderEntity).toEqual(entity1)
-
-      expect(collisions4?.length).toEqual(0)
+      expect(
+        findCollision({ e1: entity4, e2: entity1, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity4, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity4, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity4, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
     })
 
     it('detect collisions circle-rectangle', () => {
@@ -406,34 +464,57 @@ describe('collider', () => {
 
       state = runOneFrameWithFixedTime(state)
 
-      const collisions1 = getCollider({
-        state,
-        entity: entity1,
-      })?._collisions
-      const collisions2 = getCollider({
-        state,
-        entity: entity2,
-      })?._collisions
-      const collisions3 = getCollider({
-        state,
-        entity: entity3,
-      })?._collisions
-      const collisions4 = getCollider({
-        state,
-        entity: entity4,
-      })?._collisions
+      expect(
+        findCollision({ e1: entity1, e2: entity1, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity2, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity3, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      // expect(collisions1?.length).toEqual(2)
-      // expect(collisions1?.[0]?.colliderEntity).toEqual(entity2)
-      expect(collisions1?.[0]?.colliderEntity).toEqual(entity3)
+      expect(
+        findCollision({ e1: entity2, e2: entity1, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions2?.length).toEqual(1)
-      expect(collisions2?.[0]?.colliderEntity).toEqual(entity1)
+      expect(
+        findCollision({ e1: entity3, e2: entity1, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions3?.length).toEqual(1)
-      expect(collisions3?.[0]?.colliderEntity).toEqual(entity1)
-
-      expect(collisions4?.length).toEqual(0)
+      expect(
+        findCollision({ e1: entity4, e2: entity1, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity4, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity4, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity4, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
     })
 
     it('detect collisions point-line', () => {
@@ -526,38 +607,57 @@ describe('collider', () => {
 
       state = runOneFrameWithFixedTime(state)
 
-      const collisions1 = getCollider({
-        state,
-        entity: entity1,
-      })?._collisions
-      const collisions2 = getCollider({
-        state,
-        entity: entity2,
-      })?._collisions
-      const collisions3 = getCollider({
-        state,
-        entity: entity3,
-      })?._collisions
-      const collisions4 = getCollider({
-        state,
-        entity: entity4,
-      })?._collisions
+      expect(
+        findCollision({ e1: entity1, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity3, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions1?.length).toEqual(1)
-      expect(collisions1?.[0]?.colliderEntity).toEqual(entity3)
-      expect(collisions1?.[1]?.colliderEntity).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity1, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions2?.length).toEqual(0)
-      expect(collisions2?.[0]?.colliderEntity).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity1, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions3?.length).toEqual(1)
-      expect(collisions3?.[0]?.colliderEntity).toEqual(entity1)
-      expect(collisions3?.[1]?.colliderEntity).not.toBeDefined()
-
-      expect(collisions4?.length).toEqual(0)
+      expect(
+        findCollision({ e1: entity4, e2: entity1, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity4, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity4, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
     })
 
     it('detect collisions line-line', () => {
+      const allCollisions: CollisionEvent['payload'][] = []
+      addEventHandler(({ state, event }) => {
+        if (event.type === CanvasEngineEvent.colliderCollision) {
+          allCollisions.push(event.payload)
+        }
+
+        return state
+      })
+
       // line
       const entity1 = generateEntity()
       // crosses line1
@@ -660,40 +760,70 @@ describe('collider', () => {
 
       state = runOneFrameWithFixedTime(state)
 
-      const collisions1 = getCollider({
-        state,
-        entity: entity1,
-      })?._collisions
-      const collisions2 = getCollider({
-        state,
-        entity: entity2,
-      })?._collisions
-      const collisions3 = getCollider({
-        state,
-        entity: entity3,
-      })?._collisions
-      const collisions4 = getCollider({
-        state,
-        entity: entity4,
-      })?._collisions
-      const collisions5 = getCollider({
-        state,
-        entity: entity5,
-      })?._collisions
+      expect(
+        findCollision({ e1: entity1, e2: entity1, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity2, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity3, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions1?.length).toEqual(2)
-      expect(collisions1?.[0]?.colliderEntity).toEqual(entity2)
-      expect(collisions1?.[1]?.colliderEntity).toEqual(entity3)
+      expect(
+        findCollision({ e1: entity2, e2: entity1, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions2?.length).toEqual(1)
-      expect(collisions2?.[0]?.colliderEntity).toEqual(entity1)
+      expect(
+        findCollision({ e1: entity3, e2: entity1, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions3?.length).toEqual(1)
-      expect(collisions3?.[0]?.colliderEntity).toEqual(entity1)
+      expect(
+        findCollision({ e1: entity4, e2: entity1, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity4, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity4, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity4, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions4?.length).toEqual(0)
-
-      expect(collisions5?.length).toEqual(0)
+      expect(
+        findCollision({ e1: entity5, e2: entity1, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity5, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity5, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity5, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
     })
 
     it('detect collisions circle-line', () => {
@@ -707,6 +837,15 @@ describe('collider', () => {
       const entity4 = generateEntity()
       // line outside circle
       const entity5 = generateEntity()
+
+      const allCollisions: CollisionEvent['payload'][] = []
+      addEventHandler(({ state, event }) => {
+        if (event.type === CanvasEngineEvent.colliderCollision) {
+          allCollisions.push(event.payload)
+        }
+
+        return state
+      })
 
       let state = getState({}) as AnyState
       state = createEntity({ entity: entity1, state })
@@ -815,41 +954,70 @@ describe('collider', () => {
 
       state = runOneFrameWithFixedTime(state)
 
-      const collisions1 = getCollider({
-        state,
-        entity: entity1,
-      })?._collisions
-      const collisions2 = getCollider({
-        state,
-        entity: entity2,
-      })?._collisions
-      const collisions3 = getCollider({
-        state,
-        entity: entity3,
-      })?._collisions
-      const collisions4 = getCollider({
-        state,
-        entity: entity4,
-      })?._collisions
-      const collisions5 = getCollider({
-        state,
-        entity: entity5,
-      })?._collisions
+      expect(
+        findCollision({ e1: entity1, e2: entity1, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity2, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity3, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity1, e2: entity4, allCollisions }),
+      ).toBeDefined()
 
-      expect(collisions1?.length).toEqual(3)
-      expect(collisions1?.[0]?.colliderEntity).toEqual(entity2)
-      expect(collisions1?.[1]?.colliderEntity).toEqual(entity3)
-      expect(collisions1?.[2]?.colliderEntity).toEqual(entity4)
+      expect(
+        findCollision({ e1: entity2, e2: entity1, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity2, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions2?.length).toEqual(1)
-      expect(collisions2?.[0]?.colliderEntity).toEqual(entity1)
+      expect(
+        findCollision({ e1: entity3, e2: entity1, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity3, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions3?.length).toEqual(1)
-      expect(collisions3?.[0]?.colliderEntity).toEqual(entity1)
+      expect(
+        findCollision({ e1: entity4, e2: entity1, allCollisions }),
+      ).toBeDefined()
+      expect(
+        findCollision({ e1: entity4, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity4, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity4, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
 
-      expect(collisions4?.[0]?.colliderEntity).toEqual(entity1)
-
-      expect(collisions5?.length).toEqual(0)
+      expect(
+        findCollision({ e1: entity5, e2: entity1, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity5, e2: entity2, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity5, e2: entity3, allCollisions }),
+      ).not.toBeDefined()
+      expect(
+        findCollision({ e1: entity5, e2: entity4, allCollisions }),
+      ).not.toBeDefined()
     })
 
     it('detect collisions rectangle-line', () => {
@@ -869,6 +1037,15 @@ describe('collider', () => {
       const entity7 = generateEntity()
       // line doesn't touch rectangle
       const entity8 = generateEntity()
+
+      const allCollisions: CollisionEvent['payload'][] = []
+      addEventHandler(({ state, event }) => {
+        if (event.type === CanvasEngineEvent.colliderCollision) {
+          allCollisions.push(event.payload)
+        }
+
+        return state
+      })
 
       let state = getState({}) as AnyState
       state = createEntity({ entity: entity1, state })
@@ -967,16 +1144,16 @@ describe('collider', () => {
           entity: entity8,
           collisions: [],
         },
-      ].forEach((data, i) => {
-        const collisions = getCollider({
-          state,
-          entity: data.entity,
-        })?._collisions
+      ].forEach(({ entity, collisions }) => {
+        collisions.forEach((entity2) => {
+          const collision = allCollisions.find(
+            (collision) =>
+              collision.colliderEntity1 === entity &&
+              collision.colliderEntity2 === entity2,
+          )
 
-        expect([
-          i,
-          collisions?.map(({ colliderEntity }) => colliderEntity),
-        ]).toEqual([i, data.collisions])
+          expect(collision).toBeDefined()
+        })
       })
     })
   })
@@ -1164,23 +1341,36 @@ describe('collider', () => {
     const collisions1 = getCollider({
       state,
       entity: entity1,
-    })?._collisions
+    })?._collision
     const collisions2 = getCollider({
       state,
       entity: entity2,
-    })?._collisions
+    })?._collision
     const collisions3 = getCollider({
       state,
       entity: entity3,
-    })?._collisions
+    })?._collision
 
-    expect(collisions1?.length).toEqual(0)
+    expect(
+      findCollision({ e1: entity1, e2: entity2, allCollisions }),
+    ).not.toBeDefined()
+    expect(
+      findCollision({ e1: entity1, e2: entity3, allCollisions }),
+    ).not.toBeDefined()
 
-    expect(collisions2?.length).toEqual(1)
-    expect(collisions2?.[0]?.colliderEntity).toEqual(entity3)
+    expect(
+      findCollision({ e1: entity2, e2: entity1, allCollisions }),
+    ).not.toBeDefined()
+    expect(
+      findCollision({ e1: entity2, e2: entity3, allCollisions }),
+    ).toBeDefined()
 
-    expect(collisions3?.length).toEqual(1)
-    expect(collisions3?.[0]?.colliderEntity).toEqual(entity2)
+    expect(
+      findCollision({ e1: entity3, e2: entity1, allCollisions }),
+    ).not.toBeDefined()
+    expect(
+      findCollision({ e1: entity3, e2: entity2, allCollisions }),
+    ).toBeDefined()
   })
 
   it('should emit collision event with correct data', () => {

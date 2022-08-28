@@ -4,7 +4,6 @@ import {
   Entity,
   CollisionEvent,
   CanvasEngineEvent,
-  Dictionary,
 } from '../../type'
 import { createGlobalSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
@@ -20,7 +19,6 @@ import { getColliderContour } from './getColliderContour'
 import { getQuadTree, getQuadTreeCollisions, RectangleData } from './quadTree'
 
 export let comparisionsQuadTree = 0
-// let collisionComparisionCache: Dictionary<number> = {}
 
 const findCollisionsInNode = ({
   entities,
@@ -50,13 +48,6 @@ const findCollisionsInNode = ({
 
     for (let j = 0; j < entities.length; j++) {
       const collider2Entity = entities[j]
-      // const cacheKey = `${entity}-${collider2Entity}`
-
-      // if (collisionComparisionCache[cacheKey] !== undefined) {
-      //   continue
-      // } else {
-      //   collisionComparisionCache[cacheKey] = 1
-      // }
 
       if (entity === collider2Entity) {
         continue
@@ -108,18 +99,47 @@ const findCollisionsInNode = ({
             intersection,
           },
         })
+
+        emitEvent<CollisionEvent>({
+          type: CanvasEngineEvent.colliderCollision,
+          payload: {
+            colliderEntity1: collider2Entity,
+            colliderEntity2: entity,
+            intersection,
+          },
+        })
       }
 
       state = updateCollider({
         state,
         entity,
         update: (collider) => ({
-          _previousCollisions: collider._collisions,
-          _collisions: collisions,
+          _previousCollision: collider._collision,
+          _collision: intersection
+            ? {
+                colliderEntity: entity,
+                intersection,
+              }
+            : collider._collision,
+        }),
+      })
+
+      state = updateCollider({
+        state,
+        entity: collider2Entity,
+        update: (collider) => ({
+          _previousCollision: collider._collision,
+          _collision: intersection
+            ? {
+                colliderEntity: collider2Entity,
+                intersection,
+              }
+            : collider._collision,
         }),
       })
     }
   }
+
 
   return state
 }
@@ -136,7 +156,6 @@ export const colliderSystem = (state: AnyState) =>
       let right = -Infinity
 
       const colliderContours: Array<RectangleData> = []
-
       const allColliders = Object.entries(state.component.collider)
 
       for (let i = 0; i < allColliders.length; i++) {
@@ -171,7 +190,7 @@ export const colliderSystem = (state: AnyState) =>
 
       const maxLevel = 5
       const quadTree = getQuadTree({
-        bounds: [bottom, left, top, right],
+        bounds: [left, bottom, right, top],
         rectangles: colliderContours,
         maxLevel,
       })

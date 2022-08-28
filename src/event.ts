@@ -33,7 +33,7 @@ export const addEventHandler = <
 }
 
 export const removeEventHandler = (
-  eventHandler: EventHandler<unknown, any>,
+  eventHandler: EventHandler<any, any>,
 ) => {
   eventHandlers = eventHandlers.filter((e) => e !== eventHandler)
 }

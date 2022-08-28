@@ -91,8 +91,8 @@ export type Collider = {
   /**
    * Used to detect if collider stuck inside another collider
    */
-  _previousCollisions: Array<CollisionData>
-  _collisions: Array<CollisionData>
+  _previousCollision: CollisionData | undefined
+  _collision: CollisionData | undefined
   _rectangleContour: RectangleContour
   data:
     | ColliderDataPoint
