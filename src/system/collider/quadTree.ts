@@ -22,14 +22,6 @@ export const emptyQuadTree = {
   data: [],
 }
 
-const mapDataToEntity = (data: RectangleData[]): Entity[] => {
-  const entities: Entity[] = []
-  data.forEach(({ entity }) => {
-    entities.push(entity)
-  })
-
-  return entities
-}
 const flatQuadTree = (tree: QuadTree, maxLevel: number): RectangleData[][] => {
   const nodeData: RectangleData[][] = []
 
@@ -104,27 +96,7 @@ export const getQuadTreeCollisions = ({
   maxLevel: number
 }) => {
   const flattenQuadTree = flatQuadTree(quadTree, maxLevel)
-return removeDuplicatedCollisoins(flattenQuadTree)
-  // const uniqueCollisions: Dictionary<Entity[]> = {}
-  // for (let i = 0; i < flattenQuadTree.length; i++) {
-  //   const data = flattenQuadTree[i]
-
-  //   if (!Array.isArray(data)) {
-  //     continue
-  //   }
-
-  //   const entities: Entity[] = []
-  //   let key = ''
-
-  //   data.forEach(({ entity }) => {
-  //     entities.push(entity)
-  //     key = `${key},${entity}`
-  //   })
-
-  //   uniqueCollisions[key] = entities
-  // }
-
-  // return Object.values(uniqueCollisions)
+  return removeDuplicatedCollisoins(flattenQuadTree)
 }
 
 export const splitBounds = ({

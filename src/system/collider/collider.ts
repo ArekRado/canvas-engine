@@ -1,10 +1,4 @@
-import {
-  AnyState,
-  Collider,
-  Entity,
-  CollisionEvent,
-  CanvasEngineEvent,
-} from '../../type'
+import { AnyState, Entity, CollisionEvent, CanvasEngineEvent } from '../../type'
 import { createGlobalSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { getCollider, updateCollider } from './colliderCrud'
@@ -29,7 +23,7 @@ const findCollisionsInNode = ({
 }): AnyState => {
   for (let i = 0; i < entities.length; i++) {
     const entity = entities[i]
-    const collisions: Array<Collider['_collisions'][0]> = []
+    // const collisions: Array<Collider['_collision']> = []
 
     const collider = getCollider({
       state,
@@ -86,10 +80,10 @@ const findCollisionsInNode = ({
       comparisionsQuadTree++
 
       if (intersection !== null) {
-        collisions.push({
-          colliderEntity: collider2Entity,
-          intersection,
-        })
+        // collisions.push({
+        //   colliderEntity: collider2Entity,
+        //   intersection,
+        // })
 
         emitEvent<CollisionEvent>({
           type: CanvasEngineEvent.colliderCollision,
@@ -117,7 +111,7 @@ const findCollisionsInNode = ({
           _previousCollision: collider._collision,
           _collision: intersection
             ? {
-                colliderEntity: entity,
+                colliderEntity: collider2Entity,
                 intersection,
               }
             : collider._collision,
@@ -131,7 +125,7 @@ const findCollisionsInNode = ({
           _previousCollision: collider._collision,
           _collision: intersection
             ? {
-                colliderEntity: collider2Entity,
+                colliderEntity: entity,
                 intersection,
               }
             : collider._collision,
@@ -139,7 +133,6 @@ const findCollisionsInNode = ({
       })
     }
   }
-
 
   return state
 }

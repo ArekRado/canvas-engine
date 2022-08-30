@@ -276,7 +276,7 @@ describe('rigidBody', () => {
     ).toEqual([306.4, 0])
   })
 
-  it.only('conservation of momentum in elastic collisions 1 - rigidbodies with the same mass', () => {
+  it('conservation of momentum in elastic collisions 1 - rigidbodies with the same mass', () => {
     const r1Force: Vector2D = [0.1, 0]
     const r2Force: Vector2D = [0, 0]
 
@@ -511,7 +511,7 @@ describe('rigidBody', () => {
       }),
     })
 
-    Array.from({ length: 12 }).forEach((_, i) => {
+    Array.from({ length: 11 }).forEach((_, i) => {
       state = tick(i, state)
     })
 
@@ -609,7 +609,7 @@ describe('rigidBody', () => {
       }),
     })
 
-    Array.from({ length: 10 }).forEach((_, i) => {
+    Array.from({ length: 11 }).forEach((_, i) => {
       state = tick(i, state)
     })
 
@@ -796,14 +796,14 @@ describe('rigidBody', () => {
         state,
         entity: entity1,
       })?._collision,
-    ).toEqual([])
+    ).toBeUndefined()
 
     expect(
       getCollider({
         state,
         entity: entity2,
       })?._collision,
-    ).toEqual([])
+    ).toBeUndefined()
   })
 })
 

@@ -1,5 +1,5 @@
 {
-  "version": "0.0.111",
+  "version": "0.0.112",
   "name": "@arekrado/canvas-engine",
   "umd:main": "dist/canvas-engine.umd.production.js",
   "main": "dist/index.js",
