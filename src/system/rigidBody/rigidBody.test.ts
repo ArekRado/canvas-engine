@@ -273,7 +273,7 @@ describe('rigidBody', () => {
 
   it('conservation of momentum in elastic collisions 1 - rigidbodies with the same mass', () => {
     const r1Force: Vector2D = [0.1, 0]
-    const r2Force: Vector2D = [0, 0]
+    const r2Force: Vector2D = [-0, 0]
 
     let state = getState({}) as AnyState
 
@@ -343,17 +343,23 @@ describe('rigidBody', () => {
     })
 
     expect(
-      getRigidBody({
-        state,
-        entity: entity1,
-      })?.force,
+      toFixedVector2D(
+        getRigidBody({
+          state,
+          entity: entity1,
+        })?.force ?? [9999, 9999],
+        2,
+      ),
     ).toEqual(r2Force)
 
     expect(
-      getRigidBody({
-        state,
-        entity: entity2,
-      })?.force,
+      toFixedVector2D(
+        getRigidBody({
+          state,
+          entity: entity2,
+        })?.force ?? [9999, 9999],
+        2,
+      ),
     ).toEqual(r1Force)
   })
 
@@ -791,7 +797,7 @@ describe('rigidBody', () => {
 })
 
 describe('rigidBody + collider stress tests', () => {
-  it.only('stress test', () => {
+  it.skip('stress test', () => {
     const amountOfColliders = 1000
     let state = getState({}) as AnyState
 
@@ -904,7 +910,7 @@ describe('rigidBody + collider stress tests', () => {
 
     const timeAfter = performance.now()
     const delta = timeAfter - timeBefore
-    
+
     console.log({ delta, comparisionsQuadTree })
 
     // delta: 217, comparisionsQuadTree: 15703
@@ -912,7 +918,7 @@ describe('rigidBody + collider stress tests', () => {
     // delta: 272, comparisionsQuadTree: 15973
     // delta: 263, comparisionsQuadTree: 16785
     // delta: 246, comparisionsQuadTree: 16736
-    // delta: 261, comparisionsQuadTree: 16742 
+    // delta: 261, comparisionsQuadTree: 16742
     // delta: 224, comparisionsQuadTree: 9930
     // delta: 179, comparisionsQuadTree: 9995
     // delta: 177, comparisionsQuadTree: 9685

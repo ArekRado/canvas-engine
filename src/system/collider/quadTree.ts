@@ -63,7 +63,7 @@ const flatQuadTree = (tree: QuadTree, maxLevel: number): RectangleData[][] => {
 
 export const removeDuplicatedCollisoins = (
   collisions: RectangleData[][],
-): string[][] => {
+): [string, string][] => {
   const cache: Dictionary<[string, string]> = {}
 
   for (let i = 0; i < collisions.length; i++) {

@@ -19,11 +19,19 @@ import {
 import { getColliderContour } from './getColliderContour'
 import { getQuadTree, getQuadTreeCollisions, RectangleData } from './quadTree'
 import { getAABBCollision } from './getAABBCollision'
+import { Intersection } from './getIntersection'
 
 export let comparisionsQuadTree = 0
 let colliderContours: Dictionary<RectangleData> = {}
 export let previousCollisions: Dictionary<CollisionData | undefined> = {}
 export let collisions: Dictionary<CollisionData | undefined> = {}
+
+// every quadTree will be calculated on separated core
+// (x**2)/2
+// eg: if cpu has 8 cores then quadTree will be splited into 32 smaller quadTrees
+// eg: if cpu has 4 cores then quadTree will be splited into 8 smaller quadTrees
+const quadTreeSplit = navigator.hardwareConcurrency ** 2 / 2
+const quadTreeMaxLevel = 5
 
 const findCollisionsInNode = ({
   entities,
@@ -31,117 +39,72 @@ const findCollisionsInNode = ({
 }: {
   entities: Entity[]
   state: AnyState
-}): AnyState => {
-  for (let i = 0; i < entities.length; i++) {
-    const entity = entities[i]
+}): [Intersection | null, boolean, boolean] | null => {
+  const entity = entities[0]
+  const entity2 = entities[1]
 
-    const collider = getCollider({
-      state,
-      entity,
-    })
-    const transform1 = getTransform({
-      state,
-      entity,
-    })
-
-    if (transform1 === undefined || collider === undefined) {
-      continue
-    }
-
-    const colliderData = collider.data
-
-    for (let j = 0; j < entities.length; j++) {
-      const collider2Entity = entities[j]
-
-      if (entity === collider2Entity) {
-        continue
-      }
-
-      if (
-        getAABBCollision({
-          rectangle1: colliderContours[entity].rectangle,
-          rectangle2: colliderContours[collider2Entity].rectangle,
-        }) === false
-      ) {
-        continue
-      }
-
-      const collider2 = getCollider({
-        state,
-        entity: collider2Entity,
-      })
-      const transform2 = getTransform({
-        state,
-        entity: collider2Entity,
-      })
-
-      if (transform2 === undefined || collider2 === undefined) {
-        continue
-      }
-
-      if (hasSameLayer(collider.layer, collider2.layer) === false) {
-        continue
-      }
-
-      const collisionDetector: CollisionDetectorNormalizer =
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        collisionsMatrix[colliderData.type][collider2.data.type]
-
-      const intersection = collisionDetector({
-        transform1,
-        collider1Data: colliderData,
-        transform2,
-        collider2Data: collider2.data,
-      })
-
-      comparisionsQuadTree++
-
-      if (intersection !== null) {
-        if (collider.emitEventCollision) {
-          emitEvent<CollisionEvent>({
-            type: CanvasEngineEvent.colliderCollision,
-            payload: {
-              colliderEntity1: entity,
-              colliderEntity2: collider2Entity,
-              intersection,
-            },
-          })
-        }
-
-        if (collider2.emitEventCollision) {
-          emitEvent<CollisionEvent>({
-            type: CanvasEngineEvent.colliderCollision,
-            payload: {
-              colliderEntity1: collider2Entity,
-              colliderEntity2: entity,
-              intersection,
-            },
-          })
-        }
-      }
-
-      // set entity collisions
-      collisions[entity] = intersection
-        ? {
-            colliderEntity: collider2Entity,
-            intersection,
-          }
-        : collisions[entity]
-      previousCollisions[entity] = collisions[entity]
-
-      // set entity collider2Entity
-      collisions[collider2Entity] = intersection
-        ? {
-            colliderEntity: entity,
-            intersection,
-          }
-        : collisions[collider2Entity]
-      previousCollisions[collider2Entity] = collisions[collider2Entity]
-    }
+  if (
+    getAABBCollision({
+      rectangle1: colliderContours[entity].rectangle,
+      rectangle2: colliderContours[entity2].rectangle,
+    }) === false
+  ) {
+    return null
   }
 
-  return state
+  const collider1 = getCollider({
+    state,
+    entity,
+  })
+  const transform1 = getTransform({
+    state,
+    entity,
+  })
+
+  if (transform1 === undefined || collider1 === undefined) {
+    return null
+  }
+
+  if (entity === entity2) {
+    return null
+  }
+
+  const collider2 = getCollider({
+    state,
+    entity: entity2,
+  })
+  const transform2 = getTransform({
+    state,
+    entity: entity2,
+  })
+
+  if (transform2 === undefined || collider2 === undefined) {
+    return null
+  }
+
+  if (hasSameLayer(collider1.layer, collider2.layer) === false) {
+    return null
+  }
+
+  const collisionDetector: CollisionDetectorNormalizer =
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    collisionsMatrix[collider1.data.type][collider2.data.type]
+
+  const intersection = collisionDetector({
+    transform1,
+    collider1Data: collider1.data,
+    transform2,
+    collider2Data: collider2.data,
+  })
+
+  comparisionsQuadTree++
+
+  return [
+    intersection,
+    collider1.emitEventCollision,
+    collider2.emitEventCollision,
+  ]
 }
 
 export const colliderSystem = (state: AnyState) =>
@@ -190,27 +153,72 @@ export const colliderSystem = (state: AnyState) =>
         }
       }
 
-      const maxLevel = 5
       const quadTree = getQuadTree({
         bounds: [left, bottom, right, top],
         rectangles: Object.values(colliderContours),
-        maxLevel,
+        maxLevel: quadTreeMaxLevel,
       })
 
       if (quadTree) {
-        const collisions = getQuadTreeCollisions({
-          maxLevel,
+        const quadTreeCollisions = getQuadTreeCollisions({
+          maxLevel: quadTreeMaxLevel,
           quadTree,
         })
 
-        for (let i = 0; i < collisions.length; i++) {
-          state = findCollisionsInNode({
-            entities: collisions[i],
+        for (let i = 0; i < quadTreeCollisions.length; i++) {
+          const data = findCollisionsInNode({
+            entities: quadTreeCollisions[i],
             state,
           })
+
+          if (data !== null && data[0] !== null) {
+            const entity1 = quadTreeCollisions[i][0]
+            const entity2 = quadTreeCollisions[i][1]
+            const [intersection, emitEventCollision1, emitEventCollision2] =
+              data
+
+            if (emitEventCollision1) {
+              emitEvent<CollisionEvent>({
+                type: CanvasEngineEvent.colliderCollision,
+                payload: {
+                  colliderEntity1: entity1,
+                  colliderEntity2: entity2,
+                  intersection,
+                },
+              })
+            }
+
+            if (emitEventCollision2) {
+              emitEvent<CollisionEvent>({
+                type: CanvasEngineEvent.colliderCollision,
+                payload: {
+                  colliderEntity1: entity2,
+                  colliderEntity2: entity1,
+                  intersection,
+                },
+              })
+            }
+
+            // set entity collisions
+            collisions[entity1] = intersection
+              ? {
+                  colliderEntity: entity2,
+                  intersection,
+                }
+              : collisions[entity1]
+            previousCollisions[entity1] = collisions[entity1]
+
+            // set entity collider2Entity
+            collisions[entity2] = intersection
+              ? {
+                  colliderEntity: entity1,
+                  intersection,
+                }
+              : collisions[entity2]
+            previousCollisions[entity2] = collisions[entity2]
+          }
         }
       }
-      // console.log('colliderContours',colliderContours)
 
       colliderContours = {}
 

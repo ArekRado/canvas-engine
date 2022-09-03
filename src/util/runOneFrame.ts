@@ -45,7 +45,9 @@ export const runOneFrame = <State extends AnyState = AnyState>({
   })
 
   // Loop for fixedTicks
-  Array.from({ length: fixedTickLoops }).forEach(() => {
+  for (let i = 0; i < fixedTickLoops; i++) {
+
+  // Array.from({ length: fixedTickLoops }).forEach(() => {
     // Fixed tick has to have delta equal to FIXED_TICK_TIME
     state = updateTime({
       state,
@@ -67,7 +69,8 @@ export const runOneFrame = <State extends AnyState = AnyState>({
         state = system.fixedTick({ state }) as State
       }
     }
-  })
+    }
+  // })
 
   if (timeBeforeFixedTicks) {
     // reset time after fixed updates. It's the easiest way to return to previous time values without worrying about modulo
