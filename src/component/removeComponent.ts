@@ -1,6 +1,6 @@
 import { AnyState, Entity } from '../type'
 import { getComponent } from './getComponent'
-import { getSystemByName } from '../system/getSystemByName'
+import { getSystemByComponentName } from '../system/getSystemByName'
 
 export const removeComponent = <State extends AnyState = AnyState>({
   name,
@@ -22,7 +22,7 @@ export const removeComponent = <State extends AnyState = AnyState>({
   }
 
   const component = getComponent({ name, state, entity })
-  const system = getSystemByName(name, newState.system)
+  const system = getSystemByComponentName(name, newState.system)
 
   if (system && component && system.remove) {
     return system.remove({ state: newState, component, entity, name }) as State

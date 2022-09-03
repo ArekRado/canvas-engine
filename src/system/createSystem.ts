@@ -3,7 +3,6 @@ import {
   AnyStateForSystem,
   Dictionary,
   EmitEvent,
-  Entity,
   GlobalSystem,
   SystemMethodParams,
 } from '../type'
@@ -42,24 +41,28 @@ const triggerTickForAllComponents = <
     | undefined
 
   if (component) {
-    return Object.keys(component).reduce((acc, entity: Entity) => {
+    const keys = Object.keys(component)
+    for (let i = 0; i < keys.length; i++) {
+      const entity = keys[i]
+
       const component = getComponent<ComponentData>({
-        state: acc,
+        state: state,
         name: componentName,
         entity,
       }) as ComponentData
 
       if (!component) {
-        return acc
+        // return acc
+        continue
       }
 
-      return tickCallback({
-        state: acc,
+      state = tickCallback({
+        state: state,
         component,
         name: componentName,
         entity,
       })
-    }, state)
+    }
   }
 
   return state

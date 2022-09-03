@@ -32,9 +32,7 @@ export const addEventHandler = <
   eventHandlers.push(eventHandler)
 }
 
-export const removeEventHandler = (
-  eventHandler: EventHandler<any, any>,
-) => {
+export const removeEventHandler = (eventHandler: EventHandler<any, any>) => {
   eventHandlers = eventHandlers.filter((e) => e !== eventHandler)
 }
 
@@ -75,19 +73,17 @@ export const eventSystem = (state: InternalInitialState) =>
     tick: ({ state }) => {
       lockFirstBuffer()
 
-      state = eventBuffer.reduce(
-        (acc: InternalInitialState, event) =>
-          eventHandlers.reduce(
-            (acc2, eventHandler) =>
-              eventHandler({
-                state: acc2,
-                event,
-              }),
-            acc,
-          ),
+      for (let i = 0; i < eventBuffer.length; i++) {
+        const event = eventBuffer[i]
+        for (let j = 0; j < eventHandlers.length; j++) {
+          const eventHandler = eventHandlers[j]
 
-        state,
-      )
+          state = eventHandler({
+            state,
+            event,
+          })
+        }
+      }
 
       resetEventBuffer()
       unlockFirstBuffer()

@@ -12,7 +12,7 @@ import {
 import { getColliderContour } from './getColliderContour'
 import { getQuadTree, getQuadTreeCollisions, RectangleData } from './quadTree'
 
-export let comparisionsQuadTree = 0
+// export let comparisionsQuadTree = 0
 
 const findCollisionsInNode = ({
   entities,
@@ -77,14 +77,9 @@ const findCollisionsInNode = ({
         collider2Data: collider2Data,
       })
 
-      comparisionsQuadTree++
+      // comparisionsQuadTree++
 
       if (intersection !== null) {
-        // collisions.push({
-        //   colliderEntity: collider2Entity,
-        //   intersection,
-        // })
-
         emitEvent<CollisionEvent>({
           type: CanvasEngineEvent.colliderCollision,
           payload: {
@@ -193,8 +188,6 @@ export const colliderSystem = (state: AnyState) =>
           maxLevel,
           quadTree,
         })
-
-        // collisionComparisionCache = {}
 
         for (let i = 0; i < collisions.length; i++) {
           state = findCollisionsInNode({

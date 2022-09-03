@@ -1,4 +1,4 @@
-import { getSystemByName } from '../system/getSystemByName'
+import { getSystemByComponentName } from '../system/getSystemByName'
 import { AnyState, Entity } from '../type'
 
 export const createComponent = <Data, State extends AnyState = AnyState>({
@@ -23,7 +23,7 @@ export const createComponent = <Data, State extends AnyState = AnyState>({
     },
   }
 
-  const system = getSystemByName(name, state.system)
+  const system = getSystemByComponentName(name, state.system)
 
   if (system !== undefined) {
     if (

@@ -1,4 +1,4 @@
-import { getSystemByName } from '../system/getSystemByName'
+import { getSystemByComponentName } from '../system/getSystemByName'
 import { AnyState, Entity } from '../type'
 import { getComponent } from './getComponent'
 
@@ -22,28 +22,20 @@ export const updateComponent = <Data, State extends AnyState = AnyState>({
   })
 
   if (previousComponent !== undefined) {
-    const updatedComponent = {
-      ...previousComponent,
-      ...update(previousComponent),
-    }
+    const updatedComponent = Object.assign(
+      {},
+      previousComponent,
+      update(previousComponent),
+    )
 
-    const newState = {
-      ...state,
-      component: {
-        ...state.component,
-        [name]: {
-          ...state.component[name],
-          [entity]: updatedComponent,
-        },
-      },
-    }
+    state.component[name][entity] = updatedComponent
 
     if (callSystemUpdateMethod) {
-      const system = getSystemByName(name, state.system)
+      const system = getSystemByComponentName(name, state.system)
 
       if (system?.update) {
         return system.update({
-          state: newState,
+          state,
           component: updatedComponent,
           previousComponent,
           entity,
@@ -52,7 +44,7 @@ export const updateComponent = <Data, State extends AnyState = AnyState>({
       }
     }
 
-    return newState
+    return state
   }
 
   return state

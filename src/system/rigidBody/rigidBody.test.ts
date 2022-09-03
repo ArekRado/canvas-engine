@@ -1,6 +1,5 @@
 import {
   add,
-  distance,
   vector,
   Vector2D,
   vectorZero,
@@ -19,7 +18,7 @@ import {
   getElasticCollisionForcesStatic,
 } from './rigidBody'
 import { createTransform, getTransform } from '../transform/transformCrud'
-import { createCollider, getCollider } from '../collider/colliderCrud'
+import { createCollider } from '../collider/colliderCrud'
 import { createRigidBody, getRigidBody } from './rigidBodyCrud'
 import { toFixedVector2D } from '../../util/toFixedVector2D'
 import { degreesToRadians } from '../../util/radian'
@@ -32,7 +31,7 @@ import {
   ColliderDataPolygon,
   ColliderDataRectangle,
 } from '../../type'
-import { comparisionsQuadTree } from '../collider/collider'
+// import { comparisionsQuadTree } from '../collider/collider'
 
 describe('getElasticCollisionForces', () => {
   it('should return proper data', () => {
@@ -429,7 +428,7 @@ describe('rigidBody', () => {
       }),
     })
 
-    Array.from({ length: 11 }).forEach((_, i) => {
+    Array.from({ length: 10 }).forEach((_, i) => {
       state = tick(i, state)
     })
 
@@ -511,7 +510,7 @@ describe('rigidBody', () => {
       }),
     })
 
-    Array.from({ length: 11 }).forEach((_, i) => {
+    Array.from({ length: 10 }).forEach((_, i) => {
       state = tick(i, state)
     })
 
@@ -609,7 +608,7 @@ describe('rigidBody', () => {
       }),
     })
 
-    Array.from({ length: 11 }).forEach((_, i) => {
+    Array.from({ length: 10 }).forEach((_, i) => {
       state = tick(i, state)
     })
 
@@ -711,6 +710,9 @@ describe('rigidBody', () => {
   it('should apply additional force to rigidbodies when they collides with each other in two ticks in a row', () => {
     // if rigidbody stuck inside another rigidbody then phisic will push them to the center, we want to move them outside.
 
+    const r1Force: Vector2D = [0.1, 0]
+    const r2Force: Vector2D = [-0.2, 0]
+
     let state = getState({}) as AnyState
 
     const entity1 = generateEntity()
@@ -723,14 +725,14 @@ describe('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultTransform({
-        position: [3.777196043997166, 2.5104600747657106],
+        position: [0, 0],
       }),
     })
     state = createTransform({
       state,
       entity: entity2,
       data: defaultTransform({
-        position: [2.7081851982875227, 2.1153390722823326],
+        position: [3, 0],
       }),
     })
 
@@ -738,32 +740,22 @@ describe('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultCollider({
-        data: {
-          type: 'circle',
-          radius: 0.6646845178296792,
-          position: [0, 0],
-        },
-
         layer: {
-          belongs: ['knight'],
-          interacts: ['knight', 'barrier'],
+          belongs: ['a'],
+          interacts: ['a'],
         },
+        data: { type: 'circle', position: [0, 0], radius: 1 },
       }),
     })
     state = createCollider({
       state,
       entity: entity2,
       data: defaultCollider({
-        data: {
-          type: 'circle',
-          radius: 0.6628101775793278,
-          position: [0, 0],
-        },
-
         layer: {
-          belongs: ['knight'],
-          interacts: ['knight', 'barrier'],
+          belongs: ['a'],
+          interacts: ['a'],
         },
+        data: { type: 'circle', position: [0, 0], radius: 1 },
       }),
     })
 
@@ -771,39 +763,34 @@ describe('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultRigidBody({
-        mass: 0.6646845178296792,
-        force: [0.0006659534850252688, -0.00025463924853605054],
+        force: r1Force,
+        mass: 1,
       }),
     })
     state = createRigidBody({
       state,
       entity: entity2,
       data: defaultRigidBody({
-        mass: 0.6628101775793278,
-        force: [-0.0006650088452932791, -0.0017474685339102045],
-        isStatic: false,
+        force: r2Force,
+        mass: 1,
       }),
     })
 
-    state = tick(0, state)
-    state = tick(275, state)
-    state = tick(275, state)
+    Array.from({ length: 12 }).forEach((_, i) => {
+      state = tick(i, state)
+    })
 
-    // Rigidbody logic should push out colliders
+    const position1 = getTransform({
+      state,
+      entity: entity1,
+    })?.position as Vector2D
+    const position2 = getTransform({
+      state,
+      entity: entity2,
+    })?.position as Vector2D
 
-    expect(
-      getCollider({
-        state,
-        entity: entity1,
-      })?._collision,
-    ).toBeUndefined()
-
-    expect(
-      getCollider({
-        state,
-        entity: entity2,
-      })?._collision,
-    ).toBeUndefined()
+    expect(toFixedVector2D(position1, 2)).toEqual([-0, 0])
+    expect(toFixedVector2D(position2, 2)).toEqual([1.9, 0])
   })
 })
 
@@ -927,12 +914,12 @@ describe('rigidBody + collider stress tests', () => {
     // 387740
     // 385870
     // 386590
-    console.log({ delta, comparisionsQuadTree })
+    // console.log({ delta, comparisionsQuadTree })
 
     // 100 - 600-800ms
     // 200 - 5s
     // 1000 - 55s
 
-    expect(delta).toBeLessThan(10000)
+    expect(delta).toBeLessThan(2000)
   })
 })

@@ -59,44 +59,44 @@ export const transformSystem = (state: InternalInitialState) =>
     name: componentName.transform,
     priority: systemPriority.transform,
     tick: ({ state }) => {
-      return Object.entries(state.component.transform).reduce(
-        (state, [entity, transform]) => {
-          if (transform.parentId) {
-            const parentTransform = getTransform({
+      const transforms = Object.entries(state.component.transform)
+      for (let i = 0; i < transforms.length; i++) {
+        const [entity, transform] = transforms[i]
+
+        if (transform.parentId) {
+          const parentTransform = getTransform({
+            state,
+            entity: transform.parentId,
+          })
+
+          if (parentTransform) {
+            const fromParentPosition = transform.fromParentPosition
+            const parentPosition = getParentPosition(state, parentTransform)
+            const newPosition = add(
+              parseV3ToV2(fromParentPosition),
+              parseV3ToV2(parentPosition),
+            )
+
+            state = updateTransform({
               state,
-              entity: transform.parentId,
-            })
-
-            if (parentTransform) {
-              const fromParentPosition = transform.fromParentPosition
-              const parentPosition = getParentPosition(state, parentTransform)
-              const newPosition = add(
-                parseV3ToV2(fromParentPosition),
-                parseV3ToV2(parentPosition),
-              )
-
-              return updateTransform({
-                state,
-                entity,
-                update: () => ({
-                  ...transform,
-                  position: newPosition,
-                }),
-              }) as InternalInitialState
-            }
-          }
-
-          if (state.babylonjs.sceneRef) {
-            syncTransformWithBabylon({
-              scene: state.babylonjs.sceneRef,
-              transform: transform,
               entity,
-            })
+              update: () => ({
+                ...transform,
+                position: newPosition,
+              }),
+            }) as InternalInitialState
           }
+        }
 
-          return state
-        },
-        state,
-      )
+        if (state.babylonjs.sceneRef) {
+          syncTransformWithBabylon({
+            scene: state.babylonjs.sceneRef,
+            transform: transform,
+            entity,
+          })
+        }
+      }
+
+      return state
     },
   })

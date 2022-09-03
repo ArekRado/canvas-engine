@@ -1,21 +1,11 @@
-import { AnyState, Collider, Entity, RigidBody, Transform } from '../../type'
+import { AnyState, RigidBody } from '../../type'
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
-import {
-  add,
-  distance,
-  dot,
-  magnitude,
-  scale,
-  sub,
-  vector,
-  Vector2D,
-} from '@arekrado/vector-2d'
-import { timeEntity } from '../time/time'
+import { add, dot, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
 import { getRigidBody, updateRigidBody } from './rigidBodyCrud'
-import { getTime } from '../time/timeCrud'
 import { getTransform, updateTransform } from '../transform/transformCrud'
 import { getCollider, updateCollider } from '../collider/colliderCrud'
+import { FIXED_TICK_TIME } from '../../util/runOneFrame'
 
 const FPS = 1000 / 60
 
@@ -70,15 +60,13 @@ export const getElasticCollisionForcesStatic = ({
 
 const applyFrictionToForce = ({
   friction,
-  timeDelta,
   force,
 }: {
   friction: number
-  timeDelta: number
   force: Vector2D
 }): Vector2D => {
   // Friction same as force depends on a time.delta
-  const frictionPerSecond = friction * (timeDelta / FPS)
+  const frictionPerSecond = friction * (FIXED_TICK_TIME / FPS)
   const frictionAbs = Math.abs(frictionPerSecond)
   const x = force[0]
   const y = force[1]
@@ -97,85 +85,91 @@ const applyFrictionToForce = ({
   ]
 }
 
-// const removeFirstCollision = (collider: Collider): Partial<Collider> => ({
-//   _collision: collider._collision.slice(1, collider._collision.length),
-// })
+// const hadSameCollisionInPreviousTick = ({
+//   collisionEntity,
+//   collider,
+// }: {
+//   collisionEntity: Entity
+//   collider: Collider
+// }) =>
+//   collider._previousCollision?.colliderEntity
+//     ? collider._previousCollision.colliderEntity === collisionEntity
+//     : false
 
-const hadSameCollisionInPreviousTick = ({
-  collisionEntity,
-  collider,
-}: {
-  collisionEntity: Entity
-  collider: Collider
-}) =>
-  collider._previousCollision?.colliderEntity
-    ? collider._previousCollision.colliderEntity === collisionEntity
-    : false
+// const pushBackStuckRigidbodies = ({
+//   state,
+//   entity,
+//   collision,
+//   collider,
+//   transform,
+//   force,
+// }: {
+//   state: AnyState
+//   entity: Entity
+//   collision: NonNullable<Collider['_collision']>
+//   collider: Collider
+//   transform: Transform
+//   force: Vector2D
+// }): AnyState => {
+//   const elementsStuckInEachOther = hadSameCollisionInPreviousTick({
+//     collisionEntity: collision.colliderEntity,
+//     collider,
+//   })
 
-const pushBackStuckRigidbodies = ({
-  state,
-  entity,
-  collision,
-  collider,
-  transform,
-  force,
-}: {
-  state: AnyState
-  entity: Entity
-  collision: NonNullable<Collider['_collision']>
-  collider: Collider
-  transform: Transform
-  force: Vector2D
-}): AnyState => {
-  const elementsStuckInEachOther = hadSameCollisionInPreviousTick({
-    collisionEntity: collision.colliderEntity,
-    collider,
-  })
+//   if (elementsStuckInEachOther) {
+//     const collisionTransform = getTransform({
+//       state,
+//       entity: collision.colliderEntity,
+//     })
 
-  if (elementsStuckInEachOther) {
-    const collisionTransform = getTransform({
-      state,
-      entity: collision.colliderEntity,
-    })
+//     const minPushShift = 0.00001
+//     const rigiBodiesAreTooClose =
+//       distance(
+//         transform.position as Vector2D,
+//         collisionTransform?.position as Vector2D,
+//       ) < minPushShift
 
-    const minPushShift = 0.00001
-    const rigiBodiesAreTooClose =
-      distance(
-        transform.position as Vector2D,
-        collisionTransform?.position as Vector2D,
-      ) < minPushShift
+//     const pushShift = rigiBodiesAreTooClose
+//       ? scale(
+//           magnitude(force) || minPushShift,
+//           sub(
+//             transform.position as Vector2D,
+//             collision.intersection.position as Vector2D,
+//           ),
+//         )
+//       : vector(force[0] * 10, force[0] * 10)
 
-    const pushShift = rigiBodiesAreTooClose
-      ? scale(
-          magnitude(force) || minPushShift,
-          sub(
-            transform.position as Vector2D,
-            collision.intersection.position as Vector2D,
-          ),
-        )
-      : vector(force[0] * 10, force[0] * 10)
+//     state = updateTransform({
+//       state,
+//       entity,
+//       update: (transform) => ({
+//         position: add(transform.position as Vector2D, pushShift),
+//       }),
+//     })
+//   }
 
-    state = updateTransform({
-      state,
-      entity,
-      update: (transform) => ({
-        position: add(transform.position as Vector2D, pushShift),
-      }),
-    })
-  }
+//   return state
+// }
 
-  return state
-}
-
-const applyForceToPosition = ({
-  timeDelta,
+const pushBack = ({
   force,
   position,
 }: {
-  timeDelta: number
   force: Vector2D
   position: Vector2D
-}) => add(scale(timeDelta, force), position)
+}) =>
+  applyForceToPosition({
+    force: scale(-1, force),
+    position: position as Vector2D,
+  })
+
+const applyForceToPosition = ({
+  force,
+  position,
+}: {
+  force: Vector2D
+  position: Vector2D
+}) => add(scale(FIXED_TICK_TIME, force), position)
 
 export const rigidBodySystem = (state: AnyState) =>
   createSystem<RigidBody, AnyState>({
@@ -193,10 +187,6 @@ export const rigidBodySystem = (state: AnyState) =>
       if (component?.isStatic) {
         return state
       }
-      const time = getTime({
-        state,
-        entity: timeEntity,
-      })
       const transform = getTransform({
         state,
         entity,
@@ -206,12 +196,26 @@ export const rigidBodySystem = (state: AnyState) =>
         entity,
       })
 
-      if (!collider || !transform || !time || !component) return state
+      if (!collider || !transform || !component) return state
 
       let force = component.force
 
       const collision = collider._collision
       if (collision) {
+        const newPosition = pushBack({
+          force,
+          position: transform.position as Vector2D,
+        })
+
+        state = updateTransform({
+          state,
+          entity,
+          update: () => ({
+            position: newPosition,
+          }),
+        })
+
+        // has collision so use force to push rigidbody back to previous position
         const collisionRigidBody = getRigidBody({
           state,
           entity: collision.colliderEntity,
@@ -260,17 +264,25 @@ export const rigidBodySystem = (state: AnyState) =>
             }),
           })
 
+          state = updateCollider({
+            state,
+            entity,
+            update: () => ({
+              _collision: undefined,
+            }),
+          })
+
           //
           // Push out rigidbodies which stuck in each other
           //
-          state = pushBackStuckRigidbodies({
-            state,
-            entity,
-            collision,
-            collider,
-            transform,
-            force,
-          })
+          // state = pushBackStuckRigidbodies({
+          //   state,
+          //   entity,
+          //   collision,
+          //   collider,
+          //   transform,
+          //   force,
+          // })
         }
       }
 
@@ -280,7 +292,6 @@ export const rigidBodySystem = (state: AnyState) =>
         update: () => ({
           force: applyFrictionToForce({
             friction: component.friction,
-            timeDelta: time.delta,
             force,
           }),
         }),
@@ -292,7 +303,6 @@ export const rigidBodySystem = (state: AnyState) =>
         update: (transform) => ({
           position: applyForceToPosition({
             force,
-            timeDelta: time.delta,
             position: transform.position as Vector2D,
           }),
         }),

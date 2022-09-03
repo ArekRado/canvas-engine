@@ -1,5 +1,5 @@
 import { AnyState } from '../type'
-import { getSystemByName } from '../system/getSystemByName'
+import { getSystemByComponentName } from '../system/getSystemByName'
 
 /**
  * Calls create system method for all components. Useful when newly loaded components have to call side effects
@@ -10,7 +10,7 @@ export const recreateAllComponents = <State extends AnyState = AnyState>({
   state: State
 }): State => {
   state = Object.entries(state.component).reduce((acc, [name, value]) => {
-    const system = getSystemByName(name, acc.system)
+    const system = getSystemByComponentName(name, acc.system)
 
     if (!system) {
       return acc
