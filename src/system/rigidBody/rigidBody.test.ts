@@ -914,7 +914,7 @@ describe('rigidBody + collider stress tests', () => {
     // 387740
     // 385870
     // 386590
-    // console.log({ delta, comparisionsQuadTree })
+    // console.log({ delta })
 
     // 100 - 600-800ms
     // 200 - 5s

@@ -81,7 +81,6 @@ export const transformSystem = (state: InternalInitialState) =>
               state,
               entity,
               update: () => ({
-                ...transform,
                 position: newPosition,
               }),
             }) as InternalInitialState

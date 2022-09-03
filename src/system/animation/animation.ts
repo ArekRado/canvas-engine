@@ -97,9 +97,9 @@ export const getActiveKeyframe = ({
   const size = animationProperty.keyframes.length
 
   const { sum, activeIndex } = animationProperty.keyframes
-    .map(({ duration }) => duration)
+    // .map(({ duration }) => duration)
     .reduce(
-      (acc, duration, index) => {
+      (acc, { duration }, index) => {
         if (acc.breakLoop === true) {
           return acc
         } else if (currentTime > duration + acc.sum) {
@@ -360,7 +360,7 @@ export const animationSystem = (state: AnyState) =>
             state,
             entity,
             update: () => ({
-              ...animation,
+              // ...animation,
               currentTime: 0,
               isPlaying: false,
               isFinished: true,
@@ -381,7 +381,7 @@ export const animationSystem = (state: AnyState) =>
         state,
         entity,
         update: () => ({
-          ...animation,
+          // ...animation,
           currentTime,
           isFinished: animationTimeExceeded,
         }),

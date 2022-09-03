@@ -12,15 +12,17 @@ export const createComponent = <Data, State extends AnyState = AnyState>({
   entity: Entity
   name: string
 }): State => {
-  const newState = {
-    ...state,
-    component: {
-      ...state.component,
-      [name]: {
-        ...state.component[name],
-        [entity]: data,
-      },
-    },
+  const isFirstComponentThisName = state.component[name] === undefined
+  const needCreateEntity = isFirstComponentThisName
+    ? true
+    : state.component[name][entity] === undefined
+
+  if (isFirstComponentThisName) {
+    state.component[name] = {
+      [entity]: data,
+    }
+  } else {
+    state.component[name][entity] = data
   }
 
   const system = getSystemByComponentName(name, state.system)
@@ -28,11 +30,10 @@ export const createComponent = <Data, State extends AnyState = AnyState>({
   if (system !== undefined) {
     if (
       system.create !== undefined &&
-      (state.component[name] === undefined ||
-        state.component[name][entity] === undefined)
+      (isFirstComponentThisName || needCreateEntity)
     ) {
       return system.create({
-        state: newState,
+        state: state,
         component: data,
         entity,
         name,
@@ -40,5 +41,5 @@ export const createComponent = <Data, State extends AnyState = AnyState>({
     }
   }
 
-  return newState
+  return state
 }

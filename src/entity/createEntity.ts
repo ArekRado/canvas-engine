@@ -5,10 +5,8 @@ type CreateEntity = <State extends AnyState>(params: {
   state: State
 }) => State
 
-export const createEntity: CreateEntity = ({ entity, state }) => ({
-  ...state,
-  entity: {
-    ...state.entity,
-    [entity]: entity,
-  },
-})
+export const createEntity: CreateEntity = ({ entity, state }) => {
+  state.entity[entity] = entity
+
+  return state
+}

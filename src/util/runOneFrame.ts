@@ -1,6 +1,6 @@
 import { timeEntity } from '../system/time/time'
 import { getTime, updateTime } from '../system/time/timeCrud'
-import { AnyState } from '../type'
+import { AnyState, AnySystem, GlobalSystem } from '../type'
 
 export const FIXED_TICK_TIME = 1 // 1ms
 
@@ -35,8 +35,8 @@ export const runOneFrame = <State extends AnyState = AnyState>({
 }): State => {
   const fixedTickLoops = getFixedTickAmount(state)
 
-  const allSystems = [...state.system, ...state.globalSystem]
-    .concat()
+  const allSystems: Array<AnySystem | GlobalSystem<AnyState>> = state.system
+    .concat(state.globalSystem as unknown as AnySystem[])
     .sort((a, b) => (a.priority > b.priority ? 1 : -1))
 
   const timeBeforeFixedTicks = getTime({
@@ -69,14 +69,17 @@ export const runOneFrame = <State extends AnyState = AnyState>({
     }
   })
 
-  // reset time after fixed updates. It's the easiest way to return to previous time values without worrying about modulo
-  state = updateTime({
-    state,
-    entity: timeEntity,
-    update: () => ({
-      ...timeBeforeFixedTicks,
-    }),
-  }) as State
+  if (timeBeforeFixedTicks) {
+    // reset time after fixed updates. It's the easiest way to return to previous time values without worrying about modulo
+    state = updateTime({
+      state,
+      entity: timeEntity,
+      update: () => timeBeforeFixedTicks,
+      // update: () => ({
+      //   ...timeBeforeFixedTicks,
+      // }),
+    }) as State
+  }
 
   // Loop for normal ticks
   for (let i = 0; i < allSystems.length; i++) {
