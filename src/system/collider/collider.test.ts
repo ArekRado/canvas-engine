@@ -106,6 +106,7 @@ describe('collider', () => {
         state,
         entity: entity1,
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: {
             type: 'rectangle',
@@ -118,6 +119,7 @@ describe('collider', () => {
         state,
         entity: entity2,
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: {
             type: 'rectangle',
@@ -131,6 +133,7 @@ describe('collider', () => {
         entity: entity3,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: {
             type: 'rectangle',
@@ -202,6 +205,7 @@ describe('collider', () => {
         entity: entity1,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'point', position: vector(1, 1) },
         }),
@@ -211,6 +215,7 @@ describe('collider', () => {
         entity: entity2,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'point', position: vector(-9, -6) },
         }),
@@ -220,6 +225,7 @@ describe('collider', () => {
         entity: entity3,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'point', position: vector(99, 99) },
         }),
@@ -297,6 +303,7 @@ describe('collider', () => {
         entity: entity1,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'circle', radius: 1.5, position: vector(1, 1) },
         }),
@@ -306,6 +313,7 @@ describe('collider', () => {
         entity: entity2,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'circle', radius: 1, position: vector(0, 0) },
         }),
@@ -315,6 +323,7 @@ describe('collider', () => {
         entity: entity3,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'circle', radius: 1, position: vector(-1, -1) },
         }),
@@ -324,6 +333,7 @@ describe('collider', () => {
         entity: entity4,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'circle', radius: 1, position: vector(-1, -1) },
         }),
@@ -429,6 +439,7 @@ describe('collider', () => {
         state,
         entity: entity1,
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: {
             type: 'rectangle',
@@ -441,6 +452,7 @@ describe('collider', () => {
         state,
         entity: entity2,
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'circle', radius: 5, position: vector(5, 5) },
         }),
@@ -449,6 +461,7 @@ describe('collider', () => {
         state,
         entity: entity3,
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'circle', radius: 7.2, position: vector(-5, -5) },
         }),
@@ -457,6 +470,7 @@ describe('collider', () => {
         state,
         entity: entity4,
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'circle', radius: 7.2, position: vector(-5, -5) },
         }),
@@ -565,6 +579,7 @@ describe('collider', () => {
         entity: entity1,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'point', position: vector(2, 2) },
         }),
@@ -574,6 +589,7 @@ describe('collider', () => {
         entity: entity2,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'point', position: vector(-3, -6) },
         }),
@@ -583,6 +599,7 @@ describe('collider', () => {
         entity: entity3,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: {
             type: 'line',
@@ -596,6 +613,7 @@ describe('collider', () => {
         entity: entity4,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: {
             type: 'line',
@@ -717,6 +735,7 @@ describe('collider', () => {
         entity: entity1,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'line', position: [-9, -9], position2: [11, 11] },
         }),
@@ -726,6 +745,7 @@ describe('collider', () => {
         entity: entity2,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'line', position: [-1, 1], position2: [1, -1] },
         }),
@@ -735,6 +755,7 @@ describe('collider', () => {
         entity: entity3,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'line', position: [2, -2], position2: [-2, 2] },
         }),
@@ -744,6 +765,7 @@ describe('collider', () => {
         entity: entity4,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'line', position: [1, 1], position2: [2, 2] },
         }),
@@ -753,6 +775,7 @@ describe('collider', () => {
         entity: entity5,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'line', position: [-1, 1], position2: [1, -1] },
         }),
@@ -895,6 +918,7 @@ describe('collider', () => {
         entity: entity1,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'circle', position: vector(1, 1), radius: 1 },
         }),
@@ -904,6 +928,7 @@ describe('collider', () => {
         entity: entity2,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: {
             type: 'line',
@@ -917,6 +942,7 @@ describe('collider', () => {
         entity: entity3,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: {
             type: 'line',
@@ -930,6 +956,7 @@ describe('collider', () => {
         entity: entity4,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: {
             type: 'line',
@@ -943,6 +970,7 @@ describe('collider', () => {
         entity: entity5,
 
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: {
             type: 'line',
@@ -1080,6 +1108,7 @@ describe('collider', () => {
         state,
         entity: entity1,
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'rectangle', position: [0, 0], size: [1, 1] },
         }),
@@ -1100,6 +1129,7 @@ describe('collider', () => {
           state,
           entity,
           data: defaultCollider({
+            emitEventCollision: true,
             layer,
             data: {
               type: 'line',
@@ -1223,6 +1253,7 @@ describe('collider', () => {
         state,
         entity,
         data: defaultCollider({
+          emitEventCollision: true,
           layer,
           data: { type: 'point', position: [0, 0] },
         }),
@@ -1298,6 +1329,7 @@ describe('collider', () => {
       state,
       entity: entity1,
       data: defaultCollider({
+        emitEventCollision: true,
         layer: {
           belongs: ['a'],
           interacts: ['a'],
@@ -1309,6 +1341,7 @@ describe('collider', () => {
       state,
       entity: entity2,
       data: defaultCollider({
+        emitEventCollision: true,
         layer: {
           belongs: ['a'],
           interacts: ['a'],
@@ -1324,6 +1357,7 @@ describe('collider', () => {
       state,
       entity: entity3,
       data: defaultCollider({
+        emitEventCollision: true,
         layer: {
           belongs: ['a'],
           interacts: ['a'],
@@ -1337,19 +1371,6 @@ describe('collider', () => {
     })
 
     state = runOneFrameWithFixedTime(state)
-
-    const collisions1 = getCollider({
-      state,
-      entity: entity1,
-    })?._collision
-    const collisions2 = getCollider({
-      state,
-      entity: entity2,
-    })?._collision
-    const collisions3 = getCollider({
-      state,
-      entity: entity3,
-    })?._collision
 
     expect(
       findCollision({ e1: entity1, e2: entity2, allCollisions }),
@@ -1401,6 +1422,7 @@ describe('collider', () => {
       state,
       entity: entity1,
       data: defaultCollider({
+        emitEventCollision: true,
         layer: {
           belongs: ['a'],
           interacts: ['a'],
@@ -1412,6 +1434,7 @@ describe('collider', () => {
       state,
       entity: entity2,
       data: defaultCollider({
+        emitEventCollision: true,
         layer: {
           belongs: ['a'],
           interacts: ['a'],
@@ -1489,6 +1512,7 @@ describe('collider', () => {
       state,
       entity: entity1,
       data: defaultCollider({
+        emitEventCollision: true,
         layer: {
           belongs: ['a'],
           interacts: ['a'],
@@ -1500,6 +1524,7 @@ describe('collider', () => {
       state,
       entity: entity2,
       data: defaultCollider({
+        emitEventCollision: true,
         layer: {
           belongs: ['a'],
           interacts: ['a'],

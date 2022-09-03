@@ -1,7 +1,14 @@
-import { AnyState, Entity, CollisionEvent, CanvasEngineEvent } from '../../type'
+import {
+  AnyState,
+  Entity,
+  CollisionEvent,
+  CanvasEngineEvent,
+  Dictionary,
+  CollisionData,
+} from '../../type'
 import { createGlobalSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
-import { getCollider, updateCollider } from './colliderCrud'
+import { getCollider } from './colliderCrud'
 import { getTransform } from '../transform/transformCrud'
 import { emitEvent } from '../../event'
 import { hasSameLayer } from './hasSameLayer'
@@ -11,8 +18,12 @@ import {
 } from './collisionsMatrix'
 import { getColliderContour } from './getColliderContour'
 import { getQuadTree, getQuadTreeCollisions, RectangleData } from './quadTree'
+import { getAABBCollision } from './getAABBCollision'
 
-// export let comparisionsQuadTree = 0
+export let comparisionsQuadTree = 0
+let colliderContours: Dictionary<RectangleData> = {}
+export let previousCollisions: Dictionary<CollisionData | undefined> = {}
+export let collisions: Dictionary<CollisionData | undefined> = {}
 
 const findCollisionsInNode = ({
   entities,
@@ -23,7 +34,6 @@ const findCollisionsInNode = ({
 }): AnyState => {
   for (let i = 0; i < entities.length; i++) {
     const entity = entities[i]
-    // const collisions: Array<Collider['_collision']> = []
 
     const collider = getCollider({
       state,
@@ -47,6 +57,15 @@ const findCollisionsInNode = ({
         continue
       }
 
+      if (
+        getAABBCollision({
+          rectangle1: colliderContours[entity].rectangle,
+          rectangle2: colliderContours[collider2Entity].rectangle,
+        }) === false
+      ) {
+        continue
+      }
+
       const collider2 = getCollider({
         state,
         entity: collider2Entity,
@@ -64,68 +83,61 @@ const findCollisionsInNode = ({
         continue
       }
 
-      const collider2Data = collider2.data
       const collisionDetector: CollisionDetectorNormalizer =
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        collisionsMatrix[colliderData.type][collider2Data.type]
+        collisionsMatrix[colliderData.type][collider2.data.type]
 
       const intersection = collisionDetector({
         transform1,
         collider1Data: colliderData,
         transform2,
-        collider2Data: collider2Data,
+        collider2Data: collider2.data,
       })
 
-      // comparisionsQuadTree++
+      comparisionsQuadTree++
 
       if (intersection !== null) {
-        emitEvent<CollisionEvent>({
-          type: CanvasEngineEvent.colliderCollision,
-          payload: {
-            colliderEntity1: entity,
-            colliderEntity2: collider2Entity,
-            intersection,
-          },
-        })
+        if (collider.emitEventCollision) {
+          emitEvent<CollisionEvent>({
+            type: CanvasEngineEvent.colliderCollision,
+            payload: {
+              colliderEntity1: entity,
+              colliderEntity2: collider2Entity,
+              intersection,
+            },
+          })
+        }
 
-        emitEvent<CollisionEvent>({
-          type: CanvasEngineEvent.colliderCollision,
-          payload: {
-            colliderEntity1: collider2Entity,
-            colliderEntity2: entity,
-            intersection,
-          },
-        })
+        if (collider2.emitEventCollision) {
+          emitEvent<CollisionEvent>({
+            type: CanvasEngineEvent.colliderCollision,
+            payload: {
+              colliderEntity1: collider2Entity,
+              colliderEntity2: entity,
+              intersection,
+            },
+          })
+        }
       }
 
-      state = updateCollider({
-        state,
-        entity,
-        update: (collider) => ({
-          _previousCollision: collider._collision,
-          _collision: intersection
-            ? {
-                colliderEntity: collider2Entity,
-                intersection,
-              }
-            : collider._collision,
-        }),
-      })
+      // set entity collisions
+      collisions[entity] = intersection
+        ? {
+            colliderEntity: collider2Entity,
+            intersection,
+          }
+        : collisions[entity]
+      previousCollisions[entity] = collisions[entity]
 
-      state = updateCollider({
-        state,
-        entity: collider2Entity,
-        update: (collider) => ({
-          _previousCollision: collider._collision,
-          _collision: intersection
-            ? {
-                colliderEntity: entity,
-                intersection,
-              }
-            : collider._collision,
-        }),
-      })
+      // set entity collider2Entity
+      collisions[collider2Entity] = intersection
+        ? {
+            colliderEntity: entity,
+            intersection,
+          }
+        : collisions[collider2Entity]
+      previousCollisions[collider2Entity] = collisions[collider2Entity]
     }
   }
 
@@ -138,12 +150,14 @@ export const colliderSystem = (state: AnyState) =>
     name: componentName.collider,
     priority: systemPriority.collider,
     fixedTick: ({ state }) => {
+      previousCollisions = collisions
+      collisions = {}
+
       let top = -Infinity
       let bottom = Infinity
       let left = Infinity
       let right = -Infinity
 
-      const colliderContours: Array<RectangleData> = []
       const allColliders = Object.entries(state.component.collider)
 
       for (let i = 0; i < allColliders.length; i++) {
@@ -169,17 +183,17 @@ export const colliderSystem = (state: AnyState) =>
             right = colliderContour[2]
           }
 
-          colliderContours.push({
+          colliderContours[entity] = {
             rectangle: colliderContour,
             entity,
-          })
+          }
         }
       }
 
       const maxLevel = 5
       const quadTree = getQuadTree({
         bounds: [left, bottom, right, top],
-        rectangles: colliderContours,
+        rectangles: Object.values(colliderContours),
         maxLevel,
       })
 
@@ -196,6 +210,9 @@ export const colliderSystem = (state: AnyState) =>
           })
         }
       }
+      // console.log('colliderContours',colliderContours)
+
+      colliderContours = {}
 
       return state
     },

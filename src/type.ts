@@ -78,12 +78,13 @@ export type ColliderDataPolygon = {
   verticles: Vector2D[]
 }
 
-type CollisionData = {
+export type CollisionData = {
   colliderEntity: Entity
   intersection: Intersection
 }
 
 export type Collider = {
+  emitEventCollision: boolean
   layer: {
     belongs: string[]
     interacts: string[]
@@ -91,9 +92,8 @@ export type Collider = {
   /**
    * Used to detect if collider stuck inside another collider
    */
-  _previousCollision: CollisionData | undefined
-  _collision: CollisionData | undefined
-  _rectangleContour: RectangleContour
+  // _previousCollision: CollisionData | undefined
+  // _collision: CollisionData | undefined
   data:
     | ColliderDataPoint
     | ColliderDataRectangle

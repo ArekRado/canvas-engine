@@ -2,10 +2,11 @@ import { AnyState, RigidBody } from '../../type'
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { add, dot, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
-import { getRigidBody, updateRigidBody } from './rigidBodyCrud'
-import { getTransform, updateTransform } from '../transform/transformCrud'
-import { getCollider, updateCollider } from '../collider/colliderCrud'
+import { getRigidBody } from './rigidBodyCrud'
+import { getTransform } from '../transform/transformCrud'
+import { getCollider } from '../collider/colliderCrud'
 import { FIXED_TICK_TIME } from '../../util/runOneFrame'
+import { collisions } from '../collider/collider'
 
 const FPS = 1000 / 60
 
@@ -199,20 +200,13 @@ export const rigidBodySystem = (state: AnyState) =>
       if (!collider || !transform || !component) return state
 
       let force = component.force
+      let newPosition = transform.position
+      const collision = collisions[entity]
 
-      const collision = collider._collision
       if (collision) {
-        const newPosition = pushBack({
+        newPosition = pushBack({
           force,
           position: transform.position as Vector2D,
-        })
-
-        state = updateTransform({
-          state,
-          entity,
-          update: () => ({
-            position: newPosition,
-          }),
         })
 
         // has collision so use force to push rigidbody back to previous position
@@ -247,30 +241,11 @@ export const rigidBodySystem = (state: AnyState) =>
             // if elementsStuckInEachOther then rotate forces outside centers
             force = force1
 
-            state = updateRigidBody({
-              state,
-              entity: collision.colliderEntity,
-              update: () => ({
-                force: force2,
-              }),
-            })
+            state.component.rigidBody[collision.colliderEntity].force = force2
           }
 
-          state = updateCollider({
-            state,
-            entity: collision.colliderEntity,
-            update: () => ({
-              _collision: undefined,
-            }),
-          })
-
-          state = updateCollider({
-            state,
-            entity,
-            update: () => ({
-              _collision: undefined,
-            }),
-          })
+          collisions[entity] = undefined
+          collisions[collision.colliderEntity] = undefined
 
           //
           // Push out rigidbodies which stuck in each other
@@ -286,26 +261,14 @@ export const rigidBodySystem = (state: AnyState) =>
         }
       }
 
-      state = updateRigidBody({
-        state,
-        entity,
-        update: () => ({
-          force: applyFrictionToForce({
-            friction: component.friction,
-            force,
-          }),
-        }),
+      state.component.rigidBody[entity].force = applyFrictionToForce({
+        friction: component.friction,
+        force,
       })
 
-      state = updateTransform({
-        state,
-        entity,
-        update: (transform) => ({
-          position: applyForceToPosition({
-            force,
-            position: transform.position as Vector2D,
-          }),
-        }),
+      state.component.transform[entity].position = applyForceToPosition({
+        force,
+        position: newPosition as Vector2D,
       })
 
       return state

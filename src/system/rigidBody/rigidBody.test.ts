@@ -1,9 +1,4 @@
-import {
-  add,
-  vector,
-  Vector2D,
-  vectorZero,
-} from '@arekrado/vector-2d'
+import { add, vector, Vector2D, vectorZero } from '@arekrado/vector-2d'
 import { getState } from '../../util/state'
 import { createEntity } from '../../entity/createEntity'
 import { generateEntity } from '../../entity/generateEntity'
@@ -31,6 +26,7 @@ import {
   ColliderDataPolygon,
   ColliderDataRectangle,
 } from '../../type'
+import { comparisionsQuadTree } from '../collider/collider'
 // import { comparisionsQuadTree } from '../collider/collider'
 
 describe('getElasticCollisionForces', () => {
@@ -291,7 +287,7 @@ describe('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultTransform({
-        position: [0, 0],
+        position: [0.7, 0],
       }),
     })
     state = createTransform({
@@ -342,7 +338,7 @@ describe('rigidBody', () => {
       }),
     })
 
-    Array.from({ length: 12 }).forEach((_, i) => {
+    Array.from({ length: 10 }).forEach((_, i) => {
       state = tick(i, state)
     })
 
@@ -795,7 +791,7 @@ describe('rigidBody', () => {
 })
 
 describe('rigidBody + collider stress tests', () => {
-  it.skip('stress test', () => {
+  it.only('stress test', () => {
     const amountOfColliders = 1000
     let state = getState({}) as AnyState
 
@@ -908,18 +904,23 @@ describe('rigidBody + collider stress tests', () => {
 
     const timeAfter = performance.now()
     const delta = timeAfter - timeBefore
-    // 388460
-    // 383600
-    // 387810
-    // 387740
-    // 385870
-    // 386590
-    // console.log({ delta })
+    
+    console.log({ delta, comparisionsQuadTree })
 
-    // 100 - 600-800ms
-    // 200 - 5s
-    // 1000 - 55s
-
+    // delta: 217, comparisionsQuadTree: 15703
+    // delta: 281, comparisionsQuadTree: 16565
+    // delta: 272, comparisionsQuadTree: 15973
+    // delta: 263, comparisionsQuadTree: 16785
+    // delta: 246, comparisionsQuadTree: 16736
+    // delta: 261, comparisionsQuadTree: 16742 
+    // delta: 224, comparisionsQuadTree: 9930
+    // delta: 179, comparisionsQuadTree: 9995
+    // delta: 177, comparisionsQuadTree: 9685
+    // delta: 183, comparisionsQuadTree: 10050
+    // delta: 232, comparisionsQuadTree: 10149
+    // delta: 185, comparisionsQuadTree: 10230
+    // delta: 169, comparisionsQuadTree: 10267
+    // delta: 217, comparisionsQuadTree: 10283
     expect(delta).toBeLessThan(2000)
   })
 })
