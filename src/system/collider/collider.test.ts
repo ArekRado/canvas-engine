@@ -4,7 +4,7 @@ import { generateEntity } from '../../entity/generateEntity'
 import { defaultCollider, defaultTransform } from '../../util/defaultComponents'
 import { getState } from '../../util/state'
 import { createTransform } from '../transform/transformCrud'
-import { createCollider, getCollider } from './colliderCrud'
+import { createCollider } from './colliderCrud'
 import { degreesToRadians } from '../../util/radian'
 import { addEventHandler, removeEventHandler } from '../../event'
 import {
@@ -131,7 +131,6 @@ describe('collider', () => {
       state = createCollider({
         state,
         entity: entity3,
-
         data: defaultCollider({
           emitEventCollision: true,
           layer,
@@ -144,7 +143,7 @@ describe('collider', () => {
       })
 
       state = runOneFrameWithFixedTime(state)
-
+ 
       expect(
         findCollision({ e1: entity1, e2: entity2, allCollisions }),
       ).toBeDefined()

@@ -28,18 +28,23 @@ export let collisions: Dictionary<CollisionData | undefined> = {}
 
 // every quadTree will be calculated on separated core
 // (x**2)/2
-// eg: if cpu has 8 cores then quadTree will be splited into 32 smaller quadTrees
-// eg: if cpu has 4 cores then quadTree will be splited into 8 smaller quadTrees
-const quadTreeSplit = navigator.hardwareConcurrency ** 2 / 2
-const quadTreeMaxLevel = 5
-
+// eg: if cpu has 8 cores then quadTree will be splited into 16 smaller quadTrees
+// eg: if cpu has 4 cores then quadTree will be splited into 4 smaller quadTrees
+// const quadTreeSplit = 1
+// const quadTreeSplit = Math.max(
+//   Math.round(navigator.hardwareConcurrency ** 2 / 4),
+//   1,
+// )
+const quadTreeMaxLevel = 4
+// 48685
+// 47595
 const findCollisionsInNode = ({
   entities,
   state,
 }: {
   entities: Entity[]
   state: AnyState
-}): [Intersection | null, boolean, boolean] | null => {
+}): [Intersection | null, Intersection | null, boolean, boolean] | null => {
   const entity = entities[0]
   const entity2 = entities[1]
 
@@ -100,8 +105,18 @@ const findCollisionsInNode = ({
 
   comparisionsQuadTree++
 
+  const { type, ...intersection2Data } = collider1.data
   return [
     intersection,
+    intersection
+      ? ({
+          position: intersection.position,
+          figure: {
+            type: collider1.data.type,
+            data: intersection2Data,
+          },
+        } as Intersection) // TODO, it will break rigidbody in a future
+      : null,
     collider1.emitEventCollision,
     collider2.emitEventCollision,
   ]
@@ -112,7 +127,7 @@ export const colliderSystem = (state: AnyState) =>
     state,
     name: componentName.collider,
     priority: systemPriority.collider,
-    fixedTick: ({ state }) => {
+    tick: ({ state }) => {
       previousCollisions = collisions
       collisions = {}
 
@@ -171,11 +186,15 @@ export const colliderSystem = (state: AnyState) =>
             state,
           })
 
-          if (data !== null && data[0] !== null) {
+          if (data !== null && data[0] !== null && data[1] !== null) {
             const entity1 = quadTreeCollisions[i][0]
             const entity2 = quadTreeCollisions[i][1]
-            const [intersection, emitEventCollision1, emitEventCollision2] =
-              data
+            const [
+              intersection1,
+              _,
+              emitEventCollision1,
+              emitEventCollision2,
+            ] = data
 
             if (emitEventCollision1) {
               emitEvent<CollisionEvent>({
@@ -183,7 +202,7 @@ export const colliderSystem = (state: AnyState) =>
                 payload: {
                   colliderEntity1: entity1,
                   colliderEntity2: entity2,
-                  intersection,
+                  intersection: intersection1,
                 },
               })
             }
@@ -194,25 +213,25 @@ export const colliderSystem = (state: AnyState) =>
                 payload: {
                   colliderEntity1: entity2,
                   colliderEntity2: entity1,
-                  intersection,
+                  intersection: intersection1,
                 },
               })
             }
 
             // set entity collisions
-            collisions[entity1] = intersection
+            collisions[entity1] = intersection1
               ? {
                   colliderEntity: entity2,
-                  intersection,
+                  intersection: intersection1,
                 }
               : collisions[entity1]
             previousCollisions[entity1] = collisions[entity1]
 
             // set entity collider2Entity
-            collisions[entity2] = intersection
+            collisions[entity2] = intersection1
               ? {
                   colliderEntity: entity1,
-                  intersection,
+                  intersection: intersection1,
                 }
               : collisions[entity2]
             previousCollisions[entity2] = collisions[entity2]

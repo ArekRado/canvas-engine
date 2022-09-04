@@ -4,7 +4,7 @@ import { createGlobalSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { parseV3ToV2 } from '../../util/parseV3ToV2'
 import { Scene } from '@babylonjs/core/scene'
-import { getTransform, updateTransform } from './transformCrud'
+import { getTransform } from './transformCrud'
 
 const syncTransformWithBabylon = ({
   entity,
@@ -77,13 +77,7 @@ export const transformSystem = (state: InternalInitialState) =>
               parseV3ToV2(parentPosition),
             )
 
-            state = updateTransform({
-              state,
-              entity,
-              update: () => ({
-                position: newPosition,
-              }),
-            }) as InternalInitialState
+            state.component.transform[entity].position = newPosition
           }
         }
 

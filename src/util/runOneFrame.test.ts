@@ -90,7 +90,7 @@ describe('runOneFrame', () => {
     expect(callQueue.toString()).toBe('tick5,tick3,tick1,tick2,tick4')
   })
 
-  it('should call fixedTick in the correct amount of calls', () => {
+  it.skip('should call fixedTick in the correct amount of calls', () => {
     const deltaList: number[] = []
     const componentName = 'a'
     const fixedTickSystemMock = jest.fn<
