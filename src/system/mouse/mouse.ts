@@ -1,12 +1,20 @@
 import { vector, vectorZero } from '@arekrado/vector-2d'
-import { AnyState, Mouse } from '../../type'
+import {
+  AnyState,
+  CanvasEngineEvent,
+  Mouse,
+  MouseActionEvent,
+} from '../../type'
 import { defaultMouse } from '../../util/defaultComponents'
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { createMouse, updateMouse } from './mouseCrud'
 import { createEntity } from '../../entity/createEntity'
+import { emitEvent } from '../../event'
 
 export const mouseEntity = 'mouse'
+
+let shouldEmitEvent = false
 
 let buttons = 0
 let position = vectorZero()
@@ -40,6 +48,8 @@ export const mouseSystem = ({
     const containerPosition = container.getBoundingClientRect()
 
     const setMousePosition = (e: MouseEvent) => {
+      shouldEmitEvent = true
+
       position = vector(
         e.pageX - containerPosition.left,
         e.pageY - containerPosition.top,
@@ -60,6 +70,8 @@ export const mouseSystem = ({
     container.addEventListener(
       'mouseup',
       () => {
+        shouldEmitEvent = true
+
         isButtonUp = true
       },
       false,
@@ -67,6 +79,8 @@ export const mouseSystem = ({
     container.addEventListener(
       'mousedown',
       (e) => {
+        shouldEmitEvent = true
+
         isButtonDown = true
 
         buttons = e.buttons
@@ -78,6 +92,8 @@ export const mouseSystem = ({
       false,
     )
     container.addEventListener('wheel', (e) => {
+      shouldEmitEvent = true
+
       wheel = {
         deltaMode: e.deltaMode,
         deltaX: e.deltaX,
@@ -85,6 +101,10 @@ export const mouseSystem = ({
         deltaZ: e.deltaZ,
       }
     })
+  } else {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Couldnt find container to attach mouse events')
+    }
   }
 
   state = createEntity({
@@ -130,6 +150,15 @@ export const mouseSystem = ({
         entity,
         update: () => mouseBeforeReset,
       })
+
+      if (shouldEmitEvent === true) {
+        shouldEmitEvent = false
+
+        emitEvent<MouseActionEvent>({
+          type: CanvasEngineEvent.mouseActionEvent,
+          payload: mouseBeforeReset,
+        })
+      }
 
       return state
     },

@@ -35,7 +35,21 @@ const createOrUpdateMesh = ({
   state: AnyState
 }): BabylonMesh | LinesMesh | undefined => {
   const { MeshBuilder, sceneRef, Vector3, Color4 } = state.babylonjs
-  if (!(MeshBuilder && sceneRef && Vector3 && Color4)) return undefined
+  if (!(MeshBuilder && sceneRef && Vector3 && Color4)) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        'To use Mesh engine requires all properties to be defined',
+        {
+          MeshBuilder,
+          sceneRef,
+          Vector3,
+          Color4,
+        },
+      )
+    }
+
+    return undefined
+  }
 
   let newMesh
 

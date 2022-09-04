@@ -161,6 +161,8 @@ export const colliderSystem = (state: AnyState) =>
             right = colliderContour[2]
           }
 
+          // TODO subdivide colliders into smaller areas and then create quadTree for each area
+
           colliderContours[entity] = {
             rectangle: colliderContour,
             entity,

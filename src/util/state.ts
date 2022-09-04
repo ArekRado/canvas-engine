@@ -145,7 +145,7 @@ export const getState = <State extends AnyState = AnyState>({
 }: {
   state?: State
   document?: Document
-  containerId?: string
+  containerId: string
   scene?: AnyState['babylonjs']['sceneRef']
   camera?: AnyState['babylonjs']['cameraRef']
   Vector3?: AnyState['babylonjs']['Vector3']

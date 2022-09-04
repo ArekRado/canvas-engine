@@ -329,6 +329,8 @@ export enum CanvasEngineEvent {
   colliderCollision = 'CanvasEngineEvent-colliderCollision',
 
   renderLoopStart = 'CanvasEngineEvent-renderLoopStart',
+  mouseActionEvent = 'CanvasEngineEvent-mouseActionEvent',
+  keyboardActionEvent = 'CanvasEngineEvent-keyboardActionEvent',
 }
 
 export type CollisionEvent = ECSEvent<
@@ -348,10 +350,15 @@ export type RenderLoopStartEvent = ECSEvent<
   }
 >
 
+export type MouseActionEvent = ECSEvent<CanvasEngineEvent.mouseActionEvent, Mouse>
+export type KeyboardActionEvent = ECSEvent<CanvasEngineEvent.keyboardActionEvent, Keyboard>
+
 export type AllEvents =
   | WindowResizeEvent
   | CollisionEvent
   | RenderLoopStartEvent
+  | MouseActionEvent
+  | KeyboardActionEvent
 
 ////////////////////////////////////
 //

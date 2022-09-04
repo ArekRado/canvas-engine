@@ -1,11 +1,14 @@
 import { componentName } from '../../component/componentName'
 import { createEntity } from '../../entity/createEntity'
-import { Keyboard, AnyState } from '../../type'
+import { emitEvent } from '../../event'
+import { Keyboard, AnyState, CanvasEngineEvent, KeyboardActionEvent } from '../../type'
 import { defaultKeyboard } from '../../util/defaultComponents'
 import { createSystem, systemPriority } from '../createSystem'
 import { createKeyboard, updateKeyboard } from './keyboardCrud'
 
 export const keyboardEntity = 'keyboard'
+
+let shouldEmitEvent = false
 
 let keyboard: Keyboard = {
   keys: {},
@@ -26,6 +29,8 @@ export const keyboardSystem = ({
     document.addEventListener(
       'keydown',
       (e) => {
+        shouldEmitEvent = true
+
         keyboard.keys[e.key] = {
           isDown: true,
           isUp: false,
@@ -37,6 +42,8 @@ export const keyboardSystem = ({
     document.addEventListener(
       'keyup',
       (e) => {
+        shouldEmitEvent = true
+
         keyboard.keys[e.key] = {
           isDown: false,
           isUp: true,
@@ -87,6 +94,15 @@ export const keyboardSystem = ({
         entity,
         update: () => keyboardBeforeReset,
       })
+
+      if (shouldEmitEvent === true) {
+        shouldEmitEvent = false
+
+        emitEvent<KeyboardActionEvent>({
+          type: CanvasEngineEvent.keyboardActionEvent,
+          payload: keyboardBeforeReset,
+        })
+      }
 
       return state
     },

@@ -4,8 +4,9 @@ import { getInitialState, getSystems } from '../../util/state'
 import { runOneFrame } from '../../util/runOneFrame'
 import { getComponent } from '../../component/getComponent'
 import { componentName } from '../../component/componentName'
-import { Keyboard } from '../../type'
+import { CanvasEngineEvent, Keyboard } from '../../type'
 import { keyboardEntity } from './keyboard'
+import { addEventHandler } from '../../event'
 
 describe('keyboard', () => {
   let keyupCallback: Function
@@ -45,6 +46,9 @@ describe('keyboard', () => {
   })
 
   it('should set keyboard isUp and isDown flags', () => {
+    const eventHandler = jest.fn(({ state }) => state)
+    addEventHandler(eventHandler)
+
     const key1 = 'a'
     const key2 = 'b'
 
@@ -116,6 +120,15 @@ describe('keyboard', () => {
       isDown: false,
       isUp: true,
       isPressed: false,
+    })
+
+    expect(eventHandler.mock.calls[0][0].event.type).toEqual(
+      CanvasEngineEvent.keyboardActionEvent,
+    )
+    expect(eventHandler.mock.calls[0][0].event.payload.keys[key1]).toEqual({
+      isDown: true,
+      isPressed: true,
+      isUp: false,
     })
   })
 })

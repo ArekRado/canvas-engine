@@ -5,9 +5,10 @@ import { getInitialState, getSystems } from '../../util/state'
 import { runOneFrame } from '../../util/runOneFrame'
 import { vector, vectorZero } from '@arekrado/vector-2d'
 import { getComponent } from '../../component/getComponent'
-import { Mouse } from '../../type'
+import { CanvasEngineEvent, Mouse } from '../../type'
 import { mouseEntity } from './mouse'
 import { componentName } from '../../component/componentName'
+import { addEventHandler } from '../../event'
 
 describe('mouse', () => {
   let mousemoveCallback: Function
@@ -67,6 +68,9 @@ describe('mouse', () => {
   })
 
   it('should set buttons on mousedown event', () => {
+    const eventHandler = jest.fn(({ state }) => state)
+    addEventHandler(eventHandler)
+
     let state = getInitialStateWithMouse()
 
     expect(
@@ -99,6 +103,11 @@ describe('mouse', () => {
         name: componentName.mouse,
       })?.buttons,
     ).toBe(0)
+
+    expect(eventHandler.mock.calls[0][0].event.type).toEqual(
+      CanvasEngineEvent.mouseActionEvent,
+    )
+    expect(eventHandler.mock.calls[0][0].event.payload.buttons).toEqual(1)
   })
 
   it('should set mouse position on mousemove event', () => {
