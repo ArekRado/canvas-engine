@@ -39,14 +39,13 @@ export const adjustBabylonCameraToComponentCamera = ({
   if (!cameraRef) return
 
   if (component.position) {
-    cameraRef.position.x = component.position[0]
-    cameraRef.position.y = component.position[1]
-    cameraRef.position.z = -10
-    if (process.env.NODE_ENV === 'development' && Vector3) {
-      cameraRef.setTarget(
-        new Vector3(component.position[1], component.position[0], 0),
-      )
-    }
+    cameraRef.position.x = component.position[1];
+    cameraRef.position.y = component.position[0];
+    cameraRef.position.z = -10;
+
+    cameraRef.target.x = component.position[1];
+    cameraRef.target.y = component.position[0];
+    cameraRef.target.z = 0;
   }
 
   const size = getCameraSize(component.distance ?? 0, aspectRatio)
