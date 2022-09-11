@@ -1,10 +1,17 @@
 import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
-import { Entity, InternalInitialState, Transform, Vector3D } from '../../type'
-import { createGlobalSystem, systemPriority } from '../createSystem'
+import {
+  AnyState,
+  Entity,
+  InternalInitialState,
+  Transform,
+  Vector3D,
+} from '../../type'
+import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { parseV3ToV2 } from '../../util/parseV3ToV2'
 import { Scene } from '@babylonjs/core/scene'
 import { getTransform } from './transformCrud'
+import { updateMeshTransform } from '../mesh/mesh'
 
 const syncTransformWithBabylon = ({
   entity,
@@ -53,43 +60,106 @@ const getParentPosition = (
   }
 }
 
+const update = ({
+  state,
+  component,
+  entity,
+}: {
+  state: AnyState
+  component: Transform
+  entity: Entity
+}): AnyState => {
+  // const transforms = Object.entries(state.component.transform)
+  // for (let i = 0; i < transforms.length; i++) {
+  // const [entity, transform] = transforms[i]
+
+  if (component.parentId) {
+    const parentTransform = getTransform({
+      state,
+      entity: component.parentId,
+    })
+
+    if (parentTransform) {
+      const fromParentPosition = component.fromParentPosition
+      const parentPosition = getParentPosition(
+        state as InternalInitialState,
+        parentTransform,
+      )
+      const newPosition = add(
+        parseV3ToV2(fromParentPosition),
+        parseV3ToV2(parentPosition),
+      )
+
+      state.component.transform[entity].position = newPosition
+    }
+  }
+
+  if (state.babylonjs.sceneRef) {
+    syncTransformWithBabylon({
+      scene: state.babylonjs.sceneRef,
+      transform: component,
+      entity,
+    })
+
+    if (state.component.mesh[entity] !== undefined) {
+      const meshInstance = state.babylonjs.sceneRef?.getMeshByUniqueId(
+        parseInt(entity),
+      )
+
+      if (meshInstance) {
+        updateMeshTransform({
+          transform: component,
+          mesh: meshInstance,
+        })
+      }
+    }
+  }
+  // }
+
+  return state
+}
+
 export const transformSystem = (state: InternalInitialState) =>
-  createGlobalSystem({
+  createSystem({
     state,
     name: componentName.transform,
     priority: systemPriority.transform,
-    tick: ({ state }) => {
-      const transforms = Object.entries(state.component.transform)
-      for (let i = 0; i < transforms.length; i++) {
-        const [entity, transform] = transforms[i]
+    componentName: componentName.transform,
+    // tick: ({ state }) => {
+    //   const transforms = Object.entries(state.component.transform)
+    //   for (let i = 0; i < transforms.length; i++) {
+    //     const [entity, transform] = transforms[i]
 
-        if (transform.parentId) {
-          const parentTransform = getTransform({
-            state,
-            entity: transform.parentId,
-          })
+    //     if (transform.parentId) {
+    //       const parentTransform = getTransform({
+    //         state,
+    //         entity: transform.parentId,
+    //       })
 
-          if (parentTransform) {
-            const fromParentPosition = transform.fromParentPosition
-            const parentPosition = getParentPosition(state, parentTransform)
-            const newPosition = add(
-              parseV3ToV2(fromParentPosition),
-              parseV3ToV2(parentPosition),
-            )
+    //       if (parentTransform) {
+    //         const fromParentPosition = transform.fromParentPosition
+    //         const parentPosition = getParentPosition(state, parentTransform)
+    //         const newPosition = add(
+    //           parseV3ToV2(fromParentPosition),
+    //           parseV3ToV2(parentPosition),
+    //         )
 
-            state.component.transform[entity].position = newPosition
-          }
-        }
+    //         state.component.transform[entity].position = newPosition
+    //       }
+    //     }
 
-        if (state.babylonjs.sceneRef) {
-          syncTransformWithBabylon({
-            scene: state.babylonjs.sceneRef,
-            transform: transform,
-            entity,
-          })
-        }
-      }
+    //     if (state.babylonjs.sceneRef) {
+    //       syncTransformWithBabylon({
+    //         scene: state.babylonjs.sceneRef,
+    //         transform: transform,
+    //         entity,
+    //       })
+    //     }
+    //   }
 
-      return state
-    },
+    //   return state
+    // },
+
+    create: update,
+    update,
   })

@@ -1,5 +1,8 @@
 import { vector, Vector2D } from '@arekrado/vector-2d'
-import { defaultAnimation, defaultTransform } from '../../util/defaultComponents'
+import {
+  defaultAnimation,
+  defaultTransform,
+} from '../../util/defaultComponents'
 import {
   getActiveKeyframe,
   updateNumberAnimation,
@@ -475,7 +478,10 @@ describe('animation', () => {
           value: 0,
         },
       })
-      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<
+        Animation.AnimationComponent,
+        InternalInitialState
+      >({
         state,
         entity,
         name: componentName.animation,
@@ -539,7 +545,10 @@ describe('animation', () => {
         },
       })
 
-      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<
+        Animation.AnimationComponent,
+        InternalInitialState
+      >({
         state,
         entity,
         name: componentName.animation,
@@ -626,11 +635,15 @@ describe('animation', () => {
           value: 0,
         },
       })
-      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<
+        Animation.AnimationComponent,
+        InternalInitialState
+      >({
         state,
         entity,
         name: componentName.animation,
         data: defaultAnimation({
+          deleteWhenFinished: false,
           isPlaying: true,
           currentTime: 0,
           wrapMode: Animation.WrapMode.once,
@@ -695,7 +708,10 @@ describe('animation', () => {
           value: 5,
         },
       })
-      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<
+        Animation.AnimationComponent,
+        InternalInitialState
+      >({
         state,
         entity,
         name: componentName.animation,
@@ -768,7 +784,10 @@ describe('animation', () => {
           value: 0,
         },
       })
-      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<
+        Animation.AnimationComponent,
+        InternalInitialState
+      >({
         state,
         entity,
         name: componentName.animation,
@@ -847,7 +866,10 @@ describe('animation', () => {
           value: 0,
         },
       })
-      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<
+        Animation.AnimationComponent,
+        InternalInitialState
+      >({
         state,
         entity,
         name: componentName.animation,
@@ -922,11 +944,15 @@ describe('animation', () => {
         },
       })
 
-      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<
+        Animation.AnimationComponent,
+        InternalInitialState
+      >({
         state,
         entity,
         name: componentName.animation,
         data: defaultAnimation({
+          deleteWhenFinished: false,
           isPlaying: true,
           currentTime: 0,
           wrapMode: Animation.WrapMode.once,
@@ -1030,7 +1056,10 @@ describe('animation', () => {
         name: componentName.transform,
         data: defaultTransform(),
       })
-      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<
+        Animation.AnimationComponent,
+        InternalInitialState
+      >({
         state,
         entity,
         name: componentName.animation,
@@ -1101,7 +1130,10 @@ describe('animation', () => {
         data: { value: '' },
       })
 
-      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<
+        Animation.AnimationComponent,
+        InternalInitialState
+      >({
         state,
         entity,
         name: componentName.animation,
@@ -1167,7 +1199,10 @@ describe('animation', () => {
         entity,
         data: { value: vector(-1, -1) },
       })
-      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<
+        Animation.AnimationComponent,
+        InternalInitialState
+      >({
         state,
         entity,
         name: componentName.animation,
@@ -1253,7 +1288,10 @@ describe('animation', () => {
         data: { value: [-1, -1, -1] },
       })
 
-      state = createComponent<Animation.AnimationComponent, InternalInitialState>({
+      state = createComponent<
+        Animation.AnimationComponent,
+        InternalInitialState
+      >({
         state,
         entity,
         name: componentName.animation,

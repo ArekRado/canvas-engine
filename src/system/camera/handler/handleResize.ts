@@ -29,12 +29,10 @@ export const adjustBabylonCameraToComponentCamera = ({
   component,
   aspectRatio,
   cameraRef,
-  Vector3,
 }: {
   component: Partial<Camera>
   aspectRatio: number
   cameraRef: AnyState['babylonjs']['cameraRef']
-  Vector3: AnyState['babylonjs']['Vector3']
 }) => {
   if (!cameraRef) return
 

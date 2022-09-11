@@ -20,6 +20,7 @@ import { getColliderContour } from './getColliderContour'
 import { getQuadTree, getQuadTreeCollisions, RectangleData } from './quadTree'
 import { getAABBCollision } from './getAABBCollision'
 import { Intersection } from './getIntersection'
+import { defaultTransform } from '../../util/defaultComponents'
 
 export let comparisionsQuadTree = 0
 let colliderContours: Dictionary<RectangleData> = {}
@@ -44,7 +45,13 @@ const findCollisionsInNode = ({
 }: {
   entities: Entity[]
   state: AnyState
-}): [Intersection | null, Intersection | null, boolean, boolean] | null => {
+}): {
+  intersection1: Intersection | null
+  intersection2: Intersection | null
+  emitEventCollision1: boolean
+  emitEventCollision2: boolean
+  collisionLayer: string
+} | null => {
   const entity = entities[0]
   const entity2 = entities[1]
 
@@ -61,12 +68,13 @@ const findCollisionsInNode = ({
     state,
     entity,
   })
-  const transform1 = getTransform({
-    state,
-    entity,
-  })
+  const transform1 =
+    getTransform({
+      state,
+      entity,
+    }) ?? defaultTransform()
 
-  if (transform1 === undefined || collider1 === undefined) {
+  if (collider1 === undefined) {
     return null
   }
 
@@ -78,16 +86,18 @@ const findCollisionsInNode = ({
     state,
     entity: entity2,
   })
-  const transform2 = getTransform({
-    state,
-    entity: entity2,
-  })
+  const transform2 =
+    getTransform({
+      state,
+      entity: entity2,
+    }) ?? defaultTransform()
 
-  if (transform2 === undefined || collider2 === undefined) {
+  if (collider2 === undefined) {
     return null
   }
 
-  if (hasSameLayer(collider1.layer, collider2.layer) === false) {
+  const collisionLayer = hasSameLayer(collider1.layer, collider2.layer)
+  if (collisionLayer === undefined) {
     return null
   }
 
@@ -106,9 +116,9 @@ const findCollisionsInNode = ({
   comparisionsQuadTree++
 
   const { type, ...intersection2Data } = collider1.data
-  return [
-    intersection,
-    intersection
+  return {
+    intersection1: intersection,
+    intersection2: intersection
       ? ({
           position: intersection.position,
           figure: {
@@ -117,9 +127,10 @@ const findCollisionsInNode = ({
           },
         } as Intersection) // TODO, it will break rigidbody in a future
       : null,
-    collider1.emitEventCollision,
-    collider2.emitEventCollision,
-  ]
+    emitEventCollision1: collider1.emitEventCollision,
+    emitEventCollision2: collider2.emitEventCollision,
+    collisionLayer,
+  }
 }
 
 export const colliderSystem = (state: AnyState) =>
@@ -140,6 +151,8 @@ export const colliderSystem = (state: AnyState) =>
 
       for (let i = 0; i < allColliders.length; i++) {
         const [entity, collider] = allColliders[i]
+
+        state.component.collider[entity].collision = undefined
 
         const transform = getTransform({
           state,
@@ -188,34 +201,46 @@ export const colliderSystem = (state: AnyState) =>
             state,
           })
 
-          if (data !== null && data[0] !== null && data[1] !== null) {
+          if (
+            data !== null &&
+            data.intersection1 !== null &&
+            data.intersection2 !== null
+          ) {
             const entity1 = quadTreeCollisions[i][0]
             const entity2 = quadTreeCollisions[i][1]
-            const [
+
+            const {
               intersection1,
-              _,
+              intersection2,
               emitEventCollision1,
               emitEventCollision2,
-            ] = data
+              collisionLayer,
+            } = data
 
             if (emitEventCollision1) {
+              state.component.collider[entity1].collision = intersection1
+
               emitEvent<CollisionEvent>({
                 type: CanvasEngineEvent.colliderCollision,
                 payload: {
                   colliderEntity1: entity1,
                   colliderEntity2: entity2,
                   intersection: intersection1,
+                  collisionLayer,
                 },
               })
             }
 
             if (emitEventCollision2) {
+              state.component.collider[entity2].collision = intersection2
+
               emitEvent<CollisionEvent>({
                 type: CanvasEngineEvent.colliderCollision,
                 payload: {
                   colliderEntity1: entity2,
                   colliderEntity2: entity1,
-                  intersection: intersection1,
+                  intersection: intersection2,
+                  collisionLayer,
                 },
               })
             }
@@ -225,6 +250,7 @@ export const colliderSystem = (state: AnyState) =>
               ? {
                   colliderEntity: entity2,
                   intersection: intersection1,
+                  collisionLayer,
                 }
               : collisions[entity1]
             previousCollisions[entity1] = collisions[entity1]
@@ -234,6 +260,7 @@ export const colliderSystem = (state: AnyState) =>
               ? {
                   colliderEntity: entity1,
                   intersection: intersection1,
+                  collisionLayer,
                 }
               : collisions[entity2]
             previousCollisions[entity2] = collisions[entity2]

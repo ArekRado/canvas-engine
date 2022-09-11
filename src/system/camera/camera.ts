@@ -22,14 +22,12 @@ const update = ({
 }): typeof state => {
   if (
     state.babylonjs.sceneRef &&
-    state.babylonjs.Vector3 &&
     state.babylonjs.cameraRef
   ) {
     const size = adjustBabylonCameraToComponentCamera({
       component,
       aspectRatio: getAspectRatio(state.babylonjs.sceneRef),
       cameraRef: state.babylonjs.cameraRef,
-      Vector3: state.babylonjs.Vector3,
     })
     state = updateCamera({
       state,

@@ -15,7 +15,7 @@ export const defaultAnimation: GetDefaultComponent<
 > = (data = {}) => ({
   isPlaying: false,
   isFinished: false,
-  deleteWhenFinished: false,
+  deleteWhenFinished: true,
   currentTime: 0,
   properties: [],
   wrapMode: Animation.WrapMode.once,
@@ -25,7 +25,7 @@ export const defaultAnimation: GetDefaultComponent<
 
 export const defaultCollider: GetDefaultComponent<Collider> = (data = {}) => ({
   // _previousCollision: undefined,
-  // _collision: undefined,
+  collision: undefined,
   emitEventCollision: false,
   data: {
     type: 'point',

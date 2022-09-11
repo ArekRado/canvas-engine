@@ -81,9 +81,11 @@ export type ColliderDataPolygon = {
 export type CollisionData = {
   colliderEntity: Entity
   intersection: Intersection
+  collisionLayer: string
 }
 
 export type Collider = {
+  collision: CollisionData | undefined
   emitEventCollision: boolean
   layer: {
     belongs: string[]
@@ -339,6 +341,7 @@ export type CollisionEvent = ECSEvent<
     colliderEntity1: Entity
     colliderEntity2: Entity
     intersection: Intersection
+    collisionLayer: string
   }
 >
 

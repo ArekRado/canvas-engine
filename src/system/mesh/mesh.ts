@@ -5,7 +5,7 @@ import { getMaterial } from '../material/materialCrud'
 import { getTransform } from '../transform/transformCrud'
 import { AbstractMesh, LinesMesh, Mesh as BabylonMesh } from '@babylonjs/core'
 
-const updateMeshTransform = ({
+export const updateMeshTransform = ({
   mesh,
   transform,
 }: {
@@ -37,15 +37,12 @@ const createOrUpdateMesh = ({
   const { MeshBuilder, sceneRef, Vector3, Color4 } = state.babylonjs
   if (!(MeshBuilder && sceneRef && Vector3 && Color4)) {
     if (process.env.NODE_ENV === 'development') {
-      console.warn(
-        'To use Mesh engine requires all properties to be defined',
-        {
-          MeshBuilder,
-          sceneRef,
-          Vector3,
-          Color4,
-        },
-      )
+      console.warn('To use Mesh engine requires all properties to be defined', {
+        MeshBuilder,
+        sceneRef,
+        Vector3,
+        Color4,
+      })
     }
 
     return undefined
@@ -159,24 +156,32 @@ export const meshSystem = (state: InternalInitialState) =>
           meshInstance,
           state,
         })
+
+        const transform = getTransform({ state, entity })
+        if (transform) {
+          updateMeshTransform({
+            mesh: meshInstance,
+            transform,
+          })
+        }
       }
 
       return state
     },
-    tick: ({ state, entity }) => {
-      const mesh = state.babylonjs.sceneRef?.getMeshByUniqueId(parseInt(entity))
-      const transform = getTransform({
-        state,
-        entity,
-      })
+    // tick: ({ state, entity }) => {
+    //   const mesh = state.babylonjs.sceneRef?.getMeshByUniqueId(parseInt(entity))
+    //   const transform = getTransform({
+    //     state,
+    //     entity,
+    //   })
 
-      if (mesh && transform) {
-        updateMeshTransform({
-          mesh,
-          transform,
-        })
-      }
+    //   if (mesh && transform) {
+    //     updateMeshTransform({
+    //       mesh,
+    //       transform,
+    //     })
+    //   }
 
-      return state
-    },
+    //   return state
+    // },
   })

@@ -4,7 +4,7 @@ import { generateEntity } from '../../entity/generateEntity'
 import { defaultCollider, defaultTransform } from '../../util/defaultComponents'
 import { getState } from '../../util/state'
 import { createTransform } from '../transform/transformCrud'
-import { createCollider } from './colliderCrud'
+import { createCollider, getCollider } from './colliderCrud'
 import { degreesToRadians } from '../../util/radian'
 import { addEventHandler, removeEventHandler } from '../../event'
 import {
@@ -143,7 +143,7 @@ describe('collider', () => {
       })
 
       state = runOneFrameWithFixedTime(state)
- 
+
       expect(
         findCollision({ e1: entity1, e2: entity2, allCollisions }),
       ).toBeDefined()
@@ -1448,6 +1448,7 @@ describe('collider', () => {
       payload: {
         colliderEntity1: entity2,
         colliderEntity2: entity1,
+        collisionLayer: 'a',
         intersection: {
           figure: {
             data: {
@@ -1466,6 +1467,7 @@ describe('collider', () => {
       payload: {
         colliderEntity1: entity1,
         colliderEntity2: entity2,
+        collisionLayer: 'a',
         intersection: {
           figure: {
             data: {
@@ -1478,6 +1480,27 @@ describe('collider', () => {
         },
       },
       type: CanvasEngineEvent.colliderCollision,
+    })
+
+    expect(getCollider({ state, entity: entity1 })?.collision).toEqual({
+      figure: {
+        data: {
+          position: [0, 0],
+          radius: 1,
+        },
+        type: 'circle',
+      },
+      position: [0, 0],
+    })
+    expect(getCollider({ state, entity: entity2 })?.collision).toEqual({
+      figure: {
+        data: {
+          position: [0, 0],
+          radius: 1,
+        },
+        type: 'circle',
+      },
+      position: [0, 0],
     })
 
     removeEventHandler(eventHandler)
@@ -1538,6 +1561,7 @@ describe('collider', () => {
       payload: {
         colliderEntity1: entity2,
         colliderEntity2: entity1,
+        collisionLayer: 'a',
         intersection: {
           figure: {
             data: {
@@ -1556,6 +1580,7 @@ describe('collider', () => {
       payload: {
         colliderEntity1: entity1,
         colliderEntity2: entity2,
+        collisionLayer: 'a',
         intersection: {
           figure: {
             data: {
