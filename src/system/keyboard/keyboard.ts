@@ -82,7 +82,7 @@ export const keyboardSystem = ({
           acc[key] = {
             isDown: false,
             isUp: false,
-            isPressed: value?.isPressed || false,
+            isPressed: value?.isPressed ?? false,
           }
 
           return acc

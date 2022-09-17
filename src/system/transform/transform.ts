@@ -51,7 +51,11 @@ const getParentPosition = (
     if (parentParentTransform) {
       const position = getParentPosition(state, parentParentTransform)
       const fromParentPosition = parentTransform.fromParentPosition
-      return add(parseV3ToV2(position), parseV3ToV2(fromParentPosition))
+      return [
+        position[0] + fromParentPosition[0],
+        position[1] + fromParentPosition[1],
+        (position[2] ?? 0) + (fromParentPosition[2] ?? 0),
+      ]
     } else {
       return vectorZero()
     }
