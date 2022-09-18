@@ -79,8 +79,8 @@ export const defaultTransform: GetDefaultComponent<Transform> = (
   fromParentRotation: 0,
   scale: [1, 1],
   fromParentScale: [1, 1],
-  position: vectorZero(),
-  fromParentPosition: vectorZero(),
+  position: [0, 0, 0],
+  fromParentPosition: [0, 0, 0],
   ...data,
 })
 

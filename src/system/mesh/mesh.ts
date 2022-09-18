@@ -14,7 +14,7 @@ export const updateMeshTransform = ({
 }) => {
   mesh.position.x = transform.position[0]
   mesh.position.y = transform.position[1]
-  mesh.position.z = transform.position[2] ?? 0
+  mesh.position.z = transform.position[2]
 
   mesh.rotation.x = transform.rotation
   mesh.rotation.y = 0

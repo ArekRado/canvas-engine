@@ -14,7 +14,6 @@ import {
   // getRectangleLineIntersection,
   // getRectangleRectangleIntersection,
 } from './getIntersection'
-import { toFixedVector2D } from '../../util/toFixedVector2D'
 
 describe('getIntersection', () => {
   // describe('getRectangleRectangleIntersection', () => {

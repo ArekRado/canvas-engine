@@ -15,7 +15,7 @@ import {
 import { createTransform, getTransform } from '../transform/transformCrud'
 import { createCollider } from '../collider/colliderCrud'
 import { createRigidBody, getRigidBody } from './rigidBodyCrud'
-import { toFixedVector2D } from '../../util/toFixedVector2D'
+import { toFixedVector3D } from '../../util/toFixedVector3D'
 import { degreesToRadians } from '../../util/radian'
 import {
   AnyState,
@@ -155,7 +155,7 @@ describe.skip('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultTransform({
-        position: [0, 0],
+        position: [0, 0, 0],
       }),
     })
 
@@ -190,7 +190,7 @@ describe.skip('rigidBody', () => {
       entity: entity1,
     })
 
-    expect(toFixedVector2D(transform?.position as Vector2D, 2)).toEqual([1, 0])
+    expect(toFixedVector3D(transform?.position, 2)).toEqual([1, 0])
   })
 
   it('should use friction to reduce force', () => {
@@ -204,7 +204,7 @@ describe.skip('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultTransform({
-        position: [0, 0],
+        position: [0, 0, 0],
       }),
     })
 
@@ -235,40 +235,40 @@ describe.skip('rigidBody', () => {
     state = tick(10, state)
 
     expect(
-      toFixedVector2D(
+      toFixedVector3D(
         getTransform({
           state,
           entity: entity1,
-        })?.position as Vector2D,
+        })?.position,
         3,
       ),
-    ).toEqual([94.6, 0])
+    ).toEqual([94.6, 0,0])
 
     state = tick(20, state)
     state = tick(20, state)
 
     expect(
-      toFixedVector2D(
+      toFixedVector3D(
         getTransform({
           state,
           entity: entity1,
-        })?.position as Vector2D,
+        })?.position,
         3,
       ),
-    ).toEqual([177.2, 0])
+    ).toEqual([177.2, 0,0])
 
     state = tick(40, state)
     state = tick(40, state)
 
     expect(
-      toFixedVector2D(
+      toFixedVector3D(
         getTransform({
           state,
           entity: entity1,
-        })?.position as Vector2D,
+        })?.position,
         3,
       ),
-    ).toEqual([306.4, 0])
+    ).toEqual([306.4, 0,0])
   })
 
   it('conservation of momentum in elastic collisions 1 - rigidbodies with the same mass', () => {
@@ -287,14 +287,14 @@ describe.skip('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultTransform({
-        position: [0.7, 0],
+        position: [0.7, 0,0],
       }),
     })
     state = createTransform({
       state,
       entity: entity2,
       data: defaultTransform({
-        position: [1, 0],
+        position: [1, 0,0],
       }),
     })
 
@@ -343,7 +343,7 @@ describe.skip('rigidBody', () => {
     })
 
     expect(
-      toFixedVector2D(
+      toFixedVector3D(
         getRigidBody({
           state,
           entity: entity1,
@@ -353,7 +353,7 @@ describe.skip('rigidBody', () => {
     ).toEqual(r2Force)
 
     expect(
-      toFixedVector2D(
+      toFixedVector3D(
         getRigidBody({
           state,
           entity: entity2,
@@ -379,14 +379,14 @@ describe.skip('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultTransform({
-        position: [0, 0],
+        position: [0, 0, 0],
       }),
     })
     state = createTransform({
       state,
       entity: entity2,
       data: defaultTransform({
-        position: [3, 0],
+        position: [3, 0,0],
       }),
     })
 
@@ -437,14 +437,14 @@ describe.skip('rigidBody', () => {
     const force1 = getRigidBody({
       state,
       entity: entity1,
-    })?.force as Vector2D
+    })?.force
     const force2 = getRigidBody({
       state,
       entity: entity2,
-    })?.force as Vector2D
+    })?.force
 
-    expect(toFixedVector2D(force1, 2)).toEqual(r2Force)
-    expect(toFixedVector2D(force2, 2)).toEqual(r1Force)
+    expect(toFixedVector3D(force1, 2)).toEqual(r2Force)
+    expect(toFixedVector3D(force2, 2)).toEqual(r1Force)
   })
 
   it('conservation of momentum in elastic collisions 3 - static rigidBody should not be moved by force', () => {
@@ -460,14 +460,14 @@ describe.skip('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultTransform({
-        position: [0, 0],
+        position: [0, 0, 0],
       }),
     })
     state = createTransform({
       state,
       entity: entity2,
       data: defaultTransform({
-        position: [2, 0],
+        position: [2, 0,0],
       }),
     })
 
@@ -534,7 +534,7 @@ describe.skip('rigidBody', () => {
 
     // After collision with kinematic rigidbody force should be reflected
     expect(
-      toFixedVector2D(
+      toFixedVector3D(
         getRigidBody({
           state,
           entity: entity1,
@@ -557,7 +557,7 @@ describe.skip('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultTransform({
-        position: [0, 0],
+        position: [0, 0, 0],
       }),
     })
     state = createTransform({
@@ -565,7 +565,7 @@ describe.skip('rigidBody', () => {
       entity: entity2,
       data: defaultTransform({
         // Line has different Y axis but collision point is still the same
-        position: [2, 1],
+        position: [2, 1,0],
       }),
     })
 
@@ -616,7 +616,7 @@ describe.skip('rigidBody', () => {
 
     // Collider and transform positions doens't matter because bounce force is calculated depending on a intersection position
     expect(
-      toFixedVector2D(
+      toFixedVector3D(
         getRigidBody({
           state,
           entity: entity1,
@@ -639,7 +639,7 @@ describe.skip('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultTransform({
-        position: [0, 0],
+        position: [0, 0, 0],
       }),
     })
     state = createTransform({
@@ -647,7 +647,7 @@ describe.skip('rigidBody', () => {
       entity: entity2,
       data: defaultTransform({
         // Line has different Y axis but collision point is still the same
-        position: [2, 1],
+        position: [2, 1,0],
         rotation: degreesToRadians(45),
       }),
     })
@@ -699,11 +699,11 @@ describe.skip('rigidBody', () => {
 
     // After collision with line rotated by 45 degrees circle force should be reflected by 90 degrees - [0.2, 0] -> [0, 0.2]
     expect(
-      toFixedVector2D(
+      toFixedVector3D(
         getRigidBody({
           state,
           entity: entity1,
-        })?.force as Vector2D,
+        })?.force,
         5,
       ),
     ).toEqual([0, 0.2])
@@ -727,14 +727,14 @@ describe.skip('rigidBody', () => {
       state,
       entity: entity1,
       data: defaultTransform({
-        position: [0, 0],
+        position: [0, 0, 0],
       }),
     })
     state = createTransform({
       state,
       entity: entity2,
       data: defaultTransform({
-        position: [3, 0],
+        position: [3, 0,0],
       }),
     })
 
@@ -785,14 +785,14 @@ describe.skip('rigidBody', () => {
     const position1 = getTransform({
       state,
       entity: entity1,
-    })?.position as Vector2D
+    })?.position
     const position2 = getTransform({
       state,
       entity: entity2,
-    })?.position as Vector2D
+    })?.position
 
-    expect(toFixedVector2D(position1, 2)).toEqual([-0, 0])
-    expect(toFixedVector2D(position2, 2)).toEqual([1.9, 0])
+    expect(toFixedVector3D(position1, 2)).toEqual([-0, 0])
+    expect(toFixedVector3D(position2, 2)).toEqual([1.9, 0])
   })
 })
 

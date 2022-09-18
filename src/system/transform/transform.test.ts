@@ -1,4 +1,3 @@
-import { vector } from '@arekrado/vector-2d'
 import { getState } from '../../util/state'
 import { createEntity } from '../../entity/createEntity'
 import { generateEntity } from '../../entity/generateEntity'
@@ -15,7 +14,7 @@ describe('transform', () => {
       state: getState({}),
       entity: entity1,
       data: defaultTransform({
-        position: vector(1, 1),
+        position: [1, 1, 1],
       }),
     })
 
@@ -23,7 +22,7 @@ describe('transform', () => {
       state,
       entity: entity2,
       data: defaultTransform({
-        fromParentPosition: vector(2, 2),
+        fromParentPosition: [2, 2, 2],
         parentId: entity1,
       }),
     })
@@ -43,11 +42,11 @@ describe('transform', () => {
       entity: entity2,
     })
 
-    expect(t1?.position).toEqual(vector(1, 1))
-    expect(t1?.fromParentPosition).toEqual(vector(0, 0))
+    expect(t1?.position).toEqual([1, 1, 1])
+    expect(t1?.fromParentPosition).toEqual([0, 0, 0])
 
-    expect(t2?.position).toEqual(vector(3, 3))
-    expect(t2?.fromParentPosition).toEqual(vector(2, 2))
+    expect(t2?.position).toEqual([3, 3, 3])
+    expect(t2?.fromParentPosition).toEqual([2, 2, 2])
   })
 
   it('should set proper position using fromParentPosition and parent.position', () => {
@@ -60,7 +59,7 @@ describe('transform', () => {
       state: getState({}),
       entity: entity1,
       data: defaultTransform({
-        position: vector(1, 1),
+        position: [1, 1, 1],
       }),
     })
 
@@ -68,7 +67,7 @@ describe('transform', () => {
       state,
       entity: entity2,
       data: defaultTransform({
-        fromParentPosition: vector(1, 1),
+        fromParentPosition: [1, 1, 1],
         parentId: entity1,
       }),
     })
@@ -77,7 +76,7 @@ describe('transform', () => {
       state,
       entity: entity3,
       data: defaultTransform({
-        fromParentPosition: vector(-10, -10),
+        fromParentPosition: [-10, -10, -10],
         parentId: entity2,
       }),
     })
@@ -85,7 +84,7 @@ describe('transform', () => {
       state,
       entity: entity4,
       data: defaultTransform({
-        fromParentPosition: vector(10, 10),
+        fromParentPosition: [10, 10, 10],
         parentId: entity2,
       }),
     })
@@ -102,33 +101,33 @@ describe('transform', () => {
       entity: entity1,
     })
 
-    expect(t1?.position).toEqual(vector(1, 1))
+    expect(t1?.position).toEqual([1, 1, 1])
     // Should not change fromParentPosition when transform doesn't have parent
-    expect(t1?.fromParentPosition).toEqual(vector(0, 0))
+    expect(t1?.fromParentPosition).toEqual([0, 0, 0])
 
     const t2 = getTransform({
       state,
       entity: entity2,
     })
 
-    expect(t2?.position).toEqual(vector(2, 2))
-    expect(t2?.fromParentPosition).toEqual(vector(1, 1))
+    expect(t2?.position).toEqual([2, 2, 2])
+    expect(t2?.fromParentPosition).toEqual([1, 1, 1])
 
     const t3 = getTransform({
       state,
       entity: entity3,
     })
 
-    expect(t3?.position).toEqual(vector(-8, -8))
-    expect(t3?.fromParentPosition).toEqual(vector(-10, -10))
+    expect(t3?.position).toEqual([-8, -8, -8])
+    expect(t3?.fromParentPosition).toEqual([-10, -10, -10])
 
     const t4 = getTransform({
       state,
       entity: entity4,
     })
 
-    expect(t4?.position).toEqual(vector(12, 12))
-    expect(t4?.fromParentPosition).toEqual(vector(10, 10))
+    expect(t4?.position).toEqual([12, 12, 12])
+    expect(t4?.fromParentPosition).toEqual([10, 10, 10])
   })
 
   it('Nested entities should has equal position after one frame', () => {
@@ -156,7 +155,7 @@ describe('transform', () => {
     state = createTransform({
       state,
       entity: entity1,
-      data: defaultTransform({ position: vector(1, 1) }),
+      data: defaultTransform({ position: [1, 1, 1] }),
     })
     state = createTransform({
       state,

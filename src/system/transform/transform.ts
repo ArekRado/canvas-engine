@@ -1,4 +1,3 @@
-import { add, Vector2D, vectorZero } from '@arekrado/vector-2d'
 import {
   AnyState,
   Entity,
@@ -8,7 +7,6 @@ import {
 } from '../../type'
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
-import { parseV3ToV2 } from '../../util/parseV3ToV2'
 import { Scene } from '@babylonjs/core/scene'
 import { getTransform } from './transformCrud'
 import { updateMeshTransform } from '../mesh/mesh'
@@ -26,7 +24,7 @@ const syncTransformWithBabylon = ({
   if (transformNode) {
     transformNode.position.x = transform.position[0]
     transformNode.position.y = transform.position[1]
-    transformNode.position.z = transform.position[2] ?? 0
+    transformNode.position.z = transform.position[2]
 
     transformNode.rotation.x = transform.rotation
     // transformNode.rotation.y = transform.rotation[1]
@@ -41,7 +39,7 @@ const syncTransformWithBabylon = ({
 const getParentPosition = (
   state: InternalInitialState,
   parentTransform: Transform,
-): Vector2D | Vector3D => {
+): Vector3D => {
   if (parentTransform.parentId) {
     const parentParentTransform = getTransform({
       entity: parentTransform.parentId,
@@ -54,10 +52,10 @@ const getParentPosition = (
       return [
         position[0] + fromParentPosition[0],
         position[1] + fromParentPosition[1],
-        (position[2] ?? 0) + (fromParentPosition[2] ?? 0),
+        position[2] + fromParentPosition[2],
       ]
     } else {
-      return vectorZero()
+      return [0, 0, 0]
     }
   } else {
     return parentTransform.position
@@ -89,10 +87,11 @@ const update = ({
         state as InternalInitialState,
         parentTransform,
       )
-      const newPosition = add(
-        parseV3ToV2(fromParentPosition),
-        parseV3ToV2(parentPosition),
-      )
+      const newPosition = [
+        fromParentPosition[0] + parentPosition[0],
+        fromParentPosition[1] + parentPosition[1],
+        fromParentPosition[2] + parentPosition[2],
+      ]
 
       state.component.transform[entity].position = newPosition
     }
@@ -129,41 +128,6 @@ export const transformSystem = (state: InternalInitialState) =>
     name: componentName.transform,
     priority: systemPriority.transform,
     componentName: componentName.transform,
-    // tick: ({ state }) => {
-    //   const transforms = Object.entries(state.component.transform)
-    //   for (let i = 0; i < transforms.length; i++) {
-    //     const [entity, transform] = transforms[i]
-
-    //     if (transform.parentId) {
-    //       const parentTransform = getTransform({
-    //         state,
-    //         entity: transform.parentId,
-    //       })
-
-    //       if (parentTransform) {
-    //         const fromParentPosition = transform.fromParentPosition
-    //         const parentPosition = getParentPosition(state, parentTransform)
-    //         const newPosition = add(
-    //           parseV3ToV2(fromParentPosition),
-    //           parseV3ToV2(parentPosition),
-    //         )
-
-    //         state.component.transform[entity].position = newPosition
-    //       }
-    //     }
-
-    //     if (state.babylonjs.sceneRef) {
-    //       syncTransformWithBabylon({
-    //         scene: state.babylonjs.sceneRef,
-    //         transform: transform,
-    //         entity,
-    //       })
-    //     }
-    //   }
-
-    //   return state
-    // },
-
     create: update,
     update,
   })

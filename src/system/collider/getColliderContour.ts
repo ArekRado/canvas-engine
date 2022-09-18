@@ -1,4 +1,4 @@
-import { add, Vector2D } from '@arekrado/vector-2d'
+import { Vector2D } from '@arekrado/vector-2d'
 import { Collider, RectangleContour, Transform } from '../../type'
 import {
   applyTransformsToPosition,
@@ -54,10 +54,10 @@ export const getColliderContour = ({
       )
 
     case 'circle':
-      const position = add(
-        collider.data.position,
-        transform.position as Vector2D,
-      )
+      const position = [
+        collider.data.position[0] + transform.position[0],
+        collider.data.position[1] + transform.position[1],
+      ]
       return [
         position[0],
         position[1],

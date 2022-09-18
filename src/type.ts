@@ -299,8 +299,8 @@ export type Transform = {
   fromParentRotation: number
   scale: Vector2D | Vector3D
   fromParentScale: Vector2D | Vector3D
-  position: Vector2D | Vector3D
-  fromParentPosition: Vector2D | Vector3D
+  position: Vector3D
+  fromParentPosition: Vector3D
   parentId?: Entity
 }
 
@@ -353,8 +353,14 @@ export type RenderLoopStartEvent = ECSEvent<
   }
 >
 
-export type MouseActionEvent = ECSEvent<CanvasEngineEvent.mouseActionEvent, Mouse>
-export type KeyboardActionEvent = ECSEvent<CanvasEngineEvent.keyboardActionEvent, Keyboard>
+export type MouseActionEvent = ECSEvent<
+  CanvasEngineEvent.mouseActionEvent,
+  Mouse
+>
+export type KeyboardActionEvent = ECSEvent<
+  CanvasEngineEvent.keyboardActionEvent,
+  Keyboard
+>
 
 export type AllEvents =
   | WindowResizeEvent
