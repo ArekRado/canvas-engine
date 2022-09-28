@@ -28,6 +28,7 @@ import { createSystem } from '../createSystem'
 import { tick } from '../../util/testUtils'
 import { createAnimation } from './animationCrud'
 import { createComponent } from '../../component/createComponent'
+import { createTransform, getTransform } from '../transform/transformCrud'
 
 type AnyComponent<Value> = { value: Value }
 
@@ -74,6 +75,42 @@ describe('animation', () => {
     })
 
   describe('getActiveKeyframe', () => {
+    it('should ends when doesnt have any keyframes', () => {
+      let state = createEntity({ state: getState({}), entity })
+
+      state = createComponent<NumberComponent, InternalInitialState>({
+        state,
+        entity,
+        name: numberComponentName,
+        data: {
+          value: 0,
+        },
+      })
+
+      state = createAnimation({
+        state,
+        entity,
+        data: defaultAnimation({
+          isPlaying: true,
+          currentTime: 0,
+          wrapMode: Animation.WrapMode.once,
+          isFinished: false,
+          properties: [
+            {
+              path: 'value',
+              component: numberComponentName,
+              entity,
+              keyframes: [],
+            },
+          ],
+        }),
+      }) as InternalInitialState
+
+      state = tick(0, state)
+      state = tick(501, state)
+      state = tick(502, state)
+    })
+
     it('should return proper time and index when time is zero', () => {
       const { keyframeCurrentTime, keyframeIndex } = getActiveKeyframe({
         wrapMode: Animation.WrapMode.once,
@@ -1391,13 +1428,119 @@ describe('animation', () => {
 
       state = tick(1000, state)
       expect(getVector3DComponent(state)?.value.toString()).toBe(
-        [0, 0, 0].toString(),
+        [0, 0, -1].toString(),
       )
 
       state = tick(4000, state)
       expect(getVector3DComponent(state)?.value.toString()).toBe(
         [0, 0, -0.6666666666666667].toString(),
       )
+    })
+
+    it('Should correctly transit vectors 3d', () => {
+      let state = createEntity({ state: getState({}), entity })
+
+      state = createTransform({
+        state,
+        entity,
+        data: defaultTransform({}),
+      })
+
+      state = createAnimation({
+        state,
+        entity,
+        data: defaultAnimation({
+          isPlaying: true,
+          properties: [
+            {
+              path: 'position',
+              component: componentName.transform,
+              entity,
+              keyframes: [
+                {
+                  duration: 141421.3562373095,
+                  timingFunction: 'Linear',
+                  valueRange: [
+                    [-1, 2, -1],
+                    [0, 1, -1],
+                  ],
+                  endFrameEvent: {
+                    type: 'PorterEvent-pickUpResource',
+                    payload: { porterEntity: '431', areaEntity: '401' },
+                  },
+                },
+              ],
+            },
+          ],
+        }),
+      }) as InternalInitialState
+
+      state = tick(0, state)
+      state = tick(501, state)
+      state = tick(502, state)
+
+      expect(getTransform({ state, entity })?.position).toEqual([
+        -0.9964573950262554, 1.9964573950262554, -1,
+      ])
+      state = tick(503, state)
+      expect(getTransform({ state, entity })?.position).toEqual([
+        -0.9964503239584436, 1.9964503239584435, -1,
+      ])
+      state = tick(504, state)
+      expect(getTransform({ state, entity })?.position).toEqual([
+        -0.9964432528906316, 1.9964432528906317, -1,
+      ])
+    })
+
+    it('Should correctly transit vectors 3d', () => {
+      let state = createEntity({ state: getState({}), entity })
+
+      state = createTransform({
+        state,
+        entity,
+        data: defaultTransform({}),
+      })
+
+      state = createAnimation({
+        state,
+        entity,
+        data: defaultAnimation({
+          isPlaying: true,
+          properties: [
+            {
+              path: 'position',
+              component: componentName.transform,
+              entity,
+              keyframes: [
+                {
+                  duration: 100,
+                  timingFunction: 'Linear',
+                  valueRange: [
+                    [0, 1, -1],
+                    [0, -1, -1],
+                  ],
+                },
+              ],
+            },
+          ],
+        }),
+      }) as InternalInitialState
+
+      state = tick(0, state)
+      state = tick(10, state)
+      state = tick(10, state)
+
+      expect(getTransform({ state, entity })?.position).toEqual([
+        0, 0.1, -1,
+      ])
+      state = tick(20, state)
+      expect(getTransform({ state, entity })?.position).toEqual([
+        0, 0.2, -1,
+      ])
+      state = tick(30, state)
+      expect(getTransform({ state, entity })?.position).toEqual([
+        0, 0.3, -1,
+      ])
     })
   })
 })

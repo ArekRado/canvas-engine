@@ -3,7 +3,7 @@ import { createEntity } from '../../entity/createEntity'
 import { generateEntity } from '../../entity/generateEntity'
 import { runOneFrame } from '../../util/runOneFrame'
 import { defaultTransform } from '../../util/defaultComponents'
-import { createTransform, getTransform } from './transformCrud'
+import { createTransform, getTransform, updateTransform } from './transformCrud'
 
 describe('transform', () => {
   it('should set proper position using fromParentPosition and parent.position - simple example', () => {
@@ -205,5 +205,92 @@ describe('transform', () => {
     })
 
     expect(e1?.position).toEqual(e8?.position)
+  })
+
+  it('Should change position of nested transforms when parent position has been updated', () => {
+    const entity1 = generateEntity()
+    const entity2 = generateEntity()
+    const entity3 = generateEntity()
+
+    let state = createEntity({
+      entity: entity1,
+      state: getState({}),
+    })
+    state = createEntity({ entity: entity2, state })
+    state = createEntity({ entity: entity3, state })
+
+    state = createTransform({
+      state,
+      entity: entity1,
+      data: defaultTransform({ position: [1, 1, 1] }),
+    })
+    state = createTransform({
+      state,
+      entity: entity2,
+      data: defaultTransform({
+        parentId: entity1,
+        fromParentPosition: [1, 1, 1],
+      }),
+    })
+    state = createTransform({
+      state,
+      entity: entity3,
+      data: defaultTransform({
+        parentId: entity2,
+        fromParentPosition: [1, 1, 1],
+      }),
+    })
+
+    state = runOneFrame({ state })
+
+    expect(
+      getTransform({
+        state,
+        entity: entity1,
+      })?.position,
+    ).toEqual([1, 1, 1])
+
+    expect(
+      getTransform({
+        state,
+        entity: entity2,
+      })?.position,
+    ).toEqual([2, 2, 2])
+
+    expect(
+      getTransform({
+        state,
+        entity: entity3,
+      })?.position,
+    ).toEqual([3, 3, 3])
+
+    state = updateTransform({
+      state,
+      entity: entity1,
+      update: () => ({
+        position: [0, 0, 0],
+      }),
+    })
+
+    expect(
+      getTransform({
+        state,
+        entity: entity1,
+      })?.position,
+    ).toEqual([0, 0, 0])
+
+    expect(
+      getTransform({
+        state,
+        entity: entity2,
+      })?.position,
+    ).toEqual([1, 1, 1])
+
+    expect(
+      getTransform({
+        state,
+        entity: entity3,
+      })?.position,
+    ).toEqual([2, 2, 2])
   })
 })

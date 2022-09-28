@@ -1,5 +1,6 @@
 import {
   AnyState,
+  Dictionary,
   Entity,
   InternalInitialState,
   Transform,
@@ -8,7 +9,7 @@ import {
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { Scene } from '@babylonjs/core/scene'
-import { getTransform } from './transformCrud'
+import { getTransform, updateTransform } from './transformCrud'
 import { updateMeshTransform } from '../mesh/mesh'
 
 const syncTransformWithBabylon = ({
@@ -66,11 +67,33 @@ const update = ({
   state,
   component,
   entity,
+  previousComponent,
 }: {
   state: AnyState
   component: Transform
   entity: Entity
+  previousComponent?: Transform
 }): AnyState => {
+  if (previousComponent?.parentId !== component.parentId) {
+    const transform: Dictionary<Transform> = state.component.transform
+    if (
+      previousComponent?.parentId !== undefined &&
+      component.parentId === undefined
+    ) {
+      const children = transform[previousComponent?.parentId]._children
+
+      transform[previousComponent?.parentId]._children = children.filter(
+        (childrenEntity) => childrenEntity === entity,
+      )
+    }
+
+    if (
+      previousComponent?.parentId === undefined &&
+      component.parentId !== undefined
+    ) {
+      transform[component.parentId]._children.push(entity)
+    }
+  }
   // const transforms = Object.entries(state.component.transform)
   // for (let i = 0; i < transforms.length; i++) {
   // const [entity, transform] = transforms[i]
@@ -94,6 +117,18 @@ const update = ({
       ]
 
       state.component.transform[entity].position = newPosition
+    }
+  }
+
+  if (component._children) {
+    // const position = state.component.transform[entity].position;
+
+    for (let i = 0; i < component._children.length; i++) {
+      state = updateTransform({
+        state,
+        entity: component._children[i],
+        update: () => ({}),
+      })
     }
   }
 
@@ -130,4 +165,31 @@ export const transformSystem = (state: InternalInitialState) =>
     componentName: componentName.transform,
     create: update,
     update,
+    remove: ({ state, entity, component }) => {
+      if (component.parentId) {
+        state = updateTransform({
+          state,
+          entity: component.parentId,
+          update: ({ _children }) => ({
+            _children: _children.filter(
+              (childrenEntity) => childrenEntity === entity,
+            ),
+          }),
+        })
+      }
+
+      // if (component._children) {
+      //   for (let i = 0; i < component._children.length; i++) {
+      //     state = updateTransform({
+      //       state,
+      //       entity: component._children[i],
+      //       update: () => ({
+      //         parentId: undefined,
+      //       }),
+      //     })
+      //   }
+      // }
+
+      return state
+    },
   })

@@ -20,6 +20,9 @@ type UpdateAnimationParams = {
   progress: number
 }
 
+const vector3dMagnitue = (v: Vector3D): number =>
+  Math.sqrt(Math.pow(v[0], 2) + Math.pow(v[1], 2) + Math.pow(v[2], 2))
+
 const vector3d = {
   add: (v1: Vector3D, v2: Vector3D): Vector3D => [
     v1[0] + v2[0],
@@ -36,11 +39,24 @@ const vector3d = {
     v1[1] * value,
     v1[2] * value,
   ],
+  // isLesser: (v1: Vector3D, v2: Vector3D): boolean =>
+  //   v1[0] + v1[1] + v1[2] < v2[0] + v2[1] + v2[2],
+  // isGreater: (v1: Vector3D, v2: Vector3D): boolean =>
+  //   v1[0] + v1[1] + v1[2] > v2[0] + v2[1] + v2[2],
+
   isLesser: (v1: Vector3D, v2: Vector3D): boolean =>
-    v1[0] + v1[1] + v1[2] < v2[0] + v2[1] + v2[2],
+    vector3dMagnitue(v1) < vector3dMagnitue(v2),
   isGreater: (v1: Vector3D, v2: Vector3D): boolean =>
-    v1[0] + v1[1] + v1[2] > v2[0] + v2[1] + v2[2],
+    vector3dMagnitue(v1) > vector3dMagnitue(v2),
 }
+
+const vector4dMagnitue = (v: Color): number =>
+  Math.sqrt(
+    Math.pow(v[0], 2) +
+      Math.pow(v[1], 2) +
+      Math.pow(v[2], 2) +
+      Math.pow(v[3], 2),
+  )
 
 const vector4d = {
   add: (v1: Color, v2: Color): Color => [
@@ -62,9 +78,9 @@ const vector4d = {
     v1[3] * value,
   ],
   isLesser: (v1: Color, v2: Color): boolean =>
-    v1[0] + v1[1] + v1[2] + v1[3] < v2[0] + v2[1] + v2[2] + v2[3],
+    vector4dMagnitue(v1) < vector4dMagnitue(v2),
   isGreater: (v1: Color, v2: Color): boolean =>
-    v1[0] + v1[1] + v1[2] + v1[3] > v2[0] + v2[1] + v2[2] + v2[3],
+    vector4dMagnitue(v1) > vector4dMagnitue(v2),
 }
 
 const getPercentageProgress = (
@@ -95,6 +111,14 @@ export const getActiveKeyframe = ({
   secondLoop: boolean
 }): ActiveKeyframe => {
   const size = animationProperty.keyframes.length
+
+  if (size === 0) {
+    return {
+      keyframeCurrentTime: -1,
+      keyframeIndex: -1,
+      timeExceeded: true,
+    }
+  }
 
   const { sum, activeIndex } = animationProperty.keyframes
     // .map(({ duration }) => duration)

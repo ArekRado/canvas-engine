@@ -81,6 +81,8 @@ export const defaultTransform: GetDefaultComponent<Transform> = (
   fromParentScale: [1, 1],
   position: [0, 0, 0],
   fromParentPosition: [0, 0, 0],
+  parentId: undefined,
+  _children: [],
   ...data,
 })
 

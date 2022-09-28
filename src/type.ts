@@ -302,6 +302,7 @@ export type Transform = {
   position: Vector3D
   fromParentPosition: Vector3D
   parentId?: Entity
+  _children: Entity[]
 }
 
 ////////////////////////////////////
