@@ -1428,7 +1428,7 @@ describe('animation', () => {
 
       state = tick(1000, state)
       expect(getVector3DComponent(state)?.value.toString()).toBe(
-        [0, 0, -1].toString(),
+        [0, 0, 0].toString(),
       )
 
       state = tick(4000, state)
@@ -1531,15 +1531,17 @@ describe('animation', () => {
       state = tick(10, state)
 
       expect(getTransform({ state, entity })?.position).toEqual([
-        0, 0.1, -1,
+        0, 0.8, -1,
       ])
       state = tick(20, state)
+      state = tick(20, state)
       expect(getTransform({ state, entity })?.position).toEqual([
-        0, 0.2, -1,
+        0, 0.6, -1,
       ])
       state = tick(30, state)
+      state = tick(30, state)
       expect(getTransform({ state, entity })?.position).toEqual([
-        0, 0.3, -1,
+        0, 0.4, -1,
       ])
     })
   })

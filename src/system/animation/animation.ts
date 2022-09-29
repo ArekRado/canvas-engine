@@ -20,69 +20,6 @@ type UpdateAnimationParams = {
   progress: number
 }
 
-const vector3dMagnitue = (v: Vector3D): number =>
-  Math.sqrt(Math.pow(v[0], 2) + Math.pow(v[1], 2) + Math.pow(v[2], 2))
-
-const vector3d = {
-  add: (v1: Vector3D, v2: Vector3D): Vector3D => [
-    v1[0] + v2[0],
-    v1[1] + v2[1],
-    v1[2] + v2[2],
-  ],
-  sub: (v1: Vector3D, v2: Vector3D): Vector3D => [
-    v1[0] - v2[0],
-    v1[1] - v2[1],
-    v1[2] - v2[2],
-  ],
-  scale: (value: number, v1: Vector3D): Vector3D => [
-    v1[0] * value,
-    v1[1] * value,
-    v1[2] * value,
-  ],
-  // isLesser: (v1: Vector3D, v2: Vector3D): boolean =>
-  //   v1[0] + v1[1] + v1[2] < v2[0] + v2[1] + v2[2],
-  // isGreater: (v1: Vector3D, v2: Vector3D): boolean =>
-  //   v1[0] + v1[1] + v1[2] > v2[0] + v2[1] + v2[2],
-
-  isLesser: (v1: Vector3D, v2: Vector3D): boolean =>
-    vector3dMagnitue(v1) < vector3dMagnitue(v2),
-  isGreater: (v1: Vector3D, v2: Vector3D): boolean =>
-    vector3dMagnitue(v1) > vector3dMagnitue(v2),
-}
-
-const vector4dMagnitue = (v: Color): number =>
-  Math.sqrt(
-    Math.pow(v[0], 2) +
-      Math.pow(v[1], 2) +
-      Math.pow(v[2], 2) +
-      Math.pow(v[3], 2),
-  )
-
-const vector4d = {
-  add: (v1: Color, v2: Color): Color => [
-    v1[0] + v2[0],
-    v1[1] + v2[1],
-    v1[2] + v2[2],
-    v1[3] + v2[3],
-  ],
-  sub: (v1: Color, v2: Color): Color => [
-    v1[0] - v2[0],
-    v1[1] - v2[1],
-    v1[2] - v2[2],
-    v1[3] - v2[3],
-  ],
-  scale: (value: number, v1: Color): Color => [
-    v1[0] * value,
-    v1[1] * value,
-    v1[2] * value,
-    v1[3] * value,
-  ],
-  isLesser: (v1: Color, v2: Color): boolean =>
-    vector4dMagnitue(v1) < vector4dMagnitue(v2),
-  isGreater: (v1: Color, v2: Color): boolean =>
-    vector4dMagnitue(v1) > vector4dMagnitue(v2),
-}
-
 const getPercentageProgress = (
   currentTime: number,
   duration: number,
@@ -234,24 +171,31 @@ export const updateVector3DAnimation = ({
   progress,
   timingMode,
 }: UpdateAnimationParams) => {
-  const v1 = keyframe.valueRange[0] as Vector3D
-  const v2 = keyframe.valueRange[1] as Vector3D
+  const value = keyframe.valueRange[0] as Vector3D
 
   if (timingMode === 'step') {
-    return v1
+    return value
   }
 
-  const normalizedMax = vector3d.sub(v2, v1)
-  const newValue = vector3d.add(v1, vector3d.scale(progress, normalizedMax))
-  const isNegative = vector3d.isLesser(v1, v2)
+  const newVector: Vector3D = [0, 0, 0]
+  for (let i = 0; i < value.length; i++) {
+    const v1 = value[i]
+    const v2 = (keyframe.valueRange[1] as Vector3D)[i]
 
-  return isNegative
-    ? vector3d.isGreater(newValue, v2)
+    const isNegative = v2 > v1
+    const normalizedMax = v2 - v1
+    const newValue = v1 + progress * normalizedMax
+
+    newVector[i] = isNegative
+      ? newValue > v2
+        ? v2
+        : newValue
+      : newValue < v2
       ? v2
       : newValue
-    : vector3d.isLesser(newValue, v2)
-    ? v2
-    : newValue
+  }
+
+  return newVector
 }
 
 export const updateVector4DAnimation = ({
@@ -259,24 +203,31 @@ export const updateVector4DAnimation = ({
   progress,
   timingMode,
 }: UpdateAnimationParams) => {
-  const v1 = keyframe.valueRange[0] as Color
-  const v2 = keyframe.valueRange[1] as Color
+  const value = keyframe.valueRange[0] as Color
 
   if (timingMode === 'step') {
-    return v1
+    return value
   }
 
-  const normalizedMax = vector4d.sub(v2, v1)
-  const newValue = vector4d.add(v1, vector4d.scale(progress, normalizedMax))
-  const isNegative = vector4d.isLesser(v1, v2)
+  const newVector: Color = [0, 0, 0, 0]
+  for (let i = 0; i < value.length; i++) {
+    const v1 = value[i]
+    const v2 = (keyframe.valueRange[1] as Color)[i]
 
-  return isNegative
-    ? vector4d.isGreater(newValue, v2)
+    const isNegative = v2 > v1
+    const normalizedMax = v2 - v1
+    const newValue = v1 + progress * normalizedMax
+
+    newVector[i] = isNegative
+      ? newValue > v2
+        ? v2
+        : newValue
+      : newValue < v2
       ? v2
       : newValue
-    : vector4d.isLesser(newValue, v2)
-    ? v2
-    : newValue
+  }
+
+  return newVector
 }
 
 export const updateStringAnimation = ({ keyframe }: UpdateAnimationParams) => {
