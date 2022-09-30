@@ -76,21 +76,15 @@ const update = ({
 }): AnyState => {
   if (previousComponent?.parentId !== component.parentId) {
     const transform: Dictionary<Transform> = state.component.transform
-    if (
-      previousComponent?.parentId !== undefined &&
-      component.parentId === undefined
-    ) {
-      const children = transform[previousComponent?.parentId]._children
 
+    if (previousComponent?.parentId !== undefined) {
+      const children = transform[previousComponent?.parentId]._children
       transform[previousComponent?.parentId]._children = children.filter(
-        (childrenEntity) => childrenEntity === entity,
+        (childrenEntity) => childrenEntity !== entity,
       )
     }
 
-    if (
-      previousComponent?.parentId === undefined &&
-      component.parentId !== undefined
-    ) {
+    if (component.parentId !== undefined) {
       transform[component.parentId]._children.push(entity)
     }
   }

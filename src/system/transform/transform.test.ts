@@ -4,6 +4,7 @@ import { generateEntity } from '../../entity/generateEntity'
 import { runOneFrame } from '../../util/runOneFrame'
 import { defaultTransform } from '../../util/defaultComponents'
 import { createTransform, getTransform, updateTransform } from './transformCrud'
+import { updateComponent } from '../../component/updateComponent'
 
 describe('transform', () => {
   it('should set proper position using fromParentPosition and parent.position - simple example', () => {
@@ -292,5 +293,57 @@ describe('transform', () => {
         entity: entity3,
       })?.position,
     ).toEqual([2, 2, 2])
+  })
+
+  it('Should correctly change parentId and children when transform updates parentId', () => {
+    const entity1 = generateEntity()
+    const entity2 = generateEntity()
+    const entity3 = generateEntity()
+
+    let state = createEntity({
+      entity: entity1,
+      state: getState({}),
+    })
+    state = createEntity({ entity: entity2, state })
+    state = createEntity({ entity: entity3, state })
+
+    state = createTransform({
+      state,
+      entity: entity1,
+      data: defaultTransform({ position: [1, 1, 1] }),
+    })
+    state = createTransform({
+      state,
+      entity: entity2,
+      data: defaultTransform({
+        parentId: entity1,
+        fromParentPosition: [1, 1, 1],
+      }),
+    })
+    state = createTransform({
+      state,
+      entity: entity3,
+      data: defaultTransform({}),
+    })
+
+    expect(getTransform({ state, entity: entity1 })?._children).toEqual([
+      entity2,
+    ])
+    expect(getTransform({ state, entity: entity2 })?._children).toEqual([])
+    expect(getTransform({ state, entity: entity3 })?._children).toEqual([])
+
+    updateTransform({
+      entity: entity2,
+      state,
+      update: () => ({
+        parentId: entity3,
+      }),
+    })
+
+    expect(getTransform({ state, entity: entity1 })?._children).toEqual([])
+    expect(getTransform({ state, entity: entity2 })?._children).toEqual([])
+    expect(getTransform({ state, entity: entity3 })?._children).toEqual([
+      entity2,
+    ])
   })
 })
