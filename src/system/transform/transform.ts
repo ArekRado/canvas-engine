@@ -166,23 +166,11 @@ export const transformSystem = (state: InternalInitialState) =>
           entity: component.parentId,
           update: ({ _children }) => ({
             _children: _children.filter(
-              (childrenEntity) => childrenEntity === entity,
+              (childrenEntity) => childrenEntity !== entity,
             ),
           }),
         })
       }
-
-      // if (component._children) {
-      //   for (let i = 0; i < component._children.length; i++) {
-      //     state = updateTransform({
-      //       state,
-      //       entity: component._children[i],
-      //       update: () => ({
-      //         parentId: undefined,
-      //       }),
-      //     })
-      //   }
-      // }
 
       return state
     },

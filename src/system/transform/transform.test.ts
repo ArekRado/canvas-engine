@@ -346,4 +346,6 @@ describe('transform', () => {
       entity2,
     ])
   })
+
+  it.todo('removeTransform should remove proper children from parent')
 })
