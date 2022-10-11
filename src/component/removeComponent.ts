@@ -11,6 +11,10 @@ export const removeComponent = <State extends AnyState = AnyState>({
   entity: Entity
   state: State
 }): State => {
+  const components = state.component[name]
+
+  if (!components) return state
+
   const { [entity]: _, ...dictionaryWithoutComponent } = state.component[name]
 
   const newState = {
