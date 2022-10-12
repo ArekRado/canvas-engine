@@ -4,7 +4,7 @@
   "umd:main": "dist/canvas-engine.umd.production.js",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
-  "module": "dist/canvas-engine.esm.js",
+  "module": "index.js",
   "npmName": "@arekrado/canvas-engine",
   "sideEffects": false,
   "keywords": [
@@ -36,7 +36,7 @@
     "npm": ">=8.3.0"
   },
   "dependencies": {
-    "@arekrado/vector-2d": "0.0.5",
+    "@arekrado/vector-2d": "^0.0.6",
     "@babylonjs/core": "5.22.1",
     "just-safe-set": "^4.1.1"
   },
