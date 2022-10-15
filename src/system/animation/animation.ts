@@ -1,7 +1,6 @@
 import { Animation, AnyState, Color, Vector3D } from '../../type'
 import { TimingFunction, getValue } from '../../util/bezierFunction'
 import { add, magnitude, scale, sub, Vector2D } from '@arekrado/vector-2d'
-import set from 'just-safe-set'
 import { createSystem, systemPriority } from '../createSystem'
 import { updateComponent } from '../../component/updateComponent'
 import { componentName } from '../../component/componentName'
@@ -13,6 +12,7 @@ import {
   removeAnimation,
   updateAnimation as updateAnimationCrud,
 } from '../animation/animationCrud'
+import { set } from '../../util/set'
 
 type UpdateAnimationParams = {
   keyframe: Animation.Keyframe
@@ -57,41 +57,27 @@ export const getActiveKeyframe = ({
     }
   }
 
-  const { sum, activeIndex } = animationProperty.keyframes
-    // .map(({ duration }) => duration)
-    .reduce(
-      (acc, { duration }, index) => {
-        if (acc.breakLoop === true) {
-          return acc
-        } else if (currentTime > duration + acc.sum) {
-          if (size === index + 1) {
-            return {
-              // timeExceeded
-              sum: duration + acc.sum,
-              activeIndex: -1,
-              breakLoop: true,
-            }
-          } else {
-            return {
-              sum: duration + acc.sum,
-              activeIndex: index,
-              breakLoop: false,
-            }
-          }
-        } else {
-          return {
-            sum: acc.sum,
-            activeIndex: index,
-            breakLoop: true,
-          }
-        }
-      },
-      {
-        sum: 0,
-        activeIndex: 0,
-        breakLoop: false,
-      },
-    )
+  let sum = 0
+  let activeIndex = 0
+
+  for (let index = 0; index < size; index++) {
+    const duration = animationProperty.keyframes[index].duration
+
+    if (currentTime > duration + sum) {
+      if (size === index + 1) {
+        sum = duration + sum
+        activeIndex = -1
+        break
+      } else {
+        sum = duration + sum
+        activeIndex = index
+      }
+    } else {
+      sum = sum
+      activeIndex = index
+      break
+    }
+  }
 
   if (activeIndex === -1 && wrapMode === 'loop') {
     return getActiveKeyframe({
@@ -273,7 +259,9 @@ export const animationSystem = (state: AnyState) =>
 
       let animationTimeExceeded = false
 
-      animation.properties.forEach((property) => {
+      for (let i = 0; i < animation.properties.length; i++) {
+        const property = animation.properties[i]
+
         const { keyframeCurrentTime, keyframeIndex, timeExceeded } =
           getActiveKeyframe({
             wrapMode: animation.wrapMode,
@@ -293,36 +281,39 @@ export const animationSystem = (state: AnyState) =>
             emitEvent(endFrameEvent)
           }
           animationTimeExceeded = true
-          return
+        } else {
+          const keyframe = property.keyframes[keyframeIndex]
+
+          const progress = getPercentageProgress(
+            keyframeCurrentTime,
+            keyframe.duration,
+            keyframe.timingFunction,
+          )
+
+          // todo next value should be taken from next keyframe, not from valueRange
+          const value = updateAnimation({
+            keyframe,
+            timingMode: animation.timingMode,
+            progress,
+          })
+
+          const { component, entity, path } = property
+
+          // Array.prototype.push.apply is fast concat
+          // https://dev.to/uilicious/javascript-array-push-is-945x-faster-than-array-concat-1oki
+          const path1 = [component, entity]
+          Array.prototype.push.apply(path1, path)
+
+          component && set(state.component, path1, value)
+
+          state = updateComponent({
+            state,
+            entity,
+            name: component,
+            update: undefined,
+          })
         }
-
-        const keyframe = property.keyframes[keyframeIndex]
-
-        const progress = getPercentageProgress(
-          keyframeCurrentTime,
-          keyframe.duration,
-          keyframe.timingFunction,
-        )
-
-        // todo next value should be taken from next keyframe, not from valueRange
-        const value = updateAnimation({
-          keyframe,
-          timingMode: animation.timingMode,
-          progress,
-        })
-
-        const { component, entity, path } = property
-
-        component &&
-          set(state.component, `${component}.${entity}.${path}`, value)
-
-        state = updateComponent({
-          state,
-          entity,
-          name: component,
-          update: () => ({}),
-        })
-      })
+      }
 
       if (animationTimeExceeded) {
         if (animation.deleteWhenFinished) {
@@ -335,7 +326,6 @@ export const animationSystem = (state: AnyState) =>
             state,
             entity,
             update: () => ({
-              // ...animation,
               currentTime: 0,
               isPlaying: false,
               isFinished: true,
@@ -356,7 +346,6 @@ export const animationSystem = (state: AnyState) =>
         state,
         entity,
         update: () => ({
-          // ...animation,
           currentTime,
           isFinished: animationTimeExceeded,
         }),

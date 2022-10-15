@@ -62,5 +62,4 @@ export * from './system/transform/transformCrud'
 export { createComponentCrud } from './util/createComponentCrud'
 
 // TODO
-// Events inside system
-// Collision events
+// enabled flag in collider box

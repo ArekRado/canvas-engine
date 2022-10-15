@@ -149,6 +149,10 @@ export const colliderSystem = (state: AnyState) =>
 
       const allColliders = Object.entries(state.component.collider)
 
+      if (allColliders.length === 0) {
+        return state
+      }
+
       for (let i = 0; i < allColliders.length; i++) {
         const [entity, collider] = allColliders[i]
 

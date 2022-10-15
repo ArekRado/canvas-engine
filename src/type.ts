@@ -155,7 +155,7 @@ export namespace Animation {
     /**
      * entity.component[index].path
      */
-    path: string
+    path: string[]
     component: string // it should be keyof State['component']
     entity: Entity
     index?: number

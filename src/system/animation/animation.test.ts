@@ -97,7 +97,7 @@ describe('animation', () => {
           isFinished: false,
           properties: [
             {
-              path: 'value',
+              path: ['value'],
               component: numberComponentName,
               entity,
               keyframes: [],
@@ -117,7 +117,7 @@ describe('animation', () => {
         currentTime: 0,
         animationProperty: {
           component: 'animation',
-          path: 'FieldNumber',
+          path: ['FieldNumber'],
           entity,
           keyframes: [
             {
@@ -140,7 +140,7 @@ describe('animation', () => {
         currentTime: 5,
         animationProperty: {
           component: 'animation',
-          path: 'FieldNumber',
+          path: ['FieldNumber'],
           entity,
           keyframes: [
             {
@@ -165,7 +165,7 @@ describe('animation', () => {
           wrapMode: Animation.WrapMode.once,
           animationProperty: {
             component: 'animation',
-            path: 'FieldNumber',
+            path: ['FieldNumber'],
             entity,
             keyframes: [
               {
@@ -203,7 +203,7 @@ describe('animation', () => {
           currentTime: 3,
           wrapMode: Animation.WrapMode.once,
           animationProperty: {
-            path: 'value',
+            path: ['value'],
             component: numberComponentName,
             entity,
             keyframes: [
@@ -236,7 +236,7 @@ describe('animation', () => {
           secondLoop: false,
           animationProperty: {
             component: 'animation',
-            path: 'FieldNumber',
+            path: ['FieldNumber'],
             entity,
             keyframes: [
               {
@@ -261,7 +261,7 @@ describe('animation', () => {
           secondLoop: false,
           animationProperty: {
             component: 'animation',
-            path: 'FieldNumber',
+            path: ['FieldNumber'],
             entity,
             keyframes: [
               {
@@ -300,7 +300,7 @@ describe('animation', () => {
           wrapMode: Animation.WrapMode.once,
           animationProperty: {
             component: 'animation',
-            path: 'FieldNumber',
+            path: ['FieldNumber'],
             entity,
             keyframes: [
               {
@@ -324,7 +324,7 @@ describe('animation', () => {
           wrapMode: Animation.WrapMode.once,
           animationProperty: {
             component: 'animation',
-            path: 'FieldNumber',
+            path: ['FieldNumber'],
             entity,
             keyframes: [
               {
@@ -486,7 +486,7 @@ describe('animation', () => {
           isFinished: false,
           properties: [
             {
-              path: 'value',
+              path: ['value'],
               component: numberComponentName,
               entity,
               keyframes: [
@@ -530,7 +530,7 @@ describe('animation', () => {
           isFinished: false,
           properties: [
             {
-              path: 'value',
+              path: ['value'],
               component: numberComponentName,
               entity,
               keyframes: [
@@ -596,7 +596,7 @@ describe('animation', () => {
           isFinished: false,
           properties: [
             {
-              path: 'value',
+              path: ['value'],
               component: numberComponentName,
               entity,
               keyframes: [
@@ -621,7 +621,7 @@ describe('animation', () => {
               ],
             },
             {
-              path: 'value',
+              path: ['value'],
               component: numberComponentName,
               entity,
               keyframes: [
@@ -687,7 +687,7 @@ describe('animation', () => {
           isFinished: false,
           properties: [
             {
-              path: 'value',
+              path: ['value'],
               component: numberComponentName,
               entity,
               keyframes: [
@@ -759,7 +759,7 @@ describe('animation', () => {
           isFinished: false,
           properties: [
             {
-              path: 'value',
+              path: ['value'],
               component: numberComponentName,
               entity,
               keyframes: [
@@ -835,7 +835,7 @@ describe('animation', () => {
           isFinished: false,
           properties: [
             {
-              path: 'value',
+              path: ['value'],
               component: numberComponentName,
               entity,
               keyframes: [
@@ -917,7 +917,7 @@ describe('animation', () => {
           isFinished: false,
           properties: [
             {
-              path: 'value',
+              path: ['value'],
               component: numberComponentName,
               entity,
               keyframes: [
@@ -996,7 +996,7 @@ describe('animation', () => {
           isFinished: false,
           properties: [
             {
-              path: 'value',
+              path: ['value'],
               component: numberComponentName,
               entity,
               keyframes: [
@@ -1023,7 +1023,7 @@ describe('animation', () => {
               ],
             },
             {
-              path: 'value',
+              path: ['value'],
               component: vector2DComponentName,
               entity,
               keyframes: [
@@ -1108,7 +1108,7 @@ describe('animation', () => {
           isFinished: false,
           properties: [
             {
-              path: 'value',
+              path: ['value'],
               component: numberComponentName,
               entity,
               keyframes: [
@@ -1181,7 +1181,7 @@ describe('animation', () => {
           isFinished: false,
           properties: [
             {
-              path: 'value',
+              path: ['value'],
               component: stringComponentName,
               entity,
               keyframes: [
@@ -1252,7 +1252,7 @@ describe('animation', () => {
 
           properties: [
             {
-              path: 'value',
+              path: ['value'],
               component: vector2DComponentName,
               entity,
               keyframes: [
@@ -1339,7 +1339,7 @@ describe('animation', () => {
           wrapMode: Animation.WrapMode.once,
           properties: [
             {
-              path: 'value',
+              path: ['value'],
               component: vector3DComponentName,
               entity,
               keyframes: [
@@ -1453,7 +1453,7 @@ describe('animation', () => {
           isPlaying: true,
           properties: [
             {
-              path: 'position',
+              path: ['position'],
               component: componentName.transform,
               entity,
               keyframes: [
@@ -1508,7 +1508,7 @@ describe('animation', () => {
           isPlaying: true,
           properties: [
             {
-              path: 'position',
+              path: ['position'],
               component: componentName.transform,
               entity,
               keyframes: [
@@ -1530,19 +1530,56 @@ describe('animation', () => {
       state = tick(10, state)
       state = tick(10, state)
 
-      expect(getTransform({ state, entity })?.position).toEqual([
-        0, 0.8, -1,
-      ])
+      expect(getTransform({ state, entity })?.position).toEqual([0, 0.8, -1])
       state = tick(20, state)
       state = tick(20, state)
-      expect(getTransform({ state, entity })?.position).toEqual([
-        0, 0.6, -1,
-      ])
+      expect(getTransform({ state, entity })?.position).toEqual([0, 0.6, -1])
       state = tick(30, state)
       state = tick(30, state)
-      expect(getTransform({ state, entity })?.position).toEqual([
-        0, 0.4, -1,
-      ])
+      expect(getTransform({ state, entity })?.position).toEqual([0, 0.4, -1])
     })
+  })
+
+  it('Animation Performance test', () => {
+    let state = createEntity({ state: getState({}), entity })
+
+    state = createComponent({
+      state,
+      entity,
+      name: 'A',
+      data: {
+        x: 0,
+      },
+    })
+
+    state = createAnimation({
+      state,
+      entity,
+      data: defaultAnimation({
+        isPlaying: true,
+        properties: [
+          {
+            path: ['x'],
+            component: 'A',
+            entity,
+            keyframes: Array.from({ length: 1000 }, (_, i) => ({
+              duration: 100 * i,
+              timingFunction: 'Linear',
+              valueRange: [i, i + 1],
+            })),
+          },
+        ],
+      }),
+    }) as InternalInitialState
+
+    const a = performance.now()
+    for (let i = 0; i < 100000; i++) {
+      state = tick(i, state)
+    }
+    const b = performance.now()
+
+    console.log('diff:', b - a)
+
+    expect(b - a).toBeLessThan(2000)
   })
 })

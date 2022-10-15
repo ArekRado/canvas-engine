@@ -12,7 +12,7 @@ export const updateComponent = <Data, State extends AnyState = AnyState>({
   name: string
   entity: Entity
   state: State
-  update: (component: Data) => Partial<Data>
+  update: ((component: Data) => Partial<Data>) | undefined
   callSystemUpdateMethod?: boolean
 }): State => {
   const previousComponent = getComponent<Data, State>({
@@ -22,11 +22,10 @@ export const updateComponent = <Data, State extends AnyState = AnyState>({
   })
 
   if (previousComponent !== undefined) {
-    const updatedComponent = Object.assign(
-      {},
-      previousComponent,
-      update(previousComponent),
-    )
+    const updatedComponent =
+      update === undefined
+        ? previousComponent
+        : Object.assign({}, previousComponent, update(previousComponent))
 
     state.component[name][entity] = updatedComponent
 
