@@ -1,3 +1,4 @@
+import { PerspectiveCamera } from 'Three'
 import {
   AnyState,
   Camera,
@@ -25,41 +26,53 @@ export const getCameraSize = (distance: number, aspectRatio: number) => {
   }
 }
 
-export const adjustBabylonCameraToComponentCamera = ({
+export const adjustThreeCameraToComponentCamera = ({
   component,
-  aspectRatio,
-  cameraRef,
+  // aspectRatio,
+  cameraInstance,
 }: {
   component: Partial<Camera>
-  aspectRatio: number
-  cameraRef: AnyState['babylonjs']['cameraRef']
+  // aspectRatio: number
+  cameraInstance: PerspectiveCamera | undefined
 }) => {
-  if (!cameraRef) return
+  if (!cameraInstance) return
 
   if (component.position) {
-    cameraRef.position.x = component.position[1];
-    cameraRef.position.y = component.position[0];
-    cameraRef.position.z = -10;
-
-    cameraRef.target.x = component.position[1];
-    cameraRef.target.y = component.position[0];
-    cameraRef.target.z = 0;
+    cameraInstance.position.x = component.position[0]
+    cameraInstance.position.y = component.position[1]
+    cameraInstance.position.z = component.position[2]
   }
 
-  const size = getCameraSize(component.distance ?? 0, aspectRatio)
+  if (component.lookAt) {
+    cameraInstance.lookAt(
+      component.lookAt[0],
+      component.lookAt[1],
+      component.lookAt[2],
+    )
 
-  cameraRef.orthoLeft = size.left
-  cameraRef.orthoRight = size.right
-  cameraRef.orthoBottom = size.bottom
-  cameraRef.orthoTop = size.top
+    // cameraInstance.target.x = component.position[1];
+    // cameraInstance.target.y = component.position[0];
+    // cameraInstance.target.z = 0;
+  }
 
-  return size
+  if (component.fov !== undefined) cameraInstance.fov = component.fov
+  if (component.aspect !== undefined) cameraInstance.aspect = component.aspect
+  if (component.near !== undefined) cameraInstance.near = component.near
+  if (component.far !== undefined) cameraInstance.far = component.far
+
+  // const size = getCameraSize(component.distance ?? 0, aspectRatio)
+
+  // cameraInstance.orthoLeft = size.left
+  // cameraInstance.orthoRight = size.right
+  // cameraInstance.orthoBottom = size.bottom
+  // cameraInstance.orthoTop = size.top
+
+  // return size
 }
 
-export const handleResize: EventHandler<
-  WindowResizeEvent,
-  AnyState
-> = ({ state }) => {
+export const handleResize: EventHandler<WindowResizeEvent, AnyState> = ({
+  state,
+}) => {
   state = updateCamera({
     state,
     entity: cameraEntity,

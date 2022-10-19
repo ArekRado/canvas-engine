@@ -1539,47 +1539,4 @@ describe('animation', () => {
       expect(getTransform({ state, entity })?.position).toEqual([0, 0.4, -1])
     })
   })
-
-  it('Animation Performance test', () => {
-    let state = createEntity({ state: getState({}), entity })
-
-    state = createComponent({
-      state,
-      entity,
-      name: 'A',
-      data: {
-        x: 0,
-      },
-    })
-
-    state = createAnimation({
-      state,
-      entity,
-      data: defaultAnimation({
-        isPlaying: true,
-        properties: [
-          {
-            path: ['x'],
-            component: 'A',
-            entity,
-            keyframes: Array.from({ length: 1000 }, (_, i) => ({
-              duration: 100 * i,
-              timingFunction: 'Linear',
-              valueRange: [i, i + 1],
-            })),
-          },
-        ],
-      }),
-    }) as InternalInitialState
-
-    const a = performance.now()
-    for (let i = 0; i < 100000; i++) {
-      state = tick(i, state)
-    }
-    const b = performance.now()
-
-    console.log('diff:', b - a)
-
-    expect(b - a).toBeLessThan(2000)
-  })
 })

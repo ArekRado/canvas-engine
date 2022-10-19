@@ -1,15 +1,18 @@
-import { InternalInitialState, Transform, Mesh, AnyState } from '../../type'
+import { InternalInitialState, Transform, Mesh, Entity } from '../../type'
 import { createSystem } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { getMaterial } from '../material/materialCrud'
 import { getTransform } from '../transform/transformCrud'
-import { AbstractMesh, LinesMesh, Mesh as BabylonMesh } from '@babylonjs/core'
+import { Material, Mesh as ThreeMesh, PlaneGeometry } from 'Three'
+import { materialObject } from '../material/material'
+
+export const meshObject: Record<Entity, ThreeMesh | undefined> = {}
 
 export const updateMeshTransform = ({
   mesh,
   transform,
 }: {
-  mesh: BabylonMesh | AbstractMesh
+  mesh: ThreeMesh
   transform: Transform
 }) => {
   mesh.position.x = transform.position[0]
@@ -20,66 +23,60 @@ export const updateMeshTransform = ({
   mesh.rotation.y = 0
   mesh.rotation.z = 0
 
-  mesh.scaling.x = transform.scale[0]
-  mesh.scaling.y = transform.scale[1]
-  mesh.scaling.z = transform.scale[2] ?? 1
+  mesh.scale.x = transform.scale[0]
+  mesh.scale.y = transform.scale[1]
+  mesh.scale.z = transform.scale[2] ?? 1
 }
 
 const createOrUpdateMesh = ({
   mesh,
-  meshInstance,
-  state,
+  // meshInstance,
+  material,
 }: {
   mesh: Mesh
-  meshInstance: BabylonMesh | AbstractMesh | undefined
-  state: AnyState
-}): BabylonMesh | LinesMesh | undefined => {
-  const { MeshBuilder, sceneRef, Vector3, Color4 } = state.babylonjs
-  if (!(MeshBuilder && sceneRef && Vector3 && Color4)) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('To use Mesh engine requires all properties to be defined', {
-        MeshBuilder,
-        sceneRef,
-        Vector3,
-        Color4,
-      })
-    }
+  meshInstance: ThreeMesh | undefined
+  material: Material | undefined
+}) => {
+  // const { PlaneGeometry, sceneRef, Vector3, Color4 } = state.three
+  // if (!(PlaneGeometry && sceneRef && Vector3 && Color4)) {
+  //   if (process.env.NODE_ENV === 'development') {
+  //     console.warn('To use Mesh engine requires all properties to be defined', {
+  //       PlaneGeometry,
+  //       sceneRef,
+  //       Vector3,
+  //       Color4,
+  //     })
+  //   }
 
-    return undefined
-  }
-
-  let newMesh
+  //   return undefined
+  // }
 
   switch (mesh.data.type) {
     case 'plane':
       // lol no updates XD
-      if (meshInstance) return undefined
-
-      newMesh = MeshBuilder.CreatePlane('plane', {
-        width: mesh.data.width,
-        height: mesh.data.height,
-        updatable: mesh.updatable,
-        sideOrientation: mesh.data.sideOrientation,
-      })
-      break
+      
+      return new ThreeMesh(
+        new PlaneGeometry(mesh.data.width, mesh.data.height),
+        material,
+      )
     case 'lines':
-      newMesh = MeshBuilder.CreateLines('lines', {
-        instance: meshInstance as LinesMesh,
-        updatable: mesh.updatable,
-        points: mesh.data.points.reduce((acc, point) => {
-          acc.push(new Vector3(point[0], point[1], 0))
-          return acc
-        }, [] as any[] /** XD */),
-        colors: mesh.data.colors.reduce((acc, color) => {
-          acc.push(new Color4(color[0], color[1], color[2], color[3]))
-          return acc
-        }, [] as any[] /** XD */),
-      })
+      return new ThreeMesh(new PlaneGeometry(1, 1), material)
 
-      break
+    //   newMesh = meshBuilder.CreateLines('lines', {
+    //     instance: meshInstance as LinesMesh,
+    //     updatable: mesh.updatable,
+    //     points: mesh.data.points.reduce((acc, point) => {
+    //       acc.push(new Vector3(point[0], point[1], 0))
+    //       return acc
+    //     }, [] as any[] /** XD */),
+    //     colors: mesh.data.colors.reduce((acc, color) => {
+    //       acc.push(new Color4(color[0], color[1], color[2], color[3]))
+    //       return acc
+    //     }, [] as any[] /** XD */),
+    //   })
+
+    // break
   }
-
-  return newMesh
 }
 
 export const meshSystem = (state: InternalInitialState) =>
@@ -88,39 +85,38 @@ export const meshSystem = (state: InternalInitialState) =>
     name: componentName.mesh,
     componentName: componentName.mesh,
     create: ({ state, component, entity }) => {
-      const { MeshBuilder, sceneRef, Vector3, Color4 } = state.babylonjs
-      if (!(MeshBuilder && sceneRef && Vector3 && Color4)) return state
-
-      const mesh = createOrUpdateMesh({
-        mesh: component,
-        meshInstance: undefined,
-        state,
-      })
-
-      if (!mesh) {
-        return state
-      }
-
-      mesh.uniqueId = parseInt(entity)
+      const { sceneRef } = state.three
+      if (!sceneRef) return state
 
       const materialComponent = getMaterial({
         state,
-        entity: component.materialEntity[0],
+        entity,
       })
 
-      if (materialComponent) {
-        const material = sceneRef.getMaterialByUniqueID(
-          materialComponent?.uniqueId,
-        )
+      const material = materialObject[entity]
 
-        mesh.material = material
-      } else if (component.data.type !== 'lines') {
+      if (!materialComponent && component.data.type !== 'lines') {
         if (process.env.NODE_ENV === 'development') {
           console.warn(
             `Mesh has been created without material component. Mesh entity: ${entity}`,
           )
         }
       }
+
+      const mesh = createOrUpdateMesh({
+        mesh: component,
+        meshInstance: undefined,
+        material,
+      })
+
+      if (!mesh) {
+        return state
+      }
+
+      mesh.name = entity
+      meshObject[entity] = mesh
+
+      sceneRef.add(mesh);
 
       const transform = getTransform({
         state,
@@ -137,24 +133,28 @@ export const meshSystem = (state: InternalInitialState) =>
       return state
     },
     remove: ({ state, entity }) => {
-      const sceneRef = state.babylonjs.sceneRef
-      if (sceneRef) {
-        const mesh = sceneRef.getMeshByUniqueId(parseInt(entity))
-        mesh?.dispose()
+      const sceneRef = state.three.sceneRef
+      const mesh = meshObject[entity] //sceneRef.getMeshByUniqueId(parseInt(entity))
+
+      if (sceneRef && mesh) {
+        sceneRef.remove(mesh)
+        mesh.geometry.dispose()
+        // mesh.material.dispose()
+        meshObject[entity] = undefined
       }
 
       return state
     },
     update: ({ state, entity, component }) => {
-      const meshInstance = state.babylonjs.sceneRef?.getMeshByUniqueId(
-        parseInt(entity),
-      )
+      const meshInstance = meshObject[entity] // state.three.sceneRef?.getMeshByUniqueId(
+      // parseInt(entity),
+      // )
 
       if (meshInstance) {
         createOrUpdateMesh({
           mesh: component,
           meshInstance,
-          state,
+          material: materialObject[entity],
         })
 
         const transform = getTransform({ state, entity })

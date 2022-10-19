@@ -63,12 +63,12 @@ export const defaultMouseInteraction: GetDefaultComponent<MouseInteraction> = (
 })
 
 export const defaultCamera: GetDefaultComponent<Camera> = (data = {}) => ({
-  position: vectorZero(),
-  distance: 1,
-  bottom: 0,
-  top: 0,
-  left: 0,
-  right: 0,
+  position: [0, 0, 0],
+  lookAt: [1, 1, 1],
+  fov: 90,
+  aspect: window.innerWidth / window.innerHeight,
+  near: 0.1,
+  far: 1000,
   ...data,
 })
 
@@ -111,7 +111,7 @@ export const defaultKeyboard: GetDefaultComponent<Keyboard> = (data = {}) => ({
 })
 
 export const defaultMaterial: GetDefaultComponent<Material> = (data = {}) => ({
-  uniqueId: -1,
+  // uniqueId: -1,
   ...data,
 })
 

@@ -8,34 +8,33 @@ import {
 } from '../../type'
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
-import { Scene } from '@babylonjs/core/scene'
 import { getTransform, updateTransform } from './transformCrud'
-import { updateMeshTransform } from '../mesh/mesh'
+import { meshObject, updateMeshTransform } from '../mesh/mesh'
 
-const syncTransformWithBabylon = ({
-  entity,
-  transform,
-  scene,
-}: {
-  entity: Entity
-  transform: Transform
-  scene: Scene
-}) => {
-  const transformNode = scene.getTransformNodeByUniqueId(parseFloat(entity))
-  if (transformNode) {
-    transformNode.position.x = transform.position[0]
-    transformNode.position.y = transform.position[1]
-    transformNode.position.z = transform.position[2]
+// const syncTransformWithBabylon = ({
+//   entity,
+//   transform,
+//   scene,
+// }: {
+//   entity: Entity
+//   transform: Transform
+//   scene: Scene
+// }) => {
+//   const transformNode = scene.getTransformNodeByUniqueId(parseFloat(entity))
+//   if (transformNode) {
+//     transformNode.position.x = transform.position[0]
+//     transformNode.position.y = transform.position[1]
+//     transformNode.position.z = transform.position[2]
 
-    transformNode.rotation.x = transform.rotation
-    // transformNode.rotation.y = transform.rotation[1]
-    // transformNode.rotation.z = transform.rotation[2] ?? 0
+//     transformNode.rotation.x = transform.rotation
+//     // transformNode.rotation.y = transform.rotation[1]
+//     // transformNode.rotation.z = transform.rotation[2] ?? 0
 
-    transformNode.scaling.x = transform.scale[0]
-    transformNode.scaling.y = transform.scale[1]
-    transformNode.scaling.z = transform.scale[2] ?? 1
-  }
-}
+//     transformNode.scaling.x = transform.scale[0]
+//     transformNode.scaling.y = transform.scale[1]
+//     transformNode.scaling.z = transform.scale[2] ?? 1
+//   }
+// }
 
 const getParentPosition = (
   state: InternalInitialState,
@@ -126,17 +125,18 @@ const update = ({
     }
   }
 
-  if (state.babylonjs.sceneRef) {
-    syncTransformWithBabylon({
-      scene: state.babylonjs.sceneRef,
-      transform: component,
-      entity,
-    })
+  if (state.three.sceneRef) {
+    // syncTransformWithBabylon({
+    //   scene: state.three.sceneRef,
+    //   transform: component,
+    //   entity,
+    // })
 
     if (state.component.mesh[entity] !== undefined) {
-      const meshInstance = state.babylonjs.sceneRef?.getMeshByUniqueId(
-        parseInt(entity),
-      )
+      const meshInstance = meshObject[entity] 
+      // state.three.sceneRef?.getMeshByUniqueId(
+      //   parseInt(entity),
+      // )
 
       if (meshInstance) {
         updateMeshTransform({

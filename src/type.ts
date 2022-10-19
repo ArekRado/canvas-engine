@@ -1,13 +1,24 @@
 import { Vector2D } from '@arekrado/vector-2d'
-import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera'
-import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
-import { Scene } from '@babylonjs/core/scene'
+// import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera'
+// import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
+// import { Scene } from '@babylonjs/core/scene'
 import { TimingFunction } from './util/bezierFunction'
-import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder'
-import { Texture } from '@babylonjs/core/Materials/Textures/texture'
-import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
-import { Vector3 } from '@babylonjs/core'
+// import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder'
+// import { Texture } from '@babylonjs/core/Materials/Textures/texture'
+// import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
+// import { Vector3 } from '@babylonjs/core'
 import { Intersection } from './system/collider/getIntersection'
+
+import { Scene, MeshBasicMaterialParameters, WebGLRenderer } from 'Three'
+
+// sceneRef?: Scene
+// cameraRef?: UniversalCamera
+// Vector3?: typeof Vector3
+// StandardMaterial?: typeof StandardMaterial
+// MeshBuilder?: typeof MeshBuilder
+// Texture?: typeof Texture
+// Color3?: typeof Color3
+// Color4?: typeof Color4
 
 ////////////////////////////////////
 //
@@ -194,7 +205,6 @@ export type MouseInteraction = {
 }
 
 export type Mesh = {
-  materialEntity: Entity[]
   updatable: boolean
   data:
     | {
@@ -216,20 +226,23 @@ export type Mesh = {
       }
 }
 
-export type Material = {
-  uniqueId: number
-  diffuseColor?: Color
-  specularColor?: Color
-  emissiveColor?: Color
-  ambientColor?: Color
-  alpha?: number
-  backFaceCulling?: boolean
-  wireframe?: boolean
-  useAlphaFromDiffuseTexture?: boolean
-
-  diffuseTexture?: string
-  bumpTexture?: string
+export type Material = MeshBasicMaterialParameters & {
+  textureUrl?: string
 }
+// {
+//   uniqueId: number
+//   diffuseColor?: Color
+//   specularColor?: Color
+//   emissiveColor?: Color
+//   ambientColor?: Color
+//   alpha?: number
+//   backFaceCulling?: boolean
+//   wireframe?: boolean
+//   useAlphaFromDiffuseTexture?: boolean
+
+//   diffuseTexture?: string
+//   bumpTexture?: string
+// }
 
 export type AnimatedProperty = {
   path: string
@@ -283,13 +296,19 @@ export type Keyboard = {
 }
 
 export type Camera = {
-  position: Vector2D
-  distance: number
-  // ortho
-  bottom: number
-  top: number
-  left: number
-  right: number
+  position: Vector3D
+  lookAt: Vector3D
+  // distance: number
+  // // ortho
+  // bottom: number
+  // top: number
+  // left: number
+  // right: number
+
+  fov?: number
+  aspect?: number
+  near?: number
+  far?: number
 }
 
 export type Vector3D = [number, number, number]
@@ -490,15 +509,17 @@ export type EmptyState<Component, System> = {
    */
   animationFrame: number
   // Babylonjs
-  babylonjs: {
+  three: {
     sceneRef?: Scene
-    cameraRef?: UniversalCamera
-    Vector3?: typeof Vector3
-    StandardMaterial?: typeof StandardMaterial
-    MeshBuilder?: typeof MeshBuilder
-    Texture?: typeof Texture
-    Color3?: typeof Color3
-    Color4?: typeof Color4
+    rendererRef?: WebGLRenderer
+    // cameraRef?: ThreeCamera
+    // Vector3?: typeof Vector3
+    // StandardMaterial?: typeof StandardMaterial
+    // // mesh?: typeof ThreeMesh
+    // Texture?: typeof Texture
+    // Color3?: typeof Color3
+    // Color4?: typeof Color4
+    // PlaneGeometry?: typeof PlaneGeometry
   }
 }
 
