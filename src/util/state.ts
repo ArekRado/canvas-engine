@@ -10,9 +10,50 @@ import { animationSystem } from '../system/animation/animation'
 import { meshSystem } from '../system/mesh/mesh'
 import { materialSystem } from '../system/material/material'
 import { eventSystem } from '../event'
+import { rigidBodySystem } from '../system/rigidBody/rigidBody'
 import { AnyState, InternalInitialState } from '../type'
-import { WebGLRenderer } from 'Three'
-// import { rigidBodySystem } from '../system/rigidBody/rigidBody'
+import { Scene, WebGLRenderer } from 'Three'
+
+let sceneRef: Scene | undefined
+let rendererRef: WebGLRenderer | undefined
+
+// export const setScene = () => {
+//   sceneRef = new Scene()
+// }
+// export const getScene = () => sceneRef
+
+// export const setRenderer = (containerId: string) => {
+//   const canvas = document.getElementById(containerId) as HTMLCanvasElement
+//   rendererRef = new WebGLRenderer({ canvas })
+// }
+// export const getRenderer = () => rendererRef
+
+export function scene() {
+  // let sceneRef: Scene | undefined
+
+  return {
+    get: function () {
+      return sceneRef
+    },
+    set: function () {
+      sceneRef = new Scene()
+    },
+  }
+}
+
+export function renderer() {
+  // let rendererRef: WebGLRenderer | undefined
+
+  return {
+    get: function () {
+      return rendererRef
+    },
+    set: function (containerId: string) {
+      const canvas = document.getElementById(containerId) as HTMLCanvasElement
+      rendererRef = new WebGLRenderer({ canvas })
+    },
+  }
+}
 
 export const getInitialState = (): InternalInitialState => ({
   entity: {},
@@ -32,79 +73,18 @@ export const getInitialState = (): InternalInitialState => ({
   globalSystem: [],
   system: [],
   animationFrame: -1,
-  three: {
-    sceneRef: undefined,
-    // cameraRef: undefined,
-    // StandardMaterial: undefined,
-    // MeshBuilder: undefined,
-  },
 })
 
 export const getSystems = ({
   state,
   document,
   containerId,
-  scene,
-  renderer,
-}: // camera,
-// Vector3,
-// StandardMaterial,
-// MeshBuilder,
-// Texture,
-// Color3,
-// Color4,
-{
+}: {
   state: AnyState
   renderer?: WebGLRenderer
   document?: Document
   containerId?: string
-  scene?: AnyState['three']['sceneRef']
-  // camera?: AnyState['three']['cameraRef']
-  // Vector3?: AnyState['three']['Vector3']
-  // StandardMaterial?: AnyState['three']['StandardMaterial']
-  // MeshBuilder?: AnyState['three']['MeshBuilder']
-  // Texture?: AnyState['three']['Texture']
-  // Color3?: AnyState['three']['Color3']
-  // Color4?: AnyState['three']['Color4']
 }): InternalInitialState => {
-  if (process.env.NODE_ENV === 'development') {
-    if (
-      !scene ||
-      !renderer
-      // !camera
-      // !Vector3 ||
-      // !StandardMaterial ||
-      // !MeshBuilder ||
-      // !Texture ||
-      // !Color3
-    ) {
-      console.warn(
-        'Babylonjs camera is not defined. Some features may not work properly.',
-        {
-          scene: !!scene,
-          renderer: !!renderer,
-          // camera: !!camera,
-          // Vector3: !!Vector3,
-          // StandardMaterial: !!StandardMaterial,
-          // MeshBuilder: !!MeshBuilder,
-          // Texture: !!Texture,
-          // Color3: !!Color3,
-          // Color4: !!Color4,
-        },
-      )
-    }
-  }
-
-  state.three.sceneRef = scene
-  state.three.rendererRef = renderer
-  // state.three.cameraRef = camera
-  // state.three.Vector3 = Vector3
-  // state.three.StandardMaterial = StandardMaterial
-  // state.three.MeshBuilder = MeshBuilder
-  // state.three.Texture = Texture
-  // state.three.Color3 = Color3
-  // state.three.Color4 = Color4
-
   let internatlState = state as InternalInitialState
 
   internatlState = eventSystem(internatlState) as InternalInitialState
@@ -118,7 +98,7 @@ export const getSystems = ({
   ) as InternalInitialState
   internatlState = materialSystem(internatlState) as InternalInitialState
   internatlState = meshSystem(internatlState) as InternalInitialState
-  // internatlState = rigidBodySystem(internatlState) as InternalInitialState
+  internatlState = rigidBodySystem(internatlState) as InternalInitialState
 
   if (containerId) {
     internatlState = mouseSystem({
@@ -140,40 +120,31 @@ export const getState = <State extends AnyState = AnyState>({
   state,
   document,
   containerId,
-  scene,
-  renderer,
-}: // camera,
-// Vector3,
-// StandardMaterial,
-// MeshBuilder,
-// Texture,
-// Color3,
-// Color4,
-{
+}: {
   state?: State
   document?: Document
+  window?: Window
   containerId: string
-  scene?: AnyState['three']['sceneRef']
-  renderer?: WebGLRenderer
-  // camera?: AnyState['three']['cameraRef']
-  // Vector3?: AnyState['three']['Vector3']
-  // StandardMaterial?: AnyState['three']['StandardMaterial']
-  // MeshBuilder?: AnyState['three']['MeshBuilder']
-  // Texture?: AnyState['three']['Texture']
-  // Color3?: AnyState['three']['Color3']
-  // Color4?: AnyState['three']['Color4']
-}): InternalInitialState =>
-  getSystems({
+}): InternalInitialState => {
+  if (window && document) {
+    renderer().set(containerId)
+    scene().set()
+
+    // const renderer = new WebGLRenderer({ canvas })
+    // const scene = new Scene()
+
+    const rendererRef = renderer().get()
+    const sceneRef = scene().get()
+
+    if (rendererRef && sceneRef) {
+      rendererRef.setSize(window.innerWidth, window.innerHeight)
+      document.body.appendChild(rendererRef.domElement)
+    }
+  }
+
+  return getSystems({
     state: state || getInitialState(),
     document,
     containerId,
-    scene,
-    renderer,
-    // camera,
-    // Vector3,
-    // StandardMaterial,
-    // MeshBuilder,
-    // Texture,
-    // Color3,
-    // Color4,
   })
+}

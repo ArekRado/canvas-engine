@@ -9,7 +9,7 @@ import { TimingFunction } from './util/bezierFunction'
 // import { Vector3 } from '@babylonjs/core'
 import { Intersection } from './system/collider/getIntersection'
 
-import { Scene, MeshBasicMaterialParameters, WebGLRenderer } from 'Three'
+import { MeshBasicMaterialParameters } from 'Three'
 
 // sceneRef?: Scene
 // cameraRef?: UniversalCamera
@@ -509,18 +509,18 @@ export type EmptyState<Component, System> = {
    */
   animationFrame: number
   // Babylonjs
-  three: {
-    sceneRef?: Scene
-    rendererRef?: WebGLRenderer
-    // cameraRef?: ThreeCamera
-    // Vector3?: typeof Vector3
-    // StandardMaterial?: typeof StandardMaterial
-    // // mesh?: typeof ThreeMesh
-    // Texture?: typeof Texture
-    // Color3?: typeof Color3
-    // Color4?: typeof Color4
-    // PlaneGeometry?: typeof PlaneGeometry
-  }
+  // three: {
+  //   sceneRef?: Scene
+  //   rendererRef?: WebGLRenderer
+  //   // cameraRef?: ThreeCamera
+  //   // Vector3?: typeof Vector3
+  //   // StandardMaterial?: typeof StandardMaterial
+  //   // // mesh?: typeof ThreeMesh
+  //   // Texture?: typeof Texture
+  //   // Color3?: typeof Color3
+  //   // Color4?: typeof Color4
+  //   // PlaneGeometry?: typeof PlaneGeometry
+  // }
 }
 
 /**

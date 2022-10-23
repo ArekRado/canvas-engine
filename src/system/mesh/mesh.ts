@@ -3,26 +3,32 @@ import { createSystem } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { getMaterial } from '../material/materialCrud'
 import { getTransform } from '../transform/transformCrud'
-import { Material, Mesh as ThreeMesh, PlaneGeometry } from 'Three'
+import {
+  BufferGeometry,
+  Line,
+  Material,
+  Mesh as ThreeMesh,
+  PlaneGeometry,
+  Vector3,
+} from 'Three'
 import { materialObject } from '../material/material'
+import { scene } from '../../util/state'
 
-export const meshObject: Record<Entity, ThreeMesh | undefined> = {}
+export const meshObject: Record<Entity, ThreeMesh | Line | undefined> = {}
 
 export const updateMeshTransform = ({
   mesh,
   transform,
 }: {
-  mesh: ThreeMesh
+  mesh: ThreeMesh | Line
   transform: Transform
 }) => {
   mesh.position.x = transform.position[0]
   mesh.position.y = transform.position[1]
   mesh.position.z = transform.position[2]
-
   mesh.rotation.x = transform.rotation
   mesh.rotation.y = 0
   mesh.rotation.z = 0
-
   mesh.scale.x = transform.scale[0]
   mesh.scale.y = transform.scale[1]
   mesh.scale.z = transform.scale[2] ?? 1
@@ -30,11 +36,11 @@ export const updateMeshTransform = ({
 
 const createOrUpdateMesh = ({
   mesh,
-  // meshInstance,
+  meshInstance,
   material,
 }: {
   mesh: Mesh
-  meshInstance: ThreeMesh | undefined
+  meshInstance: ThreeMesh | Line | undefined
   material: Material | undefined
 }) => {
   // const { PlaneGeometry, sceneRef, Vector3, Color4 } = state.three
@@ -51,29 +57,36 @@ const createOrUpdateMesh = ({
   //   return undefined
   // }
 
+  if (meshInstance) {
+    return undefined
+  }
+
   switch (mesh.data.type) {
     case 'plane':
       // lol no updates XD
-      
+
       return new ThreeMesh(
         new PlaneGeometry(mesh.data.width, mesh.data.height),
         material,
       )
     case 'lines':
-      return new ThreeMesh(new PlaneGeometry(1, 1), material)
+      const points = mesh.data.points.reduce((acc, point) => {
+        acc.push(new Vector3(point[0], point[1], 0))
+        return acc
+      }, [] as Vector3[])
 
-    //   newMesh = meshBuilder.CreateLines('lines', {
-    //     instance: meshInstance as LinesMesh,
-    //     updatable: mesh.updatable,
-    //     points: mesh.data.points.reduce((acc, point) => {
-    //       acc.push(new Vector3(point[0], point[1], 0))
-    //       return acc
-    //     }, [] as any[] /** XD */),
-    //     colors: mesh.data.colors.reduce((acc, color) => {
-    //       acc.push(new Color4(color[0], color[1], color[2], color[3]))
-    //       return acc
-    //     }, [] as any[] /** XD */),
-    //   })
+      const geometry = new BufferGeometry().setFromPoints(points)
+      return new Line(geometry, material)
+
+    // newMesh = meshBuilder.CreateLines('lines', {
+    //   instance: meshInstance as LinesMesh,
+    //   updatable: mesh.updatable,
+    //   points: ,
+    //   colors: mesh.data.colors.reduce((acc, color) => {
+    //     acc.push(new Color4(color[0], color[1], color[2], color[3]))
+    //     return acc
+    //   }, [] as any[] /** XD */),
+    // })
 
     // break
   }
@@ -85,15 +98,13 @@ export const meshSystem = (state: InternalInitialState) =>
     name: componentName.mesh,
     componentName: componentName.mesh,
     create: ({ state, component, entity }) => {
-      const { sceneRef } = state.three
+      const sceneRef = scene().get()
       if (!sceneRef) return state
 
       const materialComponent = getMaterial({
         state,
         entity,
       })
-
-      const material = materialObject[entity]
 
       if (!materialComponent && component.data.type !== 'lines') {
         if (process.env.NODE_ENV === 'development') {
@@ -106,7 +117,7 @@ export const meshSystem = (state: InternalInitialState) =>
       const mesh = createOrUpdateMesh({
         mesh: component,
         meshInstance: undefined,
-        material,
+        material: materialObject[entity],
       })
 
       if (!mesh) {
@@ -116,7 +127,7 @@ export const meshSystem = (state: InternalInitialState) =>
       mesh.name = entity
       meshObject[entity] = mesh
 
-      sceneRef.add(mesh);
+      sceneRef.add(mesh)
 
       const transform = getTransform({
         state,
@@ -133,8 +144,8 @@ export const meshSystem = (state: InternalInitialState) =>
       return state
     },
     remove: ({ state, entity }) => {
-      const sceneRef = state.three.sceneRef
-      const mesh = meshObject[entity] //sceneRef.getMeshByUniqueId(parseInt(entity))
+      const sceneRef = scene().get()
+      const mesh = meshObject[entity]
 
       if (sceneRef && mesh) {
         sceneRef.remove(mesh)
@@ -146,9 +157,7 @@ export const meshSystem = (state: InternalInitialState) =>
       return state
     },
     update: ({ state, entity, component }) => {
-      const meshInstance = meshObject[entity] // state.three.sceneRef?.getMeshByUniqueId(
-      // parseInt(entity),
-      // )
+      const meshInstance = meshObject[entity]
 
       if (meshInstance) {
         createOrUpdateMesh({

@@ -7,8 +7,9 @@ import {
   MeshBasicMaterial,
   TextureLoader,
 } from 'Three'
+import { scene } from '../../util/state'
 
-export const materialObject: Record<Entity, ThreeMaterial | undefined> = {}
+export let materialObject: Record<Entity, ThreeMaterial | undefined> = {}
 
 let loader: TextureLoader | undefined = undefined
 
@@ -29,7 +30,7 @@ const setupMaterialData = ({
   previousComponent: Material | undefined
   state: InternalInitialState
 }) => {
-  const { sceneRef } = state.three
+  const sceneRef = scene().get()
   if (!sceneRef) return state
 
   let material = materialObject[entity]
@@ -39,12 +40,14 @@ const setupMaterialData = ({
   }
 
   if (!material) {
+    const { textureUrl, ...materialParams } = component
+
     material = new MeshBasicMaterial(
       {
-        ...component,
+        ...materialParams,
         map:
-          loader !== undefined && component.textureUrl !== undefined
-            ? loader.load(component.textureUrl)
+          loader !== undefined && textureUrl !== undefined
+            ? loader.load(textureUrl)
             : undefined,
       },
       //   {
@@ -52,8 +55,12 @@ const setupMaterialData = ({
       //   side: FrontSide,
       // }
     )
-    // material = new StandardMaterial(entity, sceneRef)
-    // material.uniqueId = component.uniqueId
+
+    materialObject = {
+      ...materialObject,
+      [entity]: material,
+    }
+    // materialObject[entity] = material
   }
 
   // if (
@@ -187,10 +194,12 @@ export const materialSystem = (state: InternalInitialState) =>
       return state
     },
     remove: ({ state, entity }) => {
-      const sceneRef = state.three.sceneRef
-      if (sceneRef) {
-        const material = materialObject[entity]
-        material?.dispose()
+      const material = materialObject[entity]
+      material?.dispose()
+
+      materialObject = {
+        ...materialObject,
+        [entity]: undefined
       }
 
       return state

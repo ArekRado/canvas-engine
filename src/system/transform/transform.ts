@@ -10,6 +10,7 @@ import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { getTransform, updateTransform } from './transformCrud'
 import { meshObject, updateMeshTransform } from '../mesh/mesh'
+import { scene } from '../../util/state'
 
 // const syncTransformWithBabylon = ({
 //   entity,
@@ -125,28 +126,17 @@ const update = ({
     }
   }
 
-  if (state.three.sceneRef) {
-    // syncTransformWithBabylon({
-    //   scene: state.three.sceneRef,
-    //   transform: component,
-    //   entity,
-    // })
+  const sceneRef = scene().get()
+  if (sceneRef && state.component.mesh[entity] !== undefined) {
+    const meshInstance = meshObject[entity]
 
-    if (state.component.mesh[entity] !== undefined) {
-      const meshInstance = meshObject[entity] 
-      // state.three.sceneRef?.getMeshByUniqueId(
-      //   parseInt(entity),
-      // )
-
-      if (meshInstance) {
-        updateMeshTransform({
-          transform: component,
-          mesh: meshInstance,
-        })
-      }
+    if (meshInstance) {
+      updateMeshTransform({
+        transform: component,
+        mesh: meshInstance,
+      })
     }
   }
-  // }
 
   return state
 }

@@ -59,6 +59,7 @@ const unlockFirstBuffer = () => {
 }
 
 export const emitEvent = <Event>(event: Event) => {
+  // console.log(event)
   if (activeBuffer === 'first') {
     eventBuffer.push(event)
   } else {
