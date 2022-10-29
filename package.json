@@ -1,5 +1,5 @@
 {
-  "version": "0.0.113",
+  "version": "0.0.114",
   "name": "@arekrado/canvas-engine",
   "umd:main": "dist/canvas-engine.umd.production.js",
   "main": "dist/index.js",
@@ -36,7 +36,7 @@
     "npm": ">=8.3.0"
   },
   "dependencies": {
-    "@arekrado/vector-2d": "^0.0.6",
+    "@arekrado/vector-2d": "^0.0.8",
     "three": "^0.145.0"
   },
   "devDependencies": {

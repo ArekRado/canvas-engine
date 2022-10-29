@@ -6,7 +6,7 @@ import {
   Material as ThreeMaterial,
   MeshBasicMaterial,
   TextureLoader,
-} from 'Three'
+} from 'three'
 import { scene } from '../../util/state'
 
 export let materialObject: Record<Entity, ThreeMaterial | undefined> = {}
@@ -31,7 +31,11 @@ const setupMaterialData = ({
   state: InternalInitialState
 }) => {
   const sceneRef = scene().get()
-  if (!sceneRef) return state
+  if (!sceneRef) {
+    console.log('no reef')
+
+    return state
+  }
 
   let material = materialObject[entity]
 
@@ -55,7 +59,6 @@ const setupMaterialData = ({
       //   side: FrontSide,
       // }
     )
-
     materialObject = {
       ...materialObject,
       [entity]: material,
@@ -199,7 +202,7 @@ export const materialSystem = (state: InternalInitialState) =>
 
       materialObject = {
         ...materialObject,
-        [entity]: undefined
+        [entity]: undefined,
       }
 
       return state

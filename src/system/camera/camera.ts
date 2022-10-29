@@ -5,7 +5,7 @@ import { adjustThreeCameraToComponentCamera } from './handler/handleResize'
 import { createEntity } from '../../entity/createEntity'
 import { createCamera, updateCamera } from './cameraCrud'
 import { generateEntity } from '../../entity/generateEntity'
-import { PerspectiveCamera } from 'Three'
+import { PerspectiveCamera } from 'three'
 
 export const cameraEntity = generateEntity()
 

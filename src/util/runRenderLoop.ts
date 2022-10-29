@@ -12,11 +12,10 @@ export const runRenderLoop = <State extends AnyState = AnyState>({
   windowMock?: Window
 }) => {
   const callback = () => {
-    state = runOneFrame({ state })
-
     const sceneRef = scene().get()
     const rendererRef = renderer().get()
     if (rendererRef && sceneRef && cameraInstance) {
+      state = runOneFrame({ state })
       rendererRef.render(sceneRef, cameraInstance)
     }
 

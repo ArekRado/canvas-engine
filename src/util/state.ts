@@ -12,7 +12,7 @@ import { materialSystem } from '../system/material/material'
 import { eventSystem } from '../event'
 import { rigidBodySystem } from '../system/rigidBody/rigidBody'
 import { AnyState, InternalInitialState } from '../type'
-import { Scene, WebGLRenderer } from 'Three'
+import { Scene, WebGLRenderer } from 'three'
 
 let sceneRef: Scene | undefined
 let rendererRef: WebGLRenderer | undefined
@@ -118,27 +118,25 @@ export const getSystems = ({
 
 export const getState = <State extends AnyState = AnyState>({
   state,
-  document,
+  documentMock = document,
+  windowMock = window,
   containerId,
 }: {
   state?: State
-  document?: Document
-  window?: Window
+  documentMock?: Document
+  windowMock?: Window
   containerId: string
 }): InternalInitialState => {
-  if (window && document) {
+  if (windowMock && documentMock) {
     renderer().set(containerId)
     scene().set()
-
-    // const renderer = new WebGLRenderer({ canvas })
-    // const scene = new Scene()
 
     const rendererRef = renderer().get()
     const sceneRef = scene().get()
 
     if (rendererRef && sceneRef) {
-      rendererRef.setSize(window.innerWidth, window.innerHeight)
-      document.body.appendChild(rendererRef.domElement)
+      rendererRef.setSize(windowMock.innerWidth, windowMock.innerHeight)
+      documentMock.body.appendChild(rendererRef.domElement)
     }
   }
 

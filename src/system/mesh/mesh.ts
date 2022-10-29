@@ -10,7 +10,7 @@ import {
   Mesh as ThreeMesh,
   PlaneGeometry,
   Vector3,
-} from 'Three'
+} from 'three'
 import { materialObject } from '../material/material'
 import { scene } from '../../util/state'
 

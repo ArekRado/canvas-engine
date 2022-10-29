@@ -3,7 +3,13 @@
     "outDir": "dist",
     "module": "esnext",
     "target": "esnext",
-    "lib": ["es6", "dom", "es2015", "es2017.object", "ES2019"],
+    "lib": [
+      "es6",
+      "dom",
+      "es2015",
+      "es2017.object",
+      "ES2019"
+    ],
     "sourceMap": true,
     "jsx": "react",
     "moduleResolution": "node",
@@ -17,18 +23,23 @@
     "baseUrl": "src",
     "declaration": true,
     "importHelpers": true,
-    "alwaysStrict": true,    
+    "alwaysStrict": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedParameters": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*"
+  ],
   "exclude": [
     "node_modules",
     "**/*.test.ts",
     "**/*.test.tsx"
   ],
-  "filesGlob": ["typings/index.d.ts", "src/**/*"]
+  "filesGlob": [
+    "typings/index.d.ts",
+    "src/**/*"
+  ]
 }

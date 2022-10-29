@@ -1,4 +1,4 @@
-import { PerspectiveCamera } from 'Three'
+import { PerspectiveCamera } from 'three'
 import {
   AnyState,
   Camera,
