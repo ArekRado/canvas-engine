@@ -127,7 +127,7 @@ export const getState = <State extends AnyState = AnyState>({
   windowMock?: Window
   containerId: string
 }): InternalInitialState => {
-  if (windowMock && documentMock) {
+  if (windowMock && documentMock && containerId) {
     renderer().set(containerId)
     scene().set()
 

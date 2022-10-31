@@ -30,13 +30,13 @@
     "publish:dry": "npm publish --dry-run",
     "lint": "eslint ./src --ext .ts,.tsx",
     "lint:fix": "eslint ./src --ext .ts --fix"
-  },
+  }, 
   "engines": {
     "node": ">=16",
     "npm": ">=8.3.0"
   },
   "dependencies": {
-    "@arekrado/vector-2d": "^0.0.8",
+    "@arekrado/vector-2d": "^0.0.9",
     "three": "^0.145.0"
   },
   "devDependencies": {
