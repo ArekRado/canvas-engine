@@ -11,10 +11,13 @@ import {
   PlaneGeometry,
   Vector3,
 } from 'three'
-import { materialObject } from '../material/material'
-import { scene } from '../../util/state'
+import { getThreeMaterial } from '../material/material'
+import { getScene } from '../../util/state'
 
-export const meshObject: Record<Entity, ThreeMesh | Line | undefined> = {}
+const meshObject: Record<Entity, ThreeMesh | Line | undefined> = {}
+
+export const getThreeMesh = (entity: Entity): ThreeMesh | Line | undefined =>
+  meshObject[entity]
 
 export const updateMeshTransform = ({
   mesh,
@@ -61,16 +64,14 @@ const createOrUpdateMesh = ({
     return undefined
   }
 
-  switch (mesh.data.type) {
+  switch (mesh.type) {
     case 'plane':
-      // lol no updates XD
-
       return new ThreeMesh(
-        new PlaneGeometry(mesh.data.width, mesh.data.height),
+        new PlaneGeometry(mesh.width, mesh.height, mesh.widthSegments, mesh.heightSegments),
         material,
       )
     case 'lines':
-      const points = mesh.data.points.reduce((acc, point) => {
+      const points = mesh.points.reduce((acc, point) => {
         acc.push(new Vector3(point[0], point[1], 0))
         return acc
       }, [] as Vector3[])
@@ -98,7 +99,7 @@ export const meshSystem = (state: InternalInitialState) =>
     name: componentName.mesh,
     componentName: componentName.mesh,
     create: ({ state, component, entity }) => {
-      const sceneRef = scene().get()
+      const sceneRef = getScene()
       if (!sceneRef) return state
 
       const materialComponent = getMaterial({
@@ -106,7 +107,7 @@ export const meshSystem = (state: InternalInitialState) =>
         entity,
       })
 
-      if (!materialComponent && component.data.type !== 'lines') {
+      if (!materialComponent && component.type !== 'lines') {
         if (process.env.NODE_ENV === 'development') {
           console.warn(
             `Mesh has been created without material component. Mesh entity: ${entity}`,
@@ -117,7 +118,7 @@ export const meshSystem = (state: InternalInitialState) =>
       const mesh = createOrUpdateMesh({
         mesh: component,
         meshInstance: undefined,
-        material: materialObject[entity],
+        material: getThreeMaterial(entity),
       })
 
       if (!mesh) {
@@ -144,26 +145,25 @@ export const meshSystem = (state: InternalInitialState) =>
       return state
     },
     remove: ({ state, entity }) => {
-      const sceneRef = scene().get()
-      const mesh = meshObject[entity]
+      const sceneRef = getScene()
+      const mesh = getThreeMesh(entity)
 
       if (sceneRef && mesh) {
         sceneRef.remove(mesh)
         mesh.geometry.dispose()
-        // mesh.material.dispose()
         meshObject[entity] = undefined
       }
 
       return state
     },
     update: ({ state, entity, component }) => {
-      const meshInstance = meshObject[entity]
+      const meshInstance = getThreeMesh(entity)
 
       if (meshInstance) {
         createOrUpdateMesh({
           mesh: component,
           meshInstance,
-          material: materialObject[entity],
+          material: getThreeMaterial(entity),
         })
 
         const transform = getTransform({ state, entity })

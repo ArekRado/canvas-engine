@@ -9,8 +9,8 @@ import {
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
 import { getTransform, updateTransform } from './transformCrud'
-import { meshObject, updateMeshTransform } from '../mesh/mesh'
-import { scene } from '../../util/state'
+import { getThreeMesh, updateMeshTransform } from '../mesh/mesh'
+import { getScene } from '../../util/state'
 
 // const syncTransformWithBabylon = ({
 //   entity,
@@ -126,9 +126,9 @@ const update = ({
     }
   }
 
-  const sceneRef = scene().get()
+  const sceneRef = getScene()
   if (sceneRef && state.component.mesh[entity] !== undefined) {
-    const meshInstance = meshObject[entity]
+    const meshInstance = getThreeMesh(entity)
 
     if (meshInstance) {
       updateMeshTransform({

@@ -5,7 +5,6 @@ import {
   Mouse,
   MouseInteraction,
   RigidBody,
-  Mesh,
   Material,
 } from '../type'
 import { Animation, Keyboard, Transform, Collider } from '../type'
@@ -111,18 +110,6 @@ export const defaultKeyboard: GetDefaultComponent<Keyboard> = (data = {}) => ({
 })
 
 export const defaultMaterial: GetDefaultComponent<Material> = (data = {}) => ({
-  // uniqueId: -1,
-  ...data,
-})
-
-export const defaultMesh: GetDefaultComponent<Mesh> = (data = {}) => ({
-  materialEntity: [],
-  updatable: false,
-  data: {
-    type: 'plane',
-    width: 1,
-    height: 1,
-    sideOrientation: 0,
-  },
+  type: 'LineBasicMaterial',
   ...data,
 })

@@ -6,12 +6,75 @@ import {
   Material as ThreeMaterial,
   MeshBasicMaterial,
   TextureLoader,
+  LineBasicMaterial,
+  LineDashedMaterial,
+  MeshDepthMaterial,
+  MeshDistanceMaterial,
+  MeshLambertMaterial,
+  MeshMatcapMaterial,
+  MeshNormalMaterial,
+  MeshPhongMaterial,
+  MeshPhysicalMaterial,
+  MeshStandardMaterial,
+  MeshToonMaterial,
+  PointsMaterial,
+  ShaderMaterial,
+  ShadowMaterial,
+  SpriteMaterial,
+  Texture,
 } from 'three'
-import { scene } from '../../util/state'
+import { getScene } from '../../util/state'
 
-export let materialObject: Record<Entity, ThreeMaterial | undefined> = {}
+let materialObject: Record<Entity, ThreeMaterial | undefined> = {}
+export const getThreeMaterial = (entity: Entity): ThreeMaterial | undefined =>
+  materialObject[entity]
 
 let loader: TextureLoader | undefined = undefined
+
+const createThreeMaterial = (material: Material) => {
+  const { textureUrl, ...rest } = material
+  const map: Texture | undefined =
+    loader !== undefined && textureUrl !== undefined
+      ? loader.load(textureUrl)
+      : (rest as unknown as any)?.map
+      
+  const materialParams = { ...rest, map }
+
+  switch (materialParams.type) {
+    case 'LineBasicMaterial':
+      return new LineBasicMaterial(materialParams)
+    case 'LineDashedMaterial':
+      return new LineDashedMaterial(materialParams)
+    case 'MeshBasicMaterial':
+      return new MeshBasicMaterial(materialParams)
+    case 'MeshDepthMaterial':
+      return new MeshDepthMaterial(materialParams)
+    case 'MeshDistanceMaterial':
+      return new MeshDistanceMaterial(materialParams)
+    case 'MeshLambertMaterial':
+      return new MeshLambertMaterial(materialParams)
+    case 'MeshMatcapMaterial':
+      return new MeshMatcapMaterial(materialParams)
+    case 'MeshNormalMaterial':
+      return new MeshNormalMaterial(materialParams)
+    case 'MeshPhongMaterial':
+      return new MeshPhongMaterial(materialParams)
+    case 'MeshPhysicalMaterial':
+      return new MeshPhysicalMaterial(materialParams)
+    case 'MeshStandardMaterial':
+      return new MeshStandardMaterial(materialParams)
+    case 'MeshToonMaterial':
+      return new MeshToonMaterial(materialParams)
+    case 'PointsMaterial':
+      return new PointsMaterial(materialParams)
+    case 'ShaderMaterial':
+      return new ShaderMaterial(materialParams)
+    case 'ShadowMaterial':
+      return new ShadowMaterial(materialParams)
+    case 'SpriteMaterial':
+      return new SpriteMaterial(materialParams)
+  }
+}
 
 // const isEqual = (
 //   a: undefined | number | boolean | string | Array<unknown>,
@@ -30,40 +93,22 @@ const setupMaterialData = ({
   previousComponent: Material | undefined
   state: InternalInitialState
 }) => {
-  const sceneRef = scene().get()
+  const sceneRef = getScene()
   if (!sceneRef) {
-    console.log('no reef')
-
     return state
   }
 
-  let material = materialObject[entity]
+  const material = getThreeMaterial(entity)
 
   if (loader === undefined && component.textureUrl !== undefined) {
     loader = new TextureLoader()
   }
 
   if (!material) {
-    const { textureUrl, ...materialParams } = component
-
-    material = new MeshBasicMaterial(
-      {
-        ...materialParams,
-        map:
-          loader !== undefined && textureUrl !== undefined
-            ? loader.load(textureUrl)
-            : undefined,
-      },
-      //   {
-      //   color: 0xffff00,
-      //   side: FrontSide,
-      // }
-    )
     materialObject = {
       ...materialObject,
-      [entity]: material,
+      [entity]: createThreeMaterial(component),
     }
-    // materialObject[entity] = material
   }
 
   // if (

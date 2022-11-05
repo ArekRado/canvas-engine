@@ -9,7 +9,24 @@ import { TimingFunction } from './util/bezierFunction'
 // import { Vector3 } from '@babylonjs/core'
 import { Intersection } from './system/collider/getIntersection'
 
-import { MeshBasicMaterialParameters } from 'three'
+import {
+  LineBasicMaterialParameters,
+  LineDashedMaterialParameters,
+  MeshBasicMaterialParameters,
+  MeshDepthMaterialParameters,
+  MeshDistanceMaterialParameters,
+  MeshLambertMaterialParameters,
+  MeshMatcapMaterialParameters,
+  MeshNormalMaterialParameters,
+  MeshPhongMaterialParameters,
+  MeshPhysicalMaterialParameters,
+  MeshStandardMaterialParameters,
+  MeshToonMaterialParameters,
+  PointsMaterialParameters,
+  ShaderMaterialParameters,
+  ShadowMaterialParameters,
+  SpriteMaterialParameters,
+} from 'three'
 
 // sceneRef?: Scene
 // cameraRef?: UniversalCamera
@@ -204,31 +221,55 @@ export type MouseInteraction = {
   intersection: Intersection | null
 }
 
-export type Mesh = {
-  updatable: boolean
-  data:
-    | {
-        type: 'plane'
-        /**
-         * no updatable
-         */
-        width: number
-        /**
-         * no updatable
-         */
-        height: number
-        sideOrientation: number
-      }
-    | {
-        type: 'lines'
-        points: Vector2D[]
-        colors: Color[]
-      }
-}
+export type Mesh =
+  | {
+      type: 'plane'
+      width: number
+      height: number
+      widthSegments?: number
+      heightSegments?: number
+      sideOrientation: number
+    }
+  | {
+      type: 'lines'
+      points: Vector2D[]
+      colors: Color[]
+    }
 
-export type Material = MeshBasicMaterialParameters & {
+type MaterialTexture = {
   textureUrl?: string
 }
+
+export type Material =
+  | ({ type: 'LineBasicMaterial' } & MaterialTexture &
+      LineBasicMaterialParameters)
+  | ({ type: 'LineDashedMaterial' } & MaterialTexture &
+      LineDashedMaterialParameters)
+  | ({ type: 'MeshBasicMaterial' } & MaterialTexture &
+      MeshBasicMaterialParameters)
+  | ({ type: 'MeshDepthMaterial' } & MaterialTexture &
+      MeshDepthMaterialParameters)
+  | ({ type: 'MeshDistanceMaterial' } & MaterialTexture &
+      MeshDistanceMaterialParameters)
+  | ({ type: 'MeshLambertMaterial' } & MaterialTexture &
+      MeshLambertMaterialParameters)
+  | ({ type: 'MeshMatcapMaterial' } & MaterialTexture &
+      MeshMatcapMaterialParameters)
+  | ({ type: 'MeshNormalMaterial' } & MaterialTexture &
+      MeshNormalMaterialParameters)
+  | ({ type: 'MeshPhongMaterial' } & MaterialTexture &
+      MeshPhongMaterialParameters)
+  | ({ type: 'MeshPhysicalMaterial' } & MaterialTexture &
+      MeshPhysicalMaterialParameters)
+  | ({ type: 'MeshStandardMaterial' } & MaterialTexture &
+      MeshStandardMaterialParameters)
+  | ({ type: 'MeshToonMaterial' } & MaterialTexture &
+      MeshToonMaterialParameters)
+  | ({ type: 'PointsMaterial' } & MaterialTexture & PointsMaterialParameters)
+  | ({ type: 'ShaderMaterial' } & MaterialTexture & ShaderMaterialParameters)
+  | ({ type: 'ShadowMaterial' } & MaterialTexture & ShadowMaterialParameters)
+  | ({ type: 'SpriteMaterial' } & MaterialTexture & SpriteMaterialParameters)
+
 // {
 //   uniqueId: number
 //   diffuseColor?: Color

@@ -17,43 +17,16 @@ import { Scene, WebGLRenderer } from 'three'
 let sceneRef: Scene | undefined
 let rendererRef: WebGLRenderer | undefined
 
-// export const setScene = () => {
-//   sceneRef = new Scene()
-// }
-// export const getScene = () => sceneRef
-
-// export const setRenderer = (containerId: string) => {
-//   const canvas = document.getElementById(containerId) as HTMLCanvasElement
-//   rendererRef = new WebGLRenderer({ canvas })
-// }
-// export const getRenderer = () => rendererRef
-
-export function scene() {
-  // let sceneRef: Scene | undefined
-
-  return {
-    get: function () {
-      return sceneRef
-    },
-    set: function () {
-      sceneRef = new Scene()
-    },
-  }
+export const setScene = () => {
+  sceneRef = new Scene()
 }
+export const getScene = () => sceneRef
 
-export function renderer() {
-  // let rendererRef: WebGLRenderer | undefined
-
-  return {
-    get: function () {
-      return rendererRef
-    },
-    set: function (containerId: string) {
-      const canvas = document.getElementById(containerId) as HTMLCanvasElement
-      rendererRef = new WebGLRenderer({ canvas })
-    },
-  }
+export const setRenderer = (containerId: string) => {
+  const canvas = document.getElementById(containerId) as HTMLCanvasElement
+  rendererRef = new WebGLRenderer({ canvas })
 }
+export const getRenderer = () => rendererRef
 
 export const getInitialState = (): InternalInitialState => ({
   entity: {},
@@ -128,11 +101,11 @@ export const getState = <State extends AnyState = AnyState>({
   containerId: string
 }): InternalInitialState => {
   if (windowMock && documentMock && containerId) {
-    renderer().set(containerId)
-    scene().set()
+    setRenderer(containerId)
+    setScene()
 
-    const rendererRef = renderer().get()
-    const sceneRef = scene().get()
+    const rendererRef = getRenderer()
+    const sceneRef = getScene()
 
     if (rendererRef && sceneRef) {
       rendererRef.setSize(windowMock.innerWidth, windowMock.innerHeight)

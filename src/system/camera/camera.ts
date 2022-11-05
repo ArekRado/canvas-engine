@@ -7,7 +7,7 @@ import { createCamera, updateCamera } from './cameraCrud'
 import { generateEntity } from '../../entity/generateEntity'
 import { PerspectiveCamera } from 'three'
 
-export const cameraEntity = generateEntity()
+export const cameraEntity = `camera-${generateEntity()}`
 
 export let cameraInstance: PerspectiveCamera | undefined
 
