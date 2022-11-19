@@ -186,7 +186,7 @@ export namespace Animation {
     path: string[]
     component: string // it should be keyof State['component']
     entity: Entity
-    index?: number
+    // index?: number
     keyframes: Keyframe[]
   }
 
@@ -204,23 +204,6 @@ export namespace Animation {
   }
 }
 
-export type MouseInteraction = {
-  // doubleClickSpeed: number
-
-  // When the user clicks on an element
-  isClicked: boolean
-  // When the user double-clicks on an element
-  isDoubleClicked: boolean
-  // When the user presses a mouse button over an element
-  isMouseOver: boolean
-  // When the pointer is moved onto an element
-  isMouseEnter: boolean
-  // When the pointer is moved out of an element
-  isMouseLeave: boolean
-
-  intersection: Intersection | null
-}
-
 export type Mesh =
   | {
       type: 'plane'
@@ -234,6 +217,10 @@ export type Mesh =
       type: 'lines'
       points: Vector2D[]
       colors: Color[]
+    }
+  | {
+      type: 'gltf'
+      meshUrl: string
     }
 
 type MaterialTexture = {
@@ -355,7 +342,7 @@ export type Camera = {
 export type Vector3D = [number, number, number]
 
 export type Transform = {
-  rotation: number
+  rotation: [number, number, number]
   fromParentRotation: number
   scale: Vector2D | Vector3D
   fromParentScale: Vector2D | Vector3D
@@ -511,7 +498,6 @@ export type GlobalSystem<State extends AnyStateForSystem> = {
 export type StateDefaultComponents = {
   animation: Dictionary<Animation.AnimationComponent>
   collider: Dictionary<Collider>
-  mouseInteraction: Dictionary<MouseInteraction>
   time: Dictionary<Time>
   camera: Dictionary<Camera>
   transform: Dictionary<Transform>
@@ -525,7 +511,6 @@ export type StateDefaultComponents = {
 export type StateDefaultSystems =
   | System<Animation.AnimationComponent, AnyStateForSystem>
   | System<Collider, AnyStateForSystem>
-  | System<MouseInteraction, AnyStateForSystem>
   | System<Time, AnyStateForSystem>
   | System<Camera, AnyStateForSystem>
   | System<Transform, AnyStateForSystem>

@@ -3,7 +3,6 @@ import {
   Camera,
   GetDefaultComponent,
   Mouse,
-  MouseInteraction,
   RigidBody,
   Material,
 } from '../type'
@@ -47,20 +46,6 @@ export const defaultRigidBody: GetDefaultComponent<RigidBody> = (
   ...data,
 })
 
-export const defaultMouseInteraction: GetDefaultComponent<MouseInteraction> = (
-  data,
-) => ({
-  clickSpeed: 200,
-  doubleClickSpeed: 200,
-  isClicked: false,
-  isDoubleClicked: false,
-  isMouseOver: false,
-  isMouseEnter: false,
-  isMouseLeave: false,
-  intersection: null,
-  ...data,
-})
-
 export const defaultCamera: GetDefaultComponent<Camera> = (data = {}) => ({
   position: [0, 0, 0],
   lookAt: [1, 1, 1],
@@ -74,7 +59,7 @@ export const defaultCamera: GetDefaultComponent<Camera> = (data = {}) => ({
 export const defaultTransform: GetDefaultComponent<Transform> = (
   data = {},
 ) => ({
-  rotation: 0,
+  rotation: [0, 0, 0],
   fromParentRotation: 0,
   scale: [1, 1],
   fromParentScale: [1, 1],

@@ -1,8 +1,7 @@
-import { colliderSystem } from '../system/collider/collider'
+// import { colliderSystem } from '../system/collider/collider'
 import { transformSystem } from '../system/transform/transform'
 import { componentName } from '../component/componentName'
 import { timeSystem } from '../system/time/time'
-import { mouseInteractionSystem } from '../system/mouseInteraction/mouseInteraction'
 import { mouseSystem } from '../system/mouse/mouse'
 import { keyboardSystem } from '../system/keyboard/keyboard'
 import { cameraSystem } from '../system/camera/camera'
@@ -33,7 +32,6 @@ export const getInitialState = (): InternalInitialState => ({
   component: {
     [componentName.animation]: {},
     [componentName.collider]: {},
-    [componentName.mouseInteraction]: {},
     [componentName.time]: {},
     [componentName.camera]: {},
     [componentName.transform]: {},
@@ -64,11 +62,8 @@ export const getSystems = ({
   internatlState = timeSystem(internatlState) as InternalInitialState
   internatlState = cameraSystem(internatlState) as InternalInitialState
   internatlState = transformSystem(internatlState) as InternalInitialState
-  internatlState = colliderSystem(internatlState) as InternalInitialState
+  // internatlState = colliderSystem(internatlState) as InternalInitialState
   internatlState = animationSystem(internatlState) as InternalInitialState
-  internatlState = mouseInteractionSystem(
-    internatlState,
-  ) as InternalInitialState
   internatlState = materialSystem(internatlState) as InternalInitialState
   internatlState = meshSystem(internatlState) as InternalInitialState
   internatlState = rigidBodySystem(internatlState) as InternalInitialState

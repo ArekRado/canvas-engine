@@ -11,28 +11,17 @@ import { recreateAllComponents } from './recreateAllComponents'
 import { createSystem } from '../system/createSystem'
 import { Dictionary } from '../type'
 import { InternalInitialState } from '../index'
+import { vi } from 'vitest'
 
 describe('component', () => {
   it('should call system create, update and remove methods', () => {
     const entity1 = generateEntity()
     const entity2 = generateEntity()
 
-    const create = jest.fn<
-      InternalInitialState,
-      [{ state: InternalInitialState }]
-    >(({ state }) => state)
-    const remove = jest.fn<
-      InternalInitialState,
-      [{ state: InternalInitialState }]
-    >(({ state }) => state)
-    const update = jest.fn<
-      InternalInitialState,
-      [{ state: InternalInitialState }]
-    >(({ state }) => state)
-    const tick = jest.fn<
-      InternalInitialState,
-      [{ state: InternalInitialState }]
-    >(({ state }) => state)
+    const create = vi.fn(({ state }) => state)
+    const remove = vi.fn(({ state }) => state)
+    const update = vi.fn(({ state }) => state)
+    const tick = vi.fn(({ state }) => state)
 
     let state = createEntity({
       entity: entity1,
@@ -93,7 +82,7 @@ describe('component', () => {
       entity: entity1,
       name: 'test',
       update: () => null,
-      callSystemUpdateMethod: false
+      callSystemUpdateMethod: false,
     })
 
     // Update should not trigger create
@@ -104,10 +93,7 @@ describe('component', () => {
   it('recreateAllComponents - should call create system method for all components', () => {
     const entity1 = generateEntity()
 
-    const create = jest.fn<
-      InternalInitialState,
-      [{ state: InternalInitialState }]
-    >(({ state }) => state)
+    const create = vi.fn(({ state }) => state)
 
     let state = createEntity({
       entity: entity1,
@@ -138,10 +124,7 @@ describe('component', () => {
   it('updateComponent should set component and trigger update method', () => {
     const entity = generateEntity()
 
-    const update = jest.fn<
-      InternalInitialState,
-      [{ state: InternalInitialState }]
-    >(({ state }) => state)
+    const update = vi.fn(({ state }) => state)
 
     type SomeComponent = { value: 1 }
     const name = 'test'

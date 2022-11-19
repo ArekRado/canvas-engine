@@ -15,7 +15,7 @@ import {
   // getRectangleRectangleIntersection,
 } from './getIntersection'
 
-describe('getIntersection', () => {
+describe.skip('getIntersection', () => {
   // describe('getRectangleRectangleIntersection', () => {
   //   it('shouldIntersection collisions', () => {
   //     const edgeV1: Vector2D[] = [

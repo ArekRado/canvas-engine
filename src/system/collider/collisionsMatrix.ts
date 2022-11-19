@@ -43,7 +43,7 @@ export const applyTransformsToPosition = ({
   )
 
   const rotatedPosition = applyMatrixToVector2D(
-    rotate(transform.rotation),
+    rotate(transform.rotation[0]),
     position,
   )
 

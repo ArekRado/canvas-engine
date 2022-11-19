@@ -45,7 +45,6 @@ export {
   defaultAnimation,
   defaultCollider,
   defaultRigidBody,
-  defaultMouseInteraction,
   defaultCamera,
   defaultTransform,
   defaultMouse,
@@ -62,7 +61,6 @@ export * from './system/keyboard/keyboardCrud'
 export * from './system/material/materialCrud'
 export * from './system/mesh/meshCrud'
 export * from './system/mouse/mouseCrud'
-export * from './system/mouseInteraction/mouseInteractionCrud'
 export * from './system/rigidBody/rigidBodyCrud'
 export * from './system/time/timeCrud'
 export * from './system/transform/transformCrud'
@@ -74,3 +72,4 @@ export { createComponentCrud } from './util/createComponentCrud'
 // TODO
 // enabled flag in collider box
 // eventHandler shuld be triggered only for observed event
+// eventHandler should log error message if receive event without handler

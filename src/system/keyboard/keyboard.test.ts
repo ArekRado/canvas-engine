@@ -46,7 +46,7 @@ describe('keyboard', () => {
   })
 
   it('should set keyboard isUp and isDown flags', () => {
-    const eventHandler = jest.fn(({ state }) => state)
+    const eventHandler = vi.fn(({ state }) => state)
     addEventHandler(eventHandler)
 
     const key1 = 'a'

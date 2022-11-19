@@ -1,18 +1,12 @@
 import { getState } from '../util/state'
 import { createGlobalSystem } from './createSystem'
-import { InternalInitialState } from '../type'
 import { runOneFrame } from '../util/runOneFrame'
+import { vi } from 'vitest'
 
 describe('createGlobalSystem', () => {
   it('should not call create method when system is creating', () => {
-    const remove = jest.fn<
-      InternalInitialState,
-      [{ state: InternalInitialState }]
-    >(({ state }) => state)
-    const tick = jest.fn<
-      InternalInitialState,
-      [{ state: InternalInitialState }]
-    >(({ state }) => state)
+    const remove = vi.fn(({ state }) => state)
+    const tick = vi.fn(({ state }) => state)
 
     createGlobalSystem({
       state: getState({}),
@@ -25,10 +19,7 @@ describe('createGlobalSystem', () => {
   })
 
   it('should trigger tick after runOneFrame', () => {
-    const tick = jest.fn<
-      InternalInitialState,
-      [{ state: InternalInitialState }]
-    >(({ state }) => state)
+    const tick = vi.fn(({ state }) => state)
 
     const state = createGlobalSystem({
       state: getState({}),

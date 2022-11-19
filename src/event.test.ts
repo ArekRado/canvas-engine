@@ -13,6 +13,7 @@ import {
 } from './type'
 import { runOneFrame } from './util/runOneFrame'
 import { getState } from './util/state'
+import { vi } from 'vitest'
 
 describe('event', () => {
   it('should emit, receive events and add, remove event handlers', () => {
@@ -20,7 +21,7 @@ describe('event', () => {
       type: 'example',
       payload: 'payload',
     }
-    const eventHandler = jest.fn(({ state }) => state)
+    const eventHandler = vi.fn(({ state }) => state)
 
     addEventHandler(eventHandler)
 
@@ -54,8 +55,8 @@ describe('event', () => {
       type: CanvasEngineEvent.windowResize,
       payload: null,
     }
-    const eventHandler = jest.fn(({ state }) => state)
-    const internalEventHandler = jest.fn(({ state }) => state)
+    const eventHandler = vi.fn(({ state }) => state)
+    const internalEventHandler = vi.fn(({ state }) => state)
 
     addEventHandler(eventHandler)
     addEventHandler(internalEventHandler)
@@ -98,7 +99,7 @@ describe('event', () => {
       },
     })
 
-    const eventHandler = jest.fn(({ state }) => {
+    const eventHandler = vi.fn(({ state }) => {
       emitEvent(event)
 
       return updateComponent<Test, InternalInitialState>({

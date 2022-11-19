@@ -9,6 +9,7 @@ import { CanvasEngineEvent, Mouse } from '../../type'
 import { mouseEntity } from './mouse'
 import { componentName } from '../../component/componentName'
 import { addEventHandler } from '../../event'
+import { vi } from 'vitest'
 
 describe('mouse', () => {
   let mousemoveCallback: Function
@@ -68,7 +69,7 @@ describe('mouse', () => {
   })
 
   it('should set buttons on mousedown event', () => {
-    const eventHandler = jest.fn(({ state }) => state)
+    const eventHandler = vi.fn(({ state }) => state)
     addEventHandler(eventHandler)
 
     let state = getInitialStateWithMouse()

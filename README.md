@@ -254,3 +254,32 @@ type YourOwnStateWithCanvasEngine = InitialState<Components, Systems>
 ```
 
 # Event - TODO
+
+# Blueprints vs Systems
+Use blueprints if you don't want to duplicate state
+
+```ts
+// Bad
+
+state = createCar({
+  state,
+  entity,
+  data: {
+    name: 'fiat', // only this propert will be used in a Car component
+    color: 'red', // bad, it can be stored in a Material component
+    position: [0,0,0], // bad, it can be stored in a Transform component
+  }
+})
+
+// Good
+
+const carBlueprint = ({ state entity }: { state:State, entity:Entity }) => {
+  state = createCar({ state, entity, data: { name: 'fiat' } })
+  state = createTransform({ state, entity, data })
+}
+```
+
+Use system:
+- if you want to use component lifecycle (create, remove, tick, update, adding and removing eventHandlers) 
+- if you use plain component functions (createComponent, remoevComponent, updateComponent)
+```

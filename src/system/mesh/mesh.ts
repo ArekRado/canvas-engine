@@ -5,6 +5,7 @@ import { getMaterial } from '../material/materialCrud'
 import { getTransform } from '../transform/transformCrud'
 import {
   BufferGeometry,
+  Group,
   Line,
   Material,
   Mesh as ThreeMesh,
@@ -13,25 +14,29 @@ import {
 } from 'three'
 import { getThreeMaterial } from '../material/material'
 import { getScene } from '../../util/state'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-const meshObject: Record<Entity, ThreeMesh | Line | undefined> = {}
+const meshObject: Record<Entity, ThreeMesh | Line | Group | undefined> = {}
 
-export const getThreeMesh = (entity: Entity): ThreeMesh | Line | undefined =>
-  meshObject[entity]
+export const getThreeMesh = (
+  entity: Entity,
+): ThreeMesh | Line | Group | undefined => meshObject[entity]
 
 export const updateMeshTransform = ({
   mesh,
   transform,
 }: {
-  mesh: ThreeMesh | Line
+  mesh: ThreeMesh | Line | Group
   transform: Transform
 }) => {
   mesh.position.x = transform.position[0]
   mesh.position.y = transform.position[1]
   mesh.position.z = transform.position[2]
-  mesh.rotation.x = transform.rotation
-  mesh.rotation.y = 0
-  mesh.rotation.z = 0
+
+  mesh.rotation.x = transform.rotation[0]
+  mesh.rotation.y = transform.rotation[1]
+  mesh.rotation.z = transform.rotation[2]
+
   mesh.scale.x = transform.scale[0]
   mesh.scale.y = transform.scale[1]
   mesh.scale.z = transform.scale[2] ?? 1
@@ -43,7 +48,7 @@ const createOrUpdateMesh = ({
   material,
 }: {
   mesh: Mesh
-  meshInstance: ThreeMesh | Line | undefined
+  meshInstance: ThreeMesh | Line | Group | undefined
   material: Material | undefined
 }) => {
   // const { PlaneGeometry, sceneRef, Vector3, Color4 } = state.three
@@ -67,7 +72,12 @@ const createOrUpdateMesh = ({
   switch (mesh.type) {
     case 'plane':
       return new ThreeMesh(
-        new PlaneGeometry(mesh.width, mesh.height, mesh.widthSegments, mesh.heightSegments),
+        new PlaneGeometry(
+          mesh.width,
+          mesh.height,
+          mesh.widthSegments,
+          mesh.heightSegments,
+        ),
         material,
       )
     case 'lines':
@@ -78,18 +88,20 @@ const createOrUpdateMesh = ({
 
       const geometry = new BufferGeometry().setFromPoints(points)
       return new Line(geometry, material)
+    case 'gltf':
+      const loader = new GLTFLoader()
 
-    // newMesh = meshBuilder.CreateLines('lines', {
-    //   instance: meshInstance as LinesMesh,
-    //   updatable: mesh.updatable,
-    //   points: ,
-    //   colors: mesh.data.colors.reduce((acc, color) => {
-    //     acc.push(new Color4(color[0], color[1], color[2], color[3]))
-    //     return acc
-    //   }, [] as any[] /** XD */),
-    // })
+      loader.load(mesh.meshUrl, (gltf) => {
+        getScene()?.add(gltf.scene)
 
-    // break
+        // gltf.animations; // Array<THREE.AnimationClip>
+        // gltf.scene; // THREE.Group
+        // gltf.scenes; // Array<THREE.Group>
+        // gltf.cameras; // Array<THREE.Camera>
+        // gltf.asset; // Object
+      })
+
+      return undefined
   }
 }
 
@@ -150,7 +162,9 @@ export const meshSystem = (state: InternalInitialState) =>
 
       if (sceneRef && mesh) {
         sceneRef.remove(mesh)
-        mesh.geometry.dispose()
+        if (mesh instanceof ThreeMesh && mesh.geometry) {
+          mesh.geometry.dispose()
+        }
         meshObject[entity] = undefined
       }
 

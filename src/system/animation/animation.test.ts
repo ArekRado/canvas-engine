@@ -29,6 +29,7 @@ import { tick } from '../../util/testUtils'
 import { createAnimation } from './animationCrud'
 import { createComponent } from '../../component/createComponent'
 import { createTransform, getTransform } from '../transform/transformCrud'
+import { vi } from 'vitest'
 
 type AnyComponent<Value> = { value: Value }
 
@@ -450,10 +451,7 @@ describe('animation', () => {
     it.todo('should works with index')
 
     it('should trigger system update method', () => {
-      const update = jest.fn<
-        InternalInitialState,
-        [{ state: InternalInitialState }]
-      >(({ state }) => state)
+      const update = vi.fn(({ state }) => state)
 
       let state = createEntity({ state: getState({}), entity })
       state = createSystem({
@@ -567,7 +565,7 @@ describe('animation', () => {
         type,
         payload: 'payload',
       })
-      const eventHandler = jest.fn(({ state }) => state)
+      const eventHandler = vi.fn(({ state }) => state)
 
       addEventHandler(eventHandler)
 

@@ -8,28 +8,29 @@ import { InternalInitialState } from '../type'
 import { FIXED_TICK_TIME, runOneFrame } from './runOneFrame'
 import { getInitialState, getState } from './state'
 import { tick } from './testUtils'
+import { vi } from 'vitest'
 
 describe('runOneFrame', () => {
   it('should call system tick in proper order depending on system priority', () => {
     const callQueue: string[] = []
 
-    const tick1 = jest.fn(({ state }) => {
+    const tick1 = vi.fn(({ state }) => {
       callQueue.push('tick1')
       return state
     })
-    const tick2 = jest.fn(({ state }) => {
+    const tick2 = vi.fn(({ state }) => {
       callQueue.push('tick2')
       return state
     })
-    const tick3 = jest.fn(({ state }) => {
+    const tick3 = vi.fn(({ state }) => {
       callQueue.push('tick3')
       return state
     })
-    const tick4 = jest.fn(({ state }) => {
+    const tick4 = vi.fn(({ state }) => {
       callQueue.push('tick4')
       return state
     })
-    const tick5 = jest.fn(({ state }) => {
+    const tick5 = vi.fn(({ state }) => {
       callQueue.push('tick5')
       return state
     })
@@ -93,12 +94,12 @@ describe('runOneFrame', () => {
   it.skip('should call fixedTick in the correct amount of calls', () => {
     const deltaList: number[] = []
     const componentName = 'a'
-    const fixedTickSystemMock = jest.fn<
+    const fixedTickSystemMock = vi.fn<
       InternalInitialState,
       [{ state: InternalInitialState }]
     >(({ state }) => state)
 
-    const fixedTicGlobalSystemkMock = jest.fn<
+    const fixedTicGlobalSystemkMock = vi.fn<
       InternalInitialState,
       [{ state: InternalInitialState }]
     >(({ state }) => state)
