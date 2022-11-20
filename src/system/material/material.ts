@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-extra-semi */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Entity, InternalInitialState, Material } from '../../type'
 import { createSystem } from '../createSystem'
@@ -24,6 +25,7 @@ import {
   Texture,
 } from 'three'
 import { getScene } from '../../util/state'
+import { meshBasicMaterialProperties } from './materialProperties'
 
 let materialObject: Record<Entity, ThreeMaterial | undefined> = {}
 export const getThreeMaterial = (entity: Entity): ThreeMaterial | undefined =>
@@ -37,7 +39,7 @@ const createThreeMaterial = (material: Material) => {
     loader !== undefined && textureUrl !== undefined
       ? loader.load(textureUrl)
       : (rest as unknown as any)?.map
-      
+
   const materialParams = { ...rest, map }
 
   switch (materialParams.type) {
@@ -109,109 +111,29 @@ const setupMaterialData = ({
       ...materialObject,
       [entity]: createThreeMaterial(component),
     }
+
+    return state
+  } else if (component.type === 'MeshBasicMaterial') {
+    for (let i = 0; i < meshBasicMaterialProperties.length; i++) {
+      const property = meshBasicMaterialProperties[i]
+
+      if (
+        (material as MeshBasicMaterial)[property] !==
+        (component as MeshBasicMaterial)[property]
+      ) {
+        if (property === 'color' && component.color !== undefined) {
+          // ;(getThreeMesh(entity) as any).material.color.set(component.color)
+          ;(material as MeshBasicMaterial)?.color.set(component.color)
+        } else {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          // ;(material as MeshBasicMaterial)[property] = component[property]
+        }
+      }
+    }
+
+    // material.needsUpdate = true
   }
-
-  // if (
-  //   isEqual(previousComponent?.diffuseColor, component.diffuseColor) &&
-  //   component.diffuseColor
-  // ) {
-  //   ;(material as any).diffuseColor = new Color3(
-  //     component.diffuseColor[0],
-  //     component.diffuseColor[1],
-  //     component.diffuseColor[2],
-  //   )
-  // }
-
-  // if (
-  //   isEqual(previousComponent?.specularColor, component.specularColor) &&
-  //   component.specularColor
-  // ) {
-  //   ;(material as any).specularColor = new Color3(
-  //     component.specularColor[0],
-  //     component.specularColor[1],
-  //     component.specularColor[2],
-  //   )
-  // }
-
-  // if (
-  //   isEqual(previousComponent?.emissiveColor, component.emissiveColor) &&
-  //   component.emissiveColor
-  // ) {
-  //   ;(material as any).emissiveColor = new Color3(
-  //     component.emissiveColor[0],
-  //     component.emissiveColor[1],
-  //     component.emissiveColor[2],
-  //   )
-  // }
-
-  // if (
-  //   isEqual(previousComponent?.ambientColor, component.ambientColor) &&
-  //   component.ambientColor
-  // ) {
-  //   ;(material as any).ambientColor = new Color3(
-  //     component.ambientColor[0],
-  //     component.ambientColor[1],
-  //     component.ambientColor[2],
-  //   )
-  // }
-
-  // // if (isEqual(previousComponent?.alpha, component.alpha) && component.alpha) {
-  // //   material.alpha = component.alpha
-  // // }
-
-  // // if (
-  // //   isEqual(previousComponent?.backFaceCulling, component.backFaceCulling) &&
-  // //   component.backFaceCulling
-  // // ) {
-  // //   material.backFaceCulling = component.backFaceCulling
-  // // }
-
-  // // if (
-  // //   isEqual(previousComponent?.wireframe, component.wireframe) &&
-  // //   component.wireframe
-  // // ) {
-  // //   material.wireframe = component.wireframe
-  // // }
-
-  // if (
-  //   isEqual(
-  //     previousComponent?.useAlphaFromDiffuseTexture,
-  //     component.useAlphaFromDiffuseTexture,
-  //   ) &&
-  //   component.useAlphaFromDiffuseTexture
-  // ) {
-  //   ;(material as any).useAlphaFromDiffuseTexture =
-  //     component.useAlphaFromDiffuseTexture
-  // }
-
-  // if (
-  //   isEqual(previousComponent?.diffuseTexture, component.diffuseTexture) &&
-  //   component.diffuseTexture
-  // ) {
-  //   const diffuseTexture = new Texture(
-  //     component.diffuseTexture,
-  //     sceneRef,
-  //     undefined,
-  //     undefined,
-  //     Texture.NEAREST_NEAREST_MIPLINEAR,
-  //   )
-  //   ;(material as any).diffuseTexture = diffuseTexture
-  //   ;(material as any).diffuseTexture.hasAlpha = true // TODO remove it
-  // }
-
-  // if (
-  //   isEqual(previousComponent?.bumpTexture, component.bumpTexture) &&
-  //   component.bumpTexture
-  // ) {
-  //   const bumpTexture = new Texture(
-  //     component.bumpTexture,
-  //     sceneRef,
-  //     undefined,
-  //     undefined,
-  //     Texture.NEAREST_NEAREST_MIPLINEAR,
-  //   )
-  //   ;(material as any).bumpTexture = bumpTexture
-  // }
 
   return state
 }

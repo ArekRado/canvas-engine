@@ -16,17 +16,17 @@ import { getThreeMaterial } from '../material/material'
 import { getScene } from '../../util/state'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-const meshObject: Record<Entity, ThreeMesh | Line | Group | undefined> = {}
+type MeshType = ThreeMesh | Line | Group
+const meshObject: Record<Entity, MeshType | undefined> = {}
 
-export const getThreeMesh = (
-  entity: Entity,
-): ThreeMesh | Line | Group | undefined => meshObject[entity]
+export const getThreeMesh = (entity: Entity): MeshType | undefined =>
+  meshObject[entity]
 
 export const updateMeshTransform = ({
   mesh,
   transform,
 }: {
-  mesh: ThreeMesh | Line | Group
+  mesh: MeshType
   transform: Transform
 }) => {
   mesh.position.x = transform.position[0]
@@ -48,7 +48,7 @@ const createOrUpdateMesh = ({
   material,
 }: {
   mesh: Mesh
-  meshInstance: ThreeMesh | Line | Group | undefined
+  meshInstance: MeshType | undefined
   material: Material | undefined
 }) => {
   // const { PlaneGeometry, sceneRef, Vector3, Color4 } = state.three

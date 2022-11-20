@@ -43,7 +43,7 @@ export { runRenderLoop } from './util/runRenderLoop'
 
 export {
   defaultAnimation,
-  defaultCollider,
+  // defaultCollider,
   defaultRigidBody,
   defaultCamera,
   defaultTransform,
@@ -56,7 +56,7 @@ export { getState } from './util/state'
 // CRUD
 export * from './system/animation/animationCrud'
 export * from './system/camera/cameraCrud'
-export * from './system/collider/colliderCrud'
+// export * from './system/collider/colliderCrud'
 export * from './system/keyboard/keyboardCrud'
 export * from './system/material/materialCrud'
 export * from './system/mesh/meshCrud'
