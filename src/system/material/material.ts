@@ -112,8 +112,21 @@ const setupMaterialData = ({
       [entity]: createThreeMaterial(component),
     }
 
+    if (component.textureUrl) {
+      ;(materialObject[entity] as Material).textureUrl = component.textureUrl
+    }
+
     return state
   } else if (component.type === 'MeshBasicMaterial') {
+    if (
+      loader &&
+      component.textureUrl &&
+      (material as Material).textureUrl !== component.textureUrl
+    ) {
+      ;(material as MeshBasicMaterial).map = loader.load(component.textureUrl)
+      material.needsUpdate = true
+    }
+
     for (let i = 0; i < meshBasicMaterialProperties.length; i++) {
       const property = meshBasicMaterialProperties[i]
 
@@ -122,7 +135,6 @@ const setupMaterialData = ({
         (component as MeshBasicMaterial)[property]
       ) {
         if (property === 'color' && component.color !== undefined) {
-          // ;(getThreeMesh(entity) as any).material.color.set(component.color)
           ;(material as MeshBasicMaterial)?.color.set(component.color)
         } else {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
