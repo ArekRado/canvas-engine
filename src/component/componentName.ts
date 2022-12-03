@@ -11,4 +11,5 @@ export enum componentName {
   mesh = 'mesh',
   material = 'material',
   line2D = 'line2D',
+  sprite = 'sprite',
 }

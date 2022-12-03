@@ -12,6 +12,7 @@ import { eventSystem } from '../event'
 import { rigidBodySystem } from '../system/rigidBody/rigidBody'
 import { AnyState, InternalInitialState } from '../type'
 import { Scene, WebGLRenderer } from 'three'
+import { spriteSystem } from '../system/sprite/sprite'
 
 let sceneRef: Scene | undefined
 let rendererRef: WebGLRenderer | undefined
@@ -40,6 +41,7 @@ export const getInitialState = (): InternalInitialState => ({
     [componentName.mesh]: {},
     [componentName.material]: {},
     [componentName.rigidBody]: {},
+    [componentName.sprite]: {},
   },
   globalSystem: [],
   system: [],
@@ -67,6 +69,7 @@ export const getSystems = ({
   internatlState = materialSystem(internatlState) as InternalInitialState
   internatlState = meshSystem(internatlState) as InternalInitialState
   internatlState = rigidBodySystem(internatlState) as InternalInitialState
+  internatlState = spriteSystem(internatlState) as InternalInitialState
 
   if (containerId) {
     internatlState = mouseSystem({

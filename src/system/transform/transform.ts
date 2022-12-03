@@ -11,6 +11,7 @@ import { componentName } from '../../component/componentName'
 import { getTransform, updateTransform } from './transformCrud'
 import { getThreeMesh, updateMeshTransform } from '../mesh/mesh'
 import { getScene } from '../../util/state'
+import { getThreeSprite, updateSpriteTransform } from '../sprite/sprite'
 
 // const syncTransformWithBabylon = ({
 //   entity,
@@ -127,13 +128,20 @@ const update = ({
   }
 
   const sceneRef = getScene()
-  if (sceneRef && state.component.mesh[entity] !== undefined) {
+  if (sceneRef) {
     const meshInstance = getThreeMesh(entity)
 
     if (meshInstance) {
       updateMeshTransform({
         transform: component,
         mesh: meshInstance,
+      })
+    }
+    const spriteInstance = getThreeSprite(entity)
+    if (spriteInstance) {
+      updateSpriteTransform({
+        transform: component,
+        sprite: spriteInstance,
       })
     }
   }

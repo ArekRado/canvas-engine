@@ -26,6 +26,7 @@ import {
   ShaderMaterialParameters,
   ShadowMaterialParameters,
   SpriteMaterialParameters,
+  Sprite as ThreeSprite,
 } from 'three'
 
 // sceneRef?: Scene
@@ -226,6 +227,8 @@ export type Mesh =
 type MaterialTexture = {
   textureUrl?: string
 }
+
+export type Sprite = Partial<ThreeSprite>
 
 export type Material =
   | ({ type: 'LineBasicMaterial' } & MaterialTexture &
@@ -506,6 +509,7 @@ export type StateDefaultComponents = {
   material: Dictionary<Material>
   mesh: Dictionary<Mesh>
   rigidBody: Dictionary<RigidBody>
+  sprite: Dictionary<Sprite>
 }
 
 export type StateDefaultSystems =
@@ -520,6 +524,7 @@ export type StateDefaultSystems =
   | System<Material, AnyStateForSystem>
   | System<Mesh, AnyStateForSystem>
   | System<RigidBody, AnyStateForSystem>
+  | System<Sprite, AnyStateForSystem>
 
 /**
  * Describes empty state without internal components and systems

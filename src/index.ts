@@ -64,6 +64,7 @@ export * from './system/mouse/mouseCrud'
 export * from './system/rigidBody/rigidBodyCrud'
 export * from './system/time/timeCrud'
 export * from './system/transform/transformCrud'
+export * from './system/sprite/spriteCrud'
 
 export { createComponentCrud } from './util/createComponentCrud'
 
