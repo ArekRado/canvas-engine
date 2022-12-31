@@ -111,13 +111,15 @@ const setupMaterialData = ({
       ...materialObject,
       [entity]: createThreeMaterial(component),
     }
-
     if (component.textureUrl) {
       ;(materialObject[entity] as Material).textureUrl = component.textureUrl
     }
 
     return state
-  } else if (component.type === 'MeshBasicMaterial') {
+  } else if (
+    component.type === 'MeshBasicMaterial' ||
+    component.type === 'SpriteMaterial'
+  ) {
     if (
       loader &&
       component.textureUrl &&

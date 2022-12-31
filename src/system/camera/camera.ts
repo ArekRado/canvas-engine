@@ -1,11 +1,12 @@
 import { createSystem } from '../createSystem'
 import { componentName } from '../../component/componentName'
-import { Camera, Entity, InternalInitialState } from '../../type'
-import { adjustThreeCameraToComponentCamera } from './handler/handleResize'
+import { Camera, CanvasEngineEvent, Entity, InternalInitialState, WindowResizeEvent } from '../../type'
+import { adjustThreeCameraToComponentCamera, handleResize } from './handler/handleResize'
 import { createEntity } from '../../entity/createEntity'
 import { createCamera, updateCamera } from './cameraCrud'
 import { generateEntity } from '../../entity/generateEntity'
 import { PerspectiveCamera } from 'three'
+import { addEventHandler } from '../../event'
 
 export const cameraEntity = `camera-${generateEntity()}`
 
@@ -44,6 +45,11 @@ export const cameraSystem = (
     name: componentName.camera,
     componentName: componentName.camera,
     create: ({ state, component, entity }) => {
+      addEventHandler<WindowResizeEvent>(
+        CanvasEngineEvent.windowResize,
+        handleResize,
+      )
+
       cameraInstance = new PerspectiveCamera(
         component.fov,
         component.aspect,

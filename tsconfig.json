@@ -14,8 +14,8 @@
       "node_modules/@types"
     ],
     "types": [
-      "jest",
-      "node"
+      "node",
+      "vitest/globals"
     ],
     "sourceMap": false,
     "jsx": "react",

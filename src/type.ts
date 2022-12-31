@@ -177,7 +177,7 @@ export namespace Animation {
       | [Color, Color]
       | string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    endFrameEvent?: ECSEvent<unknown, any>
+    endFrameEvent?: ECSEvent<string, any>
   }
 
   export type Property = {

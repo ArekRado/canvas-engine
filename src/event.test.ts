@@ -23,7 +23,7 @@ describe('event', () => {
     }
     const eventHandler = vi.fn(({ state }) => state)
 
-    addEventHandler(eventHandler)
+    addEventHandler<typeof event>(event.type, eventHandler)
 
     expect(eventHandler).not.toHaveBeenCalled()
 
@@ -51,15 +51,15 @@ describe('event', () => {
   })
 
   it('should handle internal events emmited from external functions', () => {
-    const event: ECSEvent<WindowResizeEvent, null> = {
+    const event: WindowResizeEvent = {
       type: CanvasEngineEvent.windowResize,
       payload: null,
     }
     const eventHandler = vi.fn(({ state }) => state)
     const internalEventHandler = vi.fn(({ state }) => state)
 
-    addEventHandler(eventHandler)
-    addEventHandler(internalEventHandler)
+    addEventHandler(event.type, eventHandler)
+    addEventHandler(event.type, internalEventHandler)
 
     expect(eventHandler).not.toHaveBeenCalled()
 
@@ -82,7 +82,7 @@ describe('event', () => {
   it('should handle deeply nested events', () => {
     type Test = { count: number }
     const name = 'test'
-    const event: ECSEvent<WindowResizeEvent, null> = {
+    const event: WindowResizeEvent = {
       type: CanvasEngineEvent.windowResize,
       payload: null,
     }
@@ -110,7 +110,7 @@ describe('event', () => {
       })
     })
 
-    addEventHandler(eventHandler)
+    addEventHandler(CanvasEngineEvent.windowResize, eventHandler)
 
     expect(eventHandler).not.toHaveBeenCalled()
 

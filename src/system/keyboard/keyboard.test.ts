@@ -4,7 +4,7 @@ import { getInitialState, getSystems } from '../../util/state'
 import { runOneFrame } from '../../util/runOneFrame'
 import { getComponent } from '../../component/getComponent'
 import { componentName } from '../../component/componentName'
-import { CanvasEngineEvent, Keyboard } from '../../type'
+import { CanvasEngineEvent, Keyboard, KeyboardActionEvent } from '../../type'
 import { keyboardEntity } from './keyboard'
 import { addEventHandler } from '../../event'
 
@@ -47,7 +47,10 @@ describe('keyboard', () => {
 
   it('should set keyboard isUp and isDown flags', () => {
     const eventHandler = vi.fn(({ state }) => state)
-    addEventHandler(eventHandler)
+    addEventHandler<KeyboardActionEvent>(
+      CanvasEngineEvent.keyboardActionEvent,
+      eventHandler,
+    )
 
     const key1 = 'a'
     const key2 = 'b'

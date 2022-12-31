@@ -72,5 +72,4 @@ export { createComponentCrud } from './util/createComponentCrud'
 
 // TODO
 // enabled flag in collider box
-// eventHandler shuld be triggered only for observed event
 // eventHandler should log error message if receive event without handler

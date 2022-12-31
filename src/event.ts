@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createGlobalSystem } from './system/createSystem'
-import { AllEvents, AnyState, InternalInitialState } from './type'
-import { internalEventHandler } from './util/internalEventHandler'
+import { AnyState, ECSEvent, InternalInitialState } from './type'
 
 type AcitveBuffer = 'first' | 'second'
 
@@ -15,34 +14,31 @@ export type EventHandler<AllEvents, State extends AnyState = AnyState> = ({
   event: AllEvents
 }) => State
 
-let eventHandlers: EventHandler<any, any>[] = [internalEventHandler]
+let eventHandlers: [string, EventHandler<any, any>][] = []
 
 export const addEventHandler = <
-  Events = AllEvents,
+  Event extends ECSEvent<string, unknown>,
   State extends AnyState = AnyState,
 >(
-  eventHandler: EventHandler<Events, State>,
+  type: Event['type'],
+  eventHandler: EventHandler<Event, State>,
 ): void => {
-  if (process.env.NODE_ENV === 'test') {
-    if (eventHandlers.find((handler) => handler === eventHandler)) {
-      console.warn('This event handler has been already added', eventHandler)
-    }
-  }
-
-  eventHandlers.push(eventHandler)
+  eventHandlers.push([type, eventHandler])
 }
 
 export const removeEventHandler = (eventHandler: EventHandler<any, any>) => {
-  eventHandlers = eventHandlers.filter((e) => e !== eventHandler)
+  eventHandlers = eventHandlers.filter(
+    ([_, handler]) => handler !== eventHandler,
+  )
 }
 
 let activeBuffer: AcitveBuffer = 'first'
 
-let eventBuffer: unknown[] = []
+let eventBuffer: ECSEvent<string, unknown>[] = []
 /**
  * events emited inside event handlers are moved to secondEventBuffer
  */
-let secondEventBuffer: unknown[] = []
+let secondEventBuffer: ECSEvent<string, unknown>[] = []
 
 const resetEventBuffer = () => {
   eventBuffer = []
@@ -58,8 +54,9 @@ const unlockFirstBuffer = () => {
   eventBuffer = [...secondEventBuffer]
 }
 
-export const emitEvent = <Event>(event: Event) => {
-  // console.log(event)
+export const emitEvent = <Event extends ECSEvent<string, unknown>>(
+  event: Event,
+) => {
   if (activeBuffer === 'first') {
     eventBuffer.push(event)
   } else {
@@ -77,12 +74,16 @@ export const eventSystem = (state: InternalInitialState) =>
       for (let i = 0; i < eventBuffer.length; i++) {
         const event = eventBuffer[i]
         for (let j = 0; j < eventHandlers.length; j++) {
-          const eventHandler = eventHandlers[j]
+          const type = eventHandlers[j][0]
 
-          state = eventHandler({
-            state,
-            event,
-          })
+          if (type === event.type) {
+            const eventHandler = eventHandlers[j][1]
+
+            state = eventHandler({
+              state,
+              event,
+            })
+          }
         }
       }
 

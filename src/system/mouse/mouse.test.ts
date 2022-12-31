@@ -5,7 +5,7 @@ import { getInitialState, getSystems } from '../../util/state'
 import { runOneFrame } from '../../util/runOneFrame'
 import { vector, vectorZero } from '@arekrado/vector-2d'
 import { getComponent } from '../../component/getComponent'
-import { CanvasEngineEvent, Mouse } from '../../type'
+import { CanvasEngineEvent, Mouse, MouseActionEvent } from '../../type'
 import { mouseEntity } from './mouse'
 import { componentName } from '../../component/componentName'
 import { addEventHandler } from '../../event'
@@ -70,7 +70,10 @@ describe('mouse', () => {
 
   it('should set buttons on mousedown event', () => {
     const eventHandler = vi.fn(({ state }) => state)
-    addEventHandler(eventHandler)
+    addEventHandler<MouseActionEvent>(
+      CanvasEngineEvent.mouseActionEvent,
+      eventHandler,
+    )
 
     let state = getInitialStateWithMouse()
 

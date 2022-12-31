@@ -24,7 +24,7 @@
   "private": false,
   "description": "",
   "scripts": {
-    "test": "vitest run --config ./vitest.config.ts",
+    "test": "vitest run --config ./vitest.config.ts --no-isolate",
     "test:watch": "vitest --config ./vitest.config.ts",
     "publish:dry": "npm publish --dry-run",
     "lint": "eslint ./src --ext .ts,.tsx",

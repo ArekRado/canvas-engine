@@ -567,7 +567,10 @@ describe('animation', () => {
       })
       const eventHandler = vi.fn(({ state }) => state)
 
-      addEventHandler(eventHandler)
+      addEventHandler('1', eventHandler)
+      addEventHandler('2', eventHandler)
+      addEventHandler('3', eventHandler)
+      addEventHandler('4', eventHandler)
 
       let state = createEntity({ state: getState({}), entity })
 
