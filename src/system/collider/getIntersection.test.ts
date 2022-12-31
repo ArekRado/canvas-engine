@@ -1,4 +1,3 @@
-import { Vector2D } from '@arekrado/vector-2d'
 import {
   getCircleCircleIntersection,
   getCircleLineIntersection,
@@ -15,7 +14,7 @@ import {
   // getRectangleRectangleIntersection,
 } from './getIntersection'
 
-describe.skip('getIntersection', () => {
+describe('getIntersection', () => {
   // describe('getRectangleRectangleIntersection', () => {
   //   it('shouldIntersection collisions', () => {
   //     const edgeV1: Vector2D[] = [

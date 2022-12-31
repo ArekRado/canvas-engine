@@ -7,7 +7,7 @@ import {
   removeDuplicatedCollisoins,
 } from './quadTree'
 
-describe.skip('quadTree', () => {
+describe('quadTree', () => {
   describe('splitBounds', () => {
     it('should return proper bounds for each possition', () => {
       expect(

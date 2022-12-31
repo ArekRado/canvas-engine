@@ -4,7 +4,7 @@ import { getColliderContour } from './getColliderContour'
 
 const toFixed = (x: number) => parseFloat(x.toFixed(3))
 
-describe.skip('getColliderContour', () => {
+describe('getColliderContour', () => {
   describe('should generate proper rectangle contour depending on collider', () => {
     it('point', () => {
       expect(
@@ -34,8 +34,8 @@ describe.skip('getColliderContour', () => {
       expect(
         getColliderContour({
           transform: defaultTransform({
-            position: [1, 1],
-            rotation: degreesToRadians(0),
+            position: [1, 1, 1],
+            rotation: [degreesToRadians(0), 0, 0],
           }),
           collider: defaultCollider({
             data: {
@@ -64,8 +64,8 @@ describe.skip('getColliderContour', () => {
       expect(
         getColliderContour({
           transform: defaultTransform({
-            position: [0, 0],
-            rotation: degreesToRadians(0),
+            position: [0, 0, 0],
+            rotation: [degreesToRadians(0), 0, 0],
           }),
           collider: defaultCollider({
             data: {
@@ -80,8 +80,8 @@ describe.skip('getColliderContour', () => {
       expect(
         getColliderContour({
           transform: defaultTransform({
-            position: [-1, -1],
-            rotation: degreesToRadians(0),
+            position: [-1, -1, 0],
+            rotation: [degreesToRadians(0), 0, 0],
           }),
           collider: defaultCollider({
             data: {
@@ -95,8 +95,8 @@ describe.skip('getColliderContour', () => {
 
       const p = getColliderContour({
         transform: defaultTransform({
-          position: [0, 0],
-          rotation: degreesToRadians(90),
+          position: [0, 0, 0],
+          rotation: [degreesToRadians(90), 0, 0],
         }),
         collider: defaultCollider({
           data: {
@@ -116,8 +116,8 @@ describe.skip('getColliderContour', () => {
 
       const p1 = getColliderContour({
         transform: defaultTransform({
-          position: [0, 0],
-          rotation: degreesToRadians(180),
+          position: [0, 0, 0],
+          rotation: [degreesToRadians(180), 0, 0],
         }),
         collider: defaultCollider({
           data: {
@@ -137,8 +137,8 @@ describe.skip('getColliderContour', () => {
 
       const p2 = getColliderContour({
         transform: defaultTransform({
-          position: [0, 0],
-          rotation: degreesToRadians(45),
+          position: [0, 0, 0],
+          rotation: [degreesToRadians(45), 0, 0],
         }),
         collider: defaultCollider({
           data: {
@@ -161,8 +161,8 @@ describe.skip('getColliderContour', () => {
       expect(
         getColliderContour({
           transform: defaultTransform({
-            position: [0, 0],
-            rotation: degreesToRadians(0),
+            position: [0, 0, 0],
+            rotation: [degreesToRadians(0), 0, 0],
           }),
           collider: defaultCollider({
             data: {
@@ -177,8 +177,8 @@ describe.skip('getColliderContour', () => {
       expect(
         getColliderContour({
           transform: defaultTransform({
-            position: [-1, -1],
-            rotation: degreesToRadians(0),
+            position: [-1, -1, 0],
+            rotation: [degreesToRadians(0), 0, 0],
           }),
           collider: defaultCollider({
             data: {
@@ -193,8 +193,8 @@ describe.skip('getColliderContour', () => {
       expect(
         getColliderContour({
           transform: defaultTransform({
-            position: [0, 0],
-            rotation: degreesToRadians(90),
+            position: [0, 0, 0],
+            rotation: [degreesToRadians(90), 0, 0],
           }),
           collider: defaultCollider({
             data: {
@@ -208,8 +208,8 @@ describe.skip('getColliderContour', () => {
 
       const p1 = getColliderContour({
         transform: defaultTransform({
-          position: [0, 0],
-          rotation: degreesToRadians(180),
+          position: [0, 0, 0],
+          rotation: [degreesToRadians(180), 0, 0],
         }),
         collider: defaultCollider({
           data: {
@@ -224,8 +224,8 @@ describe.skip('getColliderContour', () => {
 
       const p2 = getColliderContour({
         transform: defaultTransform({
-          position: [0, 0],
-          rotation: degreesToRadians(45),
+          position: [0, 0, 0],
+          rotation: [degreesToRadians(45), 0, 0],
         }),
         collider: defaultCollider({
           data: {
@@ -256,8 +256,8 @@ describe.skip('getColliderContour', () => {
       expect(
         getColliderContour({
           transform: defaultTransform({
-            position: [0, 0],
-            rotation: degreesToRadians(0),
+            position: [0, 0, 0],
+            rotation: [degreesToRadians(0), 0, 0],
           }),
           collider: defaultCollider({
             data: {
@@ -272,8 +272,8 @@ describe.skip('getColliderContour', () => {
       expect(
         getColliderContour({
           transform: defaultTransform({
-            position: [0, 0],
-            rotation: degreesToRadians(0),
+            position: [0, 0, 0],
+            rotation: [degreesToRadians(0), 0, 0],
           }),
           collider: defaultCollider({
             data: {
@@ -288,8 +288,8 @@ describe.skip('getColliderContour', () => {
       expect(
         getColliderContour({
           transform: defaultTransform({
-            position: [-1, -1],
-            rotation: degreesToRadians(0),
+            position: [-1, -1, 0],
+            rotation: [degreesToRadians(0), 0, 0],
           }),
           collider: defaultCollider({
             data: {
@@ -303,8 +303,8 @@ describe.skip('getColliderContour', () => {
 
       const p1 = getColliderContour({
         transform: defaultTransform({
-          position: [0, 0],
-          rotation: degreesToRadians(90),
+          position: [0, 0, 0],
+          rotation: [degreesToRadians(90), 0, 0],
         }),
         collider: defaultCollider({
           data: {
@@ -323,8 +323,8 @@ describe.skip('getColliderContour', () => {
 
       const p2 = getColliderContour({
         transform: defaultTransform({
-          position: [0, 0],
-          rotation: degreesToRadians(180),
+          position: [0, 0, 0],
+          rotation: [degreesToRadians(180), 0, 0],
         }),
         collider: defaultCollider({
           data: {
@@ -344,8 +344,8 @@ describe.skip('getColliderContour', () => {
 
       const p3 = getColliderContour({
         transform: defaultTransform({
-          position: [0, 0],
-          rotation: degreesToRadians(45),
+          position: [0, 0, 0],
+          rotation: [degreesToRadians(45), 0, 0],
         }),
         collider: defaultCollider({
           data: {
@@ -367,8 +367,8 @@ describe.skip('getColliderContour', () => {
     it('polygon', () => {
       const p1 = getColliderContour({
         transform: defaultTransform({
-          position: [0, 0],
-          rotation: degreesToRadians(0),
+          position: [0, 0, 0],
+          rotation: [degreesToRadians(0), 0, 0],
         }),
         collider: defaultCollider({
           data: {
@@ -387,8 +387,8 @@ describe.skip('getColliderContour', () => {
 
       const p2 = getColliderContour({
         transform: defaultTransform({
-          position: [0, 0],
-          rotation: degreesToRadians(45),
+          position: [0, 0, 0],
+          rotation: [degreesToRadians(45), 0, 0],
         }),
         collider: defaultCollider({
           data: {

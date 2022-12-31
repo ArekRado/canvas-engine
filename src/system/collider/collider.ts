@@ -27,6 +27,9 @@ let colliderContours: Dictionary<RectangleData> = {}
 export let previousCollisions: Dictionary<CollisionData | undefined> = {}
 export let collisions: Dictionary<CollisionData | undefined> = {}
 
+// TODO
+// Run quadTree for each specific layer
+
 // every quadTree will be calculated on separated core
 // (x**2)/2
 // eg: if cpu has 8 cores then quadTree will be splited into 16 smaller quadTrees

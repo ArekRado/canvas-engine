@@ -13,7 +13,7 @@ import { rigidBodySystem } from '../system/rigidBody/rigidBody'
 import { AnyState, InternalInitialState } from '../type'
 import { Scene, WebGLRenderer } from 'three'
 import { spriteSystem } from '../system/sprite/sprite'
-// import { colliderSystem } from '../system/collider/collider'
+import { colliderSystem } from '../system/collider/collider'
 
 let sceneRef: Scene | undefined
 let rendererRef: WebGLRenderer | undefined
@@ -65,7 +65,7 @@ export const getSystems = ({
   internatlState = timeSystem(internatlState) as InternalInitialState
   internatlState = cameraSystem(internatlState) as InternalInitialState
   internatlState = transformSystem(internatlState) as InternalInitialState
-  // internatlState = colliderSystem(internatlState) as InternalInitialState
+  internatlState = colliderSystem(internatlState) as InternalInitialState
   internatlState = animationSystem(internatlState) as InternalInitialState
   internatlState = materialSystem(internatlState) as InternalInitialState
   internatlState = meshSystem(internatlState) as InternalInitialState

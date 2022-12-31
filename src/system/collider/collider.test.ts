@@ -6,7 +6,6 @@ import { getState } from '../../util/state'
 import { createTransform } from '../transform/transformCrud'
 import { createCollider, getCollider } from './colliderCrud'
 import { degreesToRadians } from '../../util/radian'
-import { addEventHandler, removeEventHandler } from '../../event'
 import {
   AnyState,
   CanvasEngineEvent,
@@ -17,6 +16,7 @@ import {
 } from '../../type'
 import { tick } from '../../util/testUtils'
 import { vi } from 'vitest'
+import { addEventHandler, removeEventHandler } from '../../event'
 
 const findCollision = ({
   allCollisions,
@@ -41,7 +41,7 @@ const runOneFrameWithFixedTime = (state: AnyState): AnyState => {
   return state
 }
 
-describe.skip('collider', () => {
+describe('collider', () => {
   let allCollisions: CollisionEvent['payload'][] = []
   const handleCollision: EventHandler<CollisionEvent, AnyState> = ({
     state,
@@ -55,7 +55,10 @@ describe.skip('collider', () => {
   }
 
   beforeEach(() => {
-    addEventHandler(handleCollision)
+    addEventHandler<CollisionEvent>(
+      CanvasEngineEvent.colliderCollision,
+      handleCollision,
+    )
   })
 
   afterEach(() => {
@@ -85,21 +88,21 @@ describe.skip('collider', () => {
         state,
         entity: entity1,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
       state = createTransform({
         state,
         entity: entity2,
         data: defaultTransform({
-          position: vector(1, 1),
+          position: [1, 1, 1],
         }),
       })
       state = createTransform({
         state,
         entity: entity3,
         data: defaultTransform({
-          position: vector(3.5, 3.5),
+          position: [3.5, 3.5, 3.5],
         }),
       })
 
@@ -182,21 +185,21 @@ describe.skip('collider', () => {
         state,
         entity: entity1,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
       state = createTransform({
         state,
         entity: entity2,
         data: defaultTransform({
-          position: vector(10, 7),
+          position: [10, 7, 7],
         }),
       })
       state = createTransform({
         state,
         entity: entity3,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
 
@@ -273,28 +276,28 @@ describe.skip('collider', () => {
         state,
         entity: entity1,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
       state = createTransform({
         state,
         entity: entity2,
         data: defaultTransform({
-          position: vector(1, 1),
+          position: [1, 1, 1],
         }),
       })
       state = createTransform({
         state,
         entity: entity3,
         data: defaultTransform({
-          position: vector(3.5, 3.5),
+          position: [3.5, 3.5, 3.5],
         }),
       })
       state = createTransform({
         state,
         entity: entity4,
         data: defaultTransform({
-          position: vector(99, 99),
+          position: [99, 99, 99],
         }),
       })
 
@@ -410,28 +413,28 @@ describe.skip('collider', () => {
         state,
         entity: entity1,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
       state = createTransform({
         state,
         entity: entity2,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
       state = createTransform({
         state,
         entity: entity3,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
       state = createTransform({
         state,
         entity: entity4,
         data: defaultTransform({
-          position: vector(99, 99),
+          position: [99, 99, 99],
         }),
       })
 
@@ -549,28 +552,28 @@ describe.skip('collider', () => {
         state,
         entity: entity1,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
       state = createTransform({
         state,
         entity: entity2,
         data: defaultTransform({
-          position: vector(10, 7),
+          position: [10, 7, 7],
         }),
       })
       state = createTransform({
         state,
         entity: entity3,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
       state = createTransform({
         state,
         entity: entity4,
         data: defaultTransform({
-          position: vector(99, 99),
+          position: [99, 99, 99],
         }),
       })
 
@@ -668,13 +671,14 @@ describe.skip('collider', () => {
 
     it('detect collisions line-line', () => {
       const allCollisions: CollisionEvent['payload'][] = []
-      addEventHandler(({ state, event }) => {
-        if (event.type === CanvasEngineEvent.colliderCollision) {
+      addEventHandler<CollisionEvent>(
+        CanvasEngineEvent.colliderCollision,
+        ({ state, event }) => {
           allCollisions.push(event.payload)
-        }
 
-        return state
-      })
+          return state
+        },
+      )
 
       // line
       const entity1 = generateEntity()
@@ -698,35 +702,35 @@ describe.skip('collider', () => {
         state,
         entity: entity1,
         data: defaultTransform({
-          position: vector(-10, -10),
+          position: [-10, -10, -10],
         }),
       })
       state = createTransform({
         state,
         entity: entity2,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
       state = createTransform({
         state,
         entity: entity3,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
       state = createTransform({
         state,
         entity: entity4,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
       state = createTransform({
         state,
         entity: entity5,
         data: defaultTransform({
-          position: vector(99, 99),
+          position: [99, 99, 99],
         }),
       })
 
@@ -862,13 +866,14 @@ describe.skip('collider', () => {
       const entity5 = generateEntity()
 
       const allCollisions: CollisionEvent['payload'][] = []
-      addEventHandler(({ state, event }) => {
-        if (event.type === CanvasEngineEvent.colliderCollision) {
+      addEventHandler<CollisionEvent>(
+        CanvasEngineEvent.colliderCollision,
+        ({ state, event }) => {
           allCollisions.push(event.payload)
-        }
 
-        return state
-      })
+          return state
+        },
+      )
 
       let state = getState({}) as AnyState
       state = createEntity({ entity: entity1, state })
@@ -881,35 +886,35 @@ describe.skip('collider', () => {
         state,
         entity: entity1,
         data: defaultTransform({
-          position: vector(-1, -1),
+          position: [-1, -1, 1],
         }),
       })
       state = createTransform({
         state,
         entity: entity2,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
       state = createTransform({
         state,
         entity: entity3,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
       state = createTransform({
         state,
         entity: entity4,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
       state = createTransform({
         state,
         entity: entity5,
         data: defaultTransform({
-          position: vector(0, 0),
+          position: [0, 0, 0],
         }),
       })
 
@@ -1067,13 +1072,14 @@ describe.skip('collider', () => {
       const entity8 = generateEntity()
 
       const allCollisions: CollisionEvent['payload'][] = []
-      addEventHandler(({ state, event }) => {
-        if (event.type === CanvasEngineEvent.colliderCollision) {
+      addEventHandler<CollisionEvent>(
+        CanvasEngineEvent.colliderCollision,
+        ({ state, event }) => {
           allCollisions.push(event.payload)
-        }
 
-        return state
-      })
+          return state
+        },
+      )
 
       let state = getState({}) as AnyState
       state = createEntity({ entity: entity1, state })
@@ -1090,7 +1096,7 @@ describe.skip('collider', () => {
             state,
             entity,
             data: defaultTransform({
-              position: [0, 0],
+              position: [0, 0, 0],
             }),
           })
         },
@@ -1100,7 +1106,7 @@ describe.skip('collider', () => {
         state,
         entity: entity8,
         data: defaultTransform({
-          position: [99, 99],
+          position: [99, 99, 99],
         }),
       })
 
@@ -1192,13 +1198,14 @@ describe.skip('collider', () => {
     let state = getState({}) as AnyState
 
     const allCollisions: CollisionEvent['payload'][] = []
-    addEventHandler(({ state, event }) => {
-      if (event.type === CanvasEngineEvent.colliderCollision) {
+    addEventHandler<CollisionEvent>(
+      CanvasEngineEvent.colliderCollision,
+      ({ state, event }) => {
         allCollisions.push(event.payload)
-      }
 
-      return state
-    })
+        return state
+      },
+    )
 
     const entity1 = generateEntity()
     const entity2 = generateEntity()
@@ -1246,7 +1253,7 @@ describe.skip('collider', () => {
       state = createTransform({
         state,
         entity,
-        data: defaultTransform({ position: [0, 0] }),
+        data: defaultTransform({ position: [0, 0, 0] }),
       })
 
       state = createCollider({
@@ -1305,14 +1312,14 @@ describe.skip('collider', () => {
       state,
       entity: entity1,
       data: defaultTransform({
-        position: vector(2, 0),
+        position: [2, 0, 0],
       }),
     })
     state = createTransform({
       state,
       entity: entity2,
       data: defaultTransform({
-        position: vector(1, 0),
+        position: [1, 0, 0],
       }),
     })
     // Rotated rectangle should be wide enough to touch line
@@ -1320,8 +1327,12 @@ describe.skip('collider', () => {
       state,
       entity: entity3,
       data: defaultTransform({
-        position: vector(-0.1, 0),
-        rotation: degreesToRadians(45),
+        position: [-0.1, 0, 0],
+        rotation: [
+          degreesToRadians(45),
+          degreesToRadians(45),
+          degreesToRadians(45),
+        ],
       }),
     })
 
@@ -1402,7 +1413,10 @@ describe.skip('collider', () => {
     state = runOneFrameWithFixedTime(state)
 
     const eventHandler = vi.fn(({ state }) => state)
-    addEventHandler(eventHandler)
+    addEventHandler<CollisionEvent>(
+      CanvasEngineEvent.colliderCollision,
+      eventHandler,
+    )
 
     state = createEntity({ entity: entity1, state })
     state = createEntity({ entity: entity2, state })
@@ -1515,7 +1529,10 @@ describe.skip('collider', () => {
     state = runOneFrameWithFixedTime(state)
 
     const eventHandler = vi.fn(({ state }) => state)
-    addEventHandler(eventHandler)
+    addEventHandler<CollisionEvent>(
+      CanvasEngineEvent.colliderCollision,
+      eventHandler,
+    )
 
     state = createEntity({ entity: entity1, state })
     state = createEntity({ entity: entity2, state })
