@@ -2,7 +2,7 @@ import { vector, Vector2D } from '@arekrado/vector-2d'
 import { createEntity } from '../../entity/createEntity'
 import { generateEntity } from '../../entity/generateEntity'
 import { defaultCollider, defaultTransform } from '../../util/defaultComponents'
-import { getState } from '../../util/state'
+import { getInitialState, getState } from '../../util/state'
 import { createTransform } from '../transform/transformCrud'
 import { createCollider, getCollider } from './colliderCrud'
 import { degreesToRadians } from '../../util/radian'
@@ -17,6 +17,7 @@ import {
 import { tick } from '../../util/testUtils'
 import { vi } from 'vitest'
 import { addEventHandler, removeEventHandler } from '../../event'
+import { prepareColliderContours } from './collider'
 
 const findCollision = ({
   allCollisions,
@@ -54,12 +55,12 @@ describe('collider', () => {
     return state
   }
 
-  beforeEach(() => {
+  const addCollisionHandler = () => {
     addEventHandler<CollisionEvent>(
       CanvasEngineEvent.colliderCollision,
       handleCollision,
     )
-  })
+  }
 
   afterEach(() => {
     allCollisions = []
@@ -79,8 +80,9 @@ describe('collider', () => {
 
       let state = createEntity({
         entity: entity1,
-        state: getState({}) as AnyState,
+        state: getState() as AnyState,
       })
+      addCollisionHandler()
       state = createEntity({ entity: entity2, state })
       state = createEntity({ entity: entity3, state })
 
@@ -177,8 +179,9 @@ describe('collider', () => {
 
       let state = createEntity({
         entity: entity1,
-        state: getState({}) as AnyState,
+        state: getState() as AnyState,
       })
+      addCollisionHandler()
       state = createEntity({ entity: entity2, state })
 
       state = createTransform({
@@ -266,8 +269,9 @@ describe('collider', () => {
 
       let state = createEntity({
         entity: entity1,
-        state: getState({}) as AnyState,
+        state: getState() as AnyState,
       })
+      addCollisionHandler()
       state = createEntity({ entity: entity2, state })
       state = createEntity({ entity: entity3, state })
       state = createEntity({ entity: entity4, state })
@@ -402,7 +406,9 @@ describe('collider', () => {
       const entity2 = generateEntity()
       const entity3 = generateEntity()
       const entity4 = generateEntity()
-      let state = getState({}) as AnyState
+      let state = getState() as AnyState
+
+      addCollisionHandler()
 
       state = createEntity({ entity: entity1, state })
       state = createEntity({ entity: entity2, state })
@@ -542,8 +548,11 @@ describe('collider', () => {
 
       let state = createEntity({
         entity: entity1,
-        state: getState({}) as AnyState,
+        state: getState() as AnyState,
       })
+
+      addCollisionHandler()
+
       state = createEntity({ entity: entity2, state })
       state = createEntity({ entity: entity3, state })
       state = createEntity({ entity: entity4, state })
@@ -671,14 +680,6 @@ describe('collider', () => {
 
     it('detect collisions line-line', () => {
       const allCollisions: CollisionEvent['payload'][] = []
-      addEventHandler<CollisionEvent>(
-        CanvasEngineEvent.colliderCollision,
-        ({ state, event }) => {
-          allCollisions.push(event.payload)
-
-          return state
-        },
-      )
 
       // line
       const entity1 = generateEntity()
@@ -691,7 +692,17 @@ describe('collider', () => {
       // doesn't touch line1
       const entity5 = generateEntity()
 
-      let state = getState({}) as AnyState
+      let state = getState() as AnyState
+
+      addEventHandler<CollisionEvent>(
+        CanvasEngineEvent.colliderCollision,
+        ({ state, event }) => {
+          allCollisions.push(event.payload)
+
+          return state
+        },
+      )
+
       state = createEntity({ entity: entity1, state })
       state = createEntity({ entity: entity2, state })
       state = createEntity({ entity: entity3, state })
@@ -866,6 +877,9 @@ describe('collider', () => {
       const entity5 = generateEntity()
 
       const allCollisions: CollisionEvent['payload'][] = []
+
+      let state = getState() as AnyState
+
       addEventHandler<CollisionEvent>(
         CanvasEngineEvent.colliderCollision,
         ({ state, event }) => {
@@ -874,8 +888,8 @@ describe('collider', () => {
           return state
         },
       )
+      addCollisionHandler()
 
-      let state = getState({}) as AnyState
       state = createEntity({ entity: entity1, state })
       state = createEntity({ entity: entity2, state })
       state = createEntity({ entity: entity3, state })
@@ -1072,6 +1086,9 @@ describe('collider', () => {
       const entity8 = generateEntity()
 
       const allCollisions: CollisionEvent['payload'][] = []
+
+      let state = getState() as AnyState
+
       addEventHandler<CollisionEvent>(
         CanvasEngineEvent.colliderCollision,
         ({ state, event }) => {
@@ -1081,7 +1098,6 @@ describe('collider', () => {
         },
       )
 
-      let state = getState({}) as AnyState
       state = createEntity({ entity: entity1, state })
       state = createEntity({ entity: entity2, state })
       state = createEntity({ entity: entity3, state })
@@ -1195,7 +1211,7 @@ describe('collider', () => {
   })
 
   it('should detect collisions only between the same layer', () => {
-    let state = getState({}) as AnyState
+    let state = getState() as AnyState
 
     const allCollisions: CollisionEvent['payload'][] = []
     addEventHandler<CollisionEvent>(
@@ -1303,7 +1319,10 @@ describe('collider', () => {
     const entity2 = generateEntity()
     const entity3 = generateEntity()
 
-    let state = getState({}) as AnyState
+    let state = getState() as AnyState
+
+    addCollisionHandler()
+
     state = createEntity({ entity: entity1, state })
     state = createEntity({ entity: entity2, state })
     state = createEntity({ entity: entity3, state })
@@ -1409,7 +1428,7 @@ describe('collider', () => {
     const entity1 = generateEntity()
     const entity2 = generateEntity()
 
-    let state = getState({}) as AnyState
+    let state = getState() as AnyState
     state = runOneFrameWithFixedTime(state)
 
     const eventHandler = vi.fn(({ state }) => state)
@@ -1525,7 +1544,7 @@ describe('collider', () => {
     const entity1 = generateEntity()
     const entity2 = generateEntity()
 
-    let state = getState({}) as AnyState
+    let state = getState() as AnyState
     state = runOneFrameWithFixedTime(state)
 
     const eventHandler = vi.fn(({ state }) => state)
@@ -1614,5 +1633,11 @@ describe('collider', () => {
     })
 
     removeEventHandler(eventHandler)
+  })
+})
+
+describe('prepareColliderContours', () => {
+  it('should return undefined when there is no colliders', () => {
+    const contourData = prepareColliderContours({ state: getState() })
   })
 })

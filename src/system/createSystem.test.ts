@@ -9,7 +9,7 @@ describe('createGlobalSystem', () => {
     const tick = vi.fn(({ state }) => state)
 
     createGlobalSystem({
-      state: getState({}),
+      state: getState(),
       name: 'test',
       tick,
     })
@@ -22,7 +22,7 @@ describe('createGlobalSystem', () => {
     const tick = vi.fn(({ state }) => state)
 
     const state = createGlobalSystem({
-      state: getState({}),
+      state: getState(),
       name: 'test',
       tick,
     })

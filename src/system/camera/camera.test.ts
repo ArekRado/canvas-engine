@@ -8,7 +8,7 @@ import { Camera } from '../../type'
 
 describe('camera', () => {
   it('should pass through camera render lifecycle without any errors', () => {
-    let state = getState({})
+    let state = getState()
 
     state = updateComponent({
       state,
@@ -25,7 +25,7 @@ describe('camera', () => {
 
     expect(camera).toEqual(
       getComponent({
-        state: getState({}),
+        state: getState(),
         entity: cameraEntity,
         name: componentName.camera,
       }),

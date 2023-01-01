@@ -46,16 +46,16 @@ describe('keyboard', () => {
   })
 
   it('should set keyboard isUp and isDown flags', () => {
+    const key1 = 'a'
+    const key2 = 'b'
+
+    let state = getInitialStateWithKeyboard()
+
     const eventHandler = vi.fn(({ state }) => state)
     addEventHandler<KeyboardActionEvent>(
       CanvasEngineEvent.keyboardActionEvent,
       eventHandler,
     )
-
-    const key1 = 'a'
-    const key2 = 'b'
-
-    let state = getInitialStateWithKeyboard()
 
     expect(
       getComponent<Keyboard>({

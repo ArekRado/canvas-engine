@@ -69,13 +69,13 @@ describe('mouse', () => {
   })
 
   it('should set buttons on mousedown event', () => {
+    let state = getInitialStateWithMouse()
+
     const eventHandler = vi.fn(({ state }) => state)
     addEventHandler<MouseActionEvent>(
       CanvasEngineEvent.mouseActionEvent,
       eventHandler,
     )
-
-    let state = getInitialStateWithMouse()
 
     expect(
       getComponent<Mouse>({

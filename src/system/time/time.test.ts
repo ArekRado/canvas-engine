@@ -23,7 +23,7 @@ const getTime = ({ state }: { state: AnyState }) =>
 describe('time', () => {
   it('should change time - start from 0 case', () => {
     let state = setTime({
-      state: getState({}),
+      state: getState(),
       data: {
         dataOverwrite: {
           delta: 0,
@@ -59,7 +59,7 @@ describe('time', () => {
 
   it('should change time - start from non 0 case', () => {
     let state = setTime({
-      state: getState({}),
+      state: getState(),
       data: {
         dataOverwrite: {
           timeNow: 10,
@@ -105,7 +105,7 @@ describe('time', () => {
     mutateMaxAllowedDelta(34)
 
     let state = setTime({
-      state: getState({}),
+      state: getState(),
       data: {
         dataOverwrite: {
           delta: 0,

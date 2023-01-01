@@ -12,7 +12,7 @@ describe('transform', () => {
     const entity2 = generateEntity()
 
     let state = createTransform({
-      state: getState({}),
+      state: getState(),
       entity: entity1,
       data: defaultTransform({
         position: [1, 1, 1],
@@ -57,7 +57,7 @@ describe('transform', () => {
     const entity4 = generateEntity()
 
     let state = createTransform({
-      state: getState({}),
+      state: getState(),
       entity: entity1,
       data: defaultTransform({
         position: [1, 1, 1],
@@ -143,7 +143,7 @@ describe('transform', () => {
 
     let state = createEntity({
       entity: entity1,
-      state: getState({}),
+      state: getState(),
     })
     state = createEntity({ entity: entity2, state })
     state = createEntity({ entity: entity3, state })
@@ -215,7 +215,7 @@ describe('transform', () => {
 
     let state = createEntity({
       entity: entity1,
-      state: getState({}),
+      state: getState(),
     })
     state = createEntity({ entity: entity2, state })
     state = createEntity({ entity: entity3, state })
@@ -302,7 +302,7 @@ describe('transform', () => {
 
     let state = createEntity({
       entity: entity1,
-      state: getState({}),
+      state: getState(),
     })
     state = createEntity({ entity: entity2, state })
     state = createEntity({ entity: entity3, state })

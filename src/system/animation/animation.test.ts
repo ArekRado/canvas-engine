@@ -77,7 +77,7 @@ describe('animation', () => {
 
   describe('getActiveKeyframe', () => {
     it('should ends when doesnt have any keyframes', () => {
-      let state = createEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState(), entity })
 
       state = createComponent<NumberComponent, InternalInitialState>({
         state,
@@ -453,7 +453,7 @@ describe('animation', () => {
     it('should trigger system update method', () => {
       const update = vi.fn(({ state }) => state)
 
-      let state = createEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState(), entity })
       state = createSystem({
         state,
         name: numberComponentName,
@@ -504,7 +504,7 @@ describe('animation', () => {
     })
 
     it('should remove animation component when it ended and proper flag is set', () => {
-      let state = createEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState(), entity })
       state = createComponent<NumberComponent, InternalInitialState>({
         state,
         entity,
@@ -561,6 +561,8 @@ describe('animation', () => {
     })
 
     it('should emit even on every keyframe change', () => {
+      let state = createEntity({ state: getState(), entity })
+
       const event = (type: string): ECSEvent<string, string> => ({
         type,
         payload: 'payload',
@@ -571,8 +573,6 @@ describe('animation', () => {
       addEventHandler('2', eventHandler)
       addEventHandler('3', eventHandler)
       addEventHandler('4', eventHandler)
-
-      let state = createEntity({ state: getState({}), entity })
 
       state = createComponent<NumberComponent, InternalInitialState>({
         state,
@@ -664,7 +664,7 @@ describe('animation', () => {
     })
 
     it('Linear animation should change value in proper way', () => {
-      let state = createEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState(), entity })
       state = createComponent<NumberComponent, InternalInitialState>({
         state,
         entity,
@@ -737,7 +737,7 @@ describe('animation', () => {
     })
 
     it('Should works with negative values', () => {
-      let state = createEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState(), entity })
       state = createComponent<NumberComponent, InternalInitialState>({
         state,
         entity,
@@ -813,7 +813,7 @@ describe('animation', () => {
     })
 
     it('Should works with multiple frames', () => {
-      let state = createEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState(), entity })
       state = createComponent<NumberComponent, InternalInitialState>({
         state,
         entity,
@@ -895,7 +895,7 @@ describe('animation', () => {
     })
 
     it('Should works with looped animations', () => {
-      let state = createEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState(), entity })
       state = createComponent<NumberComponent, InternalInitialState>({
         state,
         entity,
@@ -964,7 +964,7 @@ describe('animation', () => {
     })
 
     it('Should works with multiple properties', () => {
-      let state = createEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState(), entity })
       state = createComponent<NumberComponent, InternalInitialState>({
         state,
         entity,
@@ -1087,7 +1087,7 @@ describe('animation', () => {
     })
 
     it('timingMode step - should change value only once per keyframe', () => {
-      let state = createEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState(), entity })
       state = createComponent<Transform, InternalInitialState>({
         state,
         entity,
@@ -1160,7 +1160,7 @@ describe('animation', () => {
       const parentId1 = 'walk1.png'
       const parentId2 = 'walk2.png'
 
-      let state = createEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState(), entity })
       state = createComponent<StringComponent, InternalInitialState>({
         state,
         name: stringComponentName,
@@ -1230,7 +1230,7 @@ describe('animation', () => {
 
   describe('vector2d', () => {
     it('Linear animation should change value in a proper way', () => {
-      let state = createEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState(), entity })
       state = createComponent<Vector2DComponent, InternalInitialState>({
         state,
         name: vector2DComponentName,
@@ -1317,7 +1317,7 @@ describe('animation', () => {
 
   describe('vector3d', () => {
     it('Linear animation should change value in a proper way', () => {
-      let state = createEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState(), entity })
 
       state = createComponent<Vector3DComponent, InternalInitialState>({
         state,
@@ -1439,7 +1439,7 @@ describe('animation', () => {
     })
 
     it('Should correctly transit vectors 3d', () => {
-      let state = createEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState(), entity })
 
       state = createTransform({
         state,
@@ -1494,7 +1494,7 @@ describe('animation', () => {
     })
 
     it('Should correctly transit vectors 3d', () => {
-      let state = createEntity({ state: getState({}), entity })
+      let state = createEntity({ state: getState(), entity })
 
       state = createTransform({
         state,

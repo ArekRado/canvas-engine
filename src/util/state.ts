@@ -88,17 +88,26 @@ export const getSystems = ({
   return internatlState
 }
 
-export const getState = <State extends AnyState = AnyState>({
-  state,
-  documentMock = document,
-  windowMock = window,
-  containerId,
-}: {
-  state?: State
-  documentMock?: Document
-  windowMock?: Window
-  containerId: string
-}): InternalInitialState => {
+export const getState = <State extends AnyState = AnyState>(
+  params?: {
+    state?: State
+    documentMock?: Document
+    windowMock?: Window
+    containerId: string
+  },
+): InternalInitialState => {
+  let state
+  let documentMock
+  let windowMock
+  let containerId
+
+  if (params) {
+    state = params.state
+    documentMock = params.documentMock ?? document
+    windowMock = params.windowMock ?? window
+    containerId = params.containerId
+  }
+
   if (windowMock && documentMock && containerId) {
     setRenderer(containerId)
     setScene()

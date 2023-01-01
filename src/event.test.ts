@@ -17,17 +17,16 @@ import { vi } from 'vitest'
 
 describe('event', () => {
   it('should emit, receive events and add, remove event handlers', () => {
+    let state = getState()
+
     const event: ECSEvent<string, string> = {
       type: 'example',
       payload: 'payload',
     }
     const eventHandler = vi.fn(({ state }) => state)
-
     addEventHandler<typeof event>(event.type, eventHandler)
 
     expect(eventHandler).not.toHaveBeenCalled()
-
-    let state = getState({})
 
     emitEvent(event)
 
@@ -51,6 +50,8 @@ describe('event', () => {
   })
 
   it('should handle internal events emmited from external functions', () => {
+    let state = getState()
+
     const event: WindowResizeEvent = {
       type: CanvasEngineEvent.windowResize,
       payload: null,
@@ -60,10 +61,7 @@ describe('event', () => {
 
     addEventHandler(event.type, eventHandler)
     addEventHandler(event.type, internalEventHandler)
-
     expect(eventHandler).not.toHaveBeenCalled()
-
-    let state = getState({})
 
     emitEvent(event)
 
@@ -88,7 +86,7 @@ describe('event', () => {
     }
     const entity = generateEntity()
 
-    let state = createEntity({ state: getState({}), entity })
+    let state = createEntity({ state: getState(), entity })
 
     state = createComponent<Test, InternalInitialState>({
       state,

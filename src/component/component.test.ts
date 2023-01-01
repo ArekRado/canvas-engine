@@ -25,7 +25,7 @@ describe('component', () => {
 
     let state = createEntity({
       entity: entity1,
-      state: getState({}),
+      state: getState(),
     })
 
     state = createSystem({
@@ -97,7 +97,7 @@ describe('component', () => {
 
     let state = createEntity({
       entity: entity1,
-      state: getState({}),
+      state: getState(),
     })
 
     state = createSystem({
@@ -131,7 +131,7 @@ describe('component', () => {
 
     let state = createEntity({
       entity,
-      state: getState({}),
+      state: getState(),
     })
 
     state = createSystem({

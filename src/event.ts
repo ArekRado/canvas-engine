@@ -64,8 +64,17 @@ export const emitEvent = <Event extends ECSEvent<string, unknown>>(
   }
 }
 
-export const eventSystem = (state: InternalInitialState) =>
-  createGlobalSystem({
+export const resetEventState = () => {
+  activeBuffer = 'first'
+  resetEventBuffer()
+  secondEventBuffer = []
+  eventHandlers = []
+}
+
+export const eventSystem = (state: InternalInitialState) => {
+  resetEventState()
+
+  return createGlobalSystem({
     state,
     name: 'event',
     tick: ({ state }) => {
@@ -93,3 +102,4 @@ export const eventSystem = (state: InternalInitialState) =>
       return state
     },
   })
+}

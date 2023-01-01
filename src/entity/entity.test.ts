@@ -12,7 +12,7 @@ import { componentName } from '../component/componentName'
 describe('entity', () => {
   it('remove - should remove components by entity', () => {
     const entity = generateEntity()
-    let state = createEntity({ state: getState({}), entity })
+    let state = createEntity({ state: getState(), entity })
 
     state = createComponent<Animation.AnimationComponent, InternalInitialState>({
       state,
@@ -44,7 +44,7 @@ describe('entity', () => {
   // TODO - why do we want to update entity?
   // it('set - should set and update entity', () => {
   //   const entity = generateEntity('test', { rotation: 1 })
-  //   const v1 = setEntity({ state: getState({}), entity })
+  //   const v1 = setEntity({ state: getState(), entity })
 
   //   expect(v1.entity[entity]).toEqual(entity)
   //   expect(v1.entity[entity].rotation).toBe(1)

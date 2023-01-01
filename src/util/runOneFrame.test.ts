@@ -104,7 +104,7 @@ describe('runOneFrame', () => {
       [{ state: InternalInitialState }]
     >(({ state }) => state)
 
-    let state = getState({})
+    let state = getState()
 
     state = createSystem({
       state,

@@ -5,6 +5,7 @@ import {
   CanvasEngineEvent,
   Dictionary,
   CollisionData,
+  Collider,
 } from '../../type'
 import { createGlobalSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
@@ -136,6 +137,60 @@ const findCollisionsInNode = ({
   }
 }
 
+export const prepareColliderContours = ({ state }: { state: State }) => {
+  const allColliders = Object.entries<Collider>(state.component.collider)
+
+  if (allColliders.length === 0) {
+    return undefined
+  }
+
+  let top = -Infinity
+  let bottom = Infinity
+  let left = Infinity
+  let right = -Infinity
+
+  for (let i = 0; i < allColliders.length; i++) {
+    const [entity, collider] = allColliders[i]
+
+    state.component.collider[entity].collision = undefined
+
+    const transform = getTransform({
+      state,
+      entity,
+    })
+
+    if (transform) {
+      const colliderContour = getColliderContour({ collider, transform })
+      if (top < colliderContour[3]) {
+        top = colliderContour[3]
+      }
+      if (bottom > colliderContour[1]) {
+        bottom = colliderContour[1]
+      }
+      if (left > colliderContour[0]) {
+        left = colliderContour[0]
+      }
+      if (right < colliderContour[2]) {
+        right = colliderContour[2]
+      }
+
+      // TODO subdivide colliders into smaller areas and then create quadTree for each area
+
+      colliderContours[entity] = {
+        rectangle: colliderContour,
+        entity,
+      }
+    }
+  }
+
+  return {
+    top,
+    bottom,
+    left,
+    right,
+  }
+}
+
 export const colliderSystem = (state: AnyState) =>
   createGlobalSystem<AnyState>({
     state,
@@ -145,50 +200,13 @@ export const colliderSystem = (state: AnyState) =>
       previousCollisions = collisions
       collisions = {}
 
-      let top = -Infinity
-      let bottom = Infinity
-      let left = Infinity
-      let right = -Infinity
+      const contoursData = prepareColliderContours({ state })
 
-      const allColliders = Object.entries(state.component.collider)
-
-      if (allColliders.length === 0) {
+      if (contoursData === undefined) {
         return state
       }
 
-      for (let i = 0; i < allColliders.length; i++) {
-        const [entity, collider] = allColliders[i]
-
-        state.component.collider[entity].collision = undefined
-
-        const transform = getTransform({
-          state,
-          entity,
-        })
-
-        if (transform) {
-          const colliderContour = getColliderContour({ collider, transform })
-          if (top < colliderContour[3]) {
-            top = colliderContour[3]
-          }
-          if (bottom > colliderContour[1]) {
-            bottom = colliderContour[1]
-          }
-          if (left > colliderContour[0]) {
-            left = colliderContour[0]
-          }
-          if (right < colliderContour[2]) {
-            right = colliderContour[2]
-          }
-
-          // TODO subdivide colliders into smaller areas and then create quadTree for each area
-
-          colliderContours[entity] = {
-            rectangle: colliderContour,
-            entity,
-          }
-        }
-      }
+      const { top, bottom, left, right } = contoursData
 
       const quadTree = getQuadTree({
         bounds: [left, bottom, right, top],

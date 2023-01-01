@@ -145,7 +145,7 @@ describe.skip('getElasticCollisionForcesStatic', () => {
 
 describe.skip('rigidBody', () => {
   it('should move rigidBody using force', () => {
-    let state = getState({}) as AnyState
+    let state = getState() as AnyState
 
     const entity1 = generateEntity()
 
@@ -194,7 +194,7 @@ describe.skip('rigidBody', () => {
   })
 
   it('should use friction to reduce force', () => {
-    let state = getState({}) as AnyState
+    let state = getState() as AnyState
 
     const entity1 = generateEntity()
 
@@ -275,7 +275,7 @@ describe.skip('rigidBody', () => {
     const r1Force: Vector2D = [0.1, 0]
     const r2Force: Vector2D = [-0, 0]
 
-    let state = getState({}) as AnyState
+    let state = getState() as AnyState
 
     const entity1 = generateEntity()
     const entity2 = generateEntity()
@@ -367,7 +367,7 @@ describe.skip('rigidBody', () => {
     const r1Force: Vector2D = [0.1, 0]
     const r2Force: Vector2D = [-0.2, 0]
 
-    let state = getState({}) as AnyState
+    let state = getState() as AnyState
 
     const entity1 = generateEntity()
     const entity2 = generateEntity()
@@ -448,7 +448,7 @@ describe.skip('rigidBody', () => {
   })
 
   it('conservation of momentum in elastic collisions 3 - static rigidBody should not be moved by force', () => {
-    let state = getState({}) as AnyState
+    let state = getState() as AnyState
 
     const entity1 = generateEntity()
     const entity2 = generateEntity()
@@ -545,7 +545,7 @@ describe.skip('rigidBody', () => {
   })
 
   it('conservation of momentum in elastic collisions 4 - collision circle-line should correctly bounce circle. Position should not change bounce angle', () => {
-    let state = getState({}) as AnyState
+    let state = getState() as AnyState
 
     const entity1 = generateEntity()
     const entity2 = generateEntity()
@@ -627,7 +627,7 @@ describe.skip('rigidBody', () => {
   })
 
   it('conservation of momentum in elastic collisions 5 - collision circle-line should correctly bounce circle. Rotated line should change correctly circle force', () => {
-    let state = getState({}) as AnyState
+    let state = getState() as AnyState
 
     const entity1 = generateEntity()
     const entity2 = generateEntity()
@@ -715,7 +715,7 @@ describe.skip('rigidBody', () => {
     const r1Force: Vector2D = [0.1, 0]
     const r2Force: Vector2D = [-0.2, 0]
 
-    let state = getState({}) as AnyState
+    let state = getState() as AnyState
 
     const entity1 = generateEntity()
     const entity2 = generateEntity()
@@ -799,7 +799,7 @@ describe.skip('rigidBody', () => {
 describe.skip('rigidBody + collider stress tests', () => {
   it.only('stress test', () => {
     const amountOfColliders = 1000
-    let state = getState({}) as AnyState
+    let state = getState() as AnyState
 
     const getRandomNumber = (max = 600) => Math.floor(Math.random() * max)
 
