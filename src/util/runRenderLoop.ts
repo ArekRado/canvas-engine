@@ -1,8 +1,5 @@
 import { emitEvent } from '../event'
-import { cameraInstance } from '../system/camera/camera'
 import { AnyState, CanvasEngineEvent, RenderLoopStartEvent } from '../type'
-import { runOneFrame } from './runOneFrame'
-import { getScene, getRenderer } from './state'
 
 export const runRenderLoop = <State extends AnyState = AnyState>({
   state,
@@ -12,13 +9,6 @@ export const runRenderLoop = <State extends AnyState = AnyState>({
   windowMock?: Window
 }) => {
   const callback = () => {
-    const sceneRef = getScene()
-    const rendererRef = getRenderer()
-    if (rendererRef && sceneRef && cameraInstance) {
-      state = runOneFrame({ state })
-      rendererRef.render(sceneRef, cameraInstance)
-    }
-
     state.animationFrame = windowMock.requestAnimationFrame(callback)
   }
 

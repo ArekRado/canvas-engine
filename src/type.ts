@@ -1,42 +1,4 @@
 import { Vector2D } from '@arekrado/vector-2d'
-// import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera'
-// import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
-// import { Scene } from '@babylonjs/core/scene'
-import { TimingFunction } from './util/bezierFunction'
-// import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder'
-// import { Texture } from '@babylonjs/core/Materials/Textures/texture'
-// import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
-// import { Vector3 } from '@babylonjs/core'
-import { Intersection } from './system/collider/getIntersection'
-
-import {
-  LineBasicMaterialParameters,
-  LineDashedMaterialParameters,
-  MeshBasicMaterialParameters,
-  MeshDepthMaterialParameters,
-  MeshDistanceMaterialParameters,
-  MeshLambertMaterialParameters,
-  MeshMatcapMaterialParameters,
-  MeshNormalMaterialParameters,
-  MeshPhongMaterialParameters,
-  MeshPhysicalMaterialParameters,
-  MeshStandardMaterialParameters,
-  MeshToonMaterialParameters,
-  PointsMaterialParameters,
-  ShaderMaterialParameters,
-  ShadowMaterialParameters,
-  SpriteMaterialParameters,
-  Sprite as ThreeSprite,
-} from 'three'
-
-// sceneRef?: Scene
-// cameraRef?: UniversalCamera
-// Vector3?: typeof Vector3
-// StandardMaterial?: typeof StandardMaterial
-// MeshBuilder?: typeof MeshBuilder
-// Texture?: typeof Texture
-// Color3?: typeof Color3
-// Color4?: typeof Color4
 
 ////////////////////////////////////
 //
@@ -50,250 +12,7 @@ import {
 
 export type Dictionary<Value> = { [key: string]: Value }
 
-export type Color = [number, number, number, number]
-
-////////////////////////////////////
-//
-//
-//
-// Component
-//
-//
-//
-////////////////////////////////////
-/**
- * left,bottom,right,top
- */
-export type RectangleContour = [
-  /**
-   * left-bottom
-   */
-  number,
-  number,
-  /**
-   * right-top
-   */
-  number,
-  number,
-]
-
-export type ColliderDataPoint = {
-  type: 'point'
-  position: Vector2D
-}
-export type ColliderDataRectangle = {
-  type: 'rectangle'
-  size: Vector2D
-  /**
-   * Left bottom corner
-   */
-  position: Vector2D
-}
-export type ColliderDataCircle = {
-  type: 'circle'
-  radius: number
-  /**
-   * Left bottom corner
-   */
-  position: Vector2D
-}
-export type ColliderDataLine = {
-  type: 'line'
-  position: Vector2D
-  position2: Vector2D
-}
-export type ColliderDataPolygon = {
-  type: 'polygon'
-  verticles: Vector2D[]
-}
-
-export type CollisionData = {
-  colliderEntity: Entity
-  intersection: Intersection
-  collisionLayer: string
-}
-
-export type Collider = {
-  collision: CollisionData | undefined
-  emitEventCollision: boolean
-  layer: {
-    belongs: string[]
-    interacts: string[]
-  }
-  /**
-   * Used to detect if collider stuck inside another collider
-   */
-  // _previousCollision: CollisionData | undefined
-  // _collision: CollisionData | undefined
-  data:
-    | ColliderDataPoint
-    | ColliderDataRectangle
-    | ColliderDataCircle
-    | ColliderDataLine
-    | ColliderDataPolygon
-}
-
-export type RigidBody = {
-  mass: number
-  friction: number
-  force: Vector2D
-  isStatic: boolean // TODO
-
-  // gravityDirection: Vector2D,  // TODO
-}
-
-export namespace Animation {
-  export enum TimingMode {
-    smooth = 'smooth',
-    step = 'step',
-  }
-
-  export enum WrapMode {
-    /**
-     * When time reaches the end of the animation clip, the clip will automatically stop playing and time will be reset to beginning of the clip.
-     */
-    once = 'once',
-    /**
-     * When time reaches the end of the animation clip, time will continue at the beginning.
-     */
-    loop = 'loop',
-    /**
-     * When time reaches the end of the animation clip, time will ping pong back between beginning and end.
-     */
-    pingPong = 'pingPong',
-    /**
-     * Plays back the animation. When it reaches the end, it will keep playing the last frame and never stop playing.
-     */
-    clampForever = 'clampForever',
-  }
-
-  export type Keyframe = {
-    duration: number
-    timingFunction: TimingFunction
-    valueRange:
-      | Vector2D
-      | [Vector2D, Vector2D]
-      | [Vector3D, Vector3D]
-      | [Color, Color]
-      | string
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    endFrameEvent?: ECSEvent<string, any>
-  }
-
-  export type Property = {
-    /**
-     * entity.component[index].path
-     */
-    path: string[]
-    component: string // it should be keyof State['component']
-    entity: Entity
-    // index?: number
-    keyframes: Keyframe[]
-  }
-
-  export type AnimationComponent = {
-    currentTime: number
-    deleteWhenFinished: boolean
-    isPlaying: boolean
-    /**
-     * is true when wrapMode === 'once' and currentTime exceded
-     */
-    isFinished: boolean
-    wrapMode: WrapMode
-    timingMode: TimingMode
-    properties: Array<Property>
-  }
-}
-
-export type Mesh =
-  | {
-      type: 'plane'
-      width: number
-      height: number
-      widthSegments?: number
-      heightSegments?: number
-      sideOrientation: number
-    }
-  | {
-      type: 'lines'
-      points: Vector2D[]
-      colors: Color[]
-    }
-  | {
-      type: 'gltf'
-      meshUrl: string
-    }
-
-type MaterialTexture = {
-  textureUrl?: string
-}
-
-export type Sprite = Partial<ThreeSprite>
-
-export type Material =
-  | ({ type: 'LineBasicMaterial' } & MaterialTexture &
-      LineBasicMaterialParameters)
-  | ({ type: 'LineDashedMaterial' } & MaterialTexture &
-      LineDashedMaterialParameters)
-  | ({ type: 'MeshBasicMaterial' } & MaterialTexture &
-      MeshBasicMaterialParameters)
-  | ({ type: 'MeshDepthMaterial' } & MaterialTexture &
-      MeshDepthMaterialParameters)
-  | ({ type: 'MeshDistanceMaterial' } & MaterialTexture &
-      MeshDistanceMaterialParameters)
-  | ({ type: 'MeshLambertMaterial' } & MaterialTexture &
-      MeshLambertMaterialParameters)
-  | ({ type: 'MeshMatcapMaterial' } & MaterialTexture &
-      MeshMatcapMaterialParameters)
-  | ({ type: 'MeshNormalMaterial' } & MaterialTexture &
-      MeshNormalMaterialParameters)
-  | ({ type: 'MeshPhongMaterial' } & MaterialTexture &
-      MeshPhongMaterialParameters)
-  | ({ type: 'MeshPhysicalMaterial' } & MaterialTexture &
-      MeshPhysicalMaterialParameters)
-  | ({ type: 'MeshStandardMaterial' } & MaterialTexture &
-      MeshStandardMaterialParameters)
-  | ({ type: 'MeshToonMaterial' } & MaterialTexture &
-      MeshToonMaterialParameters)
-  | ({ type: 'PointsMaterial' } & MaterialTexture & PointsMaterialParameters)
-  | ({ type: 'ShaderMaterial' } & MaterialTexture & ShaderMaterialParameters)
-  | ({ type: 'ShadowMaterial' } & MaterialTexture & ShadowMaterialParameters)
-  | ({ type: 'SpriteMaterial' } & MaterialTexture & SpriteMaterialParameters)
-
-// {
-//   uniqueId: number
-//   diffuseColor?: Color
-//   specularColor?: Color
-//   emissiveColor?: Color
-//   ambientColor?: Color
-//   alpha?: number
-//   backFaceCulling?: boolean
-//   wireframe?: boolean
-//   useAlphaFromDiffuseTexture?: boolean
-
-//   diffuseTexture?: string
-//   bumpTexture?: string
-// }
-
-export type AnimatedProperty = {
-  path: string
-  type: 'number' | 'vector2D' | 'string'
-}
-
 export type Entity = string
-
-export type Time = {
-  previousTimeNow: number
-  timeNow: number
-  delta: number
-  dataOverwrite:
-    | {
-        previousTimeNow?: number
-        timeNow?: number
-        delta?: number
-      }
-    | undefined
-}
 
 export type Mouse = {
   buttons: number
@@ -324,35 +43,6 @@ export type KeyData = {
 
 export type Keyboard = {
   keys: { [key: string]: KeyData | undefined }
-}
-
-export type Camera = {
-  position: Vector3D
-  lookAt: Vector3D
-  // distance: number
-  // // ortho
-  // bottom: number
-  // top: number
-  // left: number
-  // right: number
-
-  fov?: number
-  aspect?: number
-  near?: number
-  far?: number
-}
-
-export type Vector3D = [number, number, number]
-
-export type Transform = {
-  rotation: [number, number, number]
-  fromParentRotation: number
-  scale: Vector2D | Vector3D
-  fromParentScale: Vector2D | Vector3D
-  position: Vector3D
-  fromParentPosition: Vector3D
-  parentId?: Entity
-  _children: Entity[]
 }
 
 ////////////////////////////////////
@@ -386,16 +76,6 @@ export enum CanvasEngineEvent {
   keyboardActionEvent = 'CanvasEngineEvent-keyboardActionEvent',
 }
 
-export type CollisionEvent = ECSEvent<
-  CanvasEngineEvent.colliderCollision,
-  {
-    colliderEntity1: Entity
-    colliderEntity2: Entity
-    intersection: Intersection
-    collisionLayer: string
-  }
->
-
 export type WindowResizeEvent = ECSEvent<CanvasEngineEvent.windowResize, null>
 export type RenderLoopStartEvent = ECSEvent<
   CanvasEngineEvent.renderLoopStart,
@@ -415,7 +95,6 @@ export type KeyboardActionEvent = ECSEvent<
 
 export type AllEvents =
   | WindowResizeEvent
-  | CollisionEvent
   | RenderLoopStartEvent
   | MouseActionEvent
   | KeyboardActionEvent
@@ -499,32 +178,14 @@ export type GlobalSystem<State extends AnyStateForSystem> = {
 ////////////////////////////////////
 
 export type StateDefaultComponents = {
-  animation: Dictionary<Animation.AnimationComponent>
-  collider: Dictionary<Collider>
-  time: Dictionary<Time>
-  camera: Dictionary<Camera>
-  transform: Dictionary<Transform>
   mouse: Dictionary<Mouse>
   keyboard: Dictionary<Keyboard>
-  material: Dictionary<Material>
-  mesh: Dictionary<Mesh>
-  rigidBody: Dictionary<RigidBody>
-  sprite: Dictionary<Sprite>
 }
 
 export type StateDefaultSystems =
-  | System<Animation.AnimationComponent, AnyStateForSystem>
-  | System<Collider, AnyStateForSystem>
-  | System<Time, AnyStateForSystem>
-  | System<Camera, AnyStateForSystem>
-  | System<Transform, AnyStateForSystem>
   | System<Event, AnyStateForSystem>
   | System<Mouse, AnyStateForSystem>
   | System<Keyboard, AnyStateForSystem>
-  | System<Material, AnyStateForSystem>
-  | System<Mesh, AnyStateForSystem>
-  | System<RigidBody, AnyStateForSystem>
-  | System<Sprite, AnyStateForSystem>
 
 /**
  * Describes empty state without internal components and systems

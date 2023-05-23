@@ -35,12 +35,10 @@
     "npm": ">=8.3.0"
   },
   "dependencies": {
-    "@arekrado/vector-2d": "^0.0.9",
-    "three": "^0.146.0"
+    "@arekrado/vector-2d": "^0.0.9"
   },
   "devDependencies": {
     "@types/node": "^18.11.9",
-    "@types/three": "^0.146.0",
     "@typescript-eslint/eslint-plugin": "^5.44.0",
     "@typescript-eslint/parser": "^5.44.0",
     "eslint": "^8.28.0",
