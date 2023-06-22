@@ -19,6 +19,10 @@ export { recreateAllComponents } from './component/recreateAllComponents'
 export { removeComponent } from './component/removeComponent'
 export { updateComponent } from './component/updateComponent'
 
+// System
+export { mouseSystem } from './system/mouse/mouse'
+export { keyboardSystem } from './system/keyboard/keyboard'
+
 // Utils
 
 export {
@@ -36,10 +40,7 @@ export {
 export { runOneFrame } from './util/runOneFrame'
 export { runRenderLoop } from './util/runRenderLoop'
 
-export {
-  defaultMouse,
-  defaultKeyboard,
-} from './util/defaultComponents'
+export { defaultMouse, defaultKeyboard } from './util/defaultComponents'
 export { getState } from './util/state'
 
 export * from './system/keyboard/keyboardCrud'

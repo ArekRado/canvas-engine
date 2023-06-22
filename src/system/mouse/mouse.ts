@@ -48,7 +48,7 @@ export const mouseSystem = ({
     const containerPosition = container.getBoundingClientRect()
 
     const setMousePosition = (e: MouseEvent) => {
-      shouldEmitEvent = true
+      shouldEmitEvent = false
 
       position = vector(
         e.pageX - containerPosition.left,
