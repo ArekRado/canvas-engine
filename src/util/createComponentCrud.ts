@@ -13,7 +13,7 @@ export const createComponentCrud = <
   name: string
 }) => {
   const crud = {
-    getComponent:({ state, entity }: { state: State; entity: Entity }) =>
+    getComponent: ({ state, entity }: { state: State; entity: Entity }) =>
       getComponent<Component, State>({
         state,
         entity,
@@ -23,7 +23,6 @@ export const createComponentCrud = <
       state,
       entity,
       update,
-      callSystemUpdateMethod = true,
     }: {
       state: State
       entity: Entity
@@ -35,7 +34,6 @@ export const createComponentCrud = <
         entity,
         name,
         update,
-        callSystemUpdateMethod,
       }),
     createComponent: ({
       state,
