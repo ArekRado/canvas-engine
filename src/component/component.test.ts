@@ -11,7 +11,7 @@ import { recreateAllComponents } from './recreateAllComponents'
 import { createSystem } from '../system/createSystem'
 import { Dictionary } from '../type'
 import { InternalInitialState } from '../index'
-import { vi } from 'vitest'
+import { vi, describe, it, expect } from 'vitest'
 
 describe('component', () => {
   it('should call system create, update and remove methods', () => {
@@ -20,7 +20,6 @@ describe('component', () => {
 
     const create = vi.fn(({ state }) => state)
     const remove = vi.fn(({ state }) => state)
-    const update = vi.fn(({ state }) => state)
     const tick = vi.fn(({ state }) => state)
 
     let state = createEntity({
@@ -35,7 +34,6 @@ describe('component', () => {
       create,
       remove,
       tick,
-      update,
     })
 
     state = createComponent<Dictionary<null>, InternalInitialState>({
@@ -54,7 +52,6 @@ describe('component', () => {
     state = runOneFrame({ state })
     state = removeComponent({ name: 'test', entity: entity1, state })
 
-    expect(update).toHaveBeenCalledTimes(0)
     expect(create).toHaveBeenCalledTimes(2)
     expect(remove).toHaveBeenCalledTimes(1)
     expect(tick).toHaveBeenCalledTimes(2)
@@ -67,7 +64,6 @@ describe('component', () => {
       data: null,
     })
 
-    expect(update).toHaveBeenCalledTimes(0)
     expect(create).toHaveBeenCalledTimes(3)
 
     // updating existing component
@@ -82,12 +78,11 @@ describe('component', () => {
       entity: entity1,
       name: 'test',
       update: () => null,
-      callSystemUpdateMethod: false,
+      // callSystemUpdateMethod: false,
     })
 
     // Update should not trigger create
     expect(create).toHaveBeenCalledTimes(3)
-    expect(update).toHaveBeenCalledTimes(1)
   })
 
   it('recreateAllComponents - should call create system method for all components', () => {
@@ -138,7 +133,6 @@ describe('component', () => {
       state,
       name,
       componentName: name,
-      update,
       create: ({ state }) => state,
     })
 
@@ -151,7 +145,6 @@ describe('component', () => {
       },
     })
 
-    expect(update).toHaveBeenCalledTimes(0)
     expect(getComponent<SomeComponent>({ state, entity, name })?.value).toBe(1)
 
     state = updateComponent({
@@ -162,7 +155,6 @@ describe('component', () => {
     })
 
     expect(getComponent<SomeComponent>({ state, entity, name })?.value).toBe(1)
-    expect(update).toHaveBeenCalledTimes(1)
 
     state = updateComponent({
       state,
@@ -172,7 +164,6 @@ describe('component', () => {
     })
 
     expect(getComponent<SomeComponent>({ state, entity, name })?.value).toBe(2)
-    expect(update).toHaveBeenCalledTimes(2)
   })
 
   it.todo('getComponentsByName')

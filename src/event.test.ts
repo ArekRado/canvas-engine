@@ -13,7 +13,7 @@ import {
 } from './type'
 import { runOneFrame } from './util/runOneFrame'
 import { getState } from './util/state'
-import { vi } from 'vitest'
+import { vi, describe, it, expect } from 'vitest'
 
 describe('event', () => {
   it('should emit, receive events and add, remove event handlers', () => {

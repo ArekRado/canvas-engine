@@ -1,12 +1,17 @@
 import { getState } from '../util/state'
+import { describe, it, expect } from 'vitest'
 
 import { createEntity } from './createEntity'
 import { removeEntity } from './removeEntity'
 import { generateEntity } from './generateEntity'
-import { defaultCollider, defaultAnimation } from '../util/defaultComponents'
 import { createComponent } from '../component/createComponent'
-import { Animation, Collider } from '../type'
-import { InternalInitialState } from '../index'
+import {
+  InternalInitialState,
+  Keyboard,
+  Mouse,
+  defaultKeyboard,
+  defaultMouse,
+} from '../index'
 import { componentName } from '../component/componentName'
 
 describe('entity', () => {
@@ -14,22 +19,22 @@ describe('entity', () => {
     const entity = generateEntity()
     let state = createEntity({ state: getState(), entity })
 
-    state = createComponent<Animation.AnimationComponent, InternalInitialState>({
+    state = createComponent<Keyboard, InternalInitialState>({
       state,
       entity,
-      name: componentName.animation,
-      data: defaultAnimation({}),
+      name: componentName.keyboard,
+      data: defaultKeyboard({}),
     })
-    state = createComponent<Collider, InternalInitialState>({
+    state = createComponent<Mouse, InternalInitialState>({
       state,
       entity,
-      name: componentName.collider,
-      data: defaultCollider({}),
+      name: componentName.mouse,
+      data: defaultMouse({}),
     })
 
     expect(state.entity[entity]).toEqual(entity)
-    expect(state.component.animation[entity]).toBeDefined()
-    expect(state.component.collider[entity]).toBeDefined()
+    expect(state.component.keyboard[entity]).toBeDefined()
+    expect(state.component.mouse[entity]).toBeDefined()
 
     const stateWithoutEntity = removeEntity<InternalInitialState>({
       state,
@@ -37,23 +42,7 @@ describe('entity', () => {
     })
 
     expect(stateWithoutEntity.entity[entity]).not.toBeDefined()
-    expect(stateWithoutEntity.component.animation[entity]).not.toBeDefined()
-    expect(stateWithoutEntity.component.collider[entity]).not.toBeDefined()
+    expect(stateWithoutEntity.component.keyboard[entity]).not.toBeDefined()
+    expect(stateWithoutEntity.component.mouse[entity]).not.toBeDefined()
   })
-
-  // TODO - why do we want to update entity?
-  // it('set - should set and update entity', () => {
-  //   const entity = generateEntity('test', { rotation: 1 })
-  //   const v1 = setEntity({ state: getState(), entity })
-
-  //   expect(v1.entity[entity]).toEqual(entity)
-  //   expect(v1.entity[entity].rotation).toBe(1)
-
-  //   const v2 = setEntity({
-  //     state: v1,
-  //     entity: { ...entity, rotation: 2 },
-  //   })
-
-  //   expect(v2.entity[entity].rotation).toBe(2)
-  // })
 })

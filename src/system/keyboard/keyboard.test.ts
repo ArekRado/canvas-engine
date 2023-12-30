@@ -7,6 +7,7 @@ import { componentName } from '../../component/componentName'
 import { CanvasEngineEvent, Keyboard, KeyboardActionEvent } from '../../type'
 import { keyboardEntity } from './keyboard'
 import { addEventHandler } from '../../event'
+import { describe, it, beforeEach, expect, vi } from 'vitest'
 
 describe('keyboard', () => {
   let keyupCallback: Function

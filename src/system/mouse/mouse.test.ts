@@ -9,7 +9,7 @@ import { CanvasEngineEvent, Mouse, MouseActionEvent } from '../../type'
 import { mouseEntity } from './mouse'
 import { componentName } from '../../component/componentName'
 import { addEventHandler } from '../../event'
-import { vi } from 'vitest'
+import { vi, describe, expect, it, beforeEach } from 'vitest'
 
 describe('mouse', () => {
   let mousemoveCallback: Function

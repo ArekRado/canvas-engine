@@ -85,11 +85,6 @@ export const createSystem = <
   tick?: (params: SystemMethodParams<ComponentData, State>) => State
   fixedTick?: (params: SystemMethodParams<ComponentData, State>) => State
   remove?: (params: SystemMethodParams<ComponentData, State>) => State
-  update?: (
-    params: SystemMethodParams<ComponentData, State> & {
-      previousComponent: ComponentData
-    },
-  ) => State
   priority?: number
   emitEvent?: EmitEvent
 }): State => {
@@ -98,7 +93,6 @@ export const createSystem = <
     componentName: params.componentName,
     priority: params.priority || systemPriority.last,
     create: params.create,
-    update: params.update,
     tick: tick
       ? ({ state }: { state: State }) => {
           return triggerTickForAllComponents({
