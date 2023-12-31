@@ -32,17 +32,17 @@ describe('entity', () => {
       data: defaultMouse({}),
     })
 
-    expect(state.entity[entity]).toEqual(entity)
-    expect(state.component.keyboard[entity]).toBeDefined()
-    expect(state.component.mouse[entity]).toBeDefined()
+    expect(state.entity.get(entity)).toEqual(entity)
+    expect(state.component.keyboard.get(entity)).toBeDefined()
+    expect(state.component.mouse.get(entity)).toBeDefined()
 
     const stateWithoutEntity = removeEntity<InternalInitialState>({
       state,
       entity,
     })
 
-    expect(stateWithoutEntity.entity[entity]).not.toBeDefined()
-    expect(stateWithoutEntity.component.keyboard[entity]).not.toBeDefined()
-    expect(stateWithoutEntity.component.mouse[entity]).not.toBeDefined()
+    expect(stateWithoutEntity.entity.get(entity)).not.toBeDefined()
+    expect(stateWithoutEntity.component.keyboard.get(entity)).not.toBeDefined()
+    expect(stateWithoutEntity.component.mouse.get(entity)).not.toBeDefined()
   })
 })

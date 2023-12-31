@@ -4,4 +4,5 @@ type GetEntity = <State extends AnyState>(params: {
   entity: Entity
   state: State
 }) => Entity | undefined
-export const getEntity: GetEntity = ({ entity, state }) => state.entity[entity]
+export const getEntity: GetEntity = ({ entity, state }) =>
+  state.entity.get(entity)

@@ -15,14 +15,13 @@ export const createComponent = <Data, State extends AnyState = AnyState>({
   const isFirstComponentThisName = state.component[name] === undefined
   const needCreateEntity = isFirstComponentThisName
     ? true
-    : state.component[name][entity] === undefined
+    : state.component[name]?.get?.(entity) === undefined
 
   if (isFirstComponentThisName) {
-    state.component[name] = {
-      [entity]: data,
-    }
+    state.component[name] = new Map()
+    state.component[name].set(entity, data)
   } else {
-    state.component[name][entity] = data
+    state.component[name].set(entity, data)
   }
 
   const system = getSystemByComponentName(name, state.system)

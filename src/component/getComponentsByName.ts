@@ -1,4 +1,4 @@
-import { AnyState, Dictionary } from '../type'
+import { AnyState, Entity } from '../type'
 
 export const getComponentsByName = <Data, State extends AnyState = AnyState>({
   name,
@@ -6,6 +6,4 @@ export const getComponentsByName = <Data, State extends AnyState = AnyState>({
 }: {
   name: string
   state: State
-}) => {
-  return state.component[name] as Dictionary<Data> | undefined
-}
+}) => state.component[name] as Map<Entity, Data> | undefined

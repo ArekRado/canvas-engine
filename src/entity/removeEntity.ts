@@ -6,21 +6,16 @@ type RemoveEntity = <State extends AnyState>(params: {
   state: State
 }) => State
 export const removeEntity: RemoveEntity = ({ entity, state }) => {
-  const { [entity]: _, ...stateWithoutEntity } = state.entity
+  state.entity.delete(entity)
 
-  const newState = {
-    ...state,
-    entity: stateWithoutEntity,
-  }
-
-  const v1 = Object.keys(newState.component).reduce(
+  const v1 = Object.keys(state.component).reduce(
     (state, name) =>
       removeComponent({
         name,
         state,
         entity,
       }),
-    newState,
+    state,
   )
 
   return v1

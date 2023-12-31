@@ -6,7 +6,6 @@ import { createComponent } from './createComponent'
 import { removeComponent } from './removeComponent'
 import { updateComponent } from './updateComponent'
 import { getComponent } from './getComponent'
-import { recreateAllComponents } from './recreateAllComponents'
 
 import { createSystem } from '../system/createSystem'
 import { Dictionary } from '../type'
@@ -83,37 +82,6 @@ describe('component', () => {
 
     // Update should not trigger create
     expect(create).toHaveBeenCalledTimes(3)
-  })
-
-  it('recreateAllComponents - should call create system method for all components', () => {
-    const entity1 = generateEntity()
-
-    const create = vi.fn(({ state }) => state)
-
-    let state = createEntity({
-      entity: entity1,
-      state: getState(),
-    })
-
-    state = createSystem({
-      state,
-      name: 'test',
-      componentName: 'test',
-      create,
-    })
-
-    state = createComponent<Dictionary<null>, InternalInitialState>({
-      state,
-      entity: entity1,
-      name: 'test',
-      data: {},
-    })
-
-    expect(create).toHaveBeenCalledTimes(1)
-
-    state = recreateAllComponents<InternalInitialState>({ state })
-
-    expect(create).toHaveBeenCalledTimes(2)
   })
 
   it('updateComponent should set component and trigger update method', () => {

@@ -15,22 +15,14 @@ export const removeComponent = <State extends AnyState = AnyState>({
 
   if (!components) return state
 
-  const { [entity]: _, ...dictionaryWithoutComponent } = state.component[name]
-
-  const newState = {
-    ...state,
-    component: {
-      ...state.component,
-      [name]: dictionaryWithoutComponent,
-    },
-  }
-
   const component = getComponent({ name, state, entity })
-  const system = getSystemByComponentName(name, newState.system)
+  const system = getSystemByComponentName(name, state.system)
+
+  state.component[name].delete(entity)
 
   if (system && component && system.remove) {
-    return system.remove({ state: newState, component, entity, name }) as State
+    return system.remove({ state: state, component, entity, name }) as State
   }
 
-  return newState
+  return state
 }

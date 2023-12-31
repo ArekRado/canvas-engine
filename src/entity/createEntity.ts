@@ -6,7 +6,7 @@ type CreateEntity = <State extends AnyState>(params: {
 }) => State
 
 export const createEntity: CreateEntity = ({ entity, state }) => {
-  state.entity[entity] = entity
+  state.entity.set(entity, entity)
 
   return state
 }

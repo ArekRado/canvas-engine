@@ -5,10 +5,10 @@ import { eventSystem } from '../event'
 import { AnyState, InternalInitialState } from '../type'
 
 export const getInitialState = (): InternalInitialState => ({
-  entity: {},
+  entity: new Map(),
   component: {
-    [componentName.mouse]: {},
-    [componentName.keyboard]: {},
+    [componentName.mouse]: new Map(),
+    [componentName.keyboard]: new Map(),
   },
   globalSystem: [],
   system: [],
@@ -44,9 +44,8 @@ export const getSystems = ({
   return internatlState
 }
 
-export const getState = () => 
-   getSystems({
+export const getState = () =>
+  getSystems({
     state: getInitialState(),
     document,
   })
-

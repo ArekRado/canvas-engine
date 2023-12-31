@@ -24,7 +24,7 @@ export const updateComponent = <Data, State extends AnyState = AnyState>({
         ? previousComponent
         : Object.assign({}, previousComponent, update(previousComponent))
 
-    state.component[name][entity] = updatedComponent
+    state.component[name].set(entity, updatedComponent)
 
     return state
   }

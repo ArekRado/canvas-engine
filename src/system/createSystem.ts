@@ -1,7 +1,5 @@
-import { getComponent } from '../component/getComponent'
 import {
   AnyStateForSystem,
-  Dictionary,
   EmitEvent,
   GlobalSystem,
   SystemMethodParams,
@@ -14,14 +12,6 @@ export enum systemPriority {
   // IO uses mutated state so it should be called first
   mouse = -1,
   keyboard = -1,
-
-  time = 1,
-  colliderQuadTree = 2,
-  collider = 3,
-  rigidBody = 4,
-  transform = 5,
-  animation = 6,
-  // draw = -2,
 }
 
 const triggerTickForAllComponents = <
@@ -36,26 +26,10 @@ const triggerTickForAllComponents = <
   componentName: string
   tickCallback: (params: SystemMethodParams<ComponentData, State>) => State
 }): State => {
-  const component = state.component[componentName] as
-    | Dictionary<ComponentData>
-    | undefined
+  const components = state.component[componentName]
 
-  if (component) {
-    const keys = Object.keys(component)
-    for (let i = 0; i < keys.length; i++) {
-      const entity = keys[i]
-
-      const component = getComponent<ComponentData>({
-        state: state,
-        name: componentName,
-        entity,
-      }) as ComponentData
-
-      if (!component) {
-        // return acc
-        continue
-      }
-
+  if (components) {
+    for (const [entity, component] of components) {
       state = tickCallback({
         state: state,
         component,

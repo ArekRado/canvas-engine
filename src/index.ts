@@ -15,7 +15,6 @@ export { componentName } from './component/componentName'
 export { createComponent } from './component/createComponent'
 export { getComponent } from './component/getComponent'
 export { getComponentsByName } from './component/getComponentsByName'
-export { recreateAllComponents } from './component/recreateAllComponents'
 export { removeComponent } from './component/removeComponent'
 export { updateComponent } from './component/updateComponent'
 

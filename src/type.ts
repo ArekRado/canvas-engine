@@ -109,6 +109,7 @@ export type AllEvents =
 //
 ////////////////////////////////////
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyStateForSystem = EmptyState<AnyComponent, any>
 
 export type GetDefaultComponent<X> = (params?: Partial<X>) => X
@@ -178,8 +179,8 @@ export type GlobalSystem<State extends AnyStateForSystem> = {
 ////////////////////////////////////
 
 export type StateDefaultComponents = {
-  mouse: Dictionary<Mouse>
-  keyboard: Dictionary<Keyboard>
+  mouse: Map<Entity, Mouse>
+  keyboard: Map<Entity, Keyboard>
 }
 
 export type StateDefaultSystems =
@@ -190,8 +191,8 @@ export type StateDefaultSystems =
 /**
  * Describes empty state without internal components and systems
  */
-export type EmptyState<Component, System> = {
-  entity: Dictionary<Entity>
+export type EmptyState<Component extends AnyComponent, System> = {
+  entity: Map<Entity, Entity>
   component: Component
   system: Array<System>
   globalSystem: Array<GlobalSystem<AnyState>>
@@ -205,12 +206,14 @@ export type EmptyState<Component, System> = {
 /**
  * Describes extendable state with internal components and systems
  */
-export type InitialState<Component, System> = EmptyState<
+export type InitialState<Component extends AnyComponent, System> = EmptyState<
   StateDefaultComponents & Component,
   StateDefaultSystems & System
 >
 
-export type AnyComponent = Dictionary<Dictionary<unknown | any>>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyComponent = Dictionary<Map<string, unknown | any>>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnySystem = System<any, AnyStateForSystem>
 export type AnyGlobalSystem = GlobalSystem<AnyStateForSystem>
 export type AnyState = EmptyState<AnyComponent, AnySystem>
