@@ -1,5 +1,34 @@
 // Types
-export * from './type'
+export {
+  Dictionary,
+  Entity,
+  Mouse,
+  KeyData,
+  Keyboard,
+  ECSEvent,
+  EmitEvent,
+  EventHandler,
+  WindowResizeEvent,
+  RenderLoopStartEvent,
+  MouseActionEvent,
+  KeyboardActionEvent,
+  AllEvents,
+  AnyStateForSystem,
+  GetDefaultComponent,
+  SystemMethodParams,
+  System,
+  CreateGlobalSystemParams,
+  GlobalSystem,
+  StateDefaultComponents,
+  StateDefaultSystems,
+  EmptyState,
+  InitialState,
+  AnyComponent,
+  AnySystem,
+  AnyGlobalSystem,
+  AnyState,
+  InternalInitialState,
+} from './type'
 
 // Entity
 export { generateEntity } from './entity/generateEntity'
@@ -33,7 +62,7 @@ export {
   emitEvent,
   addEventHandler,
   removeEventHandler,
-  EventHandler,
+  // EventHandler,
 } from './event'
 
 export { runOneFrame } from './util/runOneFrame'

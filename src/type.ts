@@ -206,7 +206,7 @@ export type EmptyState<Component extends AnyComponent, System> = {
 /**
  * Describes extendable state with internal components and systems
  */
-export type InitialState<Component extends AnyComponent, System> = EmptyState<
+export type InitialState<Component, System> = EmptyState<
   StateDefaultComponents & Component,
   StateDefaultSystems & System
 >

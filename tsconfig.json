@@ -3,20 +3,9 @@
     "outDir": "./",
     "module": "CommonJS",
     "target": "esnext",
-    "lib": [
-      "es6",
-      "dom",
-      "es2015",
-      "es2017.object",
-      "ES2019"
-    ],
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "types": [
-      "node",
-      "vitest/globals"
-    ],
+    "lib": ["es6", "dom", "es2015", "es2017.object", "ES2019"],
+    "typeRoots": ["node_modules/@types"],
+    "types": ["node"],
     "sourceMap": false,
     "jsx": "react",
     "moduleResolution": "node",
@@ -35,14 +24,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUnusedParameters": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
   // "filesGlob": ["typings/index.d.ts", "src/**/*"]
 }
