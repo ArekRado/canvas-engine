@@ -62,10 +62,10 @@ export type ECSEvent<Type, Payload> = {
 
 export type EmitEvent = (event: unknown) => void
 
-export type EventHandler<Event, State extends AnyState = AnyState> = (params: {
-  event: Event
-  state: State
-}) => State
+export type EventHandler<
+  Event,
+  State extends UnknownState = UnknownState,
+> = (params: { event: Event; state: State }) => State
 
 export enum CanvasEngineEvent {
   windowResize = 'CanvasEngineEvent-windowResize',
@@ -93,11 +93,11 @@ export type KeyboardActionEvent = ECSEvent<
   Keyboard
 >
 
-export type AllEvents =
-  | WindowResizeEvent
-  | RenderLoopStartEvent
-  | MouseActionEvent
-  | KeyboardActionEvent
+// export type AllEvents =
+//   | WindowResizeEvent
+//   | RenderLoopStartEvent
+//   | MouseActionEvent
+//   | KeyboardActionEvent
 
 ////////////////////////////////////
 //
@@ -110,13 +110,13 @@ export type AllEvents =
 ////////////////////////////////////
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyStateForSystem = EmptyState<AnyComponent, any>
+export type AnyStateForSystem = EmptyState<UnknownComponent, any>
 
 export type GetDefaultComponent<X> = (params?: Partial<X>) => X
 
 export type SystemMethodParams<
-  ComponentData,
-  State extends AnyStateForSystem,
+  ComponentData = AnyStateForSystem['component'],
+  State = AnyStateForSystem,
 > = {
   state: State
   entity: Entity
@@ -139,7 +139,6 @@ export type System<
    * Called on each runOneFrame
    */
   tick: ((params: { state: State }) => State) | undefined
-  fixedTick: ((params: { state: State }) => State) | undefined
   remove: ((params: SystemMethodParams<Component, State>) => State) | undefined
   update:
     | ((
@@ -150,19 +149,18 @@ export type System<
     | undefined
 }
 
-export type CreateGlobalSystemParams<State extends AnyStateForSystem> = {
-  state: State
-  name: string
-  create?: (params: { state: State }) => State
-  tick?: (params: { state: State }) => State
-  fixedTick?: (params: { state: State }) => State
-  priority?: number
-}
+// type CreateGlobalSystemParams<State extends AnyStateForSystem> = {
+//   state: State
+//   name: string
+//   create?: (params: { state: State }) => State
+//   tick?: (params: { state: State }) => State
+//   fixedTick?: (params: { state: State }) => State
+//   priority?: number
+// }
 
 export type GlobalSystem<State extends AnyStateForSystem> = {
   name: string
   tick?: (params: { state: State }) => State
-  fixedTick?: (params: { state: State }) => State
   create: undefined
   remove: (params: { state: State }) => State
   priority: number
@@ -178,12 +176,12 @@ export type GlobalSystem<State extends AnyStateForSystem> = {
 //
 ////////////////////////////////////
 
-export type StateDefaultComponents = {
+type StateDefaultComponents = {
   mouse: Map<Entity, Mouse>
   keyboard: Map<Entity, Keyboard>
 }
 
-export type StateDefaultSystems =
+type StateDefaultSystems =
   | System<Event, AnyStateForSystem>
   | System<Mouse, AnyStateForSystem>
   | System<Keyboard, AnyStateForSystem>
@@ -191,37 +189,24 @@ export type StateDefaultSystems =
 /**
  * Describes empty state without internal components and systems
  */
-export type EmptyState<Component extends AnyComponent, System> = {
+type EmptyState<Component extends UnknownComponent, System> = {
   entity: Map<Entity, Entity>
   component: Component
   system: Array<System>
-  globalSystem: Array<GlobalSystem<AnyState>>
-
-  /**
-   * used to cancel requestAnimationFrame loop
-   */
-  animationFrame: number
+  globalSystem: Array<GlobalSystem<UnknownState>>
 }
 
 /**
  * Describes extendable state with internal components and systems
  */
-export type InitialState<Component, System> = EmptyState<
-  StateDefaultComponents & Component,
-  StateDefaultSystems & System
->
+export type InitialState<
+  Component = UnknownComponent,
+  System = UnknownSystem,
+> = EmptyState<StateDefaultComponents & Component, StateDefaultSystems & System>
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyComponent = Dictionary<Map<string, unknown | any>>
+export type UnknownComponent = Dictionary<Map<string, any>>
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnySystem = System<any, AnyStateForSystem>
-export type AnyGlobalSystem = GlobalSystem<AnyStateForSystem>
-export type AnyState = EmptyState<AnyComponent, AnySystem>
-
-/**
- * Describes state with internal components and systems
- */
-export type InternalInitialState = EmptyState<
-  StateDefaultComponents,
-  StateDefaultSystems
->
+export type UnknownSystem = System<any, AnyStateForSystem>
+// export type UnknownGlobalSystem = GlobalSystem<AnyStateForSystem>
+type UnknownState = EmptyState<UnknownComponent, UnknownSystem>

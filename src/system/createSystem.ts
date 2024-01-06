@@ -1,7 +1,8 @@
 import {
-  AnyStateForSystem,
   EmitEvent,
+  Entity,
   GlobalSystem,
+  InitialState,
   SystemMethodParams,
 } from '../type'
 
@@ -16,7 +17,7 @@ export enum systemPriority {
 
 const triggerTickForAllComponents = <
   ComponentData,
-  State extends AnyStateForSystem = AnyStateForSystem,
+  State extends InitialState,
 >({
   state,
   componentName,
@@ -26,7 +27,10 @@ const triggerTickForAllComponents = <
   componentName: string
   tickCallback: (params: SystemMethodParams<ComponentData, State>) => State
 }): State => {
-  const components = state.component[componentName]
+  const components = state.component[componentName] as Map<
+    Entity,
+    ComponentData
+  >
 
   if (components) {
     for (const [entity, component] of components) {
@@ -44,20 +48,18 @@ const triggerTickForAllComponents = <
 
 export const createSystem = <
   ComponentData,
-  State extends AnyStateForSystem = AnyStateForSystem,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  State extends InitialState<any, any>,
 >({
   state,
   tick,
-  fixedTick,
   ...params
 }: {
   state: State
   name: string
   componentName: string
-  initialize?: (params: { state: State }) => State
   create?: (params: SystemMethodParams<ComponentData, State>) => State
   tick?: (params: SystemMethodParams<ComponentData, State>) => State
-  fixedTick?: (params: SystemMethodParams<ComponentData, State>) => State
   remove?: (params: SystemMethodParams<ComponentData, State>) => State
   priority?: number
   emitEvent?: EmitEvent
@@ -76,15 +78,6 @@ export const createSystem = <
           })
         }
       : undefined,
-    fixedTick: fixedTick
-      ? ({ state }: { state: State }) => {
-          return triggerTickForAllComponents({
-            state,
-            componentName: params.componentName,
-            tickCallback: fixedTick,
-          })
-        }
-      : undefined,
     remove: params.remove,
   }
 
@@ -94,24 +87,22 @@ export const createSystem = <
   }
 }
 
-export const createGlobalSystem = <State extends AnyStateForSystem>({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const createGlobalSystem = <State extends InitialState<any, any>>({
   state,
   tick,
-  fixedTick,
   name,
   priority,
 }: {
   state: State
   name: string
   tick?: (params: { state: State }) => State
-  fixedTick?: (params: { state: State }) => State
   priority?: number
 }): State => {
   const globalSystem: GlobalSystem<State> = {
     name,
     priority: priority || systemPriority.zero,
     tick,
-    fixedTick,
     create: undefined,
     remove: ({ state }) => state,
   }

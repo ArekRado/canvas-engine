@@ -1,32 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createGlobalSystem } from './system/createSystem'
-import { AnyState, ECSEvent, InternalInitialState } from './type'
+import { InitialState, ECSEvent } from './type'
 
 type AcitveBuffer = 'first' | 'second'
 
 export const internalEventNamePrefix = '@canvas-engine'
 
-export type EventHandler<AllEvents, State extends AnyState = AnyState> = ({
-  state,
-  event,
-}: {
-  state: State
-  event: AllEvents
-}) => State
+export type EventHandler<AllEvents> = (event: AllEvents) => void
 
-let eventHandlers: [string, EventHandler<any, any>][] = []
+let eventHandlers: [string, EventHandler<any>][] = []
 
-export const addEventHandler = <
-  Event extends ECSEvent<string, unknown>,
-  State extends AnyState = AnyState,
->(
+export const addEventHandler = <Event extends ECSEvent<string, unknown>>(
   type: Event['type'],
-  eventHandler: EventHandler<Event, State>,
+  eventHandler: EventHandler<Event>,
 ): void => {
   eventHandlers.push([type, eventHandler])
 }
 
-export const removeEventHandler = (eventHandler: EventHandler<any, any>) => {
+export const removeEventHandler = (eventHandler: EventHandler<any>) => {
   eventHandlers = eventHandlers.filter(
     ([_, handler]) => handler !== eventHandler,
   )
@@ -71,7 +62,7 @@ export const resetEventState = () => {
   eventHandlers = []
 }
 
-export const eventSystem = (state: InternalInitialState) => {
+export const eventSystem = (state: InitialState): InitialState => {
   resetEventState()
 
   return createGlobalSystem({
@@ -88,10 +79,7 @@ export const eventSystem = (state: InternalInitialState) => {
           if (type === event.type) {
             const eventHandler = eventHandlers[j][1]
 
-            state = eventHandler({
-              state,
-              event,
-            })
+            eventHandler(event)
           }
         }
       }

@@ -1,11 +1,8 @@
 import { createComponent } from '../component/createComponent'
-import { createEntity } from '../entity/createEntity'
-import { generateEntity } from '../entity/generateEntity'
 import { createGlobalSystem, createSystem } from '../system/createSystem'
-import { InternalInitialState } from '../type'
+import { InitialState } from '../type'
 import { runOneFrame } from './runOneFrame'
-import { getInitialState, getState } from './state'
-import { tick } from './testUtils'
+import { getInitialState } from './state'
 import { vi, describe, it, expect } from 'vitest'
 
 describe('runOneFrame', () => {
@@ -34,41 +31,31 @@ describe('runOneFrame', () => {
     })
 
     let state = getInitialState()
-    state = createComponent({
-      state,
-      entity: 'entity system4',
-      name: 'system4',
-      data: {},
-    })
-    state = createComponent({
-      state,
-      entity: 'entity system5',
-      name: 'system5',
-      data: {},
-    })
+    state = createComponent(state, 'system4', 'entity system4', {})
+    state = createComponent(state, 'system5', 'entity system5', {})
 
-    state = createGlobalSystem<InternalInitialState>({
+    state = createGlobalSystem<InitialState>({
       name: 'system1',
       tick: tick1,
       state,
       priority: 1,
     })
 
-    state = createGlobalSystem<InternalInitialState>({
+    state = createGlobalSystem<InitialState>({
       name: 'system2',
       tick: tick2,
       state,
       priority: 2,
     })
 
-    state = createGlobalSystem<InternalInitialState>({
+    state = createGlobalSystem<InitialState>({
       name: 'system3',
       tick: tick3,
       state,
       priority: 1,
     })
 
-    state = createSystem<null, InternalInitialState>({
+    state = createSystem<null, InitialState>({
       name: 'system4',
       componentName: 'system4',
       tick: tick4,
@@ -76,7 +63,7 @@ describe('runOneFrame', () => {
       priority: 3,
     })
 
-    state = createSystem<null, InternalInitialState>({
+    state = createSystem<null, InitialState>({
       name: 'system5',
       componentName: 'system5',
       tick: tick5,

@@ -1,11 +1,11 @@
-import { Entity, AnyState } from '../type'
+import { Entity, InitialState } from '../type'
 
-type CreateEntity = <State extends AnyState>(params: {
-  entity: Entity
-  state: State
-}) => State
+type CreateEntity = <State extends InitialState>(
+  state: State,
+  entity: Entity,
+) => State
 
-export const createEntity: CreateEntity = ({ entity, state }) => {
+export const createEntity: CreateEntity = (state, entity) => {
   state.entity.set(entity, entity)
 
   return state

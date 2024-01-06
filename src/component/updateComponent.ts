@@ -1,22 +1,13 @@
-import { AnyState, Entity } from '../type'
+import { Entity, InitialState } from '../type'
 import { getComponent } from './getComponent'
 
-export const updateComponent = <Data, State extends AnyState = AnyState>({
-  name,
-  entity,
-  state,
-  update,
-}: {
-  name: string
-  entity: Entity
-  state: State
-  update: ((component: Data) => Partial<Data>) | undefined
-}): State => {
-  const previousComponent = getComponent<Data, State>({
-    state,
-    entity,
-    name,
-  })
+export const updateComponent = <Data, State extends InitialState>(
+  state: State,
+  name: string,
+  entity: Entity,
+  update: ((component: Data) => Partial<Data>) | undefined,
+): State => {
+  const previousComponent = getComponent<Data, State>(state, name, entity)
 
   if (previousComponent !== undefined) {
     const updatedComponent =

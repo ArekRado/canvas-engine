@@ -1,20 +1,15 @@
 import { removeComponent } from '../component/removeComponent'
-import { Entity, AnyState } from '../type'
+import { Entity, InitialState } from '../type'
 
-type RemoveEntity = <State extends AnyState>(params: {
-  entity: Entity
-  state: State
-}) => State
-export const removeEntity: RemoveEntity = ({ entity, state }) => {
+type RemoveEntity = <State extends InitialState>(
+  state: State,
+  entity: Entity,
+) => State
+export const removeEntity: RemoveEntity = (state, entity) => {
   state.entity.delete(entity)
 
   const v1 = Object.keys(state.component).reduce(
-    (state, name) =>
-      removeComponent({
-        name,
-        state,
-        entity,
-      }),
+    (state, name) => removeComponent(state, name, entity),
     state,
   )
 

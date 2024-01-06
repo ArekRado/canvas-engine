@@ -1,9 +1,9 @@
-import { AnyState, Entity } from '../type'
+import { InitialState, Entity } from '../type'
 
-export const getComponentsByName = <Data, State extends AnyState = AnyState>({
-  name,
-  state,
-}: {
-  name: string
-  state: State
-}) => state.component[name] as Map<Entity, Data> | undefined
+export const getComponentsByName = <
+  Data,
+  State extends InitialState,
+>(
+  state: State,
+  name: string,
+) => state.component[name] as Map<Entity, Data> | undefined

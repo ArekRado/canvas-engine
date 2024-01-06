@@ -1,8 +1,7 @@
-import { AnyState, Entity } from '../type'
+import { Entity, InitialState } from '../type'
 
-type GetEntity = <State extends AnyState>(params: {
-  entity: Entity
-  state: State
-}) => Entity | undefined
-export const getEntity: GetEntity = ({ entity, state }) =>
-  state.entity.get(entity)
+type GetEntity = <State extends InitialState>(
+  state: State,
+  entity: Entity,
+) => Entity | undefined
+export const getEntity: GetEntity = (state, entity) => state.entity.get(entity)

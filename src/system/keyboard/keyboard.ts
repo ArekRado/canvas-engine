@@ -1,10 +1,16 @@
+import { createComponent } from '../../component/createComponent'
 import { componentName } from '../../component/componentName'
 import { createEntity } from '../../entity/createEntity'
 import { emitEvent } from '../../event'
-import { Keyboard, AnyState, CanvasEngineEvent, KeyboardActionEvent } from '../../type'
+import {
+  Keyboard,
+  CanvasEngineEvent,
+  KeyboardActionEvent,
+  InitialState,
+} from '../../type'
 import { defaultKeyboard } from '../../util/defaultComponents'
 import { createSystem, systemPriority } from '../createSystem'
-import { createKeyboard, updateKeyboard } from './keyboardCrud'
+import { updateComponent } from '../../component/updateComponent'
 
 export const keyboardEntity = 'keyboard'
 
@@ -19,7 +25,7 @@ export const keyboardSystem = ({
   containerId,
   document,
 }: {
-  state: AnyState
+  state: InitialState
   document: Document
   containerId: string
 }) => {
@@ -54,16 +60,14 @@ export const keyboardSystem = ({
     )
   }
 
-  state = createEntity({
-    entity: keyboardEntity,
-    state,
-  })
+  state = createEntity(state, keyboardEntity)
 
-  state = createKeyboard({
+  state = createComponent(
     state,
-    entity: keyboardEntity,
-    data: defaultKeyboard(),
-  })
+    componentName.keyboard,
+    keyboardEntity,
+    defaultKeyboard(),
+  )
 
   return createSystem({
     name: componentName.keyboard,
@@ -89,11 +93,12 @@ export const keyboardSystem = ({
         }, {}),
       }
 
-      state = updateKeyboard({
+      state = updateComponent(
         state,
+        componentName.keyboard,
         entity,
-        update: () => keyboardBeforeReset,
-      })
+        () => keyboardBeforeReset,
+      )
 
       if (shouldEmitEvent === true) {
         shouldEmitEvent = false

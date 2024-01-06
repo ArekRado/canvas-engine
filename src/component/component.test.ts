@@ -1,4 +1,4 @@
-import { getState } from '../util/state'
+import { getInitialStateWithSystems } from '../util/state'
 import { generateEntity } from '../entity/generateEntity'
 import { createEntity } from '../entity/createEntity'
 import { runOneFrame } from '../util/runOneFrame'
@@ -8,77 +8,74 @@ import { updateComponent } from './updateComponent'
 import { getComponent } from './getComponent'
 
 import { createSystem } from '../system/createSystem'
-import { Dictionary } from '../type'
-import { InternalInitialState } from '../index'
+import { Dictionary, InitialState } from '../type'
 import { vi, describe, it, expect } from 'vitest'
 
 describe('component', () => {
   it('should call system create, update and remove methods', () => {
     const entity1 = generateEntity()
     const entity2 = generateEntity()
+    const componentName = 'test'
 
     const create = vi.fn(({ state }) => state)
     const remove = vi.fn(({ state }) => state)
     const tick = vi.fn(({ state }) => state)
 
-    let state = createEntity({
-      entity: entity1,
-      state: getState(),
-    })
+    let state = createEntity(getInitialStateWithSystems(), entity1)
 
     state = createSystem({
       state,
-      name: 'test',
-      componentName: 'test',
+      name: componentName,
+      componentName: componentName,
       create,
       remove,
       tick,
     })
 
-    state = createComponent<Dictionary<null>, InternalInitialState>({
+    state = createComponent<Dictionary<null>, InitialState>(
       state,
-      entity: entity1,
-      name: 'test',
-      data: {},
-    })
-    state = createComponent<Dictionary<null>, InternalInitialState>({
+      componentName,
+      entity1,
+      {},
+    )
+    state = createComponent<Dictionary<null>, InitialState>(
       state,
-      entity: entity2,
-      name: 'test',
-      data: {},
-    })
+      componentName,
+      entity2,
+      {},
+    )
 
     state = runOneFrame({ state })
-    state = removeComponent({ name: 'test', entity: entity1, state })
+    state = removeComponent(state, componentName, entity1)
 
     expect(create).toHaveBeenCalledTimes(2)
     expect(remove).toHaveBeenCalledTimes(1)
     expect(tick).toHaveBeenCalledTimes(2)
 
     // create new component after remove
-    state = createComponent<null, InternalInitialState>({
+    state = createComponent<null, InitialState>(
       state,
-      entity: entity1,
-      name: 'test',
-      data: null,
-    })
+      componentName,
+      entity1,
+      null,
+    )
 
     expect(create).toHaveBeenCalledTimes(3)
 
     // updating existing component
-    state = updateComponent<null, InternalInitialState>({
+    state = updateComponent<null, InitialState>(
       state,
-      entity: entity1,
-      name: 'test',
-      update: () => null,
-    })
-    state = updateComponent<null, InternalInitialState>({
+      'test',
+      entity1,
+      () => null,
+    )
+    state = updateComponent<null, InitialState>(
       state,
-      entity: entity1,
-      name: 'test',
-      update: () => null,
+      'test',
+      entity1,
+      () => null,
       // callSystemUpdateMethod: false,
-    })
+    )
 
     // Update should not trigger create
     expect(create).toHaveBeenCalledTimes(3)
@@ -92,10 +89,7 @@ describe('component', () => {
     type SomeComponent = { value: 1 }
     const name = 'test'
 
-    let state = createEntity({
-      entity,
-      state: getState(),
-    })
+    let state = createEntity(getInitialStateWithSystems(), entity)
 
     state = createSystem({
       state,
@@ -104,35 +98,46 @@ describe('component', () => {
       create: ({ state }) => state,
     })
 
-    state = createComponent<SomeComponent, InternalInitialState>({
-      state,
-      entity,
-      name,
-      data: {
-        value: 1,
-      },
+    state = createComponent<SomeComponent, InitialState>(state, name, entity, {
+      value: 1,
     })
 
-    expect(getComponent<SomeComponent>({ state, entity, name })?.value).toBe(1)
+    expect(
+      getComponent<SomeComponent, InitialState>(state, name, entity)?.value,
+    ).toBe(1)
 
-    state = updateComponent({
-      state,
-      entity,
-      name,
-      update: () => ({}),
-    })
+    state = updateComponent(state, name, entity, () => ({}))
 
-    expect(getComponent<SomeComponent>({ state, entity, name })?.value).toBe(1)
+    expect(
+      getComponent<SomeComponent, InitialState>(state, name, entity)?.value,
+    ).toBe(1)
 
-    state = updateComponent({
-      state,
-      entity,
-      name,
-      update: () => ({ value: 2 }),
-    })
+    state = updateComponent(state, name, entity, () => ({ value: 2 }))
 
-    expect(getComponent<SomeComponent>({ state, entity, name })?.value).toBe(2)
+    expect(
+      getComponent<SomeComponent, InitialState>(state, name, entity)?.value,
+    ).toBe(2)
   })
 
-  it.todo('getComponentsByName')
+  it('removing all components os specific name should keep empty Map in a component dictionary', () => {
+    const entity = generateEntity()
+    type SomeComponent = { value: 1 }
+    const name = 'test'
+
+    let state = createEntity(getInitialStateWithSystems(), entity)
+
+    expect(state.component[name]).toEqual(undefined)
+
+    state = createComponent<SomeComponent, InitialState>(state, name, entity, {
+      value: 1,
+    })
+
+    expect(
+      getComponent<SomeComponent, InitialState>(state, name, entity)?.value,
+    ).toBe(1)
+
+    state = removeComponent(state, name, entity)
+
+    expect(state.component[name]).toEqual(new Map())
+  })
 })

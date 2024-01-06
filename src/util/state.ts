@@ -2,9 +2,9 @@ import { componentName } from '../component/componentName'
 import { mouseSystem } from '../system/mouse/mouse'
 import { keyboardSystem } from '../system/keyboard/keyboard'
 import { eventSystem } from '../event'
-import { AnyState, InternalInitialState } from '../type'
+import { InitialState } from '../type'
 
-export const getInitialState = (): InternalInitialState => ({
+export const getInitialState = (): InitialState => ({
   entity: new Map(),
   component: {
     [componentName.mouse]: new Map(),
@@ -12,7 +12,6 @@ export const getInitialState = (): InternalInitialState => ({
   },
   globalSystem: [],
   system: [],
-  animationFrame: -1,
 })
 
 export const getSystems = ({
@@ -20,31 +19,29 @@ export const getSystems = ({
   document,
   containerId,
 }: {
-  state: AnyState
+  state: InitialState
   document?: Document
   containerId?: string
-}): InternalInitialState => {
-  let internatlState = state as InternalInitialState
-
-  internatlState = eventSystem(internatlState) as InternalInitialState
+}) => {
+  state = eventSystem(state)
 
   if (containerId) {
-    internatlState = mouseSystem({
-      state: internatlState,
+    state = mouseSystem({
+      state,
       document: document ?? window.document,
       containerId,
-    }) as InternalInitialState
-    internatlState = keyboardSystem({
-      state: internatlState,
+    })
+    state = keyboardSystem({
+      state,
       document: document ?? window.document,
       containerId,
-    }) as InternalInitialState
+    })
   }
 
-  return internatlState
+  return state
 }
 
-export const getState = () =>
+export const getInitialStateWithSystems = () =>
   getSystems({
     state: getInitialState(),
     document,

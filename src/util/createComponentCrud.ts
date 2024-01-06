@@ -1,62 +1,20 @@
-import { createComponent } from '../component/createComponent'
-import { getComponent } from '../component/getComponent'
-import { removeComponent } from '../component/removeComponent'
-import { updateComponent } from '../component/updateComponent'
-import { AnyState, Entity } from '../type'
+import { Entity } from '../type'
+import { createStore } from './store'
 
-export const createComponentCrud = <
-  Component,
-  State extends AnyState = AnyState,
->({
+export const createComponentCrud = <Component>({
   name,
+  store,
 }: {
   name: string
-}) => {
-  const crud = {
-    getComponent: ({ state, entity }: { state: State; entity: Entity }) =>
-      getComponent<Component, State>({
-        state,
-        entity,
-        name,
-      }),
-    updateComponent: ({
-      state,
-      entity,
-      update,
-    }: {
-      state: State
-      entity: Entity
-      update: (component: Component) => Partial<Component>
-      callSystemUpdateMethod?: boolean
-    }) =>
-      updateComponent<Component, State>({
-        state,
-        entity,
-        name,
-        update,
-      }),
-    createComponent: ({
-      state,
-      entity,
-      data,
-    }: {
-      state: State
-      entity: Entity
-      data: Component
-    }) =>
-      createComponent<Component, State>({
-        state,
-        entity,
-        name,
-        data,
-      }),
-    removeComponent: ({ state, entity }: { state: State; entity: Entity }) =>
-      removeComponent({
-        state,
-        entity,
-        name,
-      }),
-  }
+  store: ReturnType<typeof createStore>
+}) => ({
+  getComponent: (entity: Entity) => store.getComponent<Component>(name, entity),
+  createComponent: (entity: Entity, data: Component) =>
+    store.createComponent<Component>(name, entity, data),
+  updateComponent: (
+    entity: Entity,
+    update: (component: Component) => Partial<Component>,
+  ) => store.updateComponent<Component>(name, entity, update),
 
-  return crud
-}
+  removeComponent: (entity: Entity) => store.removeComponent(name, entity),
+})

@@ -7,4 +7,4 @@ rm -rf dist/*
 
 cp package.json LICENSE README.md dist
 # cd dist
-# npm publish --dry-run
+# npm publish

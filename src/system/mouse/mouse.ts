@@ -1,16 +1,17 @@
 import { vector, vectorZero } from '@arekrado/vector-2d'
 import {
-  AnyState,
   CanvasEngineEvent,
   Mouse,
   MouseActionEvent,
+  InitialState,
 } from '../../type'
 import { defaultMouse } from '../../util/defaultComponents'
 import { createSystem, systemPriority } from '../createSystem'
 import { componentName } from '../../component/componentName'
-import { createMouse, updateMouse } from './mouseCrud'
 import { createEntity } from '../../entity/createEntity'
 import { emitEvent } from '../../event'
+import { createComponent } from '../../component/createComponent'
+import { updateComponent } from '../../component/updateComponent'
 
 export const mouseEntity = 'mouse'
 
@@ -38,7 +39,7 @@ export const mouseSystem = ({
   containerId,
   document,
 }: {
-  state: AnyState
+  state: InitialState
   document: Document
   containerId: string
 }) => {
@@ -107,16 +108,14 @@ export const mouseSystem = ({
     }
   }
 
-  state = createEntity({
-    entity: mouseEntity,
-    state,
-  })
+  state = createEntity(state, mouseEntity)
 
-  state = createMouse({
+  state = createComponent(
     state,
-    entity: mouseEntity,
-    data: defaultMouse(),
-  })
+    componentName.mouse,
+    mouseEntity,
+    defaultMouse(),
+  )
 
   return createSystem({
     name: componentName.mouse,
@@ -145,11 +144,12 @@ export const mouseSystem = ({
         deltaZ: 0,
       }
 
-      state = updateMouse({
+      state = updateComponent(
         state,
+        componentName.mouse,
         entity,
-        update: () => mouseBeforeReset,
-      })
+        () => mouseBeforeReset,
+      )
 
       if (shouldEmitEvent === true) {
         shouldEmitEvent = false

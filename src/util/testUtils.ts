@@ -1,8 +1,6 @@
-import { AnyState, InternalInitialState } from '../type'
+import { InitialState } from '../type'
 import { runOneFrame } from './runOneFrame'
 
-export const tick = (
-  state: InternalInitialState | AnyState,
-) => {
+export const tick = (state: InitialState) => {
   return runOneFrame({ state })
 }

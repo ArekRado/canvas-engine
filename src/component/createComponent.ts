@@ -1,17 +1,12 @@
 import { getSystemByComponentName } from '../system/getSystemByName'
-import { AnyState, Entity } from '../type'
+import { Entity, InitialState } from '../type'
 
-export const createComponent = <Data, State extends AnyState = AnyState>({
-  state,
-  data,
-  entity,
-  name,
-}: {
-  state: State
-  data: Data
-  entity: Entity
-  name: string
-}): State => {
+export const createComponent = <Data, State extends InitialState>(
+  state: State,
+  name: string,
+  entity: Entity,
+  data: Data,
+): State => {
   const isFirstComponentThisName = state.component[name] === undefined
   const needCreateEntity = isFirstComponentThisName
     ? true
@@ -26,18 +21,16 @@ export const createComponent = <Data, State extends AnyState = AnyState>({
 
   const system = getSystemByComponentName(name, state.system)
 
-  if (system !== undefined) {
-    if (
-      system.create !== undefined &&
-      (isFirstComponentThisName || needCreateEntity)
-    ) {
-      return system.create({
-        state: state,
-        component: data,
-        entity,
-        name,
-      }) as State
-    }
+  if (
+    system?.create !== undefined &&
+    (isFirstComponentThisName || needCreateEntity)
+  ) {
+    return system.create({
+      state: state,
+      component: data,
+      entity,
+      name,
+    }) as State
   }
 
   return state

@@ -5,19 +5,18 @@ import { updateComponent } from './component/updateComponent'
 import { generateEntity } from './entity/generateEntity'
 import { addEventHandler, emitEvent, removeEventHandler } from './event'
 import {
-  AllEvents,
   CanvasEngineEvent,
   ECSEvent,
-  InternalInitialState,
+  InitialState,
   WindowResizeEvent,
 } from './type'
 import { runOneFrame } from './util/runOneFrame'
-import { getState } from './util/state'
+import { getInitialStateWithSystems } from './util/state'
 import { vi, describe, it, expect } from 'vitest'
 
 describe('event', () => {
   it('should emit, receive events and add, remove event handlers', () => {
-    let state = getState()
+    let state = getInitialStateWithSystems()
 
     const event: ECSEvent<string, string> = {
       type: 'example',
@@ -36,10 +35,10 @@ describe('event', () => {
 
     expect(eventHandler).toHaveBeenCalledTimes(1)
     expect(Object.keys(eventHandler.mock.calls[0][0])).toEqual([
-      'state',
-      'event',
+      'type',
+      'payload',
     ])
-    expect(eventHandler.mock.calls[0][0].event).toEqual(event)
+    expect(eventHandler.mock.calls[0][0]).toEqual(event)
 
     removeEventHandler(eventHandler)
 
@@ -50,7 +49,7 @@ describe('event', () => {
   })
 
   it('should handle internal events emmited from external functions', () => {
-    let state = getState()
+    let state = getInitialStateWithSystems()
 
     const event: WindowResizeEvent = {
       type: CanvasEngineEvent.windowResize,
@@ -71,10 +70,10 @@ describe('event', () => {
 
     expect(internalEventHandler).toHaveBeenCalled()
     expect(Object.keys(internalEventHandler.mock.calls[0][0])).toEqual([
-      'state',
-      'event',
+      'type',
+      'payload',
     ])
-    expect(internalEventHandler.mock.calls[0][0].event).toEqual(event)
+    expect(internalEventHandler.mock.calls[0][0]).toEqual(event)
   })
 
   it('should handle deeply nested events', () => {
@@ -86,26 +85,17 @@ describe('event', () => {
     }
     const entity = generateEntity()
 
-    let state = createEntity({ state: getState(), entity })
+    let state = createEntity(getInitialStateWithSystems(), entity)
 
-    state = createComponent<Test, InternalInitialState>({
-      state,
-      name,
-      entity,
-      data: {
-        count: 0,
-      },
+    state = createComponent<Test, InitialState>(state, name, entity, {
+      count: 0,
     })
 
-    const eventHandler = vi.fn(({ state }) => {
-      emitEvent(event)
+    let count = 0
 
-      return updateComponent<Test, InternalInitialState>({
-        state,
-        entity,
-        name,
-        update: ({ count }) => ({ count: count + 1 }),
-      })
+    const eventHandler = vi.fn(() => {
+      emitEvent(event)
+      count++
     })
 
     addEventHandler(CanvasEngineEvent.windowResize, eventHandler)
@@ -116,7 +106,7 @@ describe('event', () => {
 
     Array.from({ length: 6 }).forEach((_, i) => {
       state = runOneFrame({ state })
-      expect(getComponent<Test>({ state, name, entity })?.count).toEqual(i + 1)
+      expect(count).toEqual(i + 1)
     })
   })
 })

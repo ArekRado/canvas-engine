@@ -4,7 +4,12 @@ import { getInitialState, getSystems } from '../../util/state'
 import { runOneFrame } from '../../util/runOneFrame'
 import { getComponent } from '../../component/getComponent'
 import { componentName } from '../../component/componentName'
-import { CanvasEngineEvent, Keyboard, KeyboardActionEvent } from '../../type'
+import {
+  CanvasEngineEvent,
+  InitialState,
+  Keyboard,
+  KeyboardActionEvent,
+} from '../../type'
 import { keyboardEntity } from './keyboard'
 import { addEventHandler } from '../../event'
 import { describe, it, beforeEach, expect, vi } from 'vitest'
@@ -59,11 +64,11 @@ describe('keyboard', () => {
     )
 
     expect(
-      getComponent<Keyboard>({
-        entity: keyboardEntity,
-        name: componentName.keyboard,
+      getComponent<Keyboard, InitialState>(
         state,
-      })?.keys[key1],
+        componentName.keyboard,
+        keyboardEntity,
+      )?.keys[key1],
     ).toBeUndefined()
 
     keydownCallback({ key: key1 })
@@ -71,11 +76,11 @@ describe('keyboard', () => {
     state = runOneFrame({ state })
 
     expect(
-      getComponent<Keyboard>({
-        entity: keyboardEntity,
-        name: componentName.keyboard,
+      getComponent<Keyboard, InitialState>(
         state,
-      })?.keys[key1],
+        componentName.keyboard,
+        keyboardEntity,
+      )?.keys[key1],
     ).toEqual({
       isDown: true,
       isUp: false,
@@ -88,22 +93,22 @@ describe('keyboard', () => {
 
     // runOneFrame should reset isDown
     expect(
-      getComponent<Keyboard>({
-        entity: keyboardEntity,
-        name: componentName.keyboard,
+      getComponent<Keyboard, InitialState>(
         state,
-      })?.keys[key1],
+        componentName.keyboard,
+        keyboardEntity,
+      )?.keys[key1],
     ).toEqual({
       isDown: false,
       isUp: false,
       isPressed: true,
     })
     expect(
-      getComponent<Keyboard>({
-        entity: keyboardEntity,
-        name: componentName.keyboard,
+      getComponent<Keyboard, InitialState>(
         state,
-      })?.keys[key2],
+        componentName.keyboard,
+        keyboardEntity,
+      )?.keys[key2],
     ).toEqual({
       isDown: true,
       isUp: false,
@@ -115,21 +120,22 @@ describe('keyboard', () => {
     state = runOneFrame({ state })
 
     expect(
-      getComponent<Keyboard>({
-        entity: keyboardEntity,
-        name: componentName.keyboard,
+      getComponent<Keyboard, InitialState>(
         state,
-      })?.keys[key1],
+        componentName.keyboard,
+        keyboardEntity,
+      )?.keys[key1],
     ).toEqual({
       isDown: false,
       isUp: true,
       isPressed: false,
     })
 
-    expect(eventHandler.mock.calls[0][0].event.type).toEqual(
+    expect(eventHandler.mock.calls[0][0].type).toEqual(
       CanvasEngineEvent.keyboardActionEvent,
     )
-    expect(eventHandler.mock.calls[0][0].event.payload.keys[key1]).toEqual({
+
+    expect(eventHandler.mock.calls[0][0].payload.keys[key1]).toEqual({
       isDown: true,
       isPressed: true,
       isUp: false,

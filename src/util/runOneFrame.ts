@@ -1,13 +1,12 @@
-import { AnyState, AnySystem, GlobalSystem } from '../type'
+import { InitialState, UnknownSystem } from '../type'
 
-export const runOneFrame = <State extends AnyState = AnyState>({
+export const runOneFrame = <State extends InitialState>({
   state,
 }: {
   state: State
 }): State => {
-
-  const allSystems: Array<AnySystem | GlobalSystem<AnyState>> = state.system
-    .concat(state.globalSystem as unknown as AnySystem[])
+  const allSystems = state.system
+    .concat(state.globalSystem as unknown as UnknownSystem[])
     .sort((a, b) => (a.priority > b.priority ? 1 : -1))
 
   for (let i = 0; i < allSystems.length; i++) {

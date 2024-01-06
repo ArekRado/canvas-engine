@@ -1,4 +1,4 @@
-import { getState } from '../util/state'
+import { getInitialStateWithSystems } from '../util/state'
 import { createGlobalSystem } from './createSystem'
 import { runOneFrame } from '../util/runOneFrame'
 import { describe, it, expect, vi } from 'vitest'
@@ -9,7 +9,7 @@ describe('createGlobalSystem', () => {
     const tick = vi.fn(({ state }) => state)
 
     createGlobalSystem({
-      state: getState(),
+      state: getInitialStateWithSystems(),
       name: 'test',
       tick,
     })
@@ -22,7 +22,7 @@ describe('createGlobalSystem', () => {
     const tick = vi.fn(({ state }) => state)
 
     const state = createGlobalSystem({
-      state: getState(),
+      state: getInitialStateWithSystems(),
       name: 'test',
       tick,
     })
