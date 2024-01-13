@@ -1,6 +1,6 @@
-import { InitialState } from '../type'
+import { EmptyState } from '../type'
 import { runOneFrame } from './runOneFrame'
 
-export const tick = (state: InitialState) => {
+export const tick = (state: EmptyState) => {
   return runOneFrame({ state })
 }

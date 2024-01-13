@@ -1,4 +1,4 @@
-import { getInitialStateWithSystems } from '../util/state'
+import { getEmptyState } from '../util/state'
 import { generateEntity } from '../entity/generateEntity'
 import { createEntity } from '../entity/createEntity'
 import { runOneFrame } from '../util/runOneFrame'
@@ -8,7 +8,7 @@ import { updateComponent } from './updateComponent'
 import { getComponent } from './getComponent'
 
 import { createSystem } from '../system/createSystem'
-import { Dictionary, InitialState } from '../type'
+import { Dictionary, EmptyState } from '../type'
 import { vi, describe, it, expect } from 'vitest'
 
 describe('component', () => {
@@ -21,7 +21,7 @@ describe('component', () => {
     const remove = vi.fn(({ state }) => state)
     const tick = vi.fn(({ state }) => state)
 
-    let state = createEntity(getInitialStateWithSystems(), entity1)
+    let state = createEntity(getEmptyState(), entity1)
 
     state = createSystem({
       state,
@@ -32,13 +32,13 @@ describe('component', () => {
       tick,
     })
 
-    state = createComponent<Dictionary<null>, InitialState>(
+    state = createComponent<Dictionary<null>, EmptyState>(
       state,
       componentName,
       entity1,
       {},
     )
-    state = createComponent<Dictionary<null>, InitialState>(
+    state = createComponent<Dictionary<null>, EmptyState>(
       state,
       componentName,
       entity2,
@@ -53,7 +53,7 @@ describe('component', () => {
     expect(tick).toHaveBeenCalledTimes(2)
 
     // create new component after remove
-    state = createComponent<null, InitialState>(
+    state = createComponent<null, EmptyState>(
       state,
       componentName,
       entity1,
@@ -63,13 +63,13 @@ describe('component', () => {
     expect(create).toHaveBeenCalledTimes(3)
 
     // updating existing component
-    state = updateComponent<null, InitialState>(
+    state = updateComponent<null, EmptyState>(
       state,
       'test',
       entity1,
       () => null,
     )
-    state = updateComponent<null, InitialState>(
+    state = updateComponent<null, EmptyState>(
       state,
       'test',
       entity1,
@@ -89,7 +89,7 @@ describe('component', () => {
     type SomeComponent = { value: 1 }
     const name = 'test'
 
-    let state = createEntity(getInitialStateWithSystems(), entity)
+    let state = createEntity(getEmptyState(), entity)
 
     state = createSystem({
       state,
@@ -98,24 +98,24 @@ describe('component', () => {
       create: ({ state }) => state,
     })
 
-    state = createComponent<SomeComponent, InitialState>(state, name, entity, {
+    state = createComponent<SomeComponent, EmptyState>(state, name, entity, {
       value: 1,
     })
 
     expect(
-      getComponent<SomeComponent, InitialState>(state, name, entity)?.value,
+      getComponent<SomeComponent, EmptyState>(state, name, entity)?.value,
     ).toBe(1)
 
     state = updateComponent(state, name, entity, () => ({}))
 
     expect(
-      getComponent<SomeComponent, InitialState>(state, name, entity)?.value,
+      getComponent<SomeComponent, EmptyState>(state, name, entity)?.value,
     ).toBe(1)
 
     state = updateComponent(state, name, entity, () => ({ value: 2 }))
 
     expect(
-      getComponent<SomeComponent, InitialState>(state, name, entity)?.value,
+      getComponent<SomeComponent, EmptyState>(state, name, entity)?.value,
     ).toBe(2)
   })
 
@@ -124,16 +124,16 @@ describe('component', () => {
     type SomeComponent = { value: 1 }
     const name = 'test'
 
-    let state = createEntity(getInitialStateWithSystems(), entity)
+    let state = createEntity(getEmptyState(), entity)
 
     expect(state.component[name]).toEqual(undefined)
 
-    state = createComponent<SomeComponent, InitialState>(state, name, entity, {
+    state = createComponent<SomeComponent, EmptyState>(state, name, entity, {
       value: 1,
     })
 
     expect(
-      getComponent<SomeComponent, InitialState>(state, name, entity)?.value,
+      getComponent<SomeComponent, EmptyState>(state, name, entity)?.value,
     ).toBe(1)
 
     state = removeComponent(state, name, entity)

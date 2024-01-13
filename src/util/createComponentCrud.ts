@@ -1,5 +1,5 @@
 import { Entity } from '../type'
-import { createStore } from './store'
+import { createStore } from '../store'
 
 export const createComponentCrud = <Component>({
   name,

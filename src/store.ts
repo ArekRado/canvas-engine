@@ -1,29 +1,40 @@
-import { Entity, InitialState, UnknownComponent } from '../type'
-import { createEntity } from '../entity/createEntity'
-import { createComponent } from '../component/createComponent'
-import { updateComponent } from '../component/updateComponent'
-import { removeComponent } from '../component/removeComponent'
-import { getComponent } from '../component/getComponent'
-import { getInitialStateWithSystems } from './state'
-import { removeEntity } from '../entity/removeEntity'
-import { getEntity } from '../entity/getEntity'
-import { createGlobalSystem, createSystem } from '../system/createSystem'
+import { Entity, EmptyState, UnknownComponent } from './type'
+import { createEntity } from './entity/createEntity'
+import { createComponent } from './component/createComponent'
+import { updateComponent } from './component/updateComponent'
+import { removeComponent } from './component/removeComponent'
+import { getComponent } from './component/getComponent'
+import { getEmptyState } from './util/state'
+import { removeEntity } from './entity/removeEntity'
+import { getEntity } from './entity/getEntity'
+import { createGlobalSystem, createSystem } from './system/createSystem'
+import { createEventContainer } from './event'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const createStore = <State extends InitialState<any, any>>(
+export const createStore = <State extends EmptyState<any, any>>(
   components?: UnknownComponent,
 ) => {
-  let state = getInitialStateWithSystems() as State
+  let state = getEmptyState() as State
 
   state.component = {
     ...state.component,
     ...components,
   }
 
+  const { emitEvent, eventSystem, addEventHandler, removeEventHandler } =
+    createEventContainer()
+
+  state = eventSystem(state)
+
   return {
     // State
     getState: () => state,
     setState: (newState: State) => (state = newState),
+
+    // Event
+    addEventHandler,
+    removeEventHandler,
+    emitEvent,
 
     // Entity
     getEntity: (entity: Entity) => getEntity<State>(state, entity),

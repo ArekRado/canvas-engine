@@ -184,7 +184,7 @@ export const playerSystem = (state: State) =>
 import {
   runOneFrame,
   getState,
-  InitialState,
+  EmptyState,
 } from '@arekrado/canvas-engine'
 import {
   Engine,
@@ -215,7 +215,7 @@ type Components = {
   gun: Gun
 }
 type Systems = System<Player>
-type State = InitialState<Components, Systems>
+type State = EmptyState<Components, Systems>
 
 let state = getState({ scene, camera }) as State
 
@@ -235,7 +235,7 @@ scene.registerBeforeRender(beforeRenderCallback)
 # Typescript
 
 ```ts
-import { EmptyState, InitialState } from '@arekrado/canvas-engine'
+import { EmptyState, EmptyState } from '@arekrado/canvas-engine'
 
 export type Components = {
   animationNumber: Dictionary<AnimationNumber>
@@ -250,7 +250,7 @@ export type Systems =
 
 type YourOwnState = EmptyState<Components, Systems>
 
-type YourOwnStateWithCanvasEngine = InitialState<Components, Systems>
+type YourOwnStateWithCanvasEngine = EmptyState<Components, Systems>
 ```
 
 # Event - TODO

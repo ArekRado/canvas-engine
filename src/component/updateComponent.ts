@@ -1,7 +1,7 @@
-import { Entity, InitialState } from '../type'
+import { Entity, EmptyState } from '../type'
 import { getComponent } from './getComponent'
 
-export const updateComponent = <Data, State extends InitialState>(
+export const updateComponent = <Data, State extends EmptyState>(
   state: State,
   name: string,
   entity: Entity,

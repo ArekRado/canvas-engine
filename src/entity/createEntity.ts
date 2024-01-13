@@ -1,6 +1,6 @@
-import { Entity, InitialState } from '../type'
+import { Entity, EmptyState } from '../type'
 
-type CreateEntity = <State extends InitialState>(
+type CreateEntity = <State extends EmptyState>(
   state: State,
   entity: Entity,
 ) => State

@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createComponent } from '../component/createComponent'
 import { createGlobalSystem, createSystem } from '../system/createSystem'
-import { InitialState } from '../type'
+import { EmptyState } from '../type'
 import { runOneFrame } from './runOneFrame'
-import { getInitialState } from './state'
+import { getEmptyState } from './state'
 import { vi, describe, it, expect } from 'vitest'
 
 describe('runOneFrame', () => {
@@ -30,32 +31,32 @@ describe('runOneFrame', () => {
       return state
     })
 
-    let state = getInitialState()
+    let state = getEmptyState()
     state = createComponent(state, 'system4', 'entity system4', {})
     state = createComponent(state, 'system5', 'entity system5', {})
 
-    state = createGlobalSystem<InitialState>({
+    state = createGlobalSystem<EmptyState<any, any>>({
       name: 'system1',
       tick: tick1,
       state,
       priority: 1,
     })
 
-    state = createGlobalSystem<InitialState>({
+    state = createGlobalSystem<EmptyState<any, any>>({
       name: 'system2',
       tick: tick2,
       state,
       priority: 2,
     })
 
-    state = createGlobalSystem<InitialState>({
+    state = createGlobalSystem<EmptyState<any, any>>({
       name: 'system3',
       tick: tick3,
       state,
       priority: 1,
     })
 
-    state = createSystem<null, InitialState>({
+    state = createSystem<null, EmptyState<any, any>>({
       name: 'system4',
       componentName: 'system4',
       tick: tick4,
@@ -63,7 +64,7 @@ describe('runOneFrame', () => {
       priority: 3,
     })
 
-    state = createSystem<null, InitialState>({
+    state = createSystem<null, EmptyState<any, any>>({
       name: 'system5',
       componentName: 'system5',
       tick: tick5,

@@ -1,6 +1,6 @@
-import { InitialState, UnknownSystem } from '../type'
+import { EmptyState, UnknownSystem } from '../type'
 
-export const runOneFrame = <State extends InitialState>({
+export const runOneFrame = <State extends EmptyState>({
   state,
 }: {
   state: State

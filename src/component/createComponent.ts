@@ -1,7 +1,7 @@
 import { getSystemByComponentName } from '../system/getSystemByName'
-import { Entity, InitialState } from '../type'
+import { Entity, EmptyState } from '../type'
 
-export const createComponent = <Data, State extends InitialState>(
+export const createComponent = <Data, State extends EmptyState>(
   state: State,
   name: string,
   entity: Entity,

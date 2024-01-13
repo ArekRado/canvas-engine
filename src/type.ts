@@ -1,4 +1,4 @@
-import { Vector2D } from '@arekrado/vector-2d'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 ////////////////////////////////////
 //
@@ -13,37 +13,6 @@ import { Vector2D } from '@arekrado/vector-2d'
 export type Dictionary<Value> = { [key: string]: Value }
 
 export type Entity = string
-
-export type Mouse = {
-  buttons: number
-  position: Vector2D
-  isMoving: boolean
-  isButtonUp: boolean
-  isButtonDown: boolean
-  lastClick: {
-    timestamp: number
-    buttons: number
-  }
-  wheel: {
-    deltaMode: number
-    deltaX: number
-    deltaY: number
-    deltaZ: number
-  }
-}
-
-export type KeyData = {
-  // Key was released.
-  isUp: boolean
-  // Key was pressed.
-  isDown: boolean
-  // @TODO Key is held.
-  isPressed: boolean
-}
-
-export type Keyboard = {
-  keys: { [key: string]: KeyData | undefined }
-}
 
 ////////////////////////////////////
 //
@@ -64,40 +33,8 @@ export type EmitEvent = (event: unknown) => void
 
 export type EventHandler<
   Event,
-  State extends UnknownState = UnknownState,
+  State extends EmptyState<any, any>,
 > = (params: { event: Event; state: State }) => State
-
-export enum CanvasEngineEvent {
-  windowResize = 'CanvasEngineEvent-windowResize',
-  colliderCollision = 'CanvasEngineEvent-colliderCollision',
-
-  renderLoopStart = 'CanvasEngineEvent-renderLoopStart',
-  mouseActionEvent = 'CanvasEngineEvent-mouseActionEvent',
-  keyboardActionEvent = 'CanvasEngineEvent-keyboardActionEvent',
-}
-
-export type WindowResizeEvent = ECSEvent<CanvasEngineEvent.windowResize, null>
-export type RenderLoopStartEvent = ECSEvent<
-  CanvasEngineEvent.renderLoopStart,
-  {
-    animationFrame: number
-  }
->
-
-export type MouseActionEvent = ECSEvent<
-  CanvasEngineEvent.mouseActionEvent,
-  Mouse
->
-export type KeyboardActionEvent = ECSEvent<
-  CanvasEngineEvent.keyboardActionEvent,
-  Keyboard
->
-
-// export type AllEvents =
-//   | WindowResizeEvent
-//   | RenderLoopStartEvent
-//   | MouseActionEvent
-//   | KeyboardActionEvent
 
 ////////////////////////////////////
 //
@@ -109,8 +46,7 @@ export type KeyboardActionEvent = ECSEvent<
 //
 ////////////////////////////////////
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyStateForSystem = EmptyState<UnknownComponent, any>
+export type AnyStateForSystem = EmptyState<UnknownComponent<any>, any>
 
 export type GetDefaultComponent<X> = (params?: Partial<X>) => X
 
@@ -176,37 +112,16 @@ export type GlobalSystem<State extends AnyStateForSystem> = {
 //
 ////////////////////////////////////
 
-type StateDefaultComponents = {
-  mouse: Map<Entity, Mouse>
-  keyboard: Map<Entity, Keyboard>
-}
-
-type StateDefaultSystems =
-  | System<Event, AnyStateForSystem>
-  | System<Mouse, AnyStateForSystem>
-  | System<Keyboard, AnyStateForSystem>
-
 /**
  * Describes empty state without internal components and systems
  */
-type EmptyState<Component extends UnknownComponent, System> = {
+export type EmptyState<Component extends UnknownComponent = any, System = any> = {
   entity: Map<Entity, Entity>
   component: Component
   system: Array<System>
-  globalSystem: Array<GlobalSystem<UnknownState>>
+  globalSystem: Array<GlobalSystem<any>>
 }
 
-/**
- * Describes extendable state with internal components and systems
- */
-export type InitialState<
-  Component = UnknownComponent,
-  System = UnknownSystem,
-> = EmptyState<StateDefaultComponents & Component, StateDefaultSystems & System>
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type UnknownComponent = Dictionary<Map<string, any>>
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type UnknownComponent<Component = any> = Dictionary<Map<string, Component>>
 export type UnknownSystem = System<any, AnyStateForSystem>
 // export type UnknownGlobalSystem = GlobalSystem<AnyStateForSystem>
-type UnknownState = EmptyState<UnknownComponent, UnknownSystem>

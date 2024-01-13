@@ -2,7 +2,7 @@ import {
   EmitEvent,
   Entity,
   GlobalSystem,
-  InitialState,
+  EmptyState,
   SystemMethodParams,
 } from '../type'
 
@@ -17,7 +17,8 @@ export enum systemPriority {
 
 const triggerTickForAllComponents = <
   ComponentData,
-  State extends InitialState,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  State extends EmptyState<any, any>,
 >({
   state,
   componentName,
@@ -49,7 +50,7 @@ const triggerTickForAllComponents = <
 export const createSystem = <
   ComponentData,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  State extends InitialState<any, any>,
+  State extends EmptyState<any, any>,
 >({
   state,
   tick,
@@ -88,7 +89,7 @@ export const createSystem = <
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const createGlobalSystem = <State extends InitialState<any, any>>({
+export const createGlobalSystem = <State extends EmptyState<any, any>>({
   state,
   tick,
   name,

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { createStore } from './store'
-import { generateEntity } from '../entity/generateEntity'
+import { generateEntity } from './entity/generateEntity'
 
 describe('store', () => {
   it('getState should return proper state', () => {

@@ -1,8 +1,8 @@
-import { InitialState, Entity } from '../type'
+import { EmptyState, Entity } from '../type'
 
 export const getComponentsByName = <
   Data,
-  State extends InitialState,
+  State extends EmptyState,
 >(
   state: State,
   name: string,

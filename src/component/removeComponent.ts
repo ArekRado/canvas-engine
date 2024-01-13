@@ -1,8 +1,8 @@
-import { Entity, InitialState } from '../type'
+import { Entity, EmptyState } from '../type'
 import { getComponent } from './getComponent'
 import { getSystemByComponentName } from '../system/getSystemByName'
 
-export const removeComponent = <State extends InitialState>(
+export const removeComponent = <State extends EmptyState>(
   state: State,
   name: string,
   entity: Entity,

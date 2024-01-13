@@ -1,7 +1,7 @@
 import { removeComponent } from '../component/removeComponent'
-import { Entity, InitialState } from '../type'
+import { Entity, EmptyState } from '../type'
 
-type RemoveEntity = <State extends InitialState>(
+type RemoveEntity = <State extends EmptyState>(
   state: State,
   entity: Entity,
 ) => State
