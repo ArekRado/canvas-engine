@@ -6,7 +6,7 @@ export const createComponent = <Data, State extends EmptyState>(
   name: string,
   entity: Entity,
   data: Data,
-): State => {
+): void => {
   const isFirstComponentThisName = state.component[name] === undefined
   const needCreateEntity = isFirstComponentThisName
     ? true
@@ -14,10 +14,9 @@ export const createComponent = <Data, State extends EmptyState>(
 
   if (isFirstComponentThisName) {
     state.component[name] = new Map()
-    state.component[name].set(entity, data)
-  } else {
-    state.component[name].set(entity, data)
   }
+
+  state.component[name].set(entity, data)
 
   const system = getSystemByComponentName(name, state.system)
 
@@ -25,13 +24,10 @@ export const createComponent = <Data, State extends EmptyState>(
     system?.create !== undefined &&
     (isFirstComponentThisName || needCreateEntity)
   ) {
-    return system.create({
-      state: state,
+    system.create({
       component: data,
       entity,
       name,
-    }) as State
+    })
   }
-
-  return state
 }

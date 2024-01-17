@@ -26,8 +26,8 @@ const triggerTickForAllComponents = <
 }: {
   state: State
   componentName: string
-  tickCallback: (params: SystemMethodParams<ComponentData, State>) => State
-}): State => {
+  tickCallback: (params: SystemMethodParams<ComponentData>) => void
+}): void => {
   const components = state.component[componentName] as Map<
     Entity,
     ComponentData
@@ -35,16 +35,13 @@ const triggerTickForAllComponents = <
 
   if (components) {
     for (const [entity, component] of components) {
-      state = tickCallback({
-        state: state,
+      tickCallback({
         component,
         name: componentName,
         entity,
       })
     }
   }
-
-  return state
 }
 
 export const createSystem = <
@@ -59,20 +56,20 @@ export const createSystem = <
   state: State
   name: string
   componentName: string
-  create?: (params: SystemMethodParams<ComponentData, State>) => State
-  tick?: (params: SystemMethodParams<ComponentData, State>) => State
-  remove?: (params: SystemMethodParams<ComponentData, State>) => State
+  create?: (params: SystemMethodParams<ComponentData>) => void
+  tick?: (params: SystemMethodParams<ComponentData>) => void
+  remove?: (params: SystemMethodParams<ComponentData>) => void
   priority?: number
   emitEvent?: EmitEvent
-}): State => {
+}): void => {
   const system = {
     name: params.name,
     componentName: params.componentName,
     priority: params.priority || systemPriority.last,
     create: params.create,
     tick: tick
-      ? ({ state }: { state: State }) => {
-          return triggerTickForAllComponents({
+      ? () => {
+          triggerTickForAllComponents({
             state,
             componentName: params.componentName,
             tickCallback: tick,
@@ -82,10 +79,7 @@ export const createSystem = <
     remove: params.remove,
   }
 
-  return {
-    ...state,
-    system: [...state.system, system],
-  }
+  state.system.push(system)
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -97,22 +91,16 @@ export const createGlobalSystem = <State extends EmptyState<any, any>>({
 }: {
   state: State
   name: string
-  tick?: (params: { state: State }) => State
+  tick?: () => void
   priority?: number
-}): State => {
-  const globalSystem: GlobalSystem<State> = {
+}) => {
+  const globalSystem: GlobalSystem = {
     name,
     priority: priority || systemPriority.zero,
     tick,
     create: undefined,
-    remove: ({ state }) => state,
+    remove: () => {},
   }
 
-  return {
-    ...state,
-    globalSystem: [
-      ...(state.globalSystem as State['globalSystem']),
-      globalSystem,
-    ],
-  }
+  state.globalSystem.push(globalSystem)
 }

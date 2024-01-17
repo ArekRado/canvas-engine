@@ -40,7 +40,7 @@ describe('event', () => {
 
     expect(eventHandler).not.toHaveBeenCalled()
 
-    runOneFrame({ state: store.getState() })
+    runOneFrame(store.getState())
 
     expect(eventHandler).toHaveBeenCalledTimes(1)
     expect(Object.keys(eventHandler.mock.calls[0][0])).toEqual([
@@ -52,7 +52,7 @@ describe('event', () => {
     store.removeEventHandler(eventHandler)
 
     store.emitEvent(event)
-    runOneFrame({ state: store.getState() })
+    runOneFrame(store.getState())
 
     expect(eventHandler).toHaveBeenCalledTimes(1)
   })
@@ -75,7 +75,7 @@ describe('event', () => {
 
     expect(internalEventHandler).not.toHaveBeenCalled()
 
-    runOneFrame({ state: store.getState() })
+    runOneFrame(store.getState())
 
     expect(internalEventHandler).toHaveBeenCalled()
     expect(Object.keys(internalEventHandler.mock.calls[0][0])).toEqual([
@@ -95,10 +95,10 @@ describe('event', () => {
       payload: null,
     }
     const entity = generateEntity()
+    const state = store.getState()
 
-    let state = createEntity(getEmptyState(), entity)
-
-    state = createComponent<Test, EmptyState>(state, name, entity, {
+    createEntity(state, entity)
+    createComponent<Test, EmptyState>(state, name, entity, {
       count: 0,
     })
 
@@ -116,7 +116,7 @@ describe('event', () => {
     store.emitEvent(event)
 
     Array.from({ length: 6 }).forEach((_, i) => {
-      runOneFrame({ state: store.getState() })
+      runOneFrame(store.getState())
 
       expect(count).toEqual(i + 1)
     })

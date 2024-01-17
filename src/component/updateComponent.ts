@@ -6,7 +6,7 @@ export const updateComponent = <Data, State extends EmptyState>(
   name: string,
   entity: Entity,
   update: ((component: Data) => Partial<Data>) | undefined,
-): State => {
+): void => {
   const previousComponent = getComponent<Data, State>(state, name, entity)
 
   if (previousComponent !== undefined) {
@@ -16,9 +16,5 @@ export const updateComponent = <Data, State extends EmptyState>(
         : Object.assign({}, previousComponent, update(previousComponent))
 
     state.component[name].set(entity, updatedComponent)
-
-    return state
   }
-
-  return state
 }

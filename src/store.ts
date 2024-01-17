@@ -24,10 +24,11 @@ export const createStore = <State extends EmptyState<any, any>>(
   const { emitEvent, eventSystem, addEventHandler, removeEventHandler } =
     createEventContainer()
 
-  state = eventSystem(state)
+  eventSystem(state)
 
   return {
     // State
+    state,
     getState: () => state,
     setState: (newState: State) => (state = newState),
 
@@ -39,10 +40,10 @@ export const createStore = <State extends EmptyState<any, any>>(
     // Entity
     getEntity: (entity: Entity) => getEntity<State>(state, entity),
     createEntity: (entity: Entity) => {
-      state = createEntity<State>(state, entity)
+      createEntity<State>(state, entity)
     },
     removeEntity: (entity: Entity) => {
-      state = removeEntity<State>(state, entity)
+      removeEntity<State>(state, entity)
     },
 
     // Component
@@ -53,17 +54,17 @@ export const createStore = <State extends EmptyState<any, any>>(
       entity: Entity,
       data: ComponentData,
     ) => {
-      state = createComponent<ComponentData, State>(state, name, entity, data)
+      createComponent<ComponentData, State>(state, name, entity, data)
     },
     updateComponent: <ComponentData>(
       name: string,
       entity: Entity,
       update: Parameters<typeof updateComponent<ComponentData, State>>[3],
     ) => {
-      state = updateComponent<ComponentData, State>(state, name, entity, update)
+      updateComponent<ComponentData, State>(state, name, entity, update)
     },
     removeComponent: (name: string, entity: Entity) => {
-      state = removeComponent<State>(state, name, entity)
+      removeComponent<State>(state, name, entity)
     },
 
     // System
@@ -73,7 +74,7 @@ export const createStore = <State extends EmptyState<any, any>>(
         'state'
       >,
     ) => {
-      state = createSystem<Component, State>({
+      createSystem<Component, State>({
         state,
         ...parameters,
       })
@@ -85,7 +86,7 @@ export const createStore = <State extends EmptyState<any, any>>(
         'state'
       >,
     ) => {
-      state = createGlobalSystem<State>({
+      createGlobalSystem<State>({
         state,
         ...parameters,
       })

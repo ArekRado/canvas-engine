@@ -31,10 +31,10 @@ export type ECSEvent<Type, Payload> = {
 
 export type EmitEvent = (event: unknown) => void
 
-export type EventHandler<
-  Event,
-  State extends EmptyState<any, any>,
-> = (params: { event: Event; state: State }) => State
+export type EventHandler<Event, State extends EmptyState<any, any>> = (params: {
+  event: Event
+  state: State
+}) => State
 
 ////////////////////////////////////
 //
@@ -50,55 +50,49 @@ export type AnyStateForSystem = EmptyState<UnknownComponent<any>, any>
 
 export type GetDefaultComponent<X> = (params?: Partial<X>) => X
 
-export type SystemMethodParams<
-  ComponentData = AnyStateForSystem['component'],
-  State = AnyStateForSystem,
-> = {
-  state: State
-  entity: Entity
-  name: string
-  component: ComponentData
-}
+export type SystemMethodParams<ComponentData = AnyStateForSystem['component']> =
+  {
+    entity: Entity
+    name: string
+    component: ComponentData
+  }
 
-export type System<
-  Component,
-  State extends AnyStateForSystem = AnyStateForSystem,
-> = {
+export type System<Component> = {
   name: string
   componentName: string
   priority: number
   /**
    * Called on each component create if state.component[name] and system name are the same
    */
-  create: ((params: SystemMethodParams<Component, State>) => State) | undefined
+  create: ((params: SystemMethodParams<Component>) => void) | undefined
   /**
    * Called on each runOneFrame
    */
-  tick: ((params: { state: State }) => State) | undefined
-  remove: ((params: SystemMethodParams<Component, State>) => State) | undefined
+  tick: (() => void) | undefined
+  remove: ((params: SystemMethodParams<Component>) => void) | undefined
   update:
     | ((
-        params: SystemMethodParams<Component, State> & {
+        params: SystemMethodParams<Component> & {
           previousComponent: Component
         },
-      ) => State)
+      ) => void)
     | undefined
 }
 
-// type CreateGlobalSystemParams<State extends AnyStateForSystem> = {
+// type CreateGlobalSystemParams = {
 //   state: State
 //   name: string
-//   create?: (params: { state: State }) => State
-//   tick?: (params: { state: State }) => State
-//   fixedTick?: (params: { state: State }) => State
+//   create?: () => void
+//   tick?: () => void
+//   fixedTick?: () => void
 //   priority?: number
 // }
 
-export type GlobalSystem<State extends AnyStateForSystem> = {
+export type GlobalSystem = {
   name: string
-  tick?: (params: { state: State }) => State
+  tick?: () => void
   create: undefined
-  remove: (params: { state: State }) => State
+  remove: () => void
   priority: number
 }
 
@@ -115,13 +109,18 @@ export type GlobalSystem<State extends AnyStateForSystem> = {
 /**
  * Describes empty state without internal components and systems
  */
-export type EmptyState<Component extends UnknownComponent = any, System = any> = {
+export type EmptyState<
+  Component extends UnknownComponent = any,
+  System = any,
+> = {
   entity: Map<Entity, Entity>
   component: Component
   system: Array<System>
-  globalSystem: Array<GlobalSystem<any>>
+  globalSystem: Array<GlobalSystem>
 }
 
-export type UnknownComponent<Component = any> = Dictionary<Map<string, Component>>
-export type UnknownSystem = System<any, AnyStateForSystem>
+export type UnknownComponent<Component = any> = Dictionary<
+  Map<string, Component>
+>
+export type UnknownSystem = System<any>
 // export type UnknownGlobalSystem = GlobalSystem<AnyStateForSystem>

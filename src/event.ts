@@ -63,13 +63,13 @@ export const createEventContainer = () => {
 
   const eventSystem = <State extends EmptyState<any, any>>(
     state: State,
-  ): State => {
+  ): void => {
     resetEventState()
 
-    return createGlobalSystem<State>({
+    createGlobalSystem<State>({
       state,
       name: 'event',
-      tick: ({ state }) => {
+      tick: () => {
         lockFirstBuffer()
 
         for (let i = 0; i < eventBuffer.length; i++) {
@@ -87,8 +87,6 @@ export const createEventContainer = () => {
 
         resetEventBuffer()
         unlockFirstBuffer()
-
-        return state
       },
     })
   }

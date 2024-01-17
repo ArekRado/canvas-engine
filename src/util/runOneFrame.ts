@@ -1,10 +1,6 @@
 import { EmptyState, UnknownSystem } from '../type'
 
-export const runOneFrame = <State extends EmptyState>({
-  state,
-}: {
-  state: State
-}): State => {
+export const runOneFrame = <State extends EmptyState>(state: State) => {
   const allSystems = state.system
     .concat(state.globalSystem as unknown as UnknownSystem[])
     .sort((a, b) => (a.priority > b.priority ? 1 : -1))
@@ -12,9 +8,7 @@ export const runOneFrame = <State extends EmptyState>({
   for (let i = 0; i < allSystems.length; i++) {
     const system = allSystems[i]
     if (system.tick) {
-      state = system.tick({ state }) as State
+      system.tick({ state }) as State
     }
   }
-
-  return state
 }

@@ -226,7 +226,7 @@ state = playerSystem(state)
 state = gunBlueprint(state)
 
 const beforeRenderCallback = () => {
-  state = runOneFrame({ state })
+  state = runOneFrame(state)
 }
 
 scene.registerBeforeRender(beforeRenderCallback)

@@ -6,10 +6,10 @@ export const removeComponent = <State extends EmptyState>(
   state: State,
   name: string,
   entity: Entity,
-): State => {
+): void => {
   const components = state.component[name]
 
-  if (!components) return state
+  if (!components) return
 
   const component = getComponent(state, name, entity)
   const system = getSystemByComponentName(name, state.system)
@@ -17,8 +17,6 @@ export const removeComponent = <State extends EmptyState>(
   state.component[name].delete(entity)
 
   if (system && component && system.remove) {
-    return system.remove({ state: state, component, entity, name }) as State
+    system.remove({ component, entity, name })
   }
-
-  return state
 }

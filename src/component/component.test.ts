@@ -21,9 +21,11 @@ describe('component', () => {
     const remove = vi.fn(({ state }) => state)
     const tick = vi.fn(({ state }) => state)
 
-    let state = createEntity(getEmptyState(), entity1)
+    const state = getEmptyState()
 
-    state = createSystem({
+    createEntity(state, entity1)
+
+    createSystem({
       state,
       name: componentName,
       componentName: componentName,
@@ -32,28 +34,28 @@ describe('component', () => {
       tick,
     })
 
-    state = createComponent<Dictionary<null>, EmptyState>(
+    createComponent<Dictionary<null>, EmptyState>(
       state,
       componentName,
       entity1,
       {},
     )
-    state = createComponent<Dictionary<null>, EmptyState>(
+    createComponent<Dictionary<null>, EmptyState>(
       state,
       componentName,
       entity2,
       {},
     )
 
-    state = runOneFrame({ state })
-    state = removeComponent(state, componentName, entity1)
+    runOneFrame(state)
+    removeComponent(state, componentName, entity1)
 
     expect(create).toHaveBeenCalledTimes(2)
     expect(remove).toHaveBeenCalledTimes(1)
     expect(tick).toHaveBeenCalledTimes(2)
 
     // create new component after remove
-    state = createComponent<null, EmptyState>(
+    createComponent<null, EmptyState>(
       state,
       componentName,
       entity1,
@@ -63,13 +65,13 @@ describe('component', () => {
     expect(create).toHaveBeenCalledTimes(3)
 
     // updating existing component
-    state = updateComponent<null, EmptyState>(
+     updateComponent<null, EmptyState>(
       state,
       'test',
       entity1,
       () => null,
     )
-    state = updateComponent<null, EmptyState>(
+    updateComponent<null, EmptyState>(
       state,
       'test',
       entity1,
@@ -85,20 +87,21 @@ describe('component', () => {
     const entity = generateEntity()
 
     const update = vi.fn(({ state }) => state)
+    const state = getEmptyState()
 
     type SomeComponent = { value: 1 }
     const name = 'test'
 
-    let state = createEntity(getEmptyState(), entity)
+    createEntity(getEmptyState(), entity)
 
-    state = createSystem({
+    createSystem({
       state,
       name,
       componentName: name,
-      create: ({ state }) => state,
+      create: () => {},
     })
 
-    state = createComponent<SomeComponent, EmptyState>(state, name, entity, {
+    createComponent<SomeComponent, EmptyState>(state, name, entity, {
       value: 1,
     })
 
@@ -106,13 +109,13 @@ describe('component', () => {
       getComponent<SomeComponent, EmptyState>(state, name, entity)?.value,
     ).toBe(1)
 
-    state = updateComponent(state, name, entity, () => ({}))
+    updateComponent(state, name, entity, () => ({}))
 
     expect(
       getComponent<SomeComponent, EmptyState>(state, name, entity)?.value,
     ).toBe(1)
 
-    state = updateComponent(state, name, entity, () => ({ value: 2 }))
+    updateComponent(state, name, entity, () => ({ value: 2 }))
 
     expect(
       getComponent<SomeComponent, EmptyState>(state, name, entity)?.value,
@@ -120,15 +123,16 @@ describe('component', () => {
   })
 
   it('removing all components os specific name should keep empty Map in a component dictionary', () => {
+    const state = getEmptyState()
     const entity = generateEntity()
     type SomeComponent = { value: 1 }
     const name = 'test'
 
-    let state = createEntity(getEmptyState(), entity)
+    createEntity(getEmptyState(), entity)
 
     expect(state.component[name]).toEqual(undefined)
 
-    state = createComponent<SomeComponent, EmptyState>(state, name, entity, {
+    createComponent<SomeComponent, EmptyState>(state, name, entity, {
       value: 1,
     })
 
@@ -136,7 +140,7 @@ describe('component', () => {
       getComponent<SomeComponent, EmptyState>(state, name, entity)?.value,
     ).toBe(1)
 
-    state = removeComponent(state, name, entity)
+    removeComponent(state, name, entity)
 
     expect(state.component[name]).toEqual(new Map())
   })

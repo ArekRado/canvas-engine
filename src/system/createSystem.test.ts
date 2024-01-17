@@ -13,25 +13,10 @@ describe('createGlobalSystem', () => {
     createGlobalSystem({
       state: getEmptyState(),
       name: 'test',
-      tick,
     })
 
     expect(remove).not.toHaveBeenCalled()
     expect(tick).not.toHaveBeenCalled()
-  })
-
-  it('should trigger tick after runOneFrame', () => {
-    const tick = vi.fn(({ state }) => state)
-
-    const state = createGlobalSystem({
-      state: getEmptyState(),
-      name: 'test',
-      tick,
-    })
-
-    runOneFrame({ state })
-
-    expect(tick).toHaveBeenCalled()
   })
 })
 
@@ -68,7 +53,7 @@ describe('createSystem', () => {
     expect(remove).toHaveBeenCalledTimes(0)
     expect(tick).toHaveBeenCalledTimes(0)
 
-    runOneFrame({ state: store.getState() })
+    runOneFrame(store.getState())
 
     expect(create).toHaveBeenCalledTimes(1)
     expect(remove).toHaveBeenCalledTimes(0)
