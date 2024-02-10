@@ -48,6 +48,7 @@ export const createSystem = <
   ComponentData,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   State extends EmptyState<any, any>,
+  CreateExtraParameters = unknown,
 >({
   state,
   tick,
@@ -56,7 +57,11 @@ export const createSystem = <
   state: State
   name: string
   componentName: string
-  create?: (params: SystemMethodParams<ComponentData>) => void
+  create?: (
+    params: SystemMethodParams<ComponentData> & {
+      extraParameters: CreateExtraParameters
+    },
+  ) => void
   tick?: (params: SystemMethodParams<ComponentData>) => void
   remove?: (params: SystemMethodParams<ComponentData>) => void
   priority?: number

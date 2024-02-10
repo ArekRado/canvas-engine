@@ -57,14 +57,20 @@ export type SystemMethodParams<ComponentData = AnyStateForSystem['component']> =
     component: ComponentData
   }
 
-export type System<Component> = {
+export type System<Component, CreateExtraParameters = unknown> = {
   name: string
   componentName: string
   priority: number
   /**
    * Called on each component create if state.component[name] and system name are the same
    */
-  create: ((params: SystemMethodParams<Component>) => void) | undefined
+  create:
+    | ((
+        params: SystemMethodParams<Component> & {
+          extraParameters: CreateExtraParameters
+        },
+      ) => void)
+    | undefined
   /**
    * Called on each runOneFrame
    */

@@ -1,11 +1,12 @@
 import { getSystemByComponentName } from '../system/getSystemByName'
 import { Entity, EmptyState } from '../type'
 
-export const createComponent = <Data, State extends EmptyState>(
+export const createComponent = <Data, State extends EmptyState, ExtraParameters = unknown>(
   state: State,
   name: string,
   entity: Entity,
   data: Data,
+  extraParameters?: ExtraParameters
 ): void => {
   const isFirstComponentThisName = state.component[name] === undefined
   const needCreateEntity = isFirstComponentThisName
@@ -28,6 +29,7 @@ export const createComponent = <Data, State extends EmptyState>(
       component: data,
       entity,
       name,
+      extraParameters,
     })
   }
 }

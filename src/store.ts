@@ -49,12 +49,19 @@ export const createStore = <State extends EmptyState<any, any>>(
     // Component
     getComponent: <ComponentData>(name: string, entity: Entity) =>
       getComponent<ComponentData, State>(state, name, entity),
-    createComponent: <ComponentData>(
+    createComponent: <ComponentData, CreateExtraParameters = unknown>(
       name: string,
       entity: Entity,
       data: ComponentData,
+      extraParameters?: CreateExtraParameters,
     ) => {
-      createComponent<ComponentData, State>(state, name, entity, data)
+      createComponent<ComponentData, State>(
+        state,
+        name,
+        entity,
+        data,
+        extraParameters,
+      )
     },
     updateComponent: <ComponentData>(
       name: string,
@@ -68,13 +75,15 @@ export const createStore = <State extends EmptyState<any, any>>(
     },
 
     // System
-    createSystem: <Component>(
+    createSystem: <Component, CreateExtraParameters = unknown>(
       parameters: Omit<
-        Parameters<typeof createSystem<Component, State>>[0],
+        Parameters<
+          typeof createSystem<Component, State, CreateExtraParameters>
+        >[0],
         'state'
       >,
     ) => {
-      createSystem<Component, State>({
+      createSystem<Component, State, CreateExtraParameters>({
         state,
         ...parameters,
       })

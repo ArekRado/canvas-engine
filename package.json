@@ -1,15 +1,22 @@
 {
-  "version": "0.0.116",
+  "version": "0.0.125",
   "name": "@arekrado/canvas-engine",
-  "main": "index.js",
-  "typings": "index.d.ts",
-  "module": "index.js",
-  "npmName": "@arekrado/canvas-engine",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.mjs",
+  "type": "commonjs",
+  "types": "dist/index.d.ts",
   "sideEffects": false,
   "keywords": [
     "canvas",
     "engine"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.mjs",
+      "default": "./dist/index.umd.js"
+    }
+  },
   "bugs": {
     "url": "https://github.com/ArekRado/canvas-engine/issues"
   },
@@ -18,6 +25,10 @@
     "type": "git",
     "url": "git+https://github.com/ArekRado/canvas-engine.git"
   },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
   "author": "Arek Rado",
   "license": "GNU",
   "private": false,
@@ -27,14 +38,12 @@
     "test:watch": "vitest --config ./vitest.config.ts --no-isolate",
     "publish:dry": "npm publish --dry-run",
     "lint": "eslint ./src --ext .ts,.tsx",
-    "lint:fix": "eslint ./src --ext .ts --fix"
+    "lint:fix": "eslint ./src --ext .ts --fix",
+    "build": "vite build"
   },
   "engines": {
     "node": ">=20",
     "npm": ">=9.8.0"
-  },
-  "dependencies": {
-    "@arekrado/vector-2d": "^0.0.11"
   },
   "devDependencies": {
     "@types/node": "^20.10.6",
@@ -45,6 +54,7 @@
     "prettier": "^3.1.1",
     "tslib": "^2.6.2",
     "typescript": "^5.3.3",
+    "vite-plugin-dts": "^3.7.2",
     "vitest": "^1.1.0"
   }
 }

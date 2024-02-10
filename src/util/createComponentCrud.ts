@@ -1,20 +1,28 @@
 import { Entity } from '../type'
 import { createStore } from '../store'
 
-export const createComponentCrud = <Component>({
+export const createComponentCrud = <
+  Component,
+  CreateExtraParameters = unknown,
+>({
   name,
-  store,
+  getStore,
 }: {
   name: string
-  store: ReturnType<typeof createStore>
+  getStore: () => ReturnType<typeof createStore>
 }) => ({
-  getComponent: (entity: Entity) => store.getComponent<Component>(name, entity),
-  createComponent: (entity: Entity, data: Component) =>
-    store.createComponent<Component>(name, entity, data),
+  getComponent: (entity: Entity) =>
+    getStore().getComponent<Component>(name, entity),
+  createComponent: (
+    entity: Entity,
+    data: Component,
+    extraParameters?: CreateExtraParameters,
+  ) =>
+    getStore().createComponent<Component>(name, entity, data, extraParameters),
   updateComponent: (
     entity: Entity,
     update: (component: Component) => Partial<Component>,
-  ) => store.updateComponent<Component>(name, entity, update),
+  ) => getStore().updateComponent<Component>(name, entity, update),
 
-  removeComponent: (entity: Entity) => store.removeComponent(name, entity),
+  removeComponent: (entity: Entity) => getStore().removeComponent(name, entity),
 })
